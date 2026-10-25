@@ -10940,5 +10940,83 @@
   "schoolHistoryDestination": "Transferred to",
   "@schoolHistoryDestination": {
     "description": "School enrollment history: schoolHistoryDestination."
+  },
+
+  "academicTitle": "Years, grades and sections",
+  "@academicTitle": {
+    "description": "School academic management: academicTitle."
+  },
+  "academicYears": "Academic years",
+  "@academicYears": {
+    "description": "School academic management: academicYears."
+  },
+  "academicGrades": "Grades",
+  "@academicGrades": {
+    "description": "School academic management: academicGrades."
+  },
+  "academicSections": "Sections",
+  "@academicSections": {
+    "description": "School academic management: academicSections."
+  },
+  "academicAddYear": "Add academic year",
+  "@academicAddYear": {
+    "description": "School academic management: academicAddYear."
+  },
+  "academicAddGrade": "Add grade",
+  "@academicAddGrade": {
+    "description": "School academic management: academicAddGrade."
+  },
+  "academicAddSection": "Add section",
+  "@academicAddSection": {
+    "description": "School academic management: academicAddSection."
+  },
+  "academicName": "Name",
+  "@academicName": {
+    "description": "School academic management: academicName."
+  },
+  "academicStart": "Start date",
+  "@academicStart": {
+    "description": "School academic management: academicStart."
+  },
+  "academicEnd": "End date",
+  "@academicEnd": {
+    "description": "School academic management: academicEnd."
+  },
+  "academicRequired": "This field is required.",
+  "@academicRequired": {
+    "description": "School academic management: academicRequired."
+  },
+  "academicDateInvalid": "Choose start and end dates; the end must follow the start.",
+  "@academicDateInvalid": {
+    "description": "School academic management: academicDateInvalid."
+  },
+  "academicCurrent": "Current year",
+  "@academicCurrent": {
+    "description": "School academic management: academicCurrent."
+  },
+  "academicCurrentNotice": "Marking this year current replaces the previous current year.",
+  "@academicCurrentNotice": {
+    "description": "School academic management: academicCurrentNotice."
+  },
+  "academicCapacity": "Capacity",
+  "@academicCapacity": {
+    "description": "School academic management: academicCapacity."
+  },
+  "academicCapacityInvalid": "Enter capacity from 1 to 500.",
+  "@academicCapacityInvalid": {
+    "description": "School academic management: academicCapacityInvalid."
+  },
+  "academicSave": "Save",
+  "@academicSave": {
+    "description": "School academic management: academicSave."
+  },
+  "academicEmpty": "No records yet.",
+  "@academicEmpty": {
+    "description": "School academic management: academicEmpty."
+  },
+  "academicSectionPrerequisite": "Add an academic year and grade before creating a section.",
+  "@academicSectionPrerequisite": {
+    "description": "School academic management: academicSectionPrerequisite."
   }
+
 }

@@ -48,7 +48,7 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
   Widget _metric(String label, dynamic count, IconData icon) => Card(
     child: Padding(
       padding: const EdgeInsets.all(12),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      child: Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, children: [
         Icon(icon, color: AppColors.brandBlue),
         const SizedBox(height: 6),
         Text(count is num ? '$count' : '—',
@@ -98,20 +98,23 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
             Text(_label('ملخص المؤسسة', 'Institution overview'),
               style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 10),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.65,
-              children: [
-                _metric(_label('المدارس', 'Schools'), summary['schools'], Icons.school_outlined),
-                _metric(_label('ملفات الطلاب', 'Student files'), summary['student_files'], Icons.groups_outlined),
-                _metric(_label('المعلمون النشطون', 'Active teachers'), summary['active_teachers'], Icons.person_outline),
-                _metric(_label('الأخصائيون', 'Specialists'), null, Icons.medical_services_outlined),
-                _metric(_label('التسجيلات النشطة', 'Active enrollments'), summary['active_enrollments'], Icons.fact_check_outlined),
-                _metric(_label('جلسات الحضور', 'Attendance sessions'), summary['attendance_sessions'], Icons.calendar_month_outlined),
-              ],
-            ),
+            LayoutBuilder(builder: (context, constraints) {
+              final scale = MediaQuery.textScalerOf(context).scale(1);
+              final columns = constraints.maxWidth >= 720 * scale ? 3
+                  : constraints.maxWidth >= 360 * scale ? 2 : 1;
+              final width = (constraints.maxWidth - (columns - 1) * 8) / columns;
+              return Wrap(spacing: 8, runSpacing: 8, children: [
+                for (final metric in <Widget>[
+                  _metric(_label('المدارس', 'Schools'), summary['schools'], Icons.school_outlined),
+                  _metric(_label('ملفات الطلاب', 'Student files'), summary['student_files'], Icons.groups_outlined),
+                  _metric(_label('المعلمون النشطون', 'Active teachers'), summary['active_teachers'], Icons.person_outline),
+                  _metric(_label('الأخصائيون', 'Specialists'), null, Icons.medical_services_outlined),
+                  _metric(_label('التسجيلات النشطة', 'Active enrollments'), summary['active_enrollments'], Icons.fact_check_outlined),
+                  _metric(_label('جلسات الحضور', 'Attendance sessions'), summary['attendance_sessions'], Icons.calendar_month_outlined),
+                ])
+                  SizedBox(width: width, child: metric),
+              ]);
+            }),
             const SizedBox(height: 6),
             Text(_label('عدد الأخصائيين غير متاح في API الحالي.',
                 'Specialist count is not provided by the current API.')),
