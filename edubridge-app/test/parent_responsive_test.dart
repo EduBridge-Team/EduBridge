@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/enrollment/parent_enrollment_screen.dart';
 import 'package:edubridge_app/screens/parent_screen.dart';
+import 'package:edubridge_app/screens/institution_statistics_screen.dart';
 import 'package:edubridge_app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -83,4 +84,39 @@ void main() {
       });
     }
   }
+  for (final width in [320.0, 1280.0]) {
+    testWidgets('institution statistics adapt at $width with large text', (tester) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await http.runWithClient(() async {
+        await tester.runAsync(() async {
+          await tester.pumpWidget(MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)),
+              child: child!),
+            home: const InstitutionStatisticsScreen(),
+          ));
+          await Future<void>.delayed(Duration.zero);
+        });
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(find.text('Attendance sessions'), 200,
+          scrollable: find.descendant(of: find.byType(ListView),
+            matching: find.byType(Scrollable)).first);
+        expect(find.text('Attendance sessions'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      }, () => MockClient((request) async => http.Response(jsonEncode(
+        request.url.path.endsWith('/my-organization')
+          ? {'organization': {'id': 4, 'slug': 'demo-institution'}}
+          : {'summary': {'schools': 1, 'student_files': 5,
+              'active_teachers': 2, 'active_enrollments': 5, 'attendance_sessions': 3},
+             'schools': []}), 200)));
+    });
+  }
+
 }
