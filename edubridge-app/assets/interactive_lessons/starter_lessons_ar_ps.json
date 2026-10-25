@@ -1,0 +1,439 @@
+{
+  "schema_version": "1.0.0",
+  "locale": "ar-PS",
+  "license_note": "Original starter content authored for EduBridge; review by an educator before publication.",
+  "templates": [
+    {
+      "id": "ar-alif-01",
+      "subject": "arabic",
+      "title": "حرف الألف",
+      "language": "ar",
+      "direction": "rtl",
+      "level": "foundation",
+      "status": "template",
+      "objective": "يميز المتعلم حرف الألف من بين حروف أخرى.",
+      "estimated_minutes": 8,
+      "accessibility": {
+        "show_one_step_at_a_time": true,
+        "allow_repeat_audio": true,
+        "no_timed_answers": true,
+        "illustrations_have_alt_text": true
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "type": "explanation",
+          "text": "هذا حرف الألف: أ. استمع إلى صوته: أَ."
+        },
+        {
+          "id": "s2",
+          "type": "single_choice",
+          "prompt": "اختر حرف الألف.",
+          "options": [
+            {
+              "id": "o1",
+              "text": "ب"
+            },
+            {
+              "id": "o2",
+              "text": "أ"
+            },
+            {
+              "id": "o3",
+              "text": "ت"
+            }
+          ],
+          "correct_option_id": "o2",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        },
+        {
+          "id": "s3",
+          "type": "single_choice",
+          "prompt": "أي كلمة تبدأ بحرف الألف؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "أسد"
+            },
+            {
+              "id": "o2",
+              "text": "بيت"
+            },
+            {
+              "id": "o3",
+              "text": "تمر"
+            }
+          ],
+          "correct_option_id": "o1",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ar-long-vowels-01",
+      "subject": "arabic",
+      "title": "مد الألف",
+      "language": "ar",
+      "direction": "rtl",
+      "level": "foundation",
+      "status": "template",
+      "objective": "يتعرف المتعلم إلى مد الألف في كلمات مألوفة.",
+      "estimated_minutes": 8,
+      "accessibility": {
+        "show_one_step_at_a_time": true,
+        "allow_repeat_audio": true,
+        "no_timed_answers": true,
+        "illustrations_have_alt_text": true
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "type": "explanation",
+          "text": "نمد الصوت عند وجود الألف مثل: باب."
+        },
+        {
+          "id": "s2",
+          "type": "single_choice",
+          "prompt": "أي كلمة تحتوي على مد الألف؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "باب"
+            },
+            {
+              "id": "o2",
+              "text": "بنت"
+            },
+            {
+              "id": "o3",
+              "text": "كتب"
+            }
+          ],
+          "correct_option_id": "o1",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        },
+        {
+          "id": "s3",
+          "type": "single_choice",
+          "prompt": "اختر الكلمة التي تسمع فيها صوت (ا) الطويل.",
+          "options": [
+            {
+              "id": "o1",
+              "text": "قلم"
+            },
+            {
+              "id": "o2",
+              "text": "دار"
+            },
+            {
+              "id": "o3",
+              "text": "يد"
+            }
+          ],
+          "correct_option_id": "o2",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        }
+      ]
+    },
+    {
+      "id": "math-count-01",
+      "subject": "math",
+      "title": "العد من 1 إلى 5",
+      "language": "ar",
+      "direction": "rtl",
+      "level": "foundation",
+      "status": "template",
+      "objective": "يعد المتعلم عناصر حتى خمسة.",
+      "estimated_minutes": 8,
+      "accessibility": {
+        "show_one_step_at_a_time": true,
+        "allow_repeat_audio": true,
+        "no_timed_answers": true,
+        "illustrations_have_alt_text": true
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "type": "explanation",
+          "text": "نعد بالترتيب: ١، ٢، ٣، ٤، ٥."
+        },
+        {
+          "id": "s2",
+          "type": "single_choice",
+          "prompt": "ما العدد الذي يأتي بعد ٢؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "١"
+            },
+            {
+              "id": "o2",
+              "text": "٣"
+            },
+            {
+              "id": "o3",
+              "text": "٥"
+            }
+          ],
+          "correct_option_id": "o2",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        },
+        {
+          "id": "s3",
+          "type": "single_choice",
+          "prompt": "كم عنصرًا في المجموعة: ● ● ● ●؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "٢"
+            },
+            {
+              "id": "o2",
+              "text": "٤"
+            },
+            {
+              "id": "o3",
+              "text": "٥"
+            }
+          ],
+          "correct_option_id": "o2",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        }
+      ]
+    },
+    {
+      "id": "math-next-01",
+      "subject": "math",
+      "title": "العدد التالي",
+      "language": "ar",
+      "direction": "rtl",
+      "level": "foundation",
+      "status": "template",
+      "objective": "يحدد المتعلم العدد التالي ضمن ١٠.",
+      "estimated_minutes": 8,
+      "accessibility": {
+        "show_one_step_at_a_time": true,
+        "allow_repeat_audio": true,
+        "no_timed_answers": true,
+        "illustrations_have_alt_text": true
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "type": "explanation",
+          "text": "العدد التالي أكبر بواحد. بعد ٦ يأتي ٧."
+        },
+        {
+          "id": "s2",
+          "type": "single_choice",
+          "prompt": "ما العدد التالي للعدد ٤؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "٣"
+            },
+            {
+              "id": "o2",
+              "text": "٥"
+            },
+            {
+              "id": "o3",
+              "text": "٦"
+            }
+          ],
+          "correct_option_id": "o2",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        },
+        {
+          "id": "s3",
+          "type": "single_choice",
+          "prompt": "ما العدد التالي للعدد ٨؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "٧"
+            },
+            {
+              "id": "o2",
+              "text": "٩"
+            },
+            {
+              "id": "o3",
+              "text": "١٠"
+            }
+          ],
+          "correct_option_id": "o2",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        }
+      ]
+    },
+    {
+      "id": "life-hygiene-01",
+      "subject": "life_skills",
+      "title": "غسل اليدين",
+      "language": "ar",
+      "direction": "rtl",
+      "level": "foundation",
+      "status": "template",
+      "objective": "يرتب المتعلم خطوات غسل اليدين بصورة صحيحة.",
+      "estimated_minutes": 8,
+      "accessibility": {
+        "show_one_step_at_a_time": true,
+        "allow_repeat_audio": true,
+        "no_timed_answers": true,
+        "illustrations_have_alt_text": true
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "type": "explanation",
+          "text": "نبلل اليدين بالماء، ثم نستخدم الصابون، ثم نفرك ونشطف ونجفف."
+        },
+        {
+          "id": "s2",
+          "type": "single_choice",
+          "prompt": "ما الذي نستخدمه لتنظيف اليدين؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "الصابون"
+            },
+            {
+              "id": "o2",
+              "text": "القلم"
+            },
+            {
+              "id": "o3",
+              "text": "الكتاب"
+            }
+          ],
+          "correct_option_id": "o1",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        },
+        {
+          "id": "s3",
+          "type": "single_choice",
+          "prompt": "ماذا نفعل بعد شطف اليدين؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "نجففهما"
+            },
+            {
+              "id": "o2",
+              "text": "نضع التراب"
+            },
+            {
+              "id": "o3",
+              "text": "نلون الورق"
+            }
+          ],
+          "correct_option_id": "o1",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        }
+      ]
+    },
+    {
+      "id": "life-feelings-01",
+      "subject": "life_skills",
+      "title": "التعرف على المشاعر",
+      "language": "ar",
+      "direction": "rtl",
+      "level": "foundation",
+      "status": "template",
+      "objective": "يميز المتعلم بين الفرح والحزن.",
+      "estimated_minutes": 8,
+      "accessibility": {
+        "show_one_step_at_a_time": true,
+        "allow_repeat_audio": true,
+        "no_timed_answers": true,
+        "illustrations_have_alt_text": true
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "type": "explanation",
+          "text": "قد نشعر بالفرح عندما يحدث شيء جميل، وبالحزن عندما نفقد شيئًا نحبه."
+        },
+        {
+          "id": "s2",
+          "type": "single_choice",
+          "prompt": "عندما نحصل على هدية نحبها، كيف قد نشعر؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "بالفرح"
+            },
+            {
+              "id": "o2",
+              "text": "بالجوع"
+            },
+            {
+              "id": "o3",
+              "text": "بالنعاس"
+            }
+          ],
+          "correct_option_id": "o1",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        },
+        {
+          "id": "s3",
+          "type": "single_choice",
+          "prompt": "عندما يكون صديقنا حزينًا، ما التصرف اللطيف؟",
+          "options": [
+            {
+              "id": "o1",
+              "text": "نسأله إن كان يحتاج إلى مساعدة"
+            },
+            {
+              "id": "o2",
+              "text": "نضحك عليه"
+            },
+            {
+              "id": "o3",
+              "text": "نتجاهله دائمًا"
+            }
+          ],
+          "correct_option_id": "o1",
+          "feedback": {
+            "correct": "أحسنت! إجابة صحيحة.",
+            "incorrect": "حاول مرة أخرى. يمكنك الاستعانة بالمساعدة."
+          }
+        }
+      ]
+    }
+  ]
+}

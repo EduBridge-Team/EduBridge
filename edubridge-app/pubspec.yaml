@@ -58,6 +58,7 @@ flutter:
     - assets/letter_6_i.png
     - assets/letter_7_d.png
     - assets/letter_8_g.png
+    - assets/interactive_lessons/starter_lessons_ar_ps.json
     - assets/letter_9_e.png
     
 
