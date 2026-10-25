@@ -161,23 +161,13 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    color: c.heading,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              _buildStatusBadge(status),
-                            ],
+                          Text(
+                            name,
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w800, color: c.heading),
                           ),
+                          const SizedBox(height: 6),
+                          _buildStatusBadge(status),
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 8,
@@ -202,73 +192,53 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _quickAction(
-                        icon: AppIcons.homework,
-                        label: context.l10n.homework,
-                        color: AppColors.brandBlue,
-                        onTap: () => _openHomework(child),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _quickAction(
-                        icon: AppIcons.report,
-                        label: context.l10n.report,
-                        color: AppColors.brandTeal,
-                        onTap: () => _openWeeklyReport(child),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _quickAction(
-                        icon: AppIcons.users,
-                        label: context.l10n.team,
-                        color: AppColors.brandBlue,
-                        onTap: () => _openCareTeam(child),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _quickAction(
-                        icon: AppIcons.progress,
-                        label: context.l10n.progress,
-                        color: AppColors.brandTealDeep,
-                        onTap: () => _openChildProgress(child),
-                      ),
-                    ),
-                  ],
-                ),
+                LayoutBuilder(builder: (context, constraints) {
+                  final scale = MediaQuery.textScalerOf(context).scale(1);
+                  final columns = constraints.maxWidth >= 400 * scale ? 4 : 2;
+                  final width = (constraints.maxWidth - (columns - 1) * 8) / columns;
+                  return Wrap(spacing: 8, runSpacing: 8, children: [
+                    for (final action in <(IconData, String, Color, VoidCallback)>[
+                      (AppIcons.homework, context.l10n.homework, AppColors.brandBlue, () => _openHomework(child)),
+                      (AppIcons.report, context.l10n.report, AppColors.brandTeal, () => _openWeeklyReport(child)),
+                      (AppIcons.users, context.l10n.team, AppColors.brandBlue, () => _openCareTeam(child)),
+                      (AppIcons.progress, context.l10n.progress, AppColors.brandTealDeep, () => _openChildProgress(child)),
+                    ])
+                      SizedBox(width: width, child: _quickAction(
+                        icon: action.$1, label: action.$2,
+                        color: action.$3, onTap: action.$4)),
+                  ]);
+                }),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _secondaryAction(
-                        icon: AppIcons.parent,
-                        label: context.l10n.parentLessons,
-                        onTap: _openParentLessons,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _secondaryAction(
-                        icon: AppIcons.specialist,
-                        label: context.l10n.requestLearningSupport,
-                        onTap: () => _openLearningSupportRequest(child),
-                      ),
-                    ),
-                  ],
-                ),
+                SizedBox(width: double.infinity, child: _secondaryAction(
+                  icon: AppIcons.parent,
+                  label: context.l10n.parentLessons,
+                  onTap: _openParentLessons,
+                )),
+                const SizedBox(height: 8),
+                LayoutBuilder(builder: (context, constraints) {
+                  final scale = MediaQuery.textScalerOf(context).scale(1);
+                  final paired = constraints.maxWidth >= 300 * scale;
+                  final width = paired ? (constraints.maxWidth - 8) / 2 : constraints.maxWidth;
+                  return Wrap(spacing: 8, runSpacing: 8, children: [
+                    SizedBox(width: width, child: _secondaryAction(
+                      icon: AppIcons.specialist,
+                      label: context.l10n.requestLearningSupport,
+                      onTap: () => _openLearningSupportRequest(child),
+                    )),
+                    SizedBox(width: width, child: _secondaryAction(
+                      icon: Icons.school_outlined,
+                      label: context.l10n.enrollmentParentTitle,
+                      onTap: () {
+                        final id = child['id'];
+                        if (id is! int || id <= 0) return;
+                        Navigator.of(context).push(MaterialPageRoute<void>(
+                          builder: (_) => ParentEnrollmentScreen(
+                            childId: id, childName: name)));
+                      },
+                    )),
+                  ]);
+                }),
                 const SizedBox(height: 6),
-                OutlinedButton.icon(
-                  onPressed: child['id'] is int ? () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => ParentEnrollmentScreen(
-                      childId: child['id'] as int, childName: name))) : null,
-                  icon: const Icon(Icons.school_outlined),
-                  label: Text(context.l10n.enrollmentParentTitle),
-                ),
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: TextButton.icon(
@@ -312,8 +282,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
               const SizedBox(height: 5),
               Text(
                 label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: c.heading,
@@ -339,8 +307,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
       icon: Icon(icon, size: 18),
       label: Text(
         label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
         style: textTheme.labelSmall?.copyWith(
           fontWeight: FontWeight.w700,
           color: c.infoText,
@@ -372,13 +338,13 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         children: [
           Icon(icon, size: 14, color: c.muted),
           const SizedBox(width: 4),
-          Text(
+          Flexible(child: Text(
             text,
             style: textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: c.muted,
             ),
-          ),
+          )),
         ],
       ),
     );
@@ -439,13 +405,13 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         children: [
           Icon(icon, size: 12, color: textColor),
           const SizedBox(width: 4),
-          Text(
+          Flexible(child: Text(
             text,
             style: textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: textColor,
             ),
-          ),
+          )),
         ],
       ),
     );
