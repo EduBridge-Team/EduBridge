@@ -49,6 +49,10 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
         ->middleware(['role:school', 'throttle:120,1']);
     Route::get('/school/enrollment-options', [\App\Http\Controllers\SchoolEnrollmentOptionsController::class, 'index'])
         ->middleware(['role:school', 'throttle:120,1']);
+    Route::get('/parent/enrollment-schools', [\App\Http\Controllers\GuardianSchoolRequestController::class, 'schools'])
+        ->middleware(['role:parent', 'throttle:60,1']);
+    Route::post('/parent/children/{child}/enrollment-requests', [\App\Http\Controllers\GuardianSchoolRequestController::class, 'submit'])
+        ->whereNumber('child')->middleware(['role:parent', 'throttle:10,1']);
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';
