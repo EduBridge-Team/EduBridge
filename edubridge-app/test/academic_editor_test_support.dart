@@ -67,7 +67,12 @@ Future<void> openAcademicEditor(
 Future<void> tapEditorKey(WidgetTester tester, String key) async {
   final field = find.byKey(ValueKey(key));
   final target = key == 'academic-year' || key == 'academic-grade'
-      ? find.descendant(of: field, matching: find.byType(OutlinedButton))
+      ? find.descendant(
+          of: field,
+          matching: find.byWidgetPredicate(
+            (widget) => widget is OutlinedButton,
+          ),
+        )
       : field;
   FocusManager.instance.primaryFocus?.unfocus();
   await tester.pumpAndSettle();
