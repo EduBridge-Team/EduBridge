@@ -10904,5 +10904,41 @@
   "enrollmentUncertain": "تعذر تأكيد العملية. أعد تحميل السجل وتحقق منه قبل إعادة الإرسال.",
   "@enrollmentUncertain": {
     "description": "School enrollment: enrollmentUncertain."
+  },
+  "schoolHistoryTitle": "سجل القيد والانتقال",
+  "@schoolHistoryTitle": {
+    "description": "School enrollment history: schoolHistoryTitle."
+  },
+  "schoolHistoryHint": "يعرض القيود المدرسية والانتقالات المسجلة لهذا الطفل دون تغيير ملفه.",
+  "@schoolHistoryHint": {
+    "description": "School enrollment history: schoolHistoryHint."
+  },
+  "schoolHistoryEmpty": "لا يوجد سجل قيد مدرسي.",
+  "@schoolHistoryEmpty": {
+    "description": "School enrollment history: schoolHistoryEmpty."
+  },
+  "schoolHistoryActive": "قيد نشط",
+  "@schoolHistoryActive": {
+    "description": "School enrollment history: schoolHistoryActive."
+  },
+  "schoolHistoryClosed": "قيد منتهٍ",
+  "@schoolHistoryClosed": {
+    "description": "School enrollment history: schoolHistoryClosed."
+  },
+  "schoolHistoryTransferred": "تم النقل",
+  "@schoolHistoryTransferred": {
+    "description": "School enrollment history: schoolHistoryTransferred."
+  },
+  "schoolHistoryStart": "بداية القيد",
+  "@schoolHistoryStart": {
+    "description": "School enrollment history: schoolHistoryStart."
+  },
+  "schoolHistoryEnd": "نهاية القيد",
+  "@schoolHistoryEnd": {
+    "description": "School enrollment history: schoolHistoryEnd."
+  },
+  "schoolHistoryDestination": "انتقل إلى",
+  "@schoolHistoryDestination": {
+    "description": "School enrollment history: schoolHistoryDestination."
   }
 }

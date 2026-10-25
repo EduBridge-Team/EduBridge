@@ -10904,5 +10904,41 @@
   "enrollmentUncertain": "The operation could not be confirmed. Reload and check the history before resubmitting.",
   "@enrollmentUncertain": {
     "description": "School enrollment: enrollmentUncertain."
+  },
+  "schoolHistoryTitle": "School enrollment history",
+  "@schoolHistoryTitle": {
+    "description": "School enrollment history: schoolHistoryTitle."
+  },
+  "schoolHistoryHint": "View this child's recorded school enrollments and transfers.",
+  "@schoolHistoryHint": {
+    "description": "School enrollment history: schoolHistoryHint."
+  },
+  "schoolHistoryEmpty": "No school enrollment history.",
+  "@schoolHistoryEmpty": {
+    "description": "School enrollment history: schoolHistoryEmpty."
+  },
+  "schoolHistoryActive": "Active enrollment",
+  "@schoolHistoryActive": {
+    "description": "School enrollment history: schoolHistoryActive."
+  },
+  "schoolHistoryClosed": "Closed enrollment",
+  "@schoolHistoryClosed": {
+    "description": "School enrollment history: schoolHistoryClosed."
+  },
+  "schoolHistoryTransferred": "Transferred",
+  "@schoolHistoryTransferred": {
+    "description": "School enrollment history: schoolHistoryTransferred."
+  },
+  "schoolHistoryStart": "Enrollment start",
+  "@schoolHistoryStart": {
+    "description": "School enrollment history: schoolHistoryStart."
+  },
+  "schoolHistoryEnd": "Enrollment end",
+  "@schoolHistoryEnd": {
+    "description": "School enrollment history: schoolHistoryEnd."
+  },
+  "schoolHistoryDestination": "Transferred to",
+  "@schoolHistoryDestination": {
+    "description": "School enrollment history: schoolHistoryDestination."
   }
 }
