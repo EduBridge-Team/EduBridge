@@ -100,6 +100,13 @@ void main() {
             tester.widget<BrandAppBar>(find.byType(BrandAppBar)).centerTitle,
             isTrue,
           );
+          final title = tester.renderObject<RenderParagraph>(
+            find.text(strings.schoolHistoryTitle),
+          );
+          expect(
+            title.getMaxIntrinsicHeight(title.size.width),
+            lessThanOrEqualTo(title.size.height + 1),
+          );
           for (final label in [
             'محمود',
             strings.schoolHistoryHint,
