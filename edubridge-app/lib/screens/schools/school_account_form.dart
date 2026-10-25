@@ -129,14 +129,12 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final l10n = context.l10n;
     final independent = widget.scope == SchoolAccountScope.independent;
     return Scaffold(
-      appBar: AppBar(
+      appBar: BrandAppBar(
+          leading: const BackButton(),
         title: Text(
           independent
               ? l10n.schoolAccountIndependentTitle
               : l10n.schoolAccountAffiliatedTitle,
-        ),
-        flexibleSpace: const DecoratedBox(
-          decoration: BoxDecoration(gradient: AppColors.appBarGradient),
         ),
       ),
       body: SafeArea(
