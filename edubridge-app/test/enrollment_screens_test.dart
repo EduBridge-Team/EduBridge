@@ -68,7 +68,10 @@ void main() {
       await tester.scrollUntilVisible(
         action,
         150,
-        scrollable: find.byType(Scrollable).last,
+        scrollable: find.descendant(
+          of: find.byType(ListView),
+          matching: find.byType(Scrollable),
+        ).first,
       );
       expect(action, findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -98,7 +101,10 @@ void main() {
         await tester.scrollUntilVisible(
           action,
           150,
-          scrollable: find.byType(Scrollable).last,
+          scrollable: find.descendant(
+          of: find.byType(ListView),
+          matching: find.byType(Scrollable),
+        ).first,
         );
         expect(action, findsOneWidget);
         expect(tester.takeException(), isNull);

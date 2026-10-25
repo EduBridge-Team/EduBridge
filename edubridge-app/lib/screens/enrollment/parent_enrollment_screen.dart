@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
+import '../../theme.dart';
+import 'school_history_screen.dart';
 import '../../model/enrollment/enrollment_models.dart';
 import '../../services/enrollment/enrollment_repository.dart';
 import 'enrollment_controllers.dart';
@@ -82,7 +84,8 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen> {
       final l10n = context.l10n;
       final data = _controller.snapshot;
       return Scaffold(
-        appBar: AppBar(
+        appBar: BrandAppBar(
+          leading: const BackButton(),
           title: Text(l10n.enrollmentParentTitle),
           actions: [
             IconButton(
@@ -101,6 +104,19 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen> {
               Text(
                 widget.childName,
                 style: Theme.of(context).textTheme.titleLarge,
+              ),
+              OutlinedButton.icon(
+                key: const ValueKey('open-school-history'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => SchoolHistoryScreen(
+                      childId: widget.childId,
+                      childName: widget.childName,
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.history),
+                label: Text(l10n.schoolHistoryTitle),
               ),
               if (_controller.loading || _controller.busy)
                 const LinearProgressIndicator(),
