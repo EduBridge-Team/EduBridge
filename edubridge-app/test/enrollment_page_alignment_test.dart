@@ -34,7 +34,7 @@ void main() {
   for (final language in ['ar', 'en']) {
     for (final width in [320.0, 720.0, 1280.0]) {
       testWidgets(
-        'centered enrollment/history and bottom action in $language at $width',
+        'centered descriptions with original headings and bottom action in $language at $width',
         (tester) async {
           tester.view.physicalSize = Size(width, 1000);
           tester.view.devicePixelRatio = 1;
@@ -58,11 +58,11 @@ void main() {
           await tester.pumpAndSettle();
           expect(
             tester.widget<BrandAppBar>(find.byType(BrandAppBar)).centerTitle,
-            isTrue,
+            isNot(true),
           );
           expect(
             tester.renderObject<RenderParagraph>(find.text('محمود')).textAlign,
-            TextAlign.center,
+            TextAlign.start,
           );
           expect(
             tester
@@ -98,17 +98,9 @@ void main() {
           await tester.pumpAndSettle();
           expect(
             tester.widget<BrandAppBar>(find.byType(BrandAppBar)).centerTitle,
-            isTrue,
-          );
-          final title = tester.renderObject<RenderParagraph>(
-            find.text(strings.schoolHistoryTitle),
-          );
-          expect(
-            title.getMaxIntrinsicHeight(title.size.width),
-            lessThanOrEqualTo(title.size.height + 1),
+            isNot(true),
           );
           for (final label in [
-            'محمود',
             strings.schoolHistoryHint,
             strings.enrollmentUnavailable,
           ]) {

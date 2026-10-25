@@ -94,14 +94,7 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
       return Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
-          centerTitle: true,
-          toolbarHeight: MediaQuery.textScalerOf(context).scale(100),
-          title: Text(
-            l10n.enrollmentParentTitle,
-            textAlign: TextAlign.center,
-            softWrap: true,
-            overflow: TextOverflow.visible,
-          ),
+          title: Text(l10n.enrollmentParentTitle),
           actions: [
             IconButton(
               tooltip: l10n.enrollmentReload,
@@ -126,6 +119,7 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                       children: [
                         Text(
                           widget.childName,
+                          textAlign: TextAlign.start,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         if (_controller.loading || _controller.busy)
@@ -221,6 +215,7 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                           const SizedBox(height: 16),
                           Text(
                             l10n.enrollmentHistory,
+                            textAlign: TextAlign.start,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           if (data.requests.isEmpty)

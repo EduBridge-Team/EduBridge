@@ -48,14 +48,7 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
       return Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
-          centerTitle: true,
-          toolbarHeight: MediaQuery.textScalerOf(context).scale(100),
-          title: Text(
-            l10n.schoolHistoryTitle,
-            textAlign: TextAlign.center,
-            softWrap: true,
-            overflow: TextOverflow.visible,
-          ),
+          title: Text(l10n.schoolHistoryTitle),
           actions: [
             IconButton(
               tooltip: l10n.enrollmentReload,
@@ -72,6 +65,7 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
               children: [
                 Text(
                   widget.childName,
+                  textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(l10n.schoolHistoryHint),
@@ -94,6 +88,7 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
                           children: [
                             Text(
                               record.schoolName,
+                              textAlign: TextAlign.start,
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(record.sectionLabel),
