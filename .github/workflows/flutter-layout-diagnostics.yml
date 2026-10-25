@@ -1,0 +1,29 @@
+name: Flutter layout diagnostics
+on:
+  pull_request:
+    paths:
+      - 'edubridge-app/**'
+      - '.github/workflows/flutter-layout-diagnostics.yml'
+permissions:
+  contents: read
+jobs:
+  layouts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+        working-directory: edubridge-app
+      - name: Run focused layout tests
+        working-directory: edubridge-app
+        run: flutter test test/parent_responsive_test.dart test/academic_management_test.dart test/enrollment_screens_test.dart --reporter expanded > layout-tests.log 2>&1
+      - name: Save diagnostic log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-layout-diagnostics
+          path: edubridge-app/layout-tests.log
+          retention-days: 1
