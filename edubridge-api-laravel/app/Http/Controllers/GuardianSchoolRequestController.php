@@ -51,7 +51,8 @@ class GuardianSchoolRequestController extends Controller
         try {
             return DB::transaction(function () use ($actor, $child, $validation) {
                 // Serialize requests from competing guardians of this child.
-                if (!DB::table('children')->where('id', $child)->lockForUpdate()->exists()) {
+                $childRecord = DB::table('children')->where('id', $child)->lockForUpdate()->first();
+                if (!$childRecord) {
                     return response()->json(['error' => 'Child unavailable'], 404);
                 }
                 $schoolId = (int) $validation->validated()['school_id'];
@@ -79,7 +80,9 @@ class GuardianSchoolRequestController extends Controller
                 ]);
                 return response()->json(['request' => [
                     'id' => $id, 'school_id' => $schoolId, 'school_name' => $school->name,
-                    'child_id' => $child, 'status' => 'pending', 'version' => 1,
+                    'child_id' => $child, 'child_name' => $childRecord->name,
+                    'status' => 'pending', 'version' => 1,
+                    'created_at' => now()->toIso8601String(), 'reason' => null,
                 ]], 201);
             });
         } catch (QueryException $e) {
