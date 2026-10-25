@@ -38,14 +38,6 @@ extension _UsersTabStateView on _UsersTabState {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
         children: [
-          if ((widget.admin['role'] ?? '').toString() == 'admin') ...[
-            FilledButton.icon(
-              onPressed: _openCreateAccount,
-              icon: const Icon(Icons.add_business_outlined),
-              label: Text(context.l10n.createInstitutionMinistryAccount),
-            ),
-            const SizedBox(height: 16),
-          ],
           _buildSearchBar(c),
           const SizedBox(height: 16),
           _buildUserSection(
