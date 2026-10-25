@@ -2,6 +2,7 @@ import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/teacher/teacher_screen.dart
 import 'package:flutter/material.dart';
+import '../interactive_lesson/starter_lesson_library_entry.dart';
 import '../../app_icons.dart';
 import '../../model/homework_model.dart';
 import '../../services/approval_service.dart';
