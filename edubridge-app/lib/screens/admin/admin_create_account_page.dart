@@ -1,27 +1,27 @@
 part of 'admin_screen.dart';
 
-class _CreateAccountSheet extends StatefulWidget {
-  const _CreateAccountSheet({this.initialRole});
+class _CreateAccountForm extends StatefulWidget {
+  const _CreateAccountForm({required this.initialRole});
 
-  final String? initialRole;
+  final String initialRole;
 
   @override
-  State<_CreateAccountSheet> createState() => _CreateAccountSheetState();
+  State<_CreateAccountForm> createState() => _CreateAccountFormState();
 }
 
-class _CreateAccountSheetState extends State<_CreateAccountSheet> {
+class _CreateAccountFormState extends State<_CreateAccountForm> {
   final _form = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _password = TextEditingController();
   final _confirmation = TextEditingController();
-  late String _role;
+  late final String _role;
 
   @override
   void initState() {
     super.initState();
-    _role = widget.initialRole ?? 'institution';
+    _role = widget.initialRole;
   }
   bool _saving = false;
   Object? _error;
@@ -74,17 +74,6 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(widget.initialRole == 'institution' ? context.l10n.institutionRole : widget.initialRole == 'ministry' ? context.l10n.ministryRole : context.l10n.createInstitutionMinistryAccount, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                if (widget.initialRole == null) DropdownButtonFormField<String>(
-                  initialValue: _role,
-                  decoration: InputDecoration(labelText: context.l10n.accountType),
-                  items: [
-                    DropdownMenuItem(value: 'institution', child: Text(context.l10n.institutionRole)),
-                    DropdownMenuItem(value: 'ministry', child: Text(context.l10n.ministryRole)),
-                  ],
-                  onChanged: _saving ? null : (value) => setState(() => _role = value!),
-                ),
                 TextFormField(
                   controller: _name, enabled: !_saving, maxLength: 150,
                   decoration: InputDecoration(labelText: context.l10n.institutionMinistryName),
@@ -138,11 +127,12 @@ class _AdminCreateAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(role == 'institution'
-              ? context.l10n.institutionRole
-              : context.l10n.ministryRole),
+        appBar: BrandAppBar(
+          leading: const BackButton(),
+          title: Text(
+            '${context.l10n.createAccount} — ${role == 'institution' ? context.l10n.institutionRole : context.l10n.ministryRole}',
+          ),
         ),
-        body: _CreateAccountSheet(initialRole: role),
+        body: _CreateAccountForm(initialRole: role),
       );
 }

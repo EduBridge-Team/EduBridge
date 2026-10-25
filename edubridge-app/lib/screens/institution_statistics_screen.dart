@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -25,11 +24,17 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
   }
 
   Future<Map<String, dynamic>?> _load() async {
-    final userId = await ApiService.getUserId();
-    if (userId == null) return null;
-    final preferences = await SharedPreferences.getInstance();
-    final slug = preferences.getString('institution_slug_$userId');
-    if (slug == null || slug.isEmpty) return null;
+    final contextResponse = await ApiService.authGet('/institutions/my-organization');
+    final organization = ApiService.decodeMap(contextResponse.body)['organization'];
+    if (contextResponse.statusCode != 200 || organization is! Map) {
+      throw Exception('Institution context unavailable');
+    }
+    final slug = organization['slug'];
+    if (organization['id'] is! int || organization['id'] <= 0 ||
+        slug is! String ||
+        !RegExp(r'^[a-z0-9][a-z0-9-]{1,79}$').hasMatch(slug)) {
+      throw const FormatException('Invalid institution context');
+    }
     final response = await ApiService.authGet(
       '/institutions/${Uri.encodeComponent(slug)}/management-report',
     );
@@ -56,39 +61,9 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: PreferredSize(
-      preferredSize: const Size.fromHeight(112),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.appBarGradient,
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 25),
-            child: Row(children: [
-              IconButton(
-                tooltip: _label('العودة إلى الرئيسية', 'Back to home'),
-                onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(Directionality.of(context) == TextDirection.rtl
-                    ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
-                    color: Colors.white, size: 27),
-              ),
-              Expanded(child: Text(
-                _label('الإحصائيات الشاملة', 'Comprehensive Statistics'),
-                style: const TextStyle(fontSize: 22, color: Colors.white,
-                  fontWeight: FontWeight.w800),
-              )),
-              IconButton(
-                tooltip: _label('تحديث', 'Refresh'),
-                onPressed: () => setState(() => _future = _load()),
-                icon: const Icon(Icons.refresh, color: Colors.white),
-              ),
-            ]),
-          ),
-        ),
-      ),
+    appBar: BrandAppBar(
+      leading: const BackButton(),
+      title: Text(_label('الإحصائيات الشاملة', 'Comprehensive Statistics')),
     ),
     body: FutureBuilder<Map<String, dynamic>?>(
       future: _future,

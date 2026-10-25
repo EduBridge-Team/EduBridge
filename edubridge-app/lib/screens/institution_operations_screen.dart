@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../l10n/l10n.dart';
@@ -16,7 +15,6 @@ class InstitutionOperationsScreen extends StatefulWidget {
 }
 
 class _InstitutionOperationsScreenState extends State<InstitutionOperationsScreen> {
-  final _slug = TextEditingController();
   final _schoolQuery = TextEditingController();
   String _schoolSearch = '';
   String? _organization;
@@ -28,25 +26,17 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
   @override
   void initState() {
     super.initState();
-    _restoreSlug();
-  }
-
-  Future<void> _restoreSlug() async {
-    final userId = await ApiService.getUserId();
-    if (userId == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    final previous = prefs.getString('institution_slug_$userId');
-    if (!mounted || previous == null || previous.isEmpty) return;
-    _slug.text = previous;
-    await _connect();
+    _connect();
   }
 
   @override
   void dispose() {
-    _slug.dispose();
     _schoolQuery.dispose();
     super.dispose();
   }
+
+  String englishLabel(String ar, String en) =>
+      Localizations.localeOf(context).languageCode == 'en' ? en : ar;
 
   String _path(String endpoint) =>
       '/institutions/${Uri.encodeComponent(_organization!)}$endpoint';
@@ -67,28 +57,31 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
   }
 
   Future<void> _connect() async {
-    final slug = _slug.text.trim().toLowerCase();
-    if (!RegExp(r'^[a-z0-9][a-z0-9-]{1,79}$').hasMatch(slug)) {
-      setState(() => _error = 'أدخل معرف المؤسسة الصحيح، مثل demo-institution');
-      return;
-    }
     setState(() {
-      _organization = slug;
+      _organization = null;
       _loading = true;
       _error = null;
       _report = null;
       _schools = const [];
     });
     try {
+      final response = await ApiService.authGet('/institutions/my-organization');
+      final organization = ApiService.decodeMap(response.body)['organization'];
+      if (response.statusCode != 200 || organization is! Map) {
+        throw Exception(englishLabel('تعذّر تحديد المؤسسة المرتبطة بالحساب', 'Could not resolve the institution for this account'));
+      }
+      final slug = organization['slug'];
+      if (organization['id'] is! int || organization['id'] <= 0 ||
+          slug is! String ||
+          !RegExp(r'^[a-z0-9][a-z0-9-]{1,79}$').hasMatch(slug)) {
+        throw const FormatException('Invalid institution context');
+      }
+      if (!mounted) return;
+      _organization = slug;
       final results = await Future.wait([
         _get('/management-report'),
         _get('/schools'),
       ]);
-      final userId = await ApiService.getUserId();
-      if (userId != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('institution_slug_$userId', slug);
-      }
       if (!mounted) return;
       setState(() {
         _report = results[0];
@@ -263,46 +256,16 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     final summary = _report?['summary'];
     final counts = summary is Map ? summary : const {};
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(118),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.appBarGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-          ),
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
-              child: Row(
-                children: [
-                  IconButton(
-                    tooltip: english ? 'Back to home' : 'العودة إلى الرئيسية',
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_forward_rounded,
-                      color: Colors.white, size: 27),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(english ? 'School Management' : 'إدارة المدارس',
-                      style: TextStyle(color: Colors.white,
-                        fontSize: 23, fontWeight: FontWeight.w800)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      appBar: BrandAppBar(
+        leading: const BackButton(),
+        title: Text(english ? 'School Management' : 'إدارة المدارس'),
       ),
       body: ListView(padding: const EdgeInsets.all(16), children: [
-        Text(english ? 'Institution ID' : 'معرف المؤسسة', style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 6),
-        TextField(controller: _slug, enabled: !_loading,
-          decoration: InputDecoration(border: const OutlineInputBorder(),
-            hintText: english ? 'e.g. demo-institution' : 'مثال: demo-institution')),
-        const SizedBox(height: 8),
-        FilledButton(onPressed: _loading ? null : _connect,
-          child: Text(english ? 'Load institution data' : 'تحميل بيانات المؤسسة')),
+        FilledButton.icon(
+          onPressed: _loading ? null : _connect,
+          icon: const Icon(Icons.refresh),
+          label: Text(english ? 'Refresh institution data' : 'تحديث بيانات المؤسسة'),
+        ),
         if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))),
         if (_loading) const LinearProgressIndicator(),
@@ -397,7 +360,7 @@ class _InstitutionRecordScreenState extends State<_InstitutionRecordScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(widget.title),
+    appBar: BrandAppBar(leading: const BackButton(), title: Text(widget.title),
       actions: [IconButton(icon: const Icon(Icons.refresh),
         onPressed: () => setState(() => _future = _load()))]),
     body: FutureBuilder<Map<String, dynamic>>(

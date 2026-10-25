@@ -40,11 +40,9 @@ class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen> {
     builder: (context, child) {
       final l10n = context.l10n;
       return Scaffold(
-        appBar: AppBar(
+        appBar: BrandAppBar(
+          leading: const BackButton(),
           title: Text(l10n.directorTitle),
-          flexibleSpace: const DecoratedBox(
-            decoration: BoxDecoration(gradient: AppColors.appBarGradient),
-          ),
           actions: [
             IconButton(
               tooltip: l10n.directorReload,

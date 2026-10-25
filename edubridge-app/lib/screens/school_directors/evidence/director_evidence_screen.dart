@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../l10n/l10n.dart';
@@ -85,7 +87,8 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
       final l10n = context.l10n;
       final evidence = _controller.evidence;
       return Scaffold(
-        appBar: AppBar(
+        appBar: BrandAppBar(
+          leading: const BackButton(),
           title: Text(l10n.directorEvidenceTitle),
           actions: [
             IconButton(

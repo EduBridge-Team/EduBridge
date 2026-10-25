@@ -16,7 +16,7 @@ import 'admin_school_create_page.dart';
 
 part 'admin_users_tab.dart';
 part 'admin_account_type_dialog.dart';
-part 'admin_create_account_sheet.dart';
+part 'admin_create_account_page.dart';
 part 'admin_user_children_sheet.dart';
 part 'admin_user_tiles.dart';
 part 'admin_shared_widgets.dart';

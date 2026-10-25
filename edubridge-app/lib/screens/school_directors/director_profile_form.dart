@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../theme.dart';
+
 import '../../l10n/l10n.dart';
 import '../../model/schools/school_director.dart';
 import 'director_failure_message.dart';
@@ -101,7 +103,8 @@ class _DirectorProfileFormState extends State<DirectorProfileForm> {
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, child) => Scaffold(
-        appBar: AppBar(
+        appBar: BrandAppBar(
+          leading: const BackButton(),
           title: Text(
             widget.director == null ? l10n.directorAdd : l10n.directorEdit,
           ),
