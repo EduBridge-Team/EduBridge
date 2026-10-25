@@ -40,6 +40,7 @@ Widget _buildLessonsTab(
                 context.l10n.lessonLibraryDescription,
                 style: TextStyle(fontSize: 13, color: c.muted),
               ),
+              const StarterLessonLibraryEntry(),
               const SizedBox(height: 12),
               TextField(
                 style: const TextStyle(fontSize: 16),
