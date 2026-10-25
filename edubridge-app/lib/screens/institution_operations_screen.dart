@@ -263,36 +263,9 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     final summary = _report?['summary'];
     final counts = summary is Map ? summary : const {};
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(118),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.appBarGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-          ),
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
-              child: Row(
-                children: [
-                  IconButton(
-                    tooltip: english ? 'Back to home' : 'العودة إلى الرئيسية',
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_forward_rounded,
-                      color: Colors.white, size: 27),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(english ? 'School Management' : 'إدارة المدارس',
-                      style: TextStyle(color: Colors.white,
-                        fontSize: 23, fontWeight: FontWeight.w800)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      appBar: BrandAppBar(
+        leading: const BackButton(),
+        title: Text(english ? 'School Management' : 'إدارة المدارس'),
       ),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         Text(english ? 'Institution ID' : 'معرف المؤسسة', style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -397,7 +370,7 @@ class _InstitutionRecordScreenState extends State<_InstitutionRecordScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(widget.title),
+    appBar: BrandAppBar(leading: const BackButton(), title: Text(widget.title),
       actions: [IconButton(icon: const Icon(Icons.refresh),
         onPressed: () => setState(() => _future = _load()))]),
     body: FutureBuilder<Map<String, dynamic>>(
