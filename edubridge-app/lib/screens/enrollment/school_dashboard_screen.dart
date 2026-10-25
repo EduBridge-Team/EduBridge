@@ -23,11 +23,13 @@ class SchoolDashboardScreen extends StatefulWidget {
   State<SchoolDashboardScreen> createState() => _SchoolDashboardScreenState();
 }
 
-class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
+class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
+    with WidgetsBindingObserver {
   late final SchoolEnrollmentController _controller;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller = SchoolEnrollmentController(
       widget.gateway ?? SchoolEnrollmentRepository(),
     );
@@ -35,7 +37,13 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _controller.reload();
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
   }
@@ -108,88 +116,95 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
             ),
           ],
         ),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                l10n.enrollmentSchoolTitle,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              OutlinedButton.icon(
-                onPressed: _controller.loading || _controller.busy
-                    ? null
-                    : _controller.reload,
-                icon: const Icon(Icons.refresh),
-                label: Text(l10n.enrollmentReload),
-              ),
-              OutlinedButton.icon(
-                key: const ValueKey('open-school-academics'),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => const AcademicScreen())),
-                icon: const Icon(Icons.school_outlined),
-                label: Text(l10n.academicTitle),
-              ),
-              if (_controller.loading || _controller.busy)
-                const LinearProgressIndicator(),
-              if (_controller.saved)
-                Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    l10n.enrollmentSaved,
-                    key: const ValueKey('school-enrollment-saved'),
-                  ),
+        body: RefreshIndicator(
+          onRefresh: _controller.reload,
+          child: SafeArea(
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  l10n.enrollmentSchoolTitle,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-              if (_controller.error != null)
-                Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    enrollmentFailureMessage(l10n, _controller.error!),
-                    key: const ValueKey('school-enrollment-error'),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                OutlinedButton.icon(
+                  onPressed: _controller.loading || _controller.busy
+                      ? null
+                      : _controller.reload,
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.enrollmentReload),
+                ),
+                OutlinedButton.icon(
+                  key: const ValueKey('open-school-academics'),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const AcademicScreen(),
                     ),
                   ),
+                  icon: const Icon(Icons.school_outlined),
+                  label: Text(l10n.academicTitle),
                 ),
-              if (data != null) ...[
-                Text(
-                  data.identity.school.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Text(
-                  '${l10n.enrollmentPending}: ${data.requests.where((r) => r.status == EnrollmentStatus.pending).length}',
-                ),
-                Text(
-                  l10n.enrollmentRequests,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                if (data.requests.isEmpty) Text(l10n.enrollmentNoRequests),
-                if (data.sections.isEmpty) Text(l10n.enrollmentNoSections),
-                for (final request in data.requests)
-                  EnrollmentRequestCard(
-                    request: request,
-                    actions: [
-                      if (request.status == EnrollmentStatus.pending) ...[
-                        FilledButton(
-                          key: ValueKey('enrollment-approve-${request.id}'),
-                          onPressed:
-                              _controller.canWrite && data.sections.isNotEmpty
-                              ? () => _decide(request, true)
-                              : null,
-                          child: Text(l10n.enrollmentApprove),
-                        ),
-                        OutlinedButton(
-                          key: ValueKey('enrollment-reject-${request.id}'),
-                          onPressed: _controller.canWrite
-                              ? () => _decide(request, false)
-                              : null,
-                          child: Text(l10n.enrollmentReject),
-                        ),
-                      ],
-                    ],
+                if (_controller.loading || _controller.busy)
+                  const LinearProgressIndicator(),
+                if (_controller.saved)
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      l10n.enrollmentSaved,
+                      key: const ValueKey('school-enrollment-saved'),
+                    ),
                   ),
+                if (_controller.error != null)
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      enrollmentFailureMessage(l10n, _controller.error!),
+                      key: const ValueKey('school-enrollment-error'),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                if (data != null) ...[
+                  Text(
+                    data.identity.school.name,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Text(
+                    '${l10n.enrollmentPending}: ${data.requests.where((r) => r.status == EnrollmentStatus.pending).length}',
+                  ),
+                  Text(
+                    l10n.enrollmentRequests,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  if (data.requests.isEmpty) Text(l10n.enrollmentNoRequests),
+                  if (data.sections.isEmpty) Text(l10n.enrollmentNoSections),
+                  for (final request in data.requests)
+                    EnrollmentRequestCard(
+                      request: request,
+                      actions: [
+                        if (request.status == EnrollmentStatus.pending) ...[
+                          FilledButton(
+                            key: ValueKey('enrollment-approve-${request.id}'),
+                            onPressed:
+                                _controller.canWrite && data.sections.isNotEmpty
+                                ? () => _decide(request, true)
+                                : null,
+                            child: Text(l10n.enrollmentApprove),
+                          ),
+                          OutlinedButton(
+                            key: ValueKey('enrollment-reject-${request.id}'),
+                            onPressed: _controller.canWrite
+                                ? () => _decide(request, false)
+                                : null,
+                            child: Text(l10n.enrollmentReject),
+                          ),
+                        ],
+                      ],
+                    ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );

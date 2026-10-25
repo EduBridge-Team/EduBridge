@@ -135,4 +135,72 @@ void main() {
     await controller.submit(controller.schools.single);
     expect(gateway.writes, 1);
   });
+  for (final failure in [
+    EnrollmentFailure.session,
+    EnrollmentFailure.forbidden,
+    EnrollmentFailure.unavailable,
+  ]) {
+    test(
+      'school $failure removes stale decisions until a successful reload',
+      () async {
+        final gateway = FakeSchoolEnrollment()..writeFailure = failure;
+        final controller = SchoolEnrollmentController(gateway);
+        addTearDown(controller.dispose);
+        await controller.reload();
+        final request = controller.snapshot!.requests.single;
+        const decision = EnrollmentDecision(
+          approve: false,
+          reason: 'No capacity',
+        );
+        await controller.decide(request, decision);
+        expect(controller.error, failure);
+        expect(controller.snapshot, isNull);
+        expect(controller.canWrite, isFalse);
+        await controller.decide(request, decision);
+        expect(gateway.writes, 1);
+        gateway.writeFailure = null;
+        await controller.reload();
+        expect(controller.canWrite, isTrue);
+      },
+    );
+    test(
+      'parent $failure blocks another submission until a successful reload',
+      () async {
+        final gateway = FakeParentEnrollment()..writeFailure = failure;
+        final controller = ParentEnrollmentController(gateway);
+        addTearDown(controller.dispose);
+        await controller.reload();
+        await controller.search('School');
+        final school = controller.schools.single;
+        await controller.submit(school);
+        expect(controller.error, failure);
+        expect(controller.snapshot, isNull);
+        expect(controller.canWrite, isFalse);
+        await controller.submit(school);
+        expect(gateway.writes, 1);
+        gateway.writeFailure = null;
+        await controller.reload();
+        expect(controller.canWrite, isTrue);
+      },
+    );
+  }
+  test(
+    'validation rejection retains editable context without claiming a save',
+    () async {
+      final gateway = FakeParentEnrollment()
+        ..writeFailure = EnrollmentFailure.validation;
+      final controller = ParentEnrollmentController(gateway);
+      addTearDown(controller.dispose);
+      await controller.reload();
+      await controller.search('School');
+      await controller.submit(controller.schools.single);
+      expect(controller.saved, isFalse);
+      expect(controller.canWrite, isTrue);
+      expect(controller.snapshot!.canRequest, isTrue);
+      gateway.writeFailure = null;
+      await controller.submit(controller.schools.single);
+      expect(gateway.writes, 2);
+      expect(controller.saved, isTrue);
+    },
+  );
 }

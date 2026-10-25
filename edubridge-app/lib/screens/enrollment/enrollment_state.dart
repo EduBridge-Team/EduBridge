@@ -64,6 +64,9 @@ class EnrollmentState<T> extends ChangeNotifier {
         _error = e.failure;
         if (confirmed ||
             const {
+              EnrollmentFailure.session,
+              EnrollmentFailure.forbidden,
+              EnrollmentFailure.unavailable,
               EnrollmentFailure.uncertain,
               EnrollmentFailure.invalidResponse,
               EnrollmentFailure.conflict,
