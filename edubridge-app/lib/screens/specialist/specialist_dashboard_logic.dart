@@ -5,38 +5,6 @@ extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState 
   // ═══════════════════════════════════════════════════════════
   //  Helpers — compute stats
   // ═══════════════════════════════════════════════════════════
-  bool _isToday(String? ts) {
-    if (ts == null || ts.isEmpty) return false;
-    final d = DateTime.tryParse(ts.replaceFirst(' ', 'T'));
-    if (d == null) return false;
-    final now = DateTime.now();
-    return d.year == now.year && d.month == now.month && d.day == now.day;
-  }
-
-  Map<String, dynamic> _computeStats(List progress) {
-    final total = progress.length;
-    final done = progress.where((r) => r['status'] == 'done').length;
-    final inProgress =
-        progress.where((r) => r['status'] == 'in_progress').length;
-    final doneToday = progress
-        .where((r) =>
-            r['status'] == 'done' && _isToday(r['completed_at']?.toString()))
-        .length;
-    final pct = total > 0 ? ((done / total) * 100).round() : 0;
-    final current = progress.cast<Map?>().firstWhere(
-          (r) => r?['status'] == 'in_progress',
-          orElse: () => null,
-        );
-    return {
-      'total': total,
-      'done': done,
-      'inProgress': inProgress,
-      'doneToday': doneToday,
-      'pct': pct,
-      'current': current,
-    };
-  }
-
   // ═══════════════════════════════════════════════════════════
   //  الفلترة والتخصصات
   // ═══════════════════════════════════════════════════════════
