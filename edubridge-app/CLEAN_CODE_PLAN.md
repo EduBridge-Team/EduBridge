@@ -113,3 +113,17 @@ protected setState from an extension. Three regression tests cover Unicode,
 whitespace/fallback differences and clock boundaries. All required CI and existing
 navigation/accessibility tests remain required; final device QA is not replaced
 by this cleanup. No entire screen, public widget or feature is removed.
+
+## Responsibility-focused continuation (October 2026)
+
+The single-responsibility rule applies across hand-written Flutter files and all
+roles. File length alone is not the acceptance criterion. Submit related changes
+as batches, not one PR per file. Current boundaries include specialist dashboard
+loading/statistics and independently imported dashboard presentation components.
+The accompanying batch separates certificate workflow/presentations, recovery routes,
+and institution school management, editing, data access and record presentation.
+
+This work does not claim that every legacy Flutter file has already been
+refactored. Remaining mixed responsibilities require subsequent feature-scoped
+passes. Preserve the user's exclusion of assistant-screen files unless explicitly
+requested otherwise; authentication token/session behavior remains unchanged.
