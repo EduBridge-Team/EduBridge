@@ -56,39 +56,9 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: PreferredSize(
-      preferredSize: const Size.fromHeight(112),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.appBarGradient,
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 25),
-            child: Row(children: [
-              IconButton(
-                tooltip: _label('العودة إلى الرئيسية', 'Back to home'),
-                onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(Directionality.of(context) == TextDirection.rtl
-                    ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
-                    color: Colors.white, size: 27),
-              ),
-              Expanded(child: Text(
-                _label('الإحصائيات الشاملة', 'Comprehensive Statistics'),
-                style: const TextStyle(fontSize: 22, color: Colors.white,
-                  fontWeight: FontWeight.w800),
-              )),
-              IconButton(
-                tooltip: _label('تحديث', 'Refresh'),
-                onPressed: () => setState(() => _future = _load()),
-                icon: const Icon(Icons.refresh, color: Colors.white),
-              ),
-            ]),
-          ),
-        ),
-      ),
+    appBar: BrandAppBar(
+      leading: const BackButton(),
+      title: Text(_label('الإحصائيات الشاملة', 'Comprehensive Statistics')),
     ),
     body: FutureBuilder<Map<String, dynamic>?>(
       future: _future,
