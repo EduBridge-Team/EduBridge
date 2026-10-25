@@ -399,3 +399,41 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
     );
   }
 }
+/// Open the existing S22 specialist recommendation from a child's own file.
+/// This deliberately reuses the established API-backed dialog and validation,
+/// rather than adding an unrelated dashboard quick action.
+Future<bool> showChildSpecialistSuggestion(
+  BuildContext context, {
+  required Map<String, dynamic> child,
+}) async {
+  if (!await ApiService.isVerified()) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.verifyIdentityFirst)),
+      );
+    }
+    return false;
+  }
+
+  try {
+    final specialists = await ApiService.getUsers(role: 'specialist');
+    if (!context.mounted) return false;
+    final selected = await showDialog<bool>(
+      context: context,
+      builder: (_) => _SuggestSpecialistSheet(
+        child: child,
+        specialists: specialists,
+        specialty: 'learning_support',
+        figmaS22: true,
+      ),
+    );
+    return selected == true;
+  } catch (_) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.specialistsLoadFailed)),
+      );
+    }
+    return false;
+  }
+}

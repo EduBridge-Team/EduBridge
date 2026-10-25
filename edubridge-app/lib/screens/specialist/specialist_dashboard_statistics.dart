@@ -1,5 +1,46 @@
-// Shared Figma-inspired dashboard statistics. Counts remain API-driven.
-part of 'specialist_screen.dart';
+import 'package:flutter/material.dart';
+
+import '../../l10n/l10n.dart';
+import '../../theme.dart';
+
+class SpecialistDashboardStatistics extends StatelessWidget {
+  const SpecialistDashboardStatistics({
+    super.key,
+    required this.pending,
+    required this.doneToday,
+    required this.inProgress,
+  });
+
+  final int pending;
+  final int doneToday;
+  final int inProgress;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Row(
+      children: [
+        _StatsCard(
+          value: '$pending',
+          label: context.l10n.awaitingAssessment,
+          color: AppColors.blue,
+        ),
+        const SizedBox(width: 7),
+        _StatsCard(
+          value: '$doneToday',
+          label: context.l10n.completedToday,
+          color: AppColors.brandTealDeep,
+        ),
+        const SizedBox(width: 7),
+        _StatsCard(
+          value: '$inProgress',
+          label: context.l10n.inProgress,
+          color: AppColors.brandTeal,
+        ),
+      ],
+    ),
+  );
+}
 
 class _StatsCard extends StatelessWidget {
   final String value;
@@ -51,32 +92,6 @@ class _StatsCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CountBadge extends StatelessWidget {
-  final String text;
-  final Color color;
-  const _CountBadge(this.text, {required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: .11),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 11.5,
-          fontWeight: FontWeight.w600,
-          color: c.body,
         ),
       ),
     );

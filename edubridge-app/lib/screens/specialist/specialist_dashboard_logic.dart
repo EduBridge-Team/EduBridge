@@ -3,9 +3,6 @@ part of 'specialist_screen.dart';
 
 extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState {
   // ═══════════════════════════════════════════════════════════
-  //  Helpers — compute stats
-  // ═══════════════════════════════════════════════════════════
-  // ═══════════════════════════════════════════════════════════
   //  الفلترة والتخصصات
   // ═══════════════════════════════════════════════════════════
   Set<int> _childSpecialistIds(Map<String, dynamic> child) {
