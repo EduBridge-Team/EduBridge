@@ -1,0 +1,75 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Http\Controllers\SchoolContextController;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Tests\TestCase;
+
+class SchoolContextTest extends TestCase
+{
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Schema::create('organizations', function (Blueprint $t) {
+            $t->id();
+            $t->boolean('is_active')->default(true);
+        });
+        Schema::create('schools', function (Blueprint $t) {
+            $t->id();
+            $t->string('name');
+            $t->unsignedBigInteger('organization_id')->nullable();
+            $t->boolean('is_active')->default(true);
+        });
+        Schema::create('school_accounts', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('user_id');
+        });
+        DB::table('organizations')->insert(['id' => 4, 'is_active' => true]);
+        DB::table('schools')->insert([
+            ['id' => 10, 'name' => 'Independent', 'organization_id' => null, 'is_active' => true],
+            ['id' => 11, 'name' => 'Affiliated', 'organization_id' => 4, 'is_active' => true],
+        ]);
+        DB::table('school_accounts')->insert([
+            ['school_id' => 10, 'user_id' => 20],
+            ['school_id' => 11, 'user_id' => 21],
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        Schema::dropIfExists('school_accounts');
+        Schema::dropIfExists('schools');
+        Schema::dropIfExists('organizations');
+        parent::tearDown();
+    }
+
+    private function context(int $userId, string $role = 'school'): \Illuminate\Http\JsonResponse
+    {
+        $request = Request::create('/api/school/context', 'GET', ['school_id' => 999]);
+        $request->attributes->set('jwt_user', (object) ['id' => $userId, 'role' => $role]);
+        return app(SchoolContextController::class)->show($request);
+    }
+
+    public function test_only_linked_school_account_can_resolve_context(): void
+    {
+        $this->assertSame(403, $this->context(20, 'teacher')->getStatusCode());
+        $this->assertSame(403, $this->context(99)->getStatusCode());
+        $data = $this->context(20)->getData(true);
+        $this->assertSame(10, $data['school']['id']);
+        $this->assertNull($data['school']['organization_id']);
+    }
+
+    public function test_inactive_school_or_institution_is_denied(): void
+    {
+        $this->assertSame(4, $this->context(21)->getData(true)['school']['organization_id']);
+        DB::table('organizations')->where('id', 4)->update(['is_active' => false]);
+        $this->assertSame(403, $this->context(21)->getStatusCode());
+        DB::table('schools')->where('id', 10)->update(['is_active' => false]);
+        $this->assertSame(403, $this->context(20)->getStatusCode());
+    }
+}
