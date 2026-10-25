@@ -11039,5 +11039,21 @@
   "curriculumYearRequired": "Add an academic year before creating a term.",
   "@curriculumYearRequired": {"description": "School curriculum management."},
   "curriculumTermInvalid": "Choose a year, an unused order from 1 to 20, and an end date after the start within that year.",
-  "@curriculumTermInvalid": {"description": "School curriculum management."}
+  "@curriculumTermInvalid": {"description": "School curriculum management."},
+  "teacherAssignmentsTitle": "Teacher assignments",
+  "@teacherAssignmentsTitle": {"description": "School teacher assignment management."},
+  "teacherAssignmentAdd": "Assign a teacher",
+  "@teacherAssignmentAdd": {"description": "School teacher assignment management."},
+  "teacherAssignmentTeacher": "Teacher",
+  "@teacherAssignmentTeacher": {"description": "School teacher assignment management."},
+  "teacherAssignmentRemove": "Remove assignment",
+  "@teacherAssignmentRemove": {"description": "School teacher assignment management."},
+  "teacherAssignmentRemoveNotice": "Only this assignment will be removed. The teacher account and student records will remain.",
+  "@teacherAssignmentRemoveNotice": {"description": "School teacher assignment management."},
+  "teacherAssignmentPrerequisite": "An active teacher, active subject and section are required to add an assignment.",
+  "@teacherAssignmentPrerequisite": {"description": "School teacher assignment management."},
+  "teacherAssignmentsEmpty": "No teacher assignments yet.",
+  "@teacherAssignmentsEmpty": {"description": "School teacher assignment management."},
+  "teacherAssignmentInvalid": "Choose an active teacher, active subject and school section without duplicating an existing assignment.",
+  "@teacherAssignmentInvalid": {"description": "School teacher assignment management."}
 }

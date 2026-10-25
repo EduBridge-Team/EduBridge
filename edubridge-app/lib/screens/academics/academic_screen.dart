@@ -6,15 +6,23 @@ import '../../services/schools/academic_repository.dart';
 import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
 import '../curriculum/curriculum_screen.dart';
+import '../teacher_assignments/teacher_assignments_screen.dart';
+import '../../services/schools/teacher_assignments_repository.dart';
 import '../../services/schools/curriculum_repository.dart';
 import 'academic_controller.dart';
 import 'academic_create_screen.dart';
 import 'academic_sections_panel.dart';
 
 class AcademicScreen extends StatefulWidget {
-  const AcademicScreen({super.key, this.gateway, this.curriculumGateway});
+  const AcademicScreen({
+    super.key,
+    this.gateway,
+    this.curriculumGateway,
+    this.teacherAssignmentsGateway,
+  });
   final AcademicGateway? gateway;
   final CurriculumGateway? curriculumGateway;
+  final TeacherAssignmentsGateway? teacherAssignmentsGateway;
   @override
   State<AcademicScreen> createState() => _AcademicScreenState();
 }
@@ -88,6 +96,18 @@ class _AcademicScreenState extends State<AcademicScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
+                    OutlinedButton.icon(
+                      key: const ValueKey('open-school-teacher-assignments'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => TeacherAssignmentsScreen(
+                            gateway: widget.teacherAssignmentsGateway,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.groups_outlined),
+                      label: Text(l10n.teacherAssignmentsTitle),
+                    ),
                     OutlinedButton.icon(
                       key: const ValueKey('open-school-curriculum'),
                       onPressed: () => Navigator.of(context).push(
