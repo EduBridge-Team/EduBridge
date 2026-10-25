@@ -11017,6 +11017,27 @@
   "academicSectionPrerequisite": "Add an academic year and grade before creating a section.",
   "@academicSectionPrerequisite": {
     "description": "School academic management: academicSectionPrerequisite."
-  }
-
+  },
+  "curriculumTitle": "Terms and subjects",
+  "@curriculumTitle": {"description": "School curriculum management."},
+  "curriculumTerms": "Academic terms",
+  "@curriculumTerms": {"description": "School curriculum management."},
+  "curriculumSubjects": "Subjects",
+  "@curriculumSubjects": {"description": "School curriculum management."},
+  "curriculumAddTerm": "Add academic term",
+  "@curriculumAddTerm": {"description": "School curriculum management."},
+  "curriculumAddSubject": "Add subject",
+  "@curriculumAddSubject": {"description": "School curriculum management."},
+  "curriculumPosition": "Term order within the year",
+  "@curriculumPosition": {"description": "School curriculum management."},
+  "curriculumCode": "Subject code (optional)",
+  "@curriculumCode": {"description": "School curriculum management."},
+  "curriculumActive": "Active subject",
+  "@curriculumActive": {"description": "School curriculum management."},
+  "curriculumInactive": "Inactive subject",
+  "@curriculumInactive": {"description": "School curriculum management."},
+  "curriculumYearRequired": "Add an academic year before creating a term.",
+  "@curriculumYearRequired": {"description": "School curriculum management."},
+  "curriculumTermInvalid": "Choose a year, an unused order from 1 to 20, and an end date after the start within that year.",
+  "@curriculumTermInvalid": {"description": "School curriculum management."}
 }

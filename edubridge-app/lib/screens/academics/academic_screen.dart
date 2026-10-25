@@ -5,13 +5,16 @@ import '../../model/schools/academic_catalog.dart';
 import '../../services/schools/academic_repository.dart';
 import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
+import '../curriculum/curriculum_screen.dart';
+import '../../services/schools/curriculum_repository.dart';
 import 'academic_controller.dart';
 import 'academic_create_screen.dart';
 import 'academic_sections_panel.dart';
 
 class AcademicScreen extends StatefulWidget {
-  const AcademicScreen({super.key, this.gateway});
+  const AcademicScreen({super.key, this.gateway, this.curriculumGateway});
   final AcademicGateway? gateway;
+  final CurriculumGateway? curriculumGateway;
   @override
   State<AcademicScreen> createState() => _AcademicScreenState();
 }
@@ -85,6 +88,18 @@ class _AcademicScreenState extends State<AcademicScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
+                    OutlinedButton.icon(
+                      key: const ValueKey('open-school-curriculum'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => CurriculumScreen(
+                            gateway: widget.curriculumGateway,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.menu_book_outlined),
+                      label: Text(l10n.curriculumTitle),
+                    ),
                     if (_controller.loading || _controller.busy)
                       const LinearProgressIndicator(),
                     if (_controller.saved)

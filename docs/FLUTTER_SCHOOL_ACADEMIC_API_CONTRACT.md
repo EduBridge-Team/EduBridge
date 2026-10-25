@@ -2,7 +2,7 @@
 
 Flutter-only implementation. No backend/schema/deployment changes. Existing
 institution academic CRUD remains unchanged; do not expose it to school users by
-forging institution slugs. Teachers, specialists, subjects, terms, editing,
+forging institution slugs. Teachers, specialists, editing,
 promotion and student reassignment are separate phases.
 
 School dashboard → Years, grades and sections. Separate creation pages share the
