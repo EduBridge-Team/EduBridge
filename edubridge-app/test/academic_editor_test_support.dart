@@ -65,9 +65,15 @@ Future<void> openAcademicEditor(
 }
 
 Future<void> tapEditorKey(WidgetTester tester, String key) async {
-  final target = find.byKey(ValueKey(key));
-  await tester.ensureVisible(target);
+  final field = find.byKey(ValueKey(key));
+  final target = key == 'academic-year' || key == 'academic-grade'
+      ? find.descendant(of: field, matching: find.byType(OutlinedButton))
+      : field;
+  FocusManager.instance.primaryFocus?.unfocus();
   await tester.pumpAndSettle();
+  await Scrollable.ensureVisible(tester.element(target), alignment: 0.5);
+  await tester.pumpAndSettle();
+  expect(target.hitTestable(), findsOneWidget);
   await tester.tap(target);
   await tester.pumpAndSettle();
 }
