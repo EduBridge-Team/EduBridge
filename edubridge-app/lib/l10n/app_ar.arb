@@ -10940,5 +10940,83 @@
   "schoolHistoryDestination": "انتقل إلى",
   "@schoolHistoryDestination": {
     "description": "School enrollment history: schoolHistoryDestination."
+  },
+
+  "academicTitle": "السنوات والصفوف والشعب",
+  "@academicTitle": {
+    "description": "School academic management: academicTitle."
+  },
+  "academicYears": "السنوات الدراسية",
+  "@academicYears": {
+    "description": "School academic management: academicYears."
+  },
+  "academicGrades": "الصفوف",
+  "@academicGrades": {
+    "description": "School academic management: academicGrades."
+  },
+  "academicSections": "الشعب",
+  "@academicSections": {
+    "description": "School academic management: academicSections."
+  },
+  "academicAddYear": "إضافة سنة دراسية",
+  "@academicAddYear": {
+    "description": "School academic management: academicAddYear."
+  },
+  "academicAddGrade": "إضافة صف",
+  "@academicAddGrade": {
+    "description": "School academic management: academicAddGrade."
+  },
+  "academicAddSection": "إضافة شعبة",
+  "@academicAddSection": {
+    "description": "School academic management: academicAddSection."
+  },
+  "academicName": "الاسم",
+  "@academicName": {
+    "description": "School academic management: academicName."
+  },
+  "academicStart": "تاريخ البداية",
+  "@academicStart": {
+    "description": "School academic management: academicStart."
+  },
+  "academicEnd": "تاريخ النهاية",
+  "@academicEnd": {
+    "description": "School academic management: academicEnd."
+  },
+  "academicRequired": "هذا الحقل مطلوب.",
+  "@academicRequired": {
+    "description": "School academic management: academicRequired."
+  },
+  "academicDateInvalid": "اختر تاريخ بداية ونهاية، على أن تكون النهاية بعد البداية.",
+  "@academicDateInvalid": {
+    "description": "School academic management: academicDateInvalid."
+  },
+  "academicCurrent": "السنة الحالية",
+  "@academicCurrent": {
+    "description": "School academic management: academicCurrent."
+  },
+  "academicCurrentNotice": "تعيين هذه السنة كحالية يلغي تعيين السنة الحالية السابقة.",
+  "@academicCurrentNotice": {
+    "description": "School academic management: academicCurrentNotice."
+  },
+  "academicCapacity": "السعة",
+  "@academicCapacity": {
+    "description": "School academic management: academicCapacity."
+  },
+  "academicCapacityInvalid": "أدخل سعة من 1 إلى 500.",
+  "@academicCapacityInvalid": {
+    "description": "School academic management: academicCapacityInvalid."
+  },
+  "academicSave": "حفظ",
+  "@academicSave": {
+    "description": "School academic management: academicSave."
+  },
+  "academicEmpty": "لا توجد سجلات بعد.",
+  "@academicEmpty": {
+    "description": "School academic management: academicEmpty."
+  },
+  "academicSectionPrerequisite": "أضف سنة دراسية وصفًا قبل إنشاء شعبة.",
+  "@academicSectionPrerequisite": {
+    "description": "School academic management: academicSectionPrerequisite."
   }
+
 }

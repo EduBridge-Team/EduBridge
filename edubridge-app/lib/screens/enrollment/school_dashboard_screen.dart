@@ -10,6 +10,7 @@ import '../../widgets/dashboard_menu.dart';
 import '../../widgets/dashboard_profile_identity.dart';
 import '../../widgets/legal_links_button.dart';
 import '../login_screen.dart';
+import '../academics/academic_screen.dart';
 import 'enrollment_controllers.dart';
 import 'enrollment_labels.dart';
 import 'enrollment_request_card.dart';
@@ -70,14 +71,12 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
       final l10n = context.l10n;
       final data = _controller.snapshot;
       return Scaffold(
-        appBar: AppBar(
+        appBar: BrandAppBar(
+          leading: const BackButton(),
           toolbarHeight: MediaQuery.textScalerOf(context)
               .scale(80)
               .clamp(96, 160)
               .toDouble(),
-          flexibleSpace: const DecoratedBox(
-            decoration: BoxDecoration(gradient: AppColors.appBarGradient),
-          ),
           title: DashboardProfileIdentity(
             roleLabel: l10n.schoolRole,
             subtitle: data?.identity.school.name ?? l10n.enrollmentSchoolTitle,
@@ -123,6 +122,13 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
                     : _controller.reload,
                 icon: const Icon(Icons.refresh),
                 label: Text(l10n.enrollmentReload),
+              ),
+              OutlinedButton.icon(
+                key: const ValueKey('open-school-academics'),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => const AcademicScreen())),
+                icon: const Icon(Icons.school_outlined),
+                label: Text(l10n.academicTitle),
               ),
               if (_controller.loading || _controller.busy)
                 const LinearProgressIndicator(),
