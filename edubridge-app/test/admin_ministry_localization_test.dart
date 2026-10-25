@@ -82,10 +82,13 @@ void main() {
       final payloads = <Map<String, dynamic>>[];
       await http.runWithClient(() async {
         await _open(tester, true, 'en', 1);
-        await _tap(tester, find.text('Create institution or ministry account'));
-        final dropdown = tester.widget<DropdownButtonFormField<String>>(find.byType(DropdownButtonFormField<String>));
-        dropdown.onChanged!(role);
-        await tester.pumpAndSettle();
+        expect(find.text('Create institution or ministry account'), findsNothing);
+        await _tap(tester, find.byIcon(Icons.menu_rounded));
+        await _tap(tester, find.text('Create accounts'));
+        await _tap(tester, find.byKey(ValueKey('create_account_$role')));
+        expect(find.byType(BottomSheet), findsNothing);
+        expect(find.byType(BackButton), findsOneWidget);
+        expect(find.byType(DropdownButtonFormField<String>), findsNothing);
         final fields = find.byType(TextFormField);
         await tester.enterText(fields.at(0), 'مؤسسة الأمل');
         await tester.enterText(fields.at(1), 'invalid');
