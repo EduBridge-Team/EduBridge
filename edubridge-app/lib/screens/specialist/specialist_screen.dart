@@ -22,6 +22,7 @@ import '../case_discussion/case_discussion_screen.dart';
 import '../choose_specialty_screen.dart';
 import '../create_specialist_progress_screen.dart';
 import '../evaluation/evaluation_sheet.dart';
+import '../evaluation_history/evaluation_history_screen.dart';
 import '../learning_support_requests/learning_support_requests_screen.dart';
 import '../notifications_screen.dart';
 import '../plan_evaluation_screen.dart';

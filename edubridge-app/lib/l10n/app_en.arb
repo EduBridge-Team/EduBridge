@@ -11055,5 +11055,17 @@
   "teacherAssignmentsEmpty": "No teacher assignments yet.",
   "@teacherAssignmentsEmpty": {"description": "School teacher assignment management."},
   "teacherAssignmentInvalid": "Choose an active teacher, active subject and school section without duplicating an existing assignment.",
-  "@teacherAssignmentInvalid": {"description": "School teacher assignment management."}
+  "@teacherAssignmentInvalid": {"description": "School teacher assignment management."},
+  "evaluationHistoryTitle": "Evaluation history",
+  "@evaluationHistoryTitle": {"description": "Existing evaluation record history."},
+  "evaluationHistoryAuthor": "Recorded by",
+  "@evaluationHistoryAuthor": {"description": "Existing evaluation record history."},
+  "evaluationHistoryMethods": "Teaching methods",
+  "@evaluationHistoryMethods": {"description": "Existing evaluation record history."},
+  "evaluationHistoryLoadFailed": "Could not load evaluation history. Try refreshing.",
+  "@evaluationHistoryLoadFailed": {"description": "Existing evaluation record history."},
+  "evaluationHistoryForbidden": "You do not have access to this child’s evaluations.",
+  "@evaluationHistoryForbidden": {"description": "Existing evaluation record history."},
+  "evaluationHistoryInvalidResponse": "The evaluation records could not be verified. Try refreshing.",
+  "@evaluationHistoryInvalidResponse": {"description": "Existing evaluation record history."}
 }

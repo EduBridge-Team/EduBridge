@@ -11055,5 +11055,17 @@
   "teacherAssignmentsEmpty": "لا يوجد ربط للمعلمين بعد.",
   "@teacherAssignmentsEmpty": {"description": "School teacher assignment management."},
   "teacherAssignmentInvalid": "اختر معلمًا ومادة مفعّلين وشعبة من المدرسة، دون تكرار نفس الربط.",
-  "@teacherAssignmentInvalid": {"description": "School teacher assignment management."}
+  "@teacherAssignmentInvalid": {"description": "School teacher assignment management."},
+  "evaluationHistoryTitle": "سجل التقييمات",
+  "@evaluationHistoryTitle": {"description": "Existing evaluation record history."},
+  "evaluationHistoryAuthor": "صاحب التقييم",
+  "@evaluationHistoryAuthor": {"description": "Existing evaluation record history."},
+  "evaluationHistoryMethods": "أساليب التدريس",
+  "@evaluationHistoryMethods": {"description": "Existing evaluation record history."},
+  "evaluationHistoryLoadFailed": "تعذّر تحميل سجل التقييمات. حاول التحديث.",
+  "@evaluationHistoryLoadFailed": {"description": "Existing evaluation record history."},
+  "evaluationHistoryForbidden": "لا تملك صلاحية عرض تقييمات هذا الطفل.",
+  "@evaluationHistoryForbidden": {"description": "Existing evaluation record history."},
+  "evaluationHistoryInvalidResponse": "تعذّر التحقق من بيانات التقييمات. حاول التحديث.",
+  "@evaluationHistoryInvalidResponse": {"description": "Existing evaluation record history."}
 }
