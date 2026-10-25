@@ -47,6 +47,8 @@ Route::prefix('/institutions/{organizationSlug}')
     ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
     ->middleware('organization.member:owner,admin,school_admin')
     ->group(function () {
+        Route::post('/school-accounts', [\App\Http\Controllers\SchoolProvisionController::class, 'affiliated'])
+            ->middleware('throttle:10,1');
         Route::get('/management-report', [InstitutionManagementReportController::class, 'index']);
         Route::get('/teachers', [InstitutionTeacherMembershipController::class, 'index']);
         Route::patch('/teachers/{teacher}', [InstitutionTeacherMembershipController::class, 'update'])->whereNumber('teacher');
