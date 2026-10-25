@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
+import '../../services/specialist_dashboard_repository.dart';
 import '../../services/notification_listener_service.dart';
 import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../../theme.dart';
@@ -143,80 +144,23 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
 
     try {
-      final responses = await Future.wait([
-        ApiService.authGet('/children'),
-        ApiService.authGet('/lessons'),
-        ApiService.authGet('/disability-types'),
-        ApiService.authGet('/users?role=teacher'),
-        ApiService.authGet('/users?role=specialist'),
-      ]);
-
-      final childrenData = jsonDecode(responses[0].body);
-      final lessonsData = jsonDecode(responses[1].body);
-      final typesData = jsonDecode(responses[2].body);
-      final teachersData = jsonDecode(responses[3].body);
-      final specialistsData = jsonDecode(responses[4].body);
-
-      if (responses[0].statusCode != 200) {
-        if (!mounted) return;
-        setState(() {
-          _error = childrenData['error'] ?? SharedUiMessage.dashboardLoadFailed;
-          _loading = false;
-        });
-        return;
-      }
-
-      final children = (childrenData['children'] ?? []) as List;
-      final rows = <Map<String, dynamic>>[];
-      for (final child in children) {
-        final pRes = await ApiService.authGet('/progress/child/${child['id']}');
-        final pData = jsonDecode(pRes.body);
-        final progress = pRes.statusCode == 200 ? (pData['progress'] ?? []) : [];
-        rows.add({
-          'child': child,
-          'progress': progress,
-          'stats': _computeStats(progress),
-        });
-      }
-
-      String? specialty;
-      try {
-        final meRes = await ApiService.authGet('/me');
-        if (meRes.statusCode == 200) {
-          final meData = jsonDecode(meRes.body);
-          final me = meData['user'] ?? meData;
-          final spec = (me['specialty'] ?? '').toString().toLowerCase().trim();
-          if (spec == 'learning_support' || spec.contains('نفس')) {
-            specialty = 'learning_support';
-          } else if (spec == 'educational' || spec.contains('تعليم')) {
-            specialty = 'educational';
-          }
-        }
-      } catch (e) {
-        debugPrint('فشل /me: $e');
-      }
-
-      if (specialty == null) {
-        final meUser = (specialistsData['users'] as List? ?? []).firstWhere(
-          (u) => u['id'] == _currentUserId,
-          orElse: () => <String, dynamic>{},
-        );
-        final spec = (meUser['specialty'] ?? '').toString().toLowerCase().trim();
-        if (spec == 'learning_support' || spec.contains('نفس')) {
-          specialty = 'learning_support';
-        } else if (spec == 'educational' || spec.contains('تعليم')) {
-          specialty = 'educational';
-        }
-      }
-
+      final data = await SpecialistDashboardRepository().load(
+        currentUserId: _currentUserId,
+      );
       if (!mounted) return;
       setState(() {
-        _rows = rows;
-        _lessons = lessonsData['lessons'] ?? [];
-        _types = typesData['disability_types'] ?? [];
-        _teachers = teachersData['users'] ?? [];
-        _specialists = specialistsData['users'] ?? [];
-        _mySpecialty = specialty;
+        _rows = data.rows;
+        _lessons = data.lessons;
+        _types = data.types;
+        _teachers = data.teachers;
+        _specialists = data.specialists;
+        _mySpecialty = data.specialty;
+        _loading = false;
+      });
+    } on SpecialistDashboardLoadException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error.message ?? SharedUiMessage.dashboardLoadFailed;
         _loading = false;
       });
     } catch (_) {
