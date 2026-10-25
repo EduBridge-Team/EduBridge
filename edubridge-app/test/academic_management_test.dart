@@ -182,6 +182,8 @@ void main() {
       await tester.scrollUntilVisible(add, 150,
         scrollable: find.descendant(of: find.byType(ListView),
           matching: find.byType(Scrollable)).first);
+      await Scrollable.ensureVisible(tester.element(add), alignment: 0.5);
+      await tester.pumpAndSettle();
       await tester.tap(add);
       await tester.pumpAndSettle();
       expect(find.byType(BackButton), findsOneWidget);
