@@ -44,6 +44,8 @@ void main() {
           await tester.scrollUntilVisible(enrollment, 200,
             scrollable: find.descendant(of: find.byType(ListView),
               matching: find.byType(Scrollable)).first);
+          await Scrollable.ensureVisible(tester.element(enrollment), alignment: 0.5);
+          await tester.pumpAndSettle();
           expect(enrollment, findsOneWidget);
           expect(support, findsOneWidget);
           final e = tester.getRect(enrollment);
