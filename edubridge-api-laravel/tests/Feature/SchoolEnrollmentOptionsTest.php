@@ -62,7 +62,7 @@ class SchoolEnrollmentOptionsTest extends TestCase
         parent::tearDown();
     }
 
-    private function options(int $id, string $role = 'school'): \Illuminate\Http\JsonResponse
+    private function schoolOptions(int $id, string $role = 'school'): \Illuminate\Http\JsonResponse
     {
         $request = Request::create('/api/school/enrollment-options', 'GET', ['school_id' => 2]);
         $request->attributes->set('jwt_user', (object) ['id' => $id, 'role' => $role]);
@@ -71,7 +71,7 @@ class SchoolEnrollmentOptionsTest extends TestCase
 
     public function test_options_only_include_own_active_year(): void
     {
-        $data = $this->options(10)->getData(true);
+        $data = $this->schoolOptions(10)->getData(true);
         $this->assertSame(1, $data['school_id']);
         $this->assertCount(1, $data['sections']);
         $this->assertSame(1, $data['sections'][0]['id']);
@@ -79,7 +79,7 @@ class SchoolEnrollmentOptionsTest extends TestCase
 
     public function test_unlinked_users_and_other_roles_are_denied(): void
     {
-        $this->assertSame(403, $this->options(11)->getStatusCode());
-        $this->assertSame(403, $this->options(10, 'teacher')->getStatusCode());
+        $this->assertSame(403, $this->schoolOptions(11)->getStatusCode());
+        $this->assertSame(403, $this->schoolOptions(10, 'teacher')->getStatusCode());
     }
 }
