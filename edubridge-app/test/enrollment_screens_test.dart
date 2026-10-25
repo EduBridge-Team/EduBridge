@@ -68,10 +68,12 @@ void main() {
       await tester.scrollUntilVisible(
         action,
         150,
-        scrollable: find.descendant(
-          of: find.byType(ListView),
-          matching: find.byType(Scrollable),
-        ).first,
+        scrollable: find
+            .descendant(
+              of: find.byWidgetPredicate((widget) => widget is ScrollView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       expect(action, findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -101,10 +103,12 @@ void main() {
         await tester.scrollUntilVisible(
           action,
           150,
-          scrollable: find.descendant(
-          of: find.byType(ListView),
-          matching: find.byType(Scrollable),
-        ).first,
+          scrollable: find
+              .descendant(
+                of: find.byWidgetPredicate((widget) => widget is ScrollView),
+                matching: find.byType(Scrollable),
+              )
+              .first,
         );
         expect(action, findsOneWidget);
         expect(tester.takeException(), isNull);
