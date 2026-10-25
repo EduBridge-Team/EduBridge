@@ -56,6 +56,27 @@ trait AuthLoginActions
                 ], 500);
             }
 
+            if ($user->role === 'school') {
+                // A valid password alone does not authorize an inactive or unlinked school.
+                $schools = DB::table('school_accounts as sa')
+                    ->join('schools as s', 's.id', '=', 'sa.school_id')
+                    ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
+                    ->where('sa.user_id', $user->id)
+                    ->where('s.is_active', true)
+                    ->where(function ($query) {
+                        $query->whereNull('s.organization_id')->orWhere('o.is_active', true);
+                    })
+                    ->limit(2)
+                    ->count();
+
+                if ($schools !== 1) {
+                    return response()->json([
+                        'error' => 'حساب المدرسة غير مفعل أو غير مرتبط بمدرسة نشطة',
+                        'code' => 'SCHOOL_ACCESS_UNAVAILABLE',
+                    ], 403);
+                }
+            }
+
             try {
                 $token = $this->issueToken($user);
             } catch (\RuntimeException $e) {
