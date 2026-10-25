@@ -72,10 +72,16 @@ class _AcademicScreenState extends State<AcademicScreen> {
                 _add(AcademicKind.year),
                 if (data.years.isEmpty) Text(l10n.academicEmpty),
                 for (final year in data.years)
-                  Card(child: ListTile(
-                    title: Text(year.name),
-                    subtitle: Text('${MaterialLocalizations.of(context).formatMediumDate(year.start)} — ${MaterialLocalizations.of(context).formatMediumDate(year.end)}'),
-                    trailing: year.current ? Text(l10n.academicCurrent) : null,
+                  Card(child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(year.name),
+                        Text('${MaterialLocalizations.of(context).formatMediumDate(year.start)} — ${MaterialLocalizations.of(context).formatMediumDate(year.end)}'),
+                        if (year.current) Text(l10n.academicCurrent),
+                      ],
+                    ),
                   )),
                 Text(l10n.academicGrades, style: Theme.of(context).textTheme.titleLarge),
                 _add(AcademicKind.grade),
