@@ -84,7 +84,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
     // use the same S21 layout; existing role-based child/team access stays.
     final created = await showDialog<bool>(
       context: context,
-      builder: (_) => const _NewDiscussionSheet(figmaS21: true),
+      builder: (_) => const NewCaseDiscussionSheet(),
     );
     if (created == true && mounted) _load();
   }

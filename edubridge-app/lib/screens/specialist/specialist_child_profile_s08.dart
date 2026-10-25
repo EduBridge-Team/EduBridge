@@ -2,62 +2,12 @@
 part of 'specialist_child_profile_screen.dart';
 
 extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
-  Future<void> _loadS08Metrics() async {
-    try {
-      final responses = await Future.wait([
-        ApiService.authGet('/children/$_childId/lessons'),
-        ApiService.authGet('/progress/child/$_childId'),
-      ]);
-      if (!mounted) return;
-
-      int? lessonsCount;
-      int? completionPct;
-      final lessonResponse = responses[0];
-      final progressResponse = responses[1];
-      if (lessonResponse.statusCode == 200) {
-        final data = ApiService.decodeMap(lessonResponse.body);
-        final lessons = data['lessons'];
-        if (lessons is List) {
-          lessonsCount = lessons.length;
-          if (progressResponse.statusCode == 200 && lessons.isNotEmpty) {
-            final progressData = ApiService.decodeMap(progressResponse.body);
-            final progress = progressData['progress'];
-            if (progress is List) {
-              final completedIds = <int>{};
-              for (final entry in progress) {
-                if (entry is Map && entry['status'] == 'done') {
-                  final id = int.tryParse((entry['lesson_id'] ?? '').toString());
-                  if (id != null) completedIds.add(id);
-                }
-              }
-              final completedVisible = lessons.where((lesson) {
-                if (lesson is! Map) return false;
-                final id = int.tryParse((lesson['id'] ?? '').toString());
-                return id != null && completedIds.contains(id);
-              }).length;
-              completionPct = (100 * completedVisible / lessons.length).round();
-            }
-          }
-        }
-      }
-      _updateProfileState(() {
-        _s08LessonsCount = lessonsCount;
-        _s08CompletionPct = completionPct;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      _updateProfileState(() {
-        _s08LessonsCount = null;
-        _s08CompletionPct = null;
-      });
-    }
-  }
-
   Widget _buildS08Scaffold(BuildContext context, JisrColors c) {
     final student = _profile;
     final preview = student.isAssignmentPreview;
     final subtitle = [
-      if (student.age != null) context.l10n.childAgeYears(student.age.toString()),
+      if (student.age != null)
+        context.l10n.childAgeYears(student.age.toString()),
       if (student.disability.isNotEmpty) student.disability,
     ].join(' • ');
     return Scaffold(
@@ -69,16 +19,24 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
           icon: const CircleAvatar(
             radius: 18,
             backgroundColor: Color(0x33FFFFFF),
-            child: Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
           onPressed: () => Navigator.maybePop(context),
         ),
         title: Text(
-          _childName.isEmpty ? context.l10n.studentProfile : context.l10n.studentProfileFor(_childName),
+          _childName.isEmpty
+              ? context.l10n.studentProfile
+              : context.l10n.studentProfileFor(_childName),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,
+            color: Colors.white,
+            fontSize: 21,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),
@@ -119,13 +77,15 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               ),
             ],
             const SizedBox(height: 14),
-            _s08Metrics(c),
+            StudentLearningMetricsCards(
+              lessonsCount: _s08LessonsCount,
+              completionPercent: _s08CompletionPct,
+            ),
             if (!_loading && _error == null && !preview) ...[
               const SizedBox(height: 22),
               _s08Title(c, context.l10n.childFollowUp),
               const SizedBox(height: 10),
-              _s08Action(
-                c,
+              StudentProfileActionCard(
                 icon: Icons.edit_outlined,
                 title: context.l10n.evaluateChildPlan,
                 subtitle: context.l10n.addReviewChildEvaluation,
@@ -133,45 +93,44 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 accent: const Color(0xFF04AABB),
                 onTap: _evaluate,
               ),
-              _s08Action(
-                c,
+              StudentProfileActionCard(
                 icon: Icons.trending_up_rounded,
                 title: context.l10n.viewProgress,
                 subtitle: context.l10n.trackChildDevelopment,
                 tint: const Color(0xFFE4F5E7),
                 accent: const Color(0xFF37B54A),
-                badge: _s08CompletionPct == null
-                    ? null : '$_s08CompletionPct%',
+                badge: _s08CompletionPct == null ? null : '$_s08CompletionPct%',
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChildProgressScreen(
-                      childId: _childId, childName: _childName,
+                      childId: _childId,
+                      childName: _childName,
                     ),
                   ),
                 ),
               ),
-              _s08Action(
-                c,
+              StudentProfileActionCard(
                 icon: Icons.menu_book_outlined,
                 title: context.l10n.childLessons,
                 subtitle: context.l10n.viewLessonsMaterials,
                 tint: const Color(0xFFE0EDFC),
                 accent: const Color(0xFF1769C2),
                 badge: _s08LessonsCount == null
-                    ? null : context.l10n.profileLessonCount(_s08LessonsCount!),
+                    ? null
+                    : context.l10n.profileLessonCount(_s08LessonsCount!),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChildLessonsScreen(
-                      childId: _childId, childName: _childName,
+                      childId: _childId,
+                      childName: _childName,
                       specialistS10: true,
                     ),
                   ),
                 ),
               ),
-              _s08Action(
-                c,
+              StudentProfileActionCard(
                 icon: Icons.lightbulb_outline_rounded,
                 title: context.l10n.recommendSupportSpecialist,
                 subtitle: context.l10n.recommendSpecialistForChild,
@@ -185,8 +144,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                   if (sent && mounted) await _load();
                 },
               ),
-              _s08Action(
-                c,
+              StudentProfileActionCard(
                 icon: Icons.chat_bubble_outline,
                 title: context.l10n.discussCase,
                 subtitle: context.l10n.contactChildCareTeam,
@@ -195,8 +153,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        const CaseDiscussionScreen(),
+                    builder: (_) => const CaseDiscussionScreen(),
                   ),
                 ),
               ),
@@ -204,138 +161,254 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
             const SizedBox(height: 12),
             _s08Title(c, context.l10n.childDetails),
             const SizedBox(height: 10),
-            _s08Details(c, context.l10n.childInformation, subtitle, Icons.badge_outlined, [
-              _row(c, context.l10n.name, _childName, Icons.person_outline),
-              if (student.age != null)
-                _row(c, context.l10n.age, context.l10n.childAgeYears(student.age.toString()), Icons.cake_outlined),
-              if (student.birthDate.isNotEmpty)
-                _row(c, context.l10n.birthDate, student.birthDate, Icons.cake_outlined),
-              if (student.gender.isNotEmpty)
-                _row(c, context.l10n.gender, student.gender == 'female' ? context.l10n.female :
-                    student.gender == 'male' ? context.l10n.male : student.gender,
-                    Icons.person_outline),
-              if (student.disability.isNotEmpty)
-                _row(c, context.l10n.disabilityType, student.disability,
-                    Icons.accessibility_new),
-              if (student.description.isNotEmpty)
-                _row(c, context.l10n.disabilityDescription, student.description, AppIcons.info),
-              if (student.specialNeeds.isNotEmpty)
-                _row(c, context.l10n.specialNeeds, student.specialNeeds, AppIcons.support),
-              if (student.preferredStyle.isNotEmpty)
-                _row(c, context.l10n.learningStyle, student.preferredStyle, AppIcons.lesson),
-              if (student.strengths.isNotEmpty)
-                _chips(c, context.l10n.strengths, student.strengths, AppColors.greenDeep),
-              if (student.challenges.isNotEmpty)
-                _chips(c, context.l10n.challenges, student.challenges, AppColors.orangeDeep),
-            ]),
-            _s08Details(
-              c, context.l10n.followUpTeamPlan,
-              [student.teacherName, student.specialistNames,
-               student.organizationName].where((t) => t.isNotEmpty).join(' • '),
-              Icons.groups_outlined,
-              [
+            StudentProfileDetailsSection(
+              title: context.l10n.childInformation,
+              subtitle: subtitle,
+              icon: Icons.badge_outlined,
+              children: [
+                _row(c, context.l10n.name, _childName, Icons.person_outline),
+                if (student.age != null)
+                  _row(
+                    c,
+                    context.l10n.age,
+                    context.l10n.childAgeYears(student.age.toString()),
+                    Icons.cake_outlined,
+                  ),
+                if (student.birthDate.isNotEmpty)
+                  _row(
+                    c,
+                    context.l10n.birthDate,
+                    student.birthDate,
+                    Icons.cake_outlined,
+                  ),
+                if (student.gender.isNotEmpty)
+                  _row(
+                    c,
+                    context.l10n.gender,
+                    student.gender == 'female'
+                        ? context.l10n.female
+                        : student.gender == 'male'
+                        ? context.l10n.male
+                        : student.gender,
+                    Icons.person_outline,
+                  ),
+                if (student.disability.isNotEmpty)
+                  _row(
+                    c,
+                    context.l10n.disabilityType,
+                    student.disability,
+                    Icons.accessibility_new,
+                  ),
+                if (student.description.isNotEmpty)
+                  _row(
+                    c,
+                    context.l10n.disabilityDescription,
+                    student.description,
+                    AppIcons.info,
+                  ),
+                if (student.specialNeeds.isNotEmpty)
+                  _row(
+                    c,
+                    context.l10n.specialNeeds,
+                    student.specialNeeds,
+                    AppIcons.support,
+                  ),
+                if (student.preferredStyle.isNotEmpty)
+                  _row(
+                    c,
+                    context.l10n.learningStyle,
+                    student.preferredStyle,
+                    AppIcons.lesson,
+                  ),
+                if (student.strengths.isNotEmpty)
+                  _chips(
+                    c,
+                    context.l10n.strengths,
+                    student.strengths,
+                    AppColors.greenDeep,
+                  ),
+                if (student.challenges.isNotEmpty)
+                  _chips(
+                    c,
+                    context.l10n.challenges,
+                    student.challenges,
+                    AppColors.orangeDeep,
+                  ),
+              ],
+            ),
+            StudentProfileDetailsSection(
+              title: context.l10n.followUpTeamPlan,
+              subtitle: [
+                student.teacherName,
+                student.specialistNames,
+                student.organizationName,
+              ].where((t) => t.isNotEmpty).join(' • '),
+              icon: Icons.groups_outlined,
+              children: [
                 if (student.guardianNames.isNotEmpty)
-                  _row(c, context.l10n.parentRole, student.guardianNames, AppIcons.parent),
+                  _row(
+                    c,
+                    context.l10n.parentRole,
+                    student.guardianNames,
+                    AppIcons.parent,
+                  ),
                 if (student.teacherName.isNotEmpty)
-                  _row(c, context.l10n.teacherRole, student.teacherName, Icons.school_outlined),
+                  _row(
+                    c,
+                    context.l10n.teacherRole,
+                    student.teacherName,
+                    Icons.school_outlined,
+                  ),
                 if (student.specialistNames.isNotEmpty)
-                  _row(c, context.l10n.specialists, student.specialistNames, AppIcons.specialist),
+                  _row(
+                    c,
+                    context.l10n.specialists,
+                    student.specialistNames,
+                    AppIcons.specialist,
+                  ),
                 if (student.organizationName.isNotEmpty)
-                  _row(c, context.l10n.institutionRole, student.organizationName,
-                      Icons.business_outlined),
+                  _row(
+                    c,
+                    context.l10n.institutionRole,
+                    student.organizationName,
+                    Icons.business_outlined,
+                  ),
                 if (student.educationalPlan.isNotEmpty)
-                  _row(c, context.l10n.educationalPlan, student.educationalPlan,
-                      AppIcons.lesson),
-                _row(c, context.l10n.status,
-                    StudentProfileLabels.specialistStatus(student, strings: context.l10n),
-                    Icons.info_outline),
+                  _row(
+                    c,
+                    context.l10n.educationalPlan,
+                    student.educationalPlan,
+                    AppIcons.lesson,
+                  ),
+                _row(
+                  c,
+                  context.l10n.status,
+                  StudentProfileLabels.specialistStatus(
+                    student,
+                    strings: context.l10n,
+                  ),
+                  Icons.info_outline,
+                ),
                 if (student.notes.isNotEmpty)
                   _row(c, context.l10n.notes, student.notes, AppIcons.info),
               ],
             ),
             if (student.hasDocuments && !preview)
-              _s08Details(c, context.l10n.documentsVerification, '',
-                  Icons.description_outlined, [
-                if (student.childNationalId.isNotEmpty)
-                  _row(c, context.l10n.childNationalId, student.childNationalId,
-                      Icons.badge_outlined),
-                if (student.guardianNationalId.isNotEmpty)
-                  _row(c, context.l10n.guardianNationalId, student.guardianNationalId,
-                      Icons.badge_outlined),
-                if (student.guardianDocument.isNotEmpty)
-                  _row(c, context.l10n.guardianIdPhoto, context.l10n.attached, Icons.attachment),
-                if (student.kinshipDocument.isNotEmpty)
-                  _row(c, context.l10n.kinshipDocument, context.l10n.attached, Icons.attachment),
-                if (student.medicalReport.isNotEmpty)
-                  _row(c, context.l10n.medicalReport, context.l10n.attached, Icons.description_outlined),
-              ]),
+              StudentProfileDetailsSection(
+                title: context.l10n.documentsVerification,
+                subtitle: '',
+                icon: Icons.description_outlined,
+                children: [
+                  if (student.childNationalId.isNotEmpty)
+                    _row(
+                      c,
+                      context.l10n.childNationalId,
+                      student.childNationalId,
+                      Icons.badge_outlined,
+                    ),
+                  if (student.guardianNationalId.isNotEmpty)
+                    _row(
+                      c,
+                      context.l10n.guardianNationalId,
+                      student.guardianNationalId,
+                      Icons.badge_outlined,
+                    ),
+                  if (student.guardianDocument.isNotEmpty)
+                    _row(
+                      c,
+                      context.l10n.guardianIdPhoto,
+                      context.l10n.attached,
+                      Icons.attachment,
+                    ),
+                  if (student.kinshipDocument.isNotEmpty)
+                    _row(
+                      c,
+                      context.l10n.kinshipDocument,
+                      context.l10n.attached,
+                      Icons.attachment,
+                    ),
+                  if (student.medicalReport.isNotEmpty)
+                    _row(
+                      c,
+                      context.l10n.medicalReport,
+                      context.l10n.attached,
+                      Icons.description_outlined,
+                    ),
+                ],
+              ),
             if (!_loading && _error == null && !preview)
-              _s08Details(c, context.l10n.additionalFollowUpTools,
-                  context.l10n.noorReportsAdaptation, Icons.more_horiz_rounded, [
-                _actionTile(
-                  c,
-                  icon: Icons.auto_awesome_rounded,
-                  title: context.l10n.askNoorAboutStudent,
-                  subtitle: context.l10n.studentDataSummary,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => StudentNoorScreen(
-                        childId: _childId, childName: _childName,
-                      ),
-                    ),
-                  ),
-                ),
-                _actionTile(
-                  c,
-                  icon: AppIcons.report,
-                  title: context.l10n.weeklyProgressTeacherReports,
-                  subtitle: context.l10n.teacherReportsProgressHistory,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => WeeklyReportScreen(
-                        specialistS26: true,
-                        childId: _childId, childName: _childName,
-                      ),
-                    ),
-                  ),
-                ),
-                if (_canAdapt)
+              StudentProfileDetailsSection(
+                title: context.l10n.additionalFollowUpTools,
+                subtitle: context.l10n.noorReportsAdaptation,
+                icon: Icons.more_horiz_rounded,
+                children: [
                   _actionTile(
                     c,
-                    icon: Icons.accessibility_new_rounded,
-                    title: context.l10n.adaptLearning,
-                    subtitle: context.l10n.adjustAdaptationFeatures,
+                    icon: Icons.auto_awesome_rounded,
+                    title: context.l10n.askNoorAboutStudent,
+                    subtitle: context.l10n.studentDataSummary,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ChildAccessibilitySettingsScreen(
+                        builder: (_) => StudentNoorScreen(
                           childId: _childId,
                           childName: _childName,
-                          disabilityTypeHint: student.disability,
                         ),
                       ),
                     ),
                   ),
-                if (student.currentPlanId != null)
                   _actionTile(
                     c,
-                    icon: Icons.fact_check_outlined,
-                    title: context.l10n.evaluateCurrentPlan,
-                    subtitle: context.l10n.measurePlanEffectiveness,
+                    icon: AppIcons.report,
+                    title: context.l10n.weeklyProgressTeacherReports,
+                    subtitle: context.l10n.teacherReportsProgressHistory,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => PlanEvaluationScreen(
+                        builder: (_) => WeeklyReportScreen(
+                          specialistS26: true,
                           childId: _childId,
                           childName: _childName,
-                          planId: student.currentPlanId!,
                         ),
                       ),
                     ),
                   ),
-              ]),
+                  if (_canAdapt)
+                    _actionTile(
+                      c,
+                      icon: Icons.accessibility_new_rounded,
+                      title: context.l10n.adaptLearning,
+                      subtitle: context.l10n.adjustAdaptationFeatures,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChildAccessibilitySettingsScreen(
+                            childId: _childId,
+                            childName: _childName,
+                            disabilityTypeHint: student.disability,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (student.currentPlanId != null)
+                    _actionTile(
+                      c,
+                      icon: Icons.fact_check_outlined,
+                      title: context.l10n.evaluateCurrentPlan,
+                      subtitle: context.l10n.measurePlanEffectiveness,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PlanEvaluationScreen(
+                            childId: _childId,
+                            childName: _childName,
+                            planId: student.currentPlanId!,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             if (preview && widget.onAccept != null) ...[
               const SizedBox(height: 14),
               FilledButton.icon(
@@ -358,171 +431,6 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
         color: c.heading,
         fontSize: 20,
         fontWeight: FontWeight.w900,
-      ),
-    ),
-  );
-
-  Widget _s08Metrics(JisrColors c) => Row(
-    children: [
-      Expanded(child: _s08Metric(c, Icons.check_circle_outline,
-          _s08CompletionPct == null ? '—' : '$_s08CompletionPct%',
-          context.l10n.achievement, const Color(0xFF42B751))),
-      const SizedBox(width: 9),
-      Expanded(child: _s08Metric(c, Icons.menu_book_outlined,
-          _s08LessonsCount?.toString() ?? '—',
-          context.l10n.lessons, const Color(0xFF1769C2))),
-    ],
-  );
-
-  Widget _s08Metric(
-    JisrColors c, IconData icon, String value, String label, Color accent,
-  ) => Container(
-    constraints: const BoxConstraints(minHeight: 116),
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-    decoration: BoxDecoration(
-      color: c.card,
-      borderRadius: BorderRadius.circular(17),
-      border: Border.all(color: c.line),
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          radius: 17,
-          backgroundColor: accent.withValues(alpha: .12),
-          child: Icon(icon, color: accent, size: 19),
-        ),
-        const SizedBox(height: 8),
-        Text(value, style: TextStyle(
-            color: c.heading, fontWeight: FontWeight.w900, fontSize: 17)),
-        const SizedBox(height: 4),
-        Text(label, style: TextStyle(color: c.muted, fontSize: 12)),
-      ],
-    ),
-  );
-
-  Widget _s08Action(
-    JisrColors c, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color tint,
-    required Color accent,
-    required VoidCallback onTap,
-    String? badge,
-  }) => Padding(
-    padding: const EdgeInsets.only(bottom: 11),
-    child: Material(
-      color: c.card,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: BorderSide(color: c.line),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
-          child: Row(
-            children: [
-              Container(
-                width: 53,
-                height: 53,
-                decoration: BoxDecoration(
-                  color: tint,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, size: 26, color: accent),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: TextStyle(
-                      color: c.heading,
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w900,
-                    )),
-                    const SizedBox(height: 4),
-                    Text(subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12, color: c.muted),
-                    ),
-                  ],
-                ),
-              ),
-              if (badge != null)
-                Flexible(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: tint,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(badge, style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: accent,
-                    )),
-                  ),
-                ),
-              Icon(Icons.chevron_left_rounded, color: c.muted, size: 21),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-
-  Widget _s08Details(
-    JisrColors c,
-    String title,
-    String subtitle,
-    IconData icon,
-    List<Widget> children,
-  ) => Padding(
-    padding: const EdgeInsets.only(bottom: 11),
-    child: Material(
-      color: c.card,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: c.line),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(
-            horizontal: 14, vertical: 7,
-          ),
-          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-          leading: Container(
-            width: 47,
-            height: 47,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE4EFFA),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: AppColors.brandBlue, size: 23),
-          ),
-          title: Text(title, style: TextStyle(
-            color: c.heading, fontSize: 15,
-            fontWeight: FontWeight.w900,
-          )),
-          subtitle: subtitle.isEmpty ? null : Text(
-            subtitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: c.muted),
-          ),
-          children: children,
-        ),
       ),
     ),
   );
