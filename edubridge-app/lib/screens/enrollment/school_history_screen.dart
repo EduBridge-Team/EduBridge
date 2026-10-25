@@ -49,7 +49,13 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
         appBar: BrandAppBar(
           leading: const BackButton(),
           centerTitle: true,
-          title: Text(l10n.schoolHistoryTitle, textAlign: TextAlign.center),
+          toolbarHeight: MediaQuery.textScalerOf(context).scale(100),
+          title: Text(
+            l10n.schoolHistoryTitle,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+          ),
           actions: [
             IconButton(
               tooltip: l10n.enrollmentReload,

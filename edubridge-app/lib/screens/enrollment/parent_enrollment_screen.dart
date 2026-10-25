@@ -95,7 +95,13 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
         appBar: BrandAppBar(
           leading: const BackButton(),
           centerTitle: true,
-          title: Text(l10n.enrollmentParentTitle, textAlign: TextAlign.center),
+          toolbarHeight: MediaQuery.textScalerOf(context).scale(100),
+          title: Text(
+            l10n.enrollmentParentTitle,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+          ),
           actions: [
             IconButton(
               tooltip: l10n.enrollmentReload,
