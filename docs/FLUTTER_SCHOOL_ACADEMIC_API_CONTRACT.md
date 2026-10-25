@@ -86,3 +86,18 @@ combined/empty results, preserved/removed selections and school changes.
 
 As of main a2db201, /school/academic and its creation endpoints remain a Backend
 dependency. These tests use an injected gateway; they do not certify a live API.
+
+## Creation form safeguards
+
+Year and grade selectors use wrapping buttons with scrollable choice dialogs,
+shared with catalog filters. Required selection validation remains in the form;
+a removed selection is cleared on catalog refresh. Creation forms pin their
+initial school identity: a refreshed context for another school disables editing
+and saving, while Back remains available. These are client safeguards, not server
+authorization.
+
+Capacity accepts Western, Arabic-Indic and Persian keyboard digits, then validates
+an integer in 1–500 and serializes the numeric value through the existing draft.
+No endpoint or server payload changes. Form tests cover all three creation kinds
+in Arabic/English at 320/720/1280 widths and 2x text, date/capacity validation,
+removed selections, changed schools and busy-save back navigation.

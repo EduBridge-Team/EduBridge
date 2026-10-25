@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
+import 'academic_choice_dialog.dart';
 
 /// A wrapping label and scrollable choice dialog for long school-authored names.
 class AcademicFilterButton extends StatelessWidget {
@@ -18,23 +19,11 @@ class AcademicFilterButton extends StatelessWidget {
   final ValueChanged<int?>? onChanged;
 
   Future<void> _choose(BuildContext context) async {
-    final result = await showDialog<int>(
-      context: context,
-      builder: (context) => SimpleDialog(
-        title: Text(label),
-        children: [
-          for (final entry in {0: context.l10n.all, ...options}.entries)
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, entry.key),
-              child: Row(
-                children: [
-                  Expanded(child: Text(entry.value)),
-                  if (entry.key == (value ?? 0)) const Icon(Icons.check),
-                ],
-              ),
-            ),
-        ],
-      ),
+    final result = await showAcademicChoiceDialog(
+      context,
+      label: label,
+      options: {0: context.l10n.all, ...options},
+      value: value ?? 0,
     );
     if (context.mounted && result != null) {
       onChanged?.call(result == 0 ? null : result);
