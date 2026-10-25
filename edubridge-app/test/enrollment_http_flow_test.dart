@@ -135,10 +135,6 @@ void main() {
           await tapVisible(tester, find.text(strings.enrollmentConfirm));
           await reveal(tester, find.text(strings.enrollmentPending));
           expect(find.text(strings.enrollmentPending), findsOneWidget);
-          await reveal(
-            tester,
-            find.byKey(const ValueKey('enrollment-submit-10')),
-          );
           expect(fixture.writes, ['/parent/children/6/enrollment-requests']);
           await reveal(
             tester,

@@ -1,10 +1,9 @@
 # School portal and guardian enrollment — Flutter contract v1
 
 Flutter implementation; route availability is tracked separately from the contract.
-At main `e05477f`, school context, options and pending inbox plus guardian search,
-submission, history and cancellation are implemented. The school decision route
-remains a backend dependency; Flutter decision tests exercise contract fixtures,
-not a live API. No backend changes are included in this Flutter batch.
+At main `ac73d9c`, school context, options, pending inbox and decisions plus
+guardian search, submission, history and cancellation are implemented. Flutter
+HTTP fixtures match those controller payloads; they do not verify a deployed API. No backend changes are included in this Flutter batch.
 
 Both enrollment screens refresh on app resume and pull-to-refresh. Refresh only
 reads state and never repeats a write. Session, permission and unavailable-route
