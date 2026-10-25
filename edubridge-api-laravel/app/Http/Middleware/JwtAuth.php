@@ -54,6 +54,28 @@ class JwtAuth
                 return response()->json(['error' => 'انتهت جلسة الدخول. سجّل الدخول مجدداً.', 'code' => 'SESSION_INVALID'], 401);
             }
 
+            if ($account->role === 'school') {
+                // Check every request, not only login. A previously issued JWT must
+                // stop working as soon as its school or institution is disabled.
+                $activeSchools = DB::table('school_accounts as sa')
+                    ->join('schools as s', 's.id', '=', 'sa.school_id')
+                    ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
+                    ->where('sa.user_id', $account->id)
+                    ->where('s.is_active', true)
+                    ->where(function ($query) {
+                        $query->whereNull('s.organization_id')->orWhere('o.is_active', true);
+                    })
+                    ->limit(2)
+                    ->count();
+
+                if ($activeSchools !== 1) {
+                    return response()->json([
+                        'error' => 'انتهت صلاحية حساب المدرسة',
+                        'code' => 'SESSION_INVALID',
+                    ], 401);
+                }
+            }
+
             // The current database account is authoritative for every policy.
             $request->attributes->set('jwt_user', $account);
         } catch (\Throwable $e) {
