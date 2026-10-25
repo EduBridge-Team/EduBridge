@@ -87,7 +87,7 @@ void main() {
           expect(path, '/parent/children/6/school-history');
           return http.Response(jsonEncode(history([record()])), 200);
         },
-        post: (_, _) async => throw StateError('Read-only feature'),
+        post: (path, body) async => throw StateError('Read-only feature'),
       ),
     );
     expect((await repository.load()).records.single.childId, 6);
