@@ -8,6 +8,7 @@ import '../../services/enrollment/enrollment_api_client.dart';
 import '../../theme.dart';
 import '../enrollment/enrollment_state.dart';
 import 'iep_labels.dart';
+import 'iep_draft_editor_screen.dart';
 import 'iep_plan_card.dart';
 import 'iep_version_screen.dart';
 
@@ -103,6 +104,22 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
+                    if (_state.error != EnrollmentFailure.session &&
+                        _state.error != EnrollmentFailure.forbidden)
+                      OutlinedButton.icon(
+                        key: const ValueKey('iep-prepare-draft'),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => IepDraftEditorScreen(
+                              childId: widget.childId,
+                              childName: widget.childName,
+                              evaluationGateway: widget.evaluationGateway,
+                            ),
+                          ),
+                        ),
+                        icon: const Icon(Icons.edit_note),
+                        label: Text(l10n.iepComposeTitle),
+                      ),
                     if (widget.childName.trim().isNotEmpty)
                       Text(
                         widget.childName,
