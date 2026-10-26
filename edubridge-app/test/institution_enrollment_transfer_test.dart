@@ -24,7 +24,7 @@ void main() {
         case 'used': f.rows.add({...f.rows.last, 'id': 4, 'child_id': 9, 'section_id': 31}); break;
         case 'year':
           final years = f.academic.data['academic_years'] as List;
-          years.add({...Map<String, dynamic>.from(years.first as Map), 'id': 11, 'is_current': false});
+          f.academic.data['academic_years'] = [...years, {...Map<String, dynamic>.from(years.first as Map), 'id': 11, 'is_current': false}];
           (f.academic.data['sections'] as List).last['academic_year_id'] = 11;
           break;
         case 'scope': f.academic.slug = 'other'; break;

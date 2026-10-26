@@ -11187,5 +11187,17 @@
   "institutionTransferTitle": "نقل إلى شعبة أخرى",
   "institutionTransferDestination": "اختر الشعبة الجديدة",
   "institutionTransferConfirm": "تأكيد النقل",
-  "institutionTransferNotice": "سيبقى القيد السابق محفوظًا في سجل القيد."
+  "institutionTransferNotice": "سيبقى القيد السابق محفوظًا في سجل القيد.",
+  "@institutionTransferTitle": {
+    "description": "Institution student section transfer: institutionTransferTitle."
+  },
+  "@institutionTransferDestination": {
+    "description": "Institution student section transfer: institutionTransferDestination."
+  },
+  "@institutionTransferConfirm": {
+    "description": "Institution student section transfer: institutionTransferConfirm."
+  },
+  "@institutionTransferNotice": {
+    "description": "Institution student section transfer: institutionTransferNotice."
+  }
 }

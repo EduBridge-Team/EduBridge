@@ -11187,5 +11187,17 @@
   "institutionTransferTitle": "Transfer to another section",
   "institutionTransferDestination": "Choose a destination section",
   "institutionTransferConfirm": "Confirm transfer",
-  "institutionTransferNotice": "The previous enrollment will remain in the history."
+  "institutionTransferNotice": "The previous enrollment will remain in the history.",
+  "@institutionTransferTitle": {
+    "description": "Institution student section transfer: institutionTransferTitle."
+  },
+  "@institutionTransferDestination": {
+    "description": "Institution student section transfer: institutionTransferDestination."
+  },
+  "@institutionTransferConfirm": {
+    "description": "Institution student section transfer: institutionTransferConfirm."
+  },
+  "@institutionTransferNotice": {
+    "description": "Institution student section transfer: institutionTransferNotice."
+  }
 }
