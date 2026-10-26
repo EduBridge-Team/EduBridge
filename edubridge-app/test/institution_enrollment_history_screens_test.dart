@@ -23,7 +23,7 @@ void main() {
         await tapCurriculum(tester, 'institution-open-enrollment-history');
         expect(find.byType(InstitutionEnrollmentHistoryScreen), findsOneWidget);
         expect(find.text('نور'), findsOneWidget);
-        await revealCurriculum(tester, find.text('أحمد'));
+        await tester.scrollUntilVisible(find.text('أحمد'), 200,\n          scrollable: find.byType(Scrollable).last);
         expect(find.text('أحمد'), findsOneWidget);
         fixture.status = 403;
         await resumeCurriculum(tester);
