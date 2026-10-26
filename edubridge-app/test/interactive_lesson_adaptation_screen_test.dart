@@ -16,7 +16,8 @@ void main() {
     await tester.pumpWidget(const MaterialApp(
       home: InteractiveLessonAdaptationScreen(template: template),
     ));
-    expect(find.textContaining('لن يتم حفظ التغييرات'), findsOneWidget);
+    expect(find.textContaining('يمكن حفظ العنوان والنتاج كمسودة خاصة بك'), findsOneWidget);
+    expect(find.byKey(const ValueKey('save-adapted-lesson')), findsOneWidget);
     await tester.enterText(find.byKey(const ValueKey('adapt-lesson-title')), 'درس معدل');
     await tester.enterText(find.byKey(const ValueKey('adapt-lesson-objective')), 'نتاج معدل');
     expect(template.title, 'العنوان الأصلي');
