@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/interactive_lesson.dart';
 import '../../services/interactive_lesson_starter_repository.dart';
 import 'interactive_lesson_player.dart';
+import 'interactive_lesson_adaptation_screen.dart';
 
 /// Standalone preview of the starter templates.
 /// No backend publishing, assignment or progress writes occur here.
@@ -39,7 +40,16 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                   child: ListTile(
                     title: Text(lesson.title),
                     subtitle: Text(lesson.objective),
-                    trailing: const Icon(Icons.chevron_left),
+                    trailing: IconButton(
+                      key: ValueKey('adapt-lesson-${lesson.id}'),
+                      tooltip: 'تخصيص للمعاينة',
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => InteractiveLessonAdaptationScreen(template: lesson),
+                        ),
+                      ),
+                    ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) => InteractiveLessonPlayer(lesson: lesson),
