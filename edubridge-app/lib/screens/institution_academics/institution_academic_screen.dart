@@ -6,6 +6,8 @@ import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/institution_academic_repository.dart';
 import '../../services/institution_curriculum_repository.dart';
 import '../../services/institution_teacher_assignments_repository.dart';
+import '../../services/institution_enrollment_history_repository.dart';
+import '../institution_enrollment/institution_enrollment_history_screen.dart';
 import '../institution_teacher_assignments/institution_teacher_assignments_screen.dart';
 import '../../services/schools/curriculum_repository.dart';
 import '../curriculum/curriculum_screen.dart';
@@ -22,12 +24,14 @@ class InstitutionAcademicScreen extends StatefulWidget {
     this.gateway,
     this.curriculumGateway,
     this.teacherAssignmentsGateway,
+    this.enrollmentHistoryGateway,
   });
   final String organizationSlug;
   final int schoolId;
   final InstitutionAcademicGateway? gateway;
   final CurriculumGateway? curriculumGateway;
   final InstitutionTeacherAssignmentsGateway? teacherAssignmentsGateway;
+  final InstitutionEnrollmentHistoryGateway? enrollmentHistoryGateway;
   @override
   State<InstitutionAcademicScreen> createState() =>
       _InstitutionAcademicScreenState();
@@ -100,6 +104,19 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     );
   }
 
+  Future<void> _openEnrollmentHistory() async {
+    final records = _state.snapshot;
+    if (records == null || _state.loading || _state.busy) return;
+    final gateway = widget.enrollmentHistoryGateway ?? InstitutionEnrollmentHistoryRepository(
+      organizationSlug: records.organizationSlug,
+      organizationId: records.organizationId,
+      schoolId: records.school.id,
+    );
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => InstitutionEnrollmentHistoryScreen(gateway: gateway),
+    ));
+  }
+
   Future<void> _openTeachers() async {
     final controller = _state;
     final records = controller.snapshot;
@@ -169,6 +186,12 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
+                    if (data != null) OutlinedButton.icon(
+                      key: const ValueKey('institution-open-enrollment-history'),
+                      onPressed: _state.loading || _state.busy ? null : _openEnrollmentHistory,
+                      icon: const Icon(Icons.history),
+                      label: Text(l.schoolHistoryTitle),
+                    ),
                     if (data != null && _state.supportsCreation) ...[
                       OutlinedButton.icon(
                         key: const ValueKey('institution-open-teacher-assignments'),
