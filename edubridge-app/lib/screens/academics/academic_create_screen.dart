@@ -4,7 +4,7 @@ import '../../l10n/l10n.dart';
 import '../../model/schools/academic_catalog.dart';
 import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
-import 'academic_controller.dart';
+import 'academic_form_controller.dart';
 import 'academic_choice_field.dart';
 import 'academic_form_values.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
@@ -21,7 +21,7 @@ class AcademicCreateScreen extends StatefulWidget {
     required this.controller,
     required this.kind,
   });
-  final AcademicController controller;
+  final AcademicFormController controller;
   final AcademicKind kind;
   @override
   State<AcademicCreateScreen> createState() => _AcademicCreateScreenState();
