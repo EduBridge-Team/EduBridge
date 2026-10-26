@@ -1,6 +1,6 @@
 # Institution school academic records in Flutter
 
-Read-only integration with existing Laravel routes:
+Integration with existing Laravel routes:
 
 - `GET /institutions/my-organization`: resolve the active institution identity.
 - `GET /institutions/{organizationSlug}/schools/{school}/academic`: read years,
@@ -18,8 +18,9 @@ Nullable section capacity stays null and is not synthesized as zero.
 The school record page opens this view. It supports reload, pull-to-refresh and
 refresh on resume, localized failures and empty groups. A changed school or
 institution resets request state; failed refreshes remove stale records. Authored
-names remain unchanged. No create/update/delete operation or new permission is
-introduced. No backend, assistant or deployment files are modified.
+names remain unchanged. Year, grade and section creation uses the existing server
+permissions and endpoints described below. Backend, assistant and deployment
+files remain unchanged.
 
 Coverage includes real response fixtures, institution/school/FK mismatches,
 duplicate IDs, nullable capacity, term date boundaries, status handling and
@@ -48,3 +49,10 @@ are preserved. Writes are serialized, back navigation is blocked while saving,
 validation errors retain entries, and ambiguous failures require reload. A
 confirmed receipt followed by refresh failure remains a confirmed save and
 returns to the list with separate save/error messages; refresh never replays POST.
+
+An open form retains its original controller across page context changes. That
+controller is deactivated when the context is replaced; a post-frame editor
+refresh visibly disables its controls without attaching it to the replacement
+context. Back navigation remains available after deactivation. Coverage includes
+this case along with all three creation flows at the supported widths, locales
+and text scale, duplicate-write guards and confirmed-save/failed-refresh behavior.
