@@ -11211,5 +11211,61 @@
   "institutionWithdrawalConfirm": "تأكيد الانسحاب",
   "@institutionWithdrawalConfirm": {
     "description": "Institution enrollment withdrawal: institutionWithdrawalConfirm."
+  },
+  "institutionAttendanceTitle": "حضور المدرسة",
+  "@institutionAttendanceTitle": {
+    "description": "Institution school attendance: institutionAttendanceTitle."
+  },
+  "institutionAttendanceDetails": "تفاصيل جلسة الحضور",
+  "@institutionAttendanceDetails": {
+    "description": "Institution school attendance: institutionAttendanceDetails."
+  },
+  "institutionAttendanceChooseDate": "اختيار التاريخ",
+  "@institutionAttendanceChooseDate": {
+    "description": "Institution school attendance: institutionAttendanceChooseDate."
+  },
+  "institutionAttendanceAllDates": "كل التواريخ",
+  "@institutionAttendanceAllDates": {
+    "description": "Institution school attendance: institutionAttendanceAllDates."
+  },
+  "institutionAttendanceLimit": "تُعرض آخر 200 جلسة كحد أقصى. اختر تاريخًا لعرض جلسات أقدم.",
+  "@institutionAttendanceLimit": {
+    "description": "Institution school attendance: institutionAttendanceLimit."
+  },
+  "institutionAttendanceEmpty": "لا توجد جلسات حضور.",
+  "@institutionAttendanceEmpty": {
+    "description": "Institution school attendance: institutionAttendanceEmpty."
+  },
+  "institutionAttendanceNoRecords": "لا توجد سجلات حضور للطلاب في هذه الجلسة.",
+  "@institutionAttendanceNoRecords": {
+    "description": "Institution school attendance: institutionAttendanceNoRecords."
+  },
+  "institutionAttendancePeriod": "الحصة",
+  "@institutionAttendancePeriod": {
+    "description": "Institution school attendance: institutionAttendancePeriod."
+  },
+  "institutionAttendanceOpen": "جلسة مفتوحة",
+  "@institutionAttendanceOpen": {
+    "description": "Institution school attendance: institutionAttendanceOpen."
+  },
+  "institutionAttendanceClosed": "جلسة مغلقة",
+  "@institutionAttendanceClosed": {
+    "description": "Institution school attendance: institutionAttendanceClosed."
+  },
+  "institutionAttendancePresent": "حاضر",
+  "@institutionAttendancePresent": {
+    "description": "Institution school attendance: institutionAttendancePresent."
+  },
+  "institutionAttendanceAbsent": "غائب",
+  "@institutionAttendanceAbsent": {
+    "description": "Institution school attendance: institutionAttendanceAbsent."
+  },
+  "institutionAttendanceLate": "متأخر",
+  "@institutionAttendanceLate": {
+    "description": "Institution school attendance: institutionAttendanceLate."
+  },
+  "institutionAttendanceExcused": "بعذر",
+  "@institutionAttendanceExcused": {
+    "description": "Institution school attendance: institutionAttendanceExcused."
   }
 }
