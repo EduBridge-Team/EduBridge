@@ -50,7 +50,7 @@ void main() {
     test('rejects duplicate IDs in $collection', () {
       final data = institutionAcademicJson();
       final list = data[collection] as List;
-      list.add(Map<String, dynamic>.from(list.first));
+      list.add(list.first);
       expect(() => parse(data), throwsFormatException);
     });
   }
