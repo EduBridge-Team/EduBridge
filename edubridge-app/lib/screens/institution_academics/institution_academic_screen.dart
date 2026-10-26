@@ -5,6 +5,8 @@ import '../../model/schools/academic_catalog.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/institution_academic_repository.dart';
 import '../../services/institution_curriculum_repository.dart';
+import '../../services/institution_teacher_assignments_repository.dart';
+import '../institution_teacher_assignments/institution_teacher_assignments_screen.dart';
 import '../../services/schools/curriculum_repository.dart';
 import '../curriculum/curriculum_screen.dart';
 import '../../theme.dart';
@@ -19,11 +21,13 @@ class InstitutionAcademicScreen extends StatefulWidget {
     required this.schoolId,
     this.gateway,
     this.curriculumGateway,
+    this.teacherAssignmentsGateway,
   });
   final String organizationSlug;
   final int schoolId;
   final InstitutionAcademicGateway? gateway;
   final CurriculumGateway? curriculumGateway;
+  final InstitutionTeacherAssignmentsGateway? teacherAssignmentsGateway;
   @override
   State<InstitutionAcademicScreen> createState() =>
       _InstitutionAcademicScreenState();
@@ -96,6 +100,21 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     );
   }
 
+  Future<void> _openTeachers() async {
+    final controller = _state;
+    final records = controller.snapshot;
+    if (!controller.canWrite || records == null) return;
+    final gateway = widget.teacherAssignmentsGateway ?? InstitutionTeacherAssignmentsRepository(
+      organizationSlug: records.organizationSlug,
+      organizationId: records.organizationId,
+      schoolId: records.school.id,
+    );
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => InstitutionTeacherAssignmentsScreen(gateway: gateway),
+    ));
+    if (mounted && identical(controller, _state)) await controller.reload();
+  }
+
   Future<void> _openCurriculum() async {
     final controller = _state;
     final records = controller.snapshot;
@@ -151,6 +170,12 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                   padding: const EdgeInsets.all(16),
                   children: [
                     if (data != null && _state.supportsCreation) ...[
+                      OutlinedButton.icon(
+                        key: const ValueKey('institution-open-teacher-assignments'),
+                        onPressed: _state.canWrite ? _openTeachers : null,
+                        icon: const Icon(Icons.groups_outlined),
+                        label: Text(l.teacherAssignmentsTitle),
+                      ),
                       OutlinedButton.icon(
                         key: const ValueKey('institution-open-curriculum'),
                         onPressed: _state.canWrite ? _openCurriculum : null,
