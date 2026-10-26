@@ -25,6 +25,6 @@ class InstitutionHistoryFixture {
           headers: {'content-type': 'application/json; charset=utf-8'});
       }
       return academic.get(path);
-    }, post: (_, _) async => throw StateError('Read only')),
+    }, post: (path, body) async => throw StateError('Read only')),
   );
 }
