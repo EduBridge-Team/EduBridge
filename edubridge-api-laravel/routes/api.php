@@ -47,6 +47,8 @@ Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
     Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
         ->middleware(['role:school', 'throttle:120,1']);
+    Route::get('/school/academic/curriculum', [\App\Http\Controllers\SchoolCurriculumCatalogController::class, 'index'])
+        ->middleware(['role:school', 'throttle:120,1']);
     Route::get('/school/enrollment-options', [\App\Http\Controllers\SchoolEnrollmentOptionsController::class, 'index'])
         ->middleware(['role:school', 'throttle:120,1']);
     Route::get('/parent/enrollment-schools', [\App\Http\Controllers\GuardianSchoolRequestController::class, 'schools'])
