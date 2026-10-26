@@ -4,6 +4,7 @@ import '../../models/interactive_lesson.dart';
 import '../../services/interactive_lesson_starter_repository.dart';
 import 'interactive_lesson_player.dart';
 import 'interactive_lesson_adaptation_screen.dart';
+import 'interactive_lesson_saved_drafts_screen.dart';
 
 /// Standalone preview of the starter templates.
 /// No backend publishing, assignment or progress writes occur here.
@@ -17,7 +18,21 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(title: const Text('الدروس التفاعلية الجاهزة')),
+        appBar: AppBar(
+          title: const Text('الدروس التفاعلية الجاهزة'),
+          actions: [
+            IconButton(
+              key: const ValueKey('open-saved-lesson-drafts'),
+              tooltip: 'مسوداتي المحفوظة',
+              icon: const Icon(Icons.folder_outlined),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const InteractiveLessonSavedDraftsScreen(),
+                ),
+              ),
+            ),
+          ],
+        ),
         body: FutureBuilder<InteractiveLessonCatalog>(
           future: (repository ?? const InteractiveLessonStarterRepository()).load(),
           builder: (context, snapshot) {
