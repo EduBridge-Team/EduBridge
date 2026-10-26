@@ -77,4 +77,37 @@ class SchoolLoginScopeTest extends TestCase
         DB::table('organizations')->where('id', 4)->update(['is_active' => false]);
         $this->assertSame(403, $this->attempt()->getStatusCode());
     }
+    public function test_two_active_school_bindings_block_login(): void
+    {
+        DB::table('schools')->insert([
+            'id' => 11, 'organization_id' => null, 'is_active' => true,
+        ]);
+        DB::table('school_accounts')->insert([
+            ['school_id' => 10, 'user_id' => 7],
+            ['school_id' => 11, 'user_id' => 7],
+        ]);
+        $response = $this->attempt();
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('SCHOOL_ACCESS_UNAVAILABLE', $response->getData(true)['code']);
+    }
+
+    public function test_duplicate_binding_to_one_school_blocks_login(): void
+    {
+        DB::table('school_accounts')->insert([
+            ['school_id' => 10, 'user_id' => 7],
+            ['school_id' => 10, 'user_id' => 7],
+        ]);
+        $response = $this->attempt();
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('SCHOOL_ACCESS_UNAVAILABLE', $response->getData(true)['code']);
+    }
+
+    public function test_foreign_user_school_binding_does_not_authorize_login(): void
+    {
+        DB::table('school_accounts')->insert(['school_id' => 10, 'user_id' => 999]);
+        $response = $this->attempt();
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('SCHOOL_ACCESS_UNAVAILABLE', $response->getData(true)['code']);
+    }
+
 }
