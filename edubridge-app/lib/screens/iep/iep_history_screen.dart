@@ -80,7 +80,11 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
       return Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
-          title: Text(l10n.iepTitle),
+          title: Text(
+            l10n.iepTitle,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+          ),
           actions: [
             IconButton(
               tooltip: l10n.enrollmentReload,

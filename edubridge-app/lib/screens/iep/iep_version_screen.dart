@@ -26,7 +26,11 @@ class IepVersionScreen extends StatelessWidget {
     return Scaffold(
       appBar: BrandAppBar(
         leading: const BackButton(),
-        title: Text(l10n.iepVersionDetails),
+        title: Text(
+          l10n.iepVersionDetails,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+        ),
       ),
       body: SafeArea(
         child: Center(
