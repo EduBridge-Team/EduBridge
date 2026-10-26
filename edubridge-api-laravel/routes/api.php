@@ -61,6 +61,12 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
         ->middleware(['role:school', 'throttle:60,1']);
     Route::post('/school/enrollment-requests/{request}/decision', [\App\Http\Controllers\SchoolEnrollmentDecisionController::class, 'decide'])
         ->whereNumber('request')->middleware(['role:school', 'throttle:20,1']);
+    Route::get('/interactive-lesson-drafts', [\App\Http\Controllers\InteractiveLessonDraftController::class, 'index'])
+        ->middleware(['role:teacher,specialist', 'throttle:60,1']);
+    Route::post('/interactive-lesson-drafts', [\App\Http\Controllers\InteractiveLessonDraftController::class, 'store'])
+        ->middleware(['role:teacher,specialist', 'throttle:20,1']);
+    Route::put('/interactive-lesson-drafts/{draft}', [\App\Http\Controllers\InteractiveLessonDraftController::class, 'update'])
+        ->whereNumber('draft')->middleware(['role:teacher,specialist', 'throttle:20,1']);
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';
