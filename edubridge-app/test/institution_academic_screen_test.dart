@@ -9,6 +9,15 @@ import 'institution_academic_fixture.dart';
 
 Future<void> openAcademicGroup(WidgetTester tester, String group) async {
   final tile = find.byKey(ValueKey('institution-academic-$group'));
+  if (tile.evaluate().isEmpty) {
+    final scroll = find.descendant(
+      of: find.byType(ListView).first,
+      matching: find.byType(Scrollable),
+    ).first;
+    tester.state<ScrollableState>(scroll).position.jumpTo(0);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(tile, 250, scrollable: scroll);
+  }
   await Scrollable.ensureVisible(tester.element(tile), alignment: 0.1);
   await tester.pumpAndSettle();
   final title = find
