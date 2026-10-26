@@ -18,7 +18,55 @@ class SavedInteractiveDraft {
   }
 }
 
+class InteractiveDraftSummary {
+  const InteractiveDraftSummary({
+    required this.id, required this.version, required this.templateId,
+    required this.title, required this.objective,
+  });
+  final int id;
+  final int version;
+  final String templateId;
+  final String title;
+  final String objective;
+
+  factory InteractiveDraftSummary.fromJson(Object? raw) {
+    if (raw is! Map ||
+        raw['id'] is! int || (raw['id'] as int) <= 0 ||
+        raw['version'] is! int || (raw['version'] as int) <= 0 ||
+        raw['template_id'] is! String ||
+        (raw['template_id'] as String).trim().isEmpty ||
+        raw['title'] is! String || (raw['title'] as String).trim().isEmpty ||
+        raw['objective'] is! String || (raw['objective'] as String).trim().isEmpty) {
+      throw const FormatException('Invalid draft summary');
+    }
+    return InteractiveDraftSummary(
+      id: raw['id'] as int,
+      version: raw['version'] as int,
+      templateId: raw['template_id'] as String,
+      title: raw['title'] as String,
+      objective: raw['objective'] as String,
+    );
+  }
+}
+
 class InteractiveDraftRepository {
+  Future<List<InteractiveDraftSummary>> list() async {
+    final response = await ApiService.authGet('/interactive-lesson-drafts');
+    if (response.statusCode != 200) {
+      throw StateError('Unable to load lesson drafts (HTTP ${response.statusCode})');
+    }
+    final data = ApiService.decodeMap(response.body);
+    final rows = data['drafts'];
+    if (rows is! List) {
+      throw const FormatException('Invalid draft list');
+    }
+    final summaries = rows.map(InteractiveDraftSummary.fromJson).toList();
+    if (summaries.map((row) => row.id).toSet().length != summaries.length) {
+      throw const FormatException('Duplicate draft ID');
+    }
+    return List.unmodifiable(summaries);
+  }
+
   const InteractiveDraftRepository();
 
   Future<SavedInteractiveDraft> save({
