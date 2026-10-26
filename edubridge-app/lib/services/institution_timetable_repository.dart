@@ -15,13 +15,42 @@ abstract interface class InstitutionTimetableCreator implements InstitutionTimet
   Future<TimetableCreationData> loadCreationData();
   Future<int> createEntry(TimetableEntryDraft draft);
 }
-class InstitutionTimetableRepository implements InstitutionTimetableCreator {
+abstract interface class InstitutionTimetableRemover implements InstitutionTimetableGateway {
+  Future<void> removeEntry(InstitutionTimetableEntry expected);
+}
+class InstitutionTimetableRepository implements InstitutionTimetableCreator, InstitutionTimetableRemover {
   InstitutionTimetableRepository({required this.organizationSlug, required this.organizationId,
     required this.schoolId, EnrollmentApiClient? client}) : _client = client ?? EnrollmentApiClient();
   final String organizationSlug;
   final int organizationId, schoolId;
   final EnrollmentApiClient _client;
   String get _root => '/institutions/${Uri.encodeComponent(organizationSlug)}/schools/$schoolId/timetable';
+  @override
+  Future<void> removeEntry(InstitutionTimetableEntry expected) async {
+    if (expected.schoolId != schoolId) {
+      throw const EnrollmentApiException(EnrollmentFailure.validation);
+    }
+    final current = await load();
+    final matches = current.entries.where((e) => e.id == expected.id);
+    if (matches.length != 1 || matches.single.identity != expected.identity) {
+      throw const EnrollmentApiException(EnrollmentFailure.conflict);
+    }
+    final receipt = await _client.delete('$_root/${expected.id}');
+    if (receipt['message'] is! String || (receipt['message'] as String).trim().isEmpty) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+    late final InstitutionTimetable after;
+    try {
+      after = await load();
+    } on EnrollmentApiException catch (e) {
+      if (e.failure == EnrollmentFailure.session || e.failure == EnrollmentFailure.forbidden ||
+          e.failure == EnrollmentFailure.invalidResponse || e.failure == EnrollmentFailure.unavailable) rethrow;
+      throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+    }
+    if (after.entries.any((e) => e.id == expected.id)) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+  }
   @override
   Future<TimetableCreationData> loadCreationData() async {
     final timetable = await load();

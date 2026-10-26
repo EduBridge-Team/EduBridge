@@ -9,10 +9,10 @@ Map<int, String> timetableDays(AppLocalizations l) => {0: l.all,
   5: l.timetableThursday, 6: l.timetableFriday, 7: l.timetableSaturday};
 
 class InstitutionTimetableCard extends StatelessWidget {
-  const InstitutionTimetableCard({super.key, required this.timetable, required this.entry, this.onChoose});
+  const InstitutionTimetableCard({super.key, required this.timetable, required this.entry, this.onChoose, this.onRemove});
   final InstitutionTimetable timetable;
   final InstitutionTimetableEntry entry;
-  final VoidCallback? onChoose;
+  final VoidCallback? onChoose, onRemove;
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -27,6 +27,8 @@ class InstitutionTimetableCard extends StatelessWidget {
         if (entry.startsAt != null) Text('${l.timetableStarts}: ${entry.startsAt}'),
         if (entry.endsAt != null) Text('${l.timetableEnds}: ${entry.endsAt}'),
         if (entry.room != null && entry.room!.isNotEmpty) Text('${l.timetableRoom}: ${entry.room}'),
+        if (onRemove != null) OutlinedButton(key: ValueKey('timetable-delete-${entry.id}'),
+          onPressed: onRemove, child: Text(l.timetableDelete)),
         if (onChoose != null) OutlinedButton(key: ValueKey('timetable-substitute-${entry.id}'),
           onPressed: onChoose, child: Text(l.timetableSubstitute)),
       ],

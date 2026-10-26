@@ -10,6 +10,8 @@ class InstitutionTimetableFixture {
   final academic = InstitutionAcademicFixture();
   int status = 200, postStatus = 201;
   int? assignedTeacher;
+  final deletions = <String>[];
+  int deleteStatus = 200;
   bool applyWrite = true;
   Map<String, dynamic>? response, createResponse;
   final creations = <Map<String, dynamic>>[];
@@ -47,6 +49,12 @@ class InstitutionTimetableFixture {
         return json({'available_teachers': candidates.where((r) => r['id'] != assignedTeacher).toList()}, status);
       }
       return academic.get(path);
+    }, delete: (path) async {
+      deletions.add(path);
+      await beforeWrite?.call();
+      if (applyWrite && deleteStatus == 200) rows.removeWhere((r) => path.endsWith('/${r['id']}'));
+      afterWrite?.call();
+      return json(response ?? {'message': 'Deleted'}, deleteStatus);
     }, post: (path, body) async {
       if (path == '/institutions/demo-institution/schools/5/timetable') {
         paths.add(path); creations.add(body); await beforeWrite?.call();

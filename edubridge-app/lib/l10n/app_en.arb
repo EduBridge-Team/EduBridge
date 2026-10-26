@@ -11411,5 +11411,21 @@
   "timetableCreatePrerequisite": "Create an academic year, a section and an active subject first.",
   "@timetableCreatePrerequisite": {
     "description": "Institution timetable creation: timetableCreatePrerequisite."
+  },
+  "timetableDelete": "Delete class",
+  "@timetableDelete": {
+    "description": "Timetable removal action and confirmation"
+  },
+  "timetableDeleteConfirm": "Delete this recurring timetable class? Its substitute assignments will also be removed. This cannot be undone.",
+  "@timetableDeleteConfirm": {
+    "description": "Timetable removal action and confirmation"
+  },
+  "timetableDeleteCancel": "Cancel",
+  "@timetableDeleteCancel": {
+    "description": "Timetable removal action and confirmation"
+  },
+  "timetableDeleted": "Class deleted",
+  "@timetableDeleted": {
+    "description": "Timetable removal action and confirmation"
   }
 }
