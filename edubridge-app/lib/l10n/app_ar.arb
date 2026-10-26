@@ -11267,5 +11267,45 @@
   "institutionAttendanceExcused": "بعذر",
   "@institutionAttendanceExcused": {
     "description": "Institution school attendance: institutionAttendanceExcused."
+  },
+  "institutionAttendanceCreate": "إنشاء جلسة حضور",
+  "@institutionAttendanceCreate": {
+    "description": "Institution attendance authoring: institutionAttendanceCreate."
+  },
+  "institutionAttendanceInitializeNotice": "عند إنشاء الجلسة، يُسجّل الطلاب المقيدون حاليًا كحاضرين تلقائيًا. راجع حضورهم قبل حفظ الجلسة أو إغلاقها.",
+  "@institutionAttendanceInitializeNotice": {
+    "description": "Institution attendance authoring: institutionAttendanceInitializeNotice."
+  },
+  "institutionAttendanceNoSubject": "بدون مادة (حضور يومي)",
+  "@institutionAttendanceNoSubject": {
+    "description": "Institution attendance authoring: institutionAttendanceNoSubject."
+  },
+  "institutionAttendancePeriodOptional": "الحصة (اختياري؛ اتركها فارغة للحضور اليومي)",
+  "@institutionAttendancePeriodOptional": {
+    "description": "Institution attendance authoring: institutionAttendancePeriodOptional."
+  },
+  "institutionAttendancePeriodInvalid": "أدخل رقم حصة من 1 إلى 20.",
+  "@institutionAttendancePeriodInvalid": {
+    "description": "Institution attendance authoring: institutionAttendancePeriodInvalid."
+  },
+  "institutionAttendanceNote": "ملاحظة",
+  "@institutionAttendanceNote": {
+    "description": "Institution attendance authoring: institutionAttendanceNote."
+  },
+  "institutionAttendanceNoteInvalid": "الملاحظة أطول من الحد المسموح.",
+  "@institutionAttendanceNoteInvalid": {
+    "description": "Institution attendance authoring: institutionAttendanceNoteInvalid."
+  },
+  "institutionAttendanceMark": "تسجيل حضور الطلاب",
+  "@institutionAttendanceMark": {
+    "description": "Institution attendance authoring: institutionAttendanceMark."
+  },
+  "institutionAttendanceClose": "حفظ وإغلاق الجلسة",
+  "@institutionAttendanceClose": {
+    "description": "Institution attendance authoring: institutionAttendanceClose."
+  },
+  "institutionAttendanceCloseNotice": "إغلاق الجلسة يمنع تعديلها لاحقًا. أكّد فقط بعد مراجعة جميع الطلاب.",
+  "@institutionAttendanceCloseNotice": {
+    "description": "Institution attendance authoring: institutionAttendanceCloseNotice."
   }
 }

@@ -29,12 +29,13 @@ typedef EnrollmentPost = Future<http.Response> Function(
 );
 
 class EnrollmentApiClient {
-  EnrollmentApiClient({EnrollmentGet? get, EnrollmentPost? post, EnrollmentPost? patch})
+  EnrollmentApiClient({EnrollmentGet? get, EnrollmentPost? post, EnrollmentPost? patch, EnrollmentPost? put})
     : _get = get ?? ApiService.authGet,
       _post = post ?? ApiService.authPost,
-      _patch = patch ?? ApiService.authPatch;
+      _patch = patch ?? ApiService.authPatch,
+      _put = put ?? ApiService.authPut;
   final EnrollmentGet _get;
-  final EnrollmentPost _post, _patch;
+  final EnrollmentPost _post, _patch, _put;
   Future<Map<String, dynamic>> get(String path) => _send(() => _get(path), 200);
   Future<Map<String, dynamic>> post(
     String path,
@@ -45,6 +46,9 @@ class EnrollmentApiClient {
     String path,
     Map<String, dynamic> body,
   ) => _send(() => _patch(path, body), 200, mutation: true);
+
+  Future<Map<String, dynamic>> put(String path, Map<String, dynamic> body) =>
+    _send(() => _put(path, body), 200, mutation: true);
 
   Future<Map<String, dynamic>> _send(
     Future<http.Response> Function() send,

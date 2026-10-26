@@ -11267,5 +11267,45 @@
   "institutionAttendanceExcused": "Excused",
   "@institutionAttendanceExcused": {
     "description": "Institution school attendance: institutionAttendanceExcused."
+  },
+  "institutionAttendanceCreate": "Create attendance session",
+  "@institutionAttendanceCreate": {
+    "description": "Institution attendance authoring: institutionAttendanceCreate."
+  },
+  "institutionAttendanceInitializeNotice": "Creating a session initializes currently enrolled students as present. Review their attendance before saving or closing the session.",
+  "@institutionAttendanceInitializeNotice": {
+    "description": "Institution attendance authoring: institutionAttendanceInitializeNotice."
+  },
+  "institutionAttendanceNoSubject": "No subject (daily attendance)",
+  "@institutionAttendanceNoSubject": {
+    "description": "Institution attendance authoring: institutionAttendanceNoSubject."
+  },
+  "institutionAttendancePeriodOptional": "Period (optional; blank for daily attendance)",
+  "@institutionAttendancePeriodOptional": {
+    "description": "Institution attendance authoring: institutionAttendancePeriodOptional."
+  },
+  "institutionAttendancePeriodInvalid": "Enter a period from 1 to 20.",
+  "@institutionAttendancePeriodInvalid": {
+    "description": "Institution attendance authoring: institutionAttendancePeriodInvalid."
+  },
+  "institutionAttendanceNote": "Note",
+  "@institutionAttendanceNote": {
+    "description": "Institution attendance authoring: institutionAttendanceNote."
+  },
+  "institutionAttendanceNoteInvalid": "The note exceeds the allowed length.",
+  "@institutionAttendanceNoteInvalid": {
+    "description": "Institution attendance authoring: institutionAttendanceNoteInvalid."
+  },
+  "institutionAttendanceMark": "Record student attendance",
+  "@institutionAttendanceMark": {
+    "description": "Institution attendance authoring: institutionAttendanceMark."
+  },
+  "institutionAttendanceClose": "Save and close session",
+  "@institutionAttendanceClose": {
+    "description": "Institution attendance authoring: institutionAttendanceClose."
+  },
+  "institutionAttendanceCloseNotice": "Closing this session prevents further changes. Confirm only after reviewing all students.",
+  "@institutionAttendanceCloseNotice": {
+    "description": "Institution attendance authoring: institutionAttendanceCloseNotice."
   }
 }
