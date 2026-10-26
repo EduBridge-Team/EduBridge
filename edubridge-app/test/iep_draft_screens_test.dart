@@ -204,8 +204,52 @@ void main() {
     },
   );
   testWidgets(
+    'removing a goal requires confirmation and invalidates the check',
+    (tester) async {
+      final evaluations = EvaluationHistoryHttpFixture();
+      final strings = await AppLocalizations.delegate.load(const Locale('en'));
+      await tester.pumpWidget(
+        curriculumHost(
+          IepDraftEditorScreen(
+            childId: 8,
+            evaluationGateway: evaluations.repository,
+          ),
+          'en',
+        ),
+      );
+      await tester.pumpAndSettle();
+      await fillPlan(tester);
+      await addDraftGoal(tester);
+      await tapDraft(tester, 'iep-verify-draft');
+      final remove = find.descendant(
+        of: find.byType(IepDraftGoalCard),
+        matching: find.text(strings.delete),
+      );
+      await revealDraft(tester, remove);
+      await tester.tap(remove);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(strings.cancel));
+      await tester.pumpAndSettle();
+      expect(find.byType(IepDraftGoalCard), findsOneWidget);
+      await revealDraft(tester, remove);
+      await tester.tap(remove);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('iep-discard-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.byType(IepDraftGoalCard), findsNothing);
+      expect(find.byKey(const ValueKey('iep-draft-checked')), findsNothing);
+      await tapDraft(tester, 'iep-verify-draft');
+      expect(find.text(strings.iepComposeGoalsRequired), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
     'goal form rejects nonfinite measurements and out-of-plan dates',
     (tester) async {
+      tester.view.physicalSize = const Size(320, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       final strings = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(
         curriculumHost(

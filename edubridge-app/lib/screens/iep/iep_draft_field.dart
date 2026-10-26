@@ -29,7 +29,6 @@ class IepDraftField extends StatelessWidget {
         label: Text(label),
         hintText: hint,
         border: const OutlineInputBorder(),
-        errorMaxLines: 5,
       ),
       keyboardType: numeric
           ? const TextInputType.numberWithOptions(decimal: true, signed: true)
@@ -39,6 +38,7 @@ class IepDraftField extends StatelessWidget {
       minLines: multiline ? 2 : 1,
       maxLines: multiline ? null : 1,
       validator: validator,
+      errorBuilder: (context, error) => Text(error),
       onChanged: (value) {
         values[name] = value;
         onChanged();
