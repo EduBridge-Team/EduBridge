@@ -11183,5 +11183,9 @@
   "institutionAcademicInvalid": "تعذّر التحقق من بيانات المدرسة أو ارتباط سجلاتها. أعد التحميل.",
   "@institutionAcademicInvalid": {"description": "Existing institution academic API read-only records."},
   "institutionAcademicFailed": "تعذّر تحميل البيانات الدراسية للمدرسة. أعد المحاولة.",
-  "@institutionAcademicFailed": {"description": "Existing institution academic API read-only records."}
+  "@institutionAcademicFailed": {"description": "Existing institution academic API read-only records."},
+  "institutionTransferTitle": "نقل إلى شعبة أخرى",
+  "institutionTransferDestination": "اختر الشعبة الجديدة",
+  "institutionTransferConfirm": "تأكيد النقل",
+  "institutionTransferNotice": "سيبقى القيد السابق محفوظًا في سجل القيد."
 }

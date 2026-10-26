@@ -5,7 +5,8 @@ import '../../model/institutions/institution_enrollment_history.dart';
 import '../../services/institution_enrollment_history_repository.dart';
 import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
-import '../enrollment/enrollment_state.dart';
+import 'institution_enrollment_controller.dart';
+import 'institution_transfer_dialog.dart';
 
 class InstitutionEnrollmentHistoryScreen extends StatefulWidget {
   const InstitutionEnrollmentHistoryScreen({super.key, required this.gateway});
@@ -15,9 +16,9 @@ class InstitutionEnrollmentHistoryScreen extends StatefulWidget {
 }
 class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollmentHistoryScreen>
     with WidgetsBindingObserver {
-  late EnrollmentState<InstitutionEnrollmentHistory> _state;
+  late InstitutionEnrollmentController _state;
   void _initialize() {
-    _state = EnrollmentState(widget.gateway.load)..reload();
+    _state = InstitutionEnrollmentController(widget.gateway)..reload();
   }
   @override
   void initState() {
@@ -55,7 +56,7 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
           leading: const BackButton(), title: Text(l.schoolHistoryTitle),
           actions: [IconButton(
             tooltip: l.enrollmentReload,
-            onPressed: _state.loading ? null : _state.reload,
+            onPressed: _state.loading || _state.busy ? null : _state.reload,
             icon: const Icon(Icons.refresh),
           )],
         ),
@@ -65,7 +66,8 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16), children: [
-                if (_state.loading) const LinearProgressIndicator(),
+                if (_state.loading || _state.busy) const LinearProgressIndicator(),
+                if (_state.saved) Semantics(liveRegion: true, child: Text(l.enrollmentSaved)),
                 if (_state.error != null) Semantics(liveRegion: true,
                   child: Text(enrollmentFailureMessage(l, _state.error!))),
                 if (data != null) ...[
@@ -83,6 +85,19 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
                           InstitutionEnrollmentStatus.transferred => l.schoolHistoryTransferred,
                         }),
                         if (record.start != null) Text('${l.schoolHistoryStart}: ${dates.formatMediumDate(record.start!)}'),
+                        if (_state.supportsTransfer && data.transferTargets(record.id).isNotEmpty)
+                          OutlinedButton(
+                            key: ValueKey('institution-transfer-${record.id}'),
+                            onPressed: !_state.canWrite ? null : () async {
+                              final controller = _state;
+                              final target = await showDialog<int>(context: context,
+                                builder: (context) => InstitutionTransferDialog(data: data, record: record));
+                              if (target != null && mounted && identical(controller, _state) && controller.canWrite) {
+                                await controller.transfer(record.id, target);
+                              }
+                            },
+                            child: Text(l.institutionTransferTitle),
+                          ),
                         if (record.end != null) Text('${l.schoolHistoryEnd}: ${dates.formatMediumDate(record.end!)}'),
                       ]),
                     ),

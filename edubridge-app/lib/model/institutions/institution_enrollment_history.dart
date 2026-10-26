@@ -55,6 +55,17 @@ class InstitutionEnrollmentHistory {
     return InstitutionEnrollmentHistory._(academic, records);
   }
 
+  List<InstitutionAcademicSection> transferTargets(int enrollmentId) {
+    final matches = records.where((r) => r.id == enrollmentId);
+    if (matches.length != 1 || matches.single.status != InstitutionEnrollmentStatus.active) {
+      return const [];
+    }
+    final record = matches.single;
+    final source = academic.sections.firstWhere((s) => s.id == record.sectionId);
+    final used = records.where((r) => r.childId == record.childId).map((r) => r.sectionId).toSet();
+    return academic.sections.where((s) => s.yearId == source.yearId && !used.contains(s.id)).toList();
+  }
+
   String sectionLabel(int id) {
     final section = academic.sections.firstWhere((v) => v.id == id);
     final year = academic.years.firstWhere((v) => v.id == section.yearId);
