@@ -6,9 +6,10 @@ import 'interactive_lesson_player.dart';
 
 /// Local, unsaved adaptation preview; cannot publish or assign a learner.
 class InteractiveLessonAdaptationScreen extends StatefulWidget {
-  const InteractiveLessonAdaptationScreen({super.key, required this.template});
+  const InteractiveLessonAdaptationScreen({super.key, required this.template, this.savedDraft});
 
   final InteractiveLesson template;
+  final InteractiveDraftSummary? savedDraft;
 
   @override
   State<InteractiveLessonAdaptationScreen> createState() =>
@@ -27,8 +28,11 @@ class _InteractiveLessonAdaptationScreenState
   @override
   void initState() {
     super.initState();
-    _title = TextEditingController(text: widget.template.title);
-    _objective = TextEditingController(text: widget.template.objective);
+    _draft = widget.savedDraft == null ? null : SavedInteractiveDraft(
+      id: widget.savedDraft!.id, version: widget.savedDraft!.version,
+    );
+    _title = TextEditingController(text: widget.savedDraft?.title ?? widget.template.title);
+    _objective = TextEditingController(text: widget.savedDraft?.objective ?? widget.template.objective);
   }
 
   @override
