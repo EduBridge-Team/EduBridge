@@ -102,3 +102,20 @@ the selected teacher. There is no existing substitution-history GET route, so th
 confirmation is shown for this operation without inventing a persistent history.
 Ambiguous/conflicting/denied writes clear stale choices and are not auto-replayed.
 All changes are Flutter-only; no backend routes, permissions or behavior changed.
+
+### Creating timetable classes
+
+The timetable screen now creates classes through the existing institution POST
+route. The form selects a school academic year, its section, an active subject,
+an optional active institution teacher, API weekday and period 1–20. Optional
+times use HH:mm in 24-hour form; an end time requires an earlier start time.
+Room names are optional and limited to the server's 80-character limit.
+
+Immediately before POST, scope and current choices are reloaded, and conflicts
+for the section, teacher or non-empty room in the same year/day/period are
+rejected. The POST database row lacks the teacher-name join, so its identity and
+all authored fields are validated using the verified teacher choices, then the
+new row is confirmed by the timetable GET. GET times normalized to seconds are
+compared with the submitted minute values. Only after confirmation does the form
+return to the list, whose filters follow the created class. Ambiguous writes and
+denied/conflicting/invalid responses never auto-replay POST. No backend changes.

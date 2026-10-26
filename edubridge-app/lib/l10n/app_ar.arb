@@ -11379,5 +11379,37 @@
   "timetableSaturday": "السبت",
   "@timetableSaturday": {
     "description": "Institution timetable and substitutes: timetableSaturday."
+  },
+  "timetableCreate": "إنشاء حصة في الجدول",
+  "@timetableCreate": {
+    "description": "Institution timetable creation: timetableCreate."
+  },
+  "timetableCreateConflict": "يوجد تعارض للشعبة أو المعلم أو الغرفة في نفس اليوم ورقم الحصة.",
+  "@timetableCreateConflict": {
+    "description": "Institution timetable creation: timetableCreateConflict."
+  },
+  "timetableCreateTimeHint": "الوقت اختياري بصيغة 24 ساعة مثل 08:00، ووقت النهاية يتطلب وقت بداية.",
+  "@timetableCreateTimeHint": {
+    "description": "Institution timetable creation: timetableCreateTimeHint."
+  },
+  "timetableCreateTimeInvalid": "أدخل وقتًا صحيحًا بصيغة 24 ساعة، مثل 08:00.",
+  "@timetableCreateTimeInvalid": {
+    "description": "Institution timetable creation: timetableCreateTimeInvalid."
+  },
+  "timetableCreateTimeOrder": "يجب أن يكون وقت النهاية بعد وقت البداية.",
+  "@timetableCreateTimeOrder": {
+    "description": "Institution timetable creation: timetableCreateTimeOrder."
+  },
+  "timetableCreatePeriodInvalid": "أدخل رقم حصة من 1 إلى 20.",
+  "@timetableCreatePeriodInvalid": {
+    "description": "Institution timetable creation: timetableCreatePeriodInvalid."
+  },
+  "timetableCreateRoomInvalid": "اسم الغرفة يجب ألا يتجاوز 80 حرفًا.",
+  "@timetableCreateRoomInvalid": {
+    "description": "Institution timetable creation: timetableCreateRoomInvalid."
+  },
+  "timetableCreatePrerequisite": "أنشئ سنة دراسية وشعبة ومادة نشطة أولًا.",
+  "@timetableCreatePrerequisite": {
+    "description": "Institution timetable creation: timetableCreatePrerequisite."
   }
 }

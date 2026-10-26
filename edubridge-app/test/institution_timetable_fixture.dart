@@ -11,7 +11,13 @@ class InstitutionTimetableFixture {
   int status = 200, postStatus = 201;
   int? assignedTeacher;
   bool applyWrite = true;
-  Map<String, dynamic>? response;
+  Map<String, dynamic>? response, createResponse;
+  final creations = <Map<String, dynamic>>[];
+  void addSection() {
+    final sections = academic.data['sections'] as List;
+    academic.data['sections'] = [...sections, <String, dynamic>{...Map<String, dynamic>.from(sections.first as Map),
+      'id': 31, 'name': 'شعبة أخرى'}];
+  }
   void Function()? afterWrite;
   Future<void> Function()? beforeWrite;
   final paths = <String>[];
@@ -42,6 +48,15 @@ class InstitutionTimetableFixture {
       }
       return academic.get(path);
     }, post: (path, body) async {
+      if (path == '/institutions/demo-institution/schools/5/timetable') {
+        paths.add(path); creations.add(body); await beforeWrite?.call();
+        final row = <String, dynamic>{...body, 'id': 81, 'school_id': 5,
+          'teacher_name': body['teacher_id'] == null ? null : members.singleWhere((t) => t['id'] == body['teacher_id'])['name']};
+        if (applyWrite && postStatus == 201) rows.add(row);
+        afterWrite?.call();
+        final databaseRow = Map<String, dynamic>.from(row)..remove('teacher_name');
+        return json(createResponse ?? {'timetable_entry': databaseRow}, postStatus);
+      }
       paths.add(path); writes.add(body); await beforeWrite?.call();
       if (applyWrite && postStatus == 201) assignedTeacher = body['substitute_teacher_id'] as int;
       afterWrite?.call();
