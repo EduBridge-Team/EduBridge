@@ -21,6 +21,8 @@ class _InteractiveLessonAdaptationScreenState
   late final TextEditingController _objective;
   bool _saving = false;
   bool _saved = false;
+  SavedInteractiveDraft? _draft;
+  bool _uncertain = false;
 
   @override
   void initState() {
@@ -37,7 +39,7 @@ class _InteractiveLessonAdaptationScreenState
   }
 
   Future<void> _save() async {
-    if (_saving || _saved) return;
+    if (_saving || _saved || _uncertain) return;
     final title = _title.text.trim();
     final objective = _objective.text.trim();
     if (title.isEmpty || objective.isEmpty) {
@@ -48,20 +50,25 @@ class _InteractiveLessonAdaptationScreenState
     }
     setState(() => _saving = true);
     try {
-      await const InteractiveDraftRepository().save(
+      final receipt = await const InteractiveDraftRepository().save(
         templateId: widget.template.id,
         title: title,
         objective: objective,
+        existing: _draft,
       );
       if (!mounted) return;
-      setState(() => _saved = true);
+      setState(() {
+        _draft = receipt;
+        _saved = true;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم حفظ المسودة في حسابك.')),
       );
     } catch (_) {
       if (!mounted) return;
+      setState(() => _uncertain = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر تأكيد الحفظ. تحقق من مسوداتك قبل إعادة المحاولة.')),
+        const SnackBar(content: Text('حالة الحفظ غير مؤكدة. راجع مسوداتك وأعد فتح الشاشة قبل محاولة جديدة.')),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -118,9 +125,9 @@ class _InteractiveLessonAdaptationScreenState
               ),
               FilledButton.icon(
                 key: const ValueKey('save-adapted-lesson'),
-                onPressed: _saving || _saved ? null : _save,
+                onPressed: _saving || _saved || _uncertain ? null : _save,
                 icon: const Icon(Icons.save_outlined),
-                label: Text(_saving ? 'جارٍ الحفظ' : _saved ? 'تم الحفظ' : 'حفظ مسودة خاصة'),
+                label: Text(_saving ? 'جارٍ الحفظ' : _saved ? 'تم الحفظ' : _uncertain ? 'تحقق من حالة المسودة' : _draft == null ? 'حفظ مسودة خاصة' : 'حفظ التعديلات'),
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
