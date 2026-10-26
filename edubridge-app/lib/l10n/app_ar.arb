@@ -11173,5 +11173,15 @@
   "iepComposePreviewNotice": "هذه معاينة لمسودة مؤقتة وغير محفوظة على السيرفر. لم يتم إرسالها للمراجعة. الرجوع يعيدك إلى المحرر مع الاحتفاظ بالمدخلات.",
   "@iepComposePreviewNotice": {"description": "Read-only temporary draft review."},
   "iepComposeBackToEdit": "الرجوع للتعديل",
-  "@iepComposeBackToEdit": {"description": "Read-only temporary draft review."}
+  "@iepComposeBackToEdit": {"description": "Read-only temporary draft review."},
+  "institutionAcademicTitle": "البيانات الدراسية للمدرسة",
+  "@institutionAcademicTitle": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicTeacher": "مربي الشعبة",
+  "@institutionAcademicTeacher": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicForbidden": "لا تملك صلاحية عرض البيانات الدراسية لهذه المدرسة.",
+  "@institutionAcademicForbidden": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicInvalid": "تعذّر التحقق من بيانات المدرسة أو ارتباط سجلاتها. أعد التحميل.",
+  "@institutionAcademicInvalid": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicFailed": "تعذّر تحميل البيانات الدراسية للمدرسة. أعد المحاولة.",
+  "@institutionAcademicFailed": {"description": "Existing institution academic API read-only records."}
 }

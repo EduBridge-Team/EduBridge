@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../services/institution_school_repository.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
+import '../services/institution_academic_repository.dart';
+import 'institution_academics/institution_academic_screen.dart';
 
 /// Shows all school fields returned for the authorized institution.
 class InstitutionSchoolRecordScreen extends StatefulWidget {
@@ -10,10 +13,12 @@ class InstitutionSchoolRecordScreen extends StatefulWidget {
     required this.title,
     required this.organizationSlug,
     required this.schoolId,
+    this.academicGateway,
   });
   final String title;
   final String organizationSlug;
   final int schoolId;
+  final InstitutionAcademicGateway? academicGateway;
 
   @override
   State<InstitutionSchoolRecordScreen> createState() =>
@@ -37,7 +42,7 @@ class _InstitutionSchoolRecordScreenState
   Widget build(BuildContext context) => Scaffold(
     appBar: BrandAppBar(
       leading: const BackButton(),
-      title: Text(widget.title),
+      title: Text(widget.title, softWrap: true, overflow: TextOverflow.visible),
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
@@ -59,6 +64,20 @@ class _InstitutionSchoolRecordScreenState
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            OutlinedButton.icon(
+              key: const ValueKey('institution-open-academic'),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => InstitutionAcademicScreen(
+                    organizationSlug: widget.organizationSlug,
+                    schoolId: widget.schoolId,
+                    gateway: widget.academicGateway,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.school_outlined),
+              label: Text(context.l10n.institutionAcademicTitle),
+            ),
             for (final field in <String, String>{
               'name': 'اسم المدرسة',
               'slug': 'معرف المدرسة',

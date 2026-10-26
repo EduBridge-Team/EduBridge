@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/institution_school_record_screen.dart';
+import 'package:edubridge_app/screens/institution_academics/institution_academic_screen.dart';
+
+import 'institution_academic_fixture.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +41,8 @@ void main() {
                         .copyWith(textScaler: const TextScaler.linear(2)),
                     child: child!,
                   ),
-                  home: const InstitutionSchoolRecordScreen(
+                  home: InstitutionSchoolRecordScreen(
+                    academicGateway: InstitutionAcademicFixture().repository,
                     title: 'School',
                     organizationSlug: 'demo-institution',
                     schoolId: 5,
@@ -56,6 +61,17 @@ void main() {
               find.text('School name'),
               language == 'en' ? findsOneWidget : findsNothing,
             );
+            final academic = find.byKey(
+              const ValueKey('institution-open-academic'),
+            );
+            await tester.ensureVisible(academic);
+            await tester.pumpAndSettle();
+            await tester.tap(academic);
+            await tester.pumpAndSettle();
+            expect(find.byType(InstitutionAcademicScreen), findsOneWidget);
+            await tester.tap(find.byType(BackButton));
+            await tester.pumpAndSettle();
+            expect(find.byType(InstitutionSchoolRecordScreen), findsOneWidget);
             expect(tester.takeException(), isNull);
             await tester.pumpWidget(const SizedBox.shrink());
           },

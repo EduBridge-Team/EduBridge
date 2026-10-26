@@ -11173,5 +11173,15 @@
   "iepComposePreviewNotice": "This is a temporary draft preview, not saved on the server or submitted for review. Returning to the editor keeps your entries.",
   "@iepComposePreviewNotice": {"description": "Read-only temporary draft review."},
   "iepComposeBackToEdit": "Return to editing",
-  "@iepComposeBackToEdit": {"description": "Read-only temporary draft review."}
+  "@iepComposeBackToEdit": {"description": "Read-only temporary draft review."},
+  "institutionAcademicTitle": "School academic records",
+  "@institutionAcademicTitle": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicTeacher": "Homeroom teacher",
+  "@institutionAcademicTeacher": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicForbidden": "You do not have access to this school’s academic records.",
+  "@institutionAcademicForbidden": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicInvalid": "The school or its record relationships could not be verified. Reload to try again.",
+  "@institutionAcademicInvalid": {"description": "Existing institution academic API read-only records."},
+  "institutionAcademicFailed": "Could not load school academic records. Try again.",
+  "@institutionAcademicFailed": {"description": "Existing institution academic API read-only records."}
 }
