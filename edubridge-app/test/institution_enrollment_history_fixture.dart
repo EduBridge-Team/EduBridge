@@ -15,6 +15,12 @@ class InstitutionHistoryFixture {
       'academic_year_id': 10, 'status': 'withdrawn', 'enrolled_on': '2026-09-01', 'left_on': '2026-09-30'},
   ];
   int status = 200;
+  int patchStatus = 200;
+  Map<String, dynamic> patchResponse = {'updated': true};
+  bool applyWithdrawal = true;
+  Future<void> Function()? beforeWithdrawal;
+  void Function()? afterWithdrawal;
+  final patches = <Map<String, dynamic>>[];
   int postStatus = 201;
   Map<String, dynamic> postResponse = {'transferred': true};
   bool applyTransfer = true;
@@ -33,6 +39,17 @@ class InstitutionHistoryFixture {
           headers: {'content-type': 'application/json; charset=utf-8'});
       }
       return academic.get(path);
+    }, patch: (path, body) async {
+      paths.add(path);
+      patches.add(body);
+      await beforeWithdrawal?.call();
+      if (applyWithdrawal && patchStatus == 200 && patchResponse['updated'] == true) {
+        final row = rows.firstWhere((r) => r['id'] == 2);
+        row['status'] = 'withdrawn';
+        row['left_on'] = '2026-10-26';
+      }
+      afterWithdrawal?.call();
+      return http.Response(jsonEncode(patchResponse), patchStatus);
     }, post: (path, body) async {
       paths.add(path);
       writes.add(body);

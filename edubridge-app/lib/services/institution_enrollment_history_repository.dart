@@ -10,7 +10,11 @@ abstract interface class InstitutionEnrollmentTransferGateway implements Institu
   Future<void> transfer(int enrollmentId, int sectionId);
 }
 
-class InstitutionEnrollmentHistoryRepository implements InstitutionEnrollmentTransferGateway {
+abstract interface class InstitutionEnrollmentWithdrawalGateway implements InstitutionEnrollmentHistoryGateway {
+  Future<void> withdraw(int enrollmentId);
+}
+
+class InstitutionEnrollmentHistoryRepository implements InstitutionEnrollmentTransferGateway, InstitutionEnrollmentWithdrawalGateway {
   InstitutionEnrollmentHistoryRepository({
     required this.organizationSlug, required this.organizationId,
     required this.schoolId, EnrollmentApiClient? client,
@@ -18,6 +22,39 @@ class InstitutionEnrollmentHistoryRepository implements InstitutionEnrollmentTra
   final String organizationSlug;
   final int organizationId, schoolId;
   final EnrollmentApiClient _client;
+  @override
+  Future<void> withdraw(int enrollmentId) async {
+    final before = await load();
+    final records = before.records.where((r) => r.id == enrollmentId);
+    if (records.length != 1 || records.single.status != InstitutionEnrollmentStatus.active) {
+      throw const EnrollmentApiException(EnrollmentFailure.validation);
+    }
+    final source = records.single;
+    final response = await _client.patch(
+      '/institutions/${Uri.encodeComponent(organizationSlug)}/schools/$schoolId/academic/student-enrollments/$enrollmentId/status',
+      {'status': 'withdrawn'},
+    );
+    if (response['updated'] != true) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+    late final InstitutionEnrollmentHistory after;
+    try {
+      after = await load();
+    } on EnrollmentApiException catch (error) {
+      // The PATCH may already be committed. Require refresh rather than replay.
+      if (error.failure == EnrollmentFailure.network) {
+        throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+      }
+      rethrow;
+    }
+    final closed = after.records.where((r) => r.id == enrollmentId);
+    if (closed.length != 1 || closed.single.childId != source.childId ||
+        closed.single.sectionId != source.sectionId || closed.single.start != source.start ||
+        closed.single.status != InstitutionEnrollmentStatus.withdrawn || closed.single.end == null) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+  }
+
   @override
   Future<void> transfer(int enrollmentId, int sectionId) async {
     final before = await load();

@@ -38,3 +38,15 @@ The repository reloads scope and eligibility before POSTing `section_id` to
 verifies the old transferred record and new active record for the same child.
 Uncertain, denied, conflicting or malformed results clear stale write choices
 and require refresh; writes are never automatically retried. No backend changes.
+
+### Enrollment withdrawal
+
+Active institution school enrollments can be ended through an explicit withdrawal
+confirmation. Only the existing PATCH `student-enrollments/{id}/status` contract
+is used, with `status: withdrawn`. The repository reloads institution/school scope
+and active status before sending, requires `200` and `updated: true`, then checks
+that the same record preserves its student, section and start date while becoming
+withdrawn with an end date. The student profile and past enrollments remain.
+Concurrent mutations are blocked; ambiguous writes and conflicting or denied
+responses clear stale controls and require a read, without automatically replaying
+PATCH. No backend routes, permissions or database behavior were modified.
