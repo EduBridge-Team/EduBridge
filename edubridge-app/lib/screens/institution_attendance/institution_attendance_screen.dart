@@ -7,6 +7,8 @@ import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
 import '../enrollment/enrollment_state.dart';
 import 'institution_attendance_content.dart';
+import 'institution_attendance_create_screen.dart';
+import 'institution_attendance_mark_screen.dart';
 
 class InstitutionAttendanceScreen extends StatefulWidget {
   const InstitutionAttendanceScreen({super.key, required this.gateway, this.sessionId, this.date});
@@ -57,6 +59,32 @@ class _InstitutionAttendanceScreenState extends State<InstitutionAttendanceScree
     setState(() => _date = date);
     await controller.reload();
   }
+  Future<void> _create() async {
+    final gateway = widget.gateway;
+    final controller = _state;
+    if (controller.loading || controller.snapshot == null || gateway is! InstitutionAttendanceWriter) return;
+    final result = await Navigator.of(context).push<(int, DateTime)>(MaterialPageRoute(builder: (_) =>
+      InstitutionAttendanceCreateScreen(writer: gateway, initialDate: _date)));
+    if (!mounted || !identical(controller, _state) || result == null) return;
+    setState(() => _date = result.$2);
+    await controller.reload();
+    if (mounted && identical(controller, _state)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.enrollmentSaved)));
+      await _open(result.$1);
+    }
+  }
+  Future<void> _edit() async {
+    final gateway = widget.gateway;
+    final controller = _state;
+    final session = controller.snapshot?.session;
+    if (controller.loading || session == null || session.closed || gateway is! InstitutionAttendanceWriter) return;
+    final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) =>
+      InstitutionAttendanceMarkScreen(writer: gateway, sessionId: session.id, date: session.date)));
+    if (mounted && identical(controller, _state)) {
+      await controller.reload();
+      if (mounted && saved == true) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.enrollmentSaved)));
+    }
+  }
   Future<void> _open(int id) async {
     final controller = _state;
     if (controller.loading || controller.snapshot == null) return;
@@ -85,6 +113,12 @@ class _InstitutionAttendanceScreenState extends State<InstitutionAttendanceScree
                 setState(() => _date = null);
                 await _state.reload();
               }, child: Text(l.institutionAttendanceAllDates)),
+          ],
+          if (data != null && widget.gateway is InstitutionAttendanceWriter) ...[
+            if (widget.sessionId == null) FilledButton(key: const ValueKey('attendance-open-create'),
+              onPressed: _state.loading ? null : _create, child: Text(l.institutionAttendanceCreate)),
+            if (data.session != null && !data.session!.closed) FilledButton(key: const ValueKey('attendance-open-mark'),
+              onPressed: _state.loading ? null : _edit, child: Text(l.institutionAttendanceMark)),
           ],
           if (_state.loading) const LinearProgressIndicator(),
           if (_state.error != null) Semantics(liveRegion: true,

@@ -62,3 +62,22 @@ duplicate session/record/student IDs, mismatched detail session identity, invali
 statuses and malformed dates. Null daily periods and subjects remain optional.
 Refresh, resume and returning from detail reload server data; denied reads clear
 stale records. This batch does not create sessions or mark student attendance.
+
+### Creating and marking attendance
+
+Institution attendance now creates daily or period sessions through the existing
+POST route and saves student marks through the existing PUT records route. The
+creation form explicitly explains that the server initializes active students as
+present. A session can have an optional active subject, period 1–20 and notes.
+Before creating, current institution/school choices and duplicate date/section/
+period sessions are checked. Creation is only confirmed after validating the
+returned identity and re-reading the initialized student records.
+
+The marking editor uses active enrollments in the session's section. Historical
+records for withdrawn/transferred students remain in the history; students with
+no attendance record require an explicit status selection. Before PUT, the roster,
+open status and previous record status/notes are re-read to reject stale edits.
+Saving can retain the open session or close it after a separate confirmation.
+The result is verified by GET, including all statuses, notes and close state.
+Concurrent writes and automatic replay after an uncertain response are blocked.
+No backend code, routes, permissions or notification behavior were modified.

@@ -10,6 +10,19 @@ class InstitutionAttendanceFixture {
   final academic = InstitutionAcademicFixture();
   int status = 200;
   bool filterDates = true;
+  int postStatus = 201, putStatus = 200;
+  bool applyWrites = true;
+  Map<String, dynamic>? createResponse;
+  Map<String, dynamic> saveResponse = {'message': 'تم حفظ الحضور بنجاح'};
+  void Function()? afterWrite;
+  Future<void> Function()? beforeWrite;
+  final posts = <Map<String, dynamic>>[], puts = <Map<String, dynamic>>[];
+  final bySession = <int, List<Map<String, dynamic>>>{};
+  List<Map<String, dynamic>> enrollments = [
+    for (final id in [9, 8]) <String, dynamic>{'id': id, 'child_id': id,
+      'child_name': id == 9 ? 'نور' : 'أحمد', 'section_id': 30, 'academic_year_id': 10,
+      'status': 'active', 'enrolled_on': '2026-10-01', 'left_on': null},
+  ];
   Map<String, dynamic>? detailSession;
   final paths = <String>[];
   List<Map<String, dynamic>> sessions = [
@@ -31,12 +44,43 @@ class InstitutionAttendanceFixture {
       Map<String, dynamic>? body;
       if (uri.path == root) {
         body = {'attendance_sessions': sessions.where((s) => !filterDates || uri.queryParameters['date'] == null || s['attendance_date'] == uri.queryParameters['date']).toList()};
-      } else if (uri.path == '$root/60') {
-        body = {'attendance_session': detailSession ?? sessions.first, 'records': records};
+      } else if (uri.path == '/institutions/demo-institution/schools/5/academic/student-enrollments') {
+        body = {'enrollments': enrollments};
+      } else if (uri.path.startsWith('$root/')) {
+        final id = int.tryParse(uri.path.split('/').last);
+        final matches = sessions.where((s) => s['id'] == id);
+        if (matches.isNotEmpty) body = {'attendance_session': id == 60 ? detailSession ?? matches.single : matches.single,
+          'records': id == 60 ? records : bySession[id] ?? <Map<String, dynamic>>[]};
       }
       if (body == null) return academic.get(path);
       return http.Response(jsonEncode(body), status,
         headers: {'content-type': 'application/json; charset=utf-8'});
-    }, post: (path, body) async => throw StateError('Attendance view must not write')),
+    }, post: (path, body) async {
+      paths.add(path); posts.add(body); await beforeWrite?.call();
+      final session = <String, dynamic>{...body, 'id': 61, 'status': 'open'};
+      if (applyWrites && postStatus == 201) {
+        sessions.add(session);
+        bySession[61] = [for (final child in enrollments.where((e) => e['status'] == 'active' && e['section_id'] == body['section_id']))
+          <String, dynamic>{'id': child['child_id'] + 100, 'attendance_session_id': 61,
+            'child_id': child['child_id'], 'child_name': child['child_name'], 'status': 'present', 'note': null}];
+      }
+      afterWrite?.call();
+      return http.Response(jsonEncode(createResponse ?? {'attendance_session': session,
+        'students_initialized': bySession[61]?.length ?? 0}), postStatus);
+    }, put: (path, body) async {
+      paths.add(path); puts.add(body); await beforeWrite?.call();
+      if (applyWrites && putStatus == 200) {
+        final id = int.parse(path.split('/').reversed.elementAt(1));
+        final rows = id == 60 ? records : bySession[id]!;
+        for (final raw in body['records'] as List) {
+          final mark = Map<String, dynamic>.from(raw as Map);
+          final matches = rows.where((r) => r['child_id'] == mark['child_id']);
+          if (matches.isNotEmpty) matches.single.addAll({'status': mark['status'], 'note': mark['note']});
+        }
+        if (body['close_session'] == true) sessions.singleWhere((s) => s['id'] == id)['status'] = 'closed';
+      }
+      afterWrite?.call();
+      return http.Response(jsonEncode(saveResponse), putStatus);
+    }),
   );
 }
