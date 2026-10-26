@@ -11199,5 +11199,17 @@
   },
   "@institutionTransferNotice": {
     "description": "Institution student section transfer: institutionTransferNotice."
+  },
+  "institutionWithdrawalTitle": "إنهاء القيد (انسحاب)",
+  "@institutionWithdrawalTitle": {
+    "description": "Institution enrollment withdrawal: institutionWithdrawalTitle."
+  },
+  "institutionWithdrawalNotice": "هل تؤكد انسحاب الطالب؟ سيُغلق القيد ويُسجّل تاريخ انتهائه، مع الاحتفاظ بملف الطالب وسجل قيده.",
+  "@institutionWithdrawalNotice": {
+    "description": "Institution enrollment withdrawal: institutionWithdrawalNotice."
+  },
+  "institutionWithdrawalConfirm": "تأكيد الانسحاب",
+  "@institutionWithdrawalConfirm": {
+    "description": "Institution enrollment withdrawal: institutionWithdrawalConfirm."
   }
 }

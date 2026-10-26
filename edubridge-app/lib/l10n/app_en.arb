@@ -11199,5 +11199,17 @@
   },
   "@institutionTransferNotice": {
     "description": "Institution student section transfer: institutionTransferNotice."
+  },
+  "institutionWithdrawalTitle": "End enrollment (withdrawal)",
+  "@institutionWithdrawalTitle": {
+    "description": "Institution enrollment withdrawal: institutionWithdrawalTitle."
+  },
+  "institutionWithdrawalNotice": "Confirm this student’s withdrawal? The enrollment will be closed with an end date. The student profile and enrollment history will remain.",
+  "@institutionWithdrawalNotice": {
+    "description": "Institution enrollment withdrawal: institutionWithdrawalNotice."
+  },
+  "institutionWithdrawalConfirm": "Confirm withdrawal",
+  "@institutionWithdrawalConfirm": {
+    "description": "Institution enrollment withdrawal: institutionWithdrawalConfirm."
   }
 }

@@ -7,6 +7,7 @@ import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
 import 'institution_enrollment_controller.dart';
 import 'institution_transfer_dialog.dart';
+import 'institution_withdrawal_dialog.dart';
 
 class InstitutionEnrollmentHistoryScreen extends StatefulWidget {
   const InstitutionEnrollmentHistoryScreen({super.key, required this.gateway});
@@ -85,6 +86,19 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
                           InstitutionEnrollmentStatus.transferred => l.schoolHistoryTransferred,
                         }),
                         if (record.start != null) Text('${l.schoolHistoryStart}: ${dates.formatMediumDate(record.start!)}'),
+                        if (_state.supportsWithdrawal && record.status == InstitutionEnrollmentStatus.active)
+                          OutlinedButton(
+                            key: ValueKey('institution-withdraw-${record.id}'),
+                            onPressed: !_state.canWrite ? null : () async {
+                              final controller = _state;
+                              final confirmed = await showDialog<bool>(context: context,
+                                builder: (context) => InstitutionWithdrawalDialog(data: data, record: record));
+                              if (confirmed == true && mounted && identical(controller, _state) && controller.canWrite) {
+                                await controller.withdraw(record.id);
+                              }
+                            },
+                            child: Text(l.institutionWithdrawalTitle),
+                          ),
                         if (_state.supportsTransfer && data.transferTargets(record.id).isNotEmpty)
                           OutlinedButton(
                             key: ValueKey('institution-transfer-${record.id}'),
