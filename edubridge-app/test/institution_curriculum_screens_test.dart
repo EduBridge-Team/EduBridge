@@ -22,6 +22,7 @@ void main() {
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
           final fixture = InstitutionAcademicFixture();
+          fixture.data = jsonDecode(jsonEncode(institutionAcademicJson()));
           final writes = <String>[];
           final gateway = InstitutionCurriculumRepository(
             organizationSlug: 'demo-institution', organizationId: 4, schoolId: 5,
