@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../services/interactive_draft_repository.dart';
+import '../../services/interactive_lesson_starter_repository.dart';
+import 'interactive_lesson_adaptation_screen.dart';
 
 /// Read-only list of the signed-in educator's saved lesson drafts.
 class InteractiveLessonSavedDraftsScreen extends StatefulWidget {
@@ -21,6 +23,32 @@ class _InteractiveLessonSavedDraftsScreenState extends State<InteractiveLessonSa
 
   void _reload() {
     _drafts = const InteractiveDraftRepository().list();
+  }
+
+  Future<void> _openDraft(InteractiveDraftSummary draft) async {
+    try {
+      final catalog = await const InteractiveLessonStarterRepository().load();
+      if (!mounted) return;
+      final templates = catalog.templates.where((lesson) => lesson.id == draft.templateId);
+      if (templates.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('القالب الأصلي لهذه المسودة غير متوفر على الجهاز.'),
+        ));
+        return;
+      }
+      await Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => InteractiveLessonAdaptationScreen(
+          template: templates.first,
+          savedDraft: draft,
+        ),
+      ));
+      if (mounted) setState(_reload);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('تعذّر فتح المسودة. حاول مجددًا بعد تحديث البيانات.'),
+      ));
+    }
   }
 
   Future<void> _refresh() async {
@@ -76,6 +104,7 @@ class _InteractiveLessonSavedDraftsScreenState extends State<InteractiveLessonSa
                     title: Text(draft.title),
                     subtitle: Text(draft.objective),
                     trailing: Text('v${draft.version}'),
+                    onTap: () => _openDraft(draft),
                   ),
                 );
               },
