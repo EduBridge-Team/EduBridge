@@ -11183,5 +11183,21 @@
   "institutionAcademicInvalid": "The school or its record relationships could not be verified. Reload to try again.",
   "@institutionAcademicInvalid": {"description": "Existing institution academic API read-only records."},
   "institutionAcademicFailed": "Could not load school academic records. Try again.",
-  "@institutionAcademicFailed": {"description": "Existing institution academic API read-only records."}
+  "@institutionAcademicFailed": {"description": "Existing institution academic API read-only records."},
+  "institutionTransferTitle": "Transfer to another section",
+  "institutionTransferDestination": "Choose a destination section",
+  "institutionTransferConfirm": "Confirm transfer",
+  "institutionTransferNotice": "The previous enrollment will remain in the history.",
+  "@institutionTransferTitle": {
+    "description": "Institution student section transfer: institutionTransferTitle."
+  },
+  "@institutionTransferDestination": {
+    "description": "Institution student section transfer: institutionTransferDestination."
+  },
+  "@institutionTransferConfirm": {
+    "description": "Institution student section transfer: institutionTransferConfirm."
+  },
+  "@institutionTransferNotice": {
+    "description": "Institution student section transfer: institutionTransferNotice."
+  }
 }

@@ -15,6 +15,14 @@ class InstitutionHistoryFixture {
       'academic_year_id': 10, 'status': 'withdrawn', 'enrolled_on': '2026-09-01', 'left_on': '2026-09-30'},
   ];
   int status = 200;
+  int postStatus = 201;
+  Map<String, dynamic> postResponse = {'transferred': true};
+  bool applyTransfer = true;
+  final writes = <Map<String, dynamic>>[];
+  void addTarget() {
+    final sections = academic.data['sections'] as List;
+    sections.add({...Map<String, dynamic>.from(sections.first as Map), 'id': 31, 'name': 'شعبة جديدة'});
+  }
   final paths = <String>[];
   InstitutionEnrollmentHistoryRepository get repository => InstitutionEnrollmentHistoryRepository(
     organizationSlug: 'demo-institution', organizationId: 4, schoolId: 5,
@@ -25,6 +33,17 @@ class InstitutionHistoryFixture {
           headers: {'content-type': 'application/json; charset=utf-8'});
       }
       return academic.get(path);
-    }, post: (path, body) async => throw StateError('Read only')),
+    }, post: (path, body) async {
+      paths.add(path);
+      writes.add(body);
+      if (applyTransfer && postStatus == 201 && postResponse['transferred'] == true) {
+        final row = rows.firstWhere((r) => r['id'] == 2);
+        row['status'] = 'transferred';
+        row['left_on'] = '2026-10-26';
+        rows.add({...row, 'id': 3, 'section_id': body['section_id'],
+          'status': 'active', 'enrolled_on': '2026-10-26', 'left_on': null});
+      }
+      return http.Response(jsonEncode(postResponse), postStatus);
+    }),
   );
 }

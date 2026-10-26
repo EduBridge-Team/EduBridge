@@ -27,3 +27,14 @@ permit institution accounts. Institution participants supplies teachers and
 students, without a specialist assignment contract. No institution specialist
 controls are enabled through those unrelated routes. A server-authorized
 institution contract is required before adding that workflow in Flutter.
+
+### Student section transfer
+
+Institution enrollment history offers an explicit confirmed transfer for active
+records when another section in the same school/year is available. Previously
+used sections are excluded, including closed records (the server rejects them).
+The repository reloads scope and eligibility before POSTing `section_id` to
+`student-enrollments/{id}/transfer`, requires `201` and `transferred: true`, then
+verifies the old transferred record and new active record for the same child.
+Uncertain, denied, conflicting or malformed results clear stale write choices
+and require refresh; writes are never automatically retried. No backend changes.
