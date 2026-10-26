@@ -72,4 +72,24 @@ class SchoolContextTest extends TestCase
         DB::table('schools')->where('id', 10)->update(['is_active' => false]);
         $this->assertSame(403, $this->context(20)->getStatusCode());
     }
+    public function test_school_context_rejects_multiple_active_school_bindings(): void
+    {
+        DB::table('school_accounts')->insert(['school_id' => 11, 'user_id' => 20]);
+        $this->assertSame(403, $this->context(20)->getStatusCode());
+    }
+
+    public function test_requested_school_id_does_not_override_authenticated_school(): void
+    {
+        // context() deliberately requests foreign school_id=999.
+        $data = $this->context(21)->getData(true);
+        $this->assertSame(11, $data['school']['id']);
+        $this->assertSame('Affiliated', $data['school']['name']);
+    }
+
+    public function test_duplicated_binding_does_not_grant_ambiguous_access(): void
+    {
+        DB::table('school_accounts')->insert(['school_id' => 10, 'user_id' => 20]);
+        $this->assertSame(403, $this->context(20)->getStatusCode());
+    }
+
 }
