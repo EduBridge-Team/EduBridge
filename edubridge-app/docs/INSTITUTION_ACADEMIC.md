@@ -119,3 +119,5 @@ new row is confirmed by the timetable GET. GET times normalized to seconds are
 compared with the submitted minute values. Only after confirmation does the form
 return to the list, whose filters follow the created class. Ambiguous writes and
 denied/conflicting/invalid responses never auto-replay POST. No backend changes.
+
+Timetable classes can be deleted after explicit confirmation that related substitute assignments are removed. Flutter revalidates the displayed class before DELETE and verifies its absence before confirming success. Ambiguous results require a read-only refresh; deletion is never automatically replayed.

@@ -11411,5 +11411,21 @@
   "timetableCreatePrerequisite": "أنشئ سنة دراسية وشعبة ومادة نشطة أولًا.",
   "@timetableCreatePrerequisite": {
     "description": "Institution timetable creation: timetableCreatePrerequisite."
+  },
+  "timetableDelete": "حذف الحصة",
+  "@timetableDelete": {
+    "description": "Timetable removal action and confirmation"
+  },
+  "timetableDeleteConfirm": "حذف هذه الحصة المتكررة من الجدول؟ سيتم حذف تكليفات البدلاء المرتبطة بها أيضاً. لا يمكن التراجع عن الحذف.",
+  "@timetableDeleteConfirm": {
+    "description": "Timetable removal action and confirmation"
+  },
+  "timetableDeleteCancel": "إلغاء",
+  "@timetableDeleteCancel": {
+    "description": "Timetable removal action and confirmation"
+  },
+  "timetableDeleted": "تم حذف الحصة",
+  "@timetableDeleted": {
+    "description": "Timetable removal action and confirmation"
   }
 }
