@@ -11167,5 +11167,11 @@
   "iepComposeVerify": "التحقق من مدخلات المسودة",
   "@iepComposeVerify": {"description": "Temporary IEP draft preparation; no server write."},
   "iepComposeChecked": "مدخلات المسودة مكتملة ومتوافقة. لم يتم حفظها أو إرسالها للمراجعة.",
-  "@iepComposeChecked": {"description": "Temporary IEP draft preparation; no server write."}
+  "@iepComposeChecked": {"description": "Temporary IEP draft preparation; no server write."},
+  "iepComposePreview": "معاينة المسودة",
+  "@iepComposePreview": {"description": "Read-only temporary draft review."},
+  "iepComposePreviewNotice": "هذه معاينة لمسودة مؤقتة وغير محفوظة على السيرفر. لم يتم إرسالها للمراجعة. الرجوع يعيدك إلى المحرر مع الاحتفاظ بالمدخلات.",
+  "@iepComposePreviewNotice": {"description": "Read-only temporary draft review."},
+  "iepComposeBackToEdit": "الرجوع للتعديل",
+  "@iepComposeBackToEdit": {"description": "Read-only temporary draft review."}
 }
