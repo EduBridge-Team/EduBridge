@@ -115,6 +115,61 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('an open editor stays pinned to its original disposed context', (
+    tester,
+  ) async {
+    final first = InstitutionAcademicWriteFixture();
+    final second = InstitutionAcademicWriteFixture();
+    final firstGateway = first.repository;
+    final secondGateway = second.repository;
+    await tester.pumpWidget(
+      curriculumHost(
+        InstitutionAcademicScreen(
+          organizationSlug: 'demo-institution',
+          schoolId: 5,
+          gateway: firstGateway,
+        ),
+        'en',
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tapEditorKey(tester, 'institution-add-grade');
+    final original = tester
+        .widget<AcademicCreateScreen>(find.byType(AcademicCreateScreen))
+        .controller;
+    await tester.enterText(
+      find.byKey(const ValueKey('academic-name')),
+      'مدخلات السياق الأول',
+    );
+    await tester.pumpWidget(
+      curriculumHost(
+        InstitutionAcademicScreen(
+          organizationSlug: 'demo-institution',
+          schoolId: 5,
+          gateway: secondGateway,
+        ),
+        'ar',
+      ),
+    );
+    await tester.pumpAndSettle();
+    final current = tester
+        .widget<AcademicCreateScreen>(find.byType(AcademicCreateScreen))
+        .controller;
+    expect(current, same(original));
+    expect(current.canWrite, isFalse);
+    expect(
+      tester
+          .widget<FilledButton>(find.byKey(const ValueKey('academic-save')))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(AcademicCreateScreen), findsNothing);
+    expect(first.writes, isEmpty);
+    expect(second.writes, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'confirmed save with failed refresh returns without replaying write',
     (tester) async {

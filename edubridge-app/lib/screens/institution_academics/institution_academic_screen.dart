@@ -70,6 +70,17 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     super.dispose();
   }
 
+  Future<void> _open(AcademicKind kind) async {
+    final controller = _state;
+    if (!controller.canWrite) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            AcademicCreateScreen(controller: controller, kind: kind),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _state,
@@ -122,14 +133,7 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                                       (kind != AcademicKind.section ||
                                           (data.years.isNotEmpty &&
                                               data.grades.isNotEmpty))
-                                  ? () => Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                        builder: (_) => AcademicCreateScreen(
-                                          controller: _state,
-                                          kind: kind,
-                                        ),
-                                      ),
-                                    )
+                                  ? () => _open(kind)
                                   : null,
                               icon: const Icon(Icons.add),
                               label: Text(academicTitle(context, kind)),
