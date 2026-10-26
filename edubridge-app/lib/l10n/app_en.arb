@@ -11211,5 +11211,61 @@
   "institutionWithdrawalConfirm": "Confirm withdrawal",
   "@institutionWithdrawalConfirm": {
     "description": "Institution enrollment withdrawal: institutionWithdrawalConfirm."
+  },
+  "institutionAttendanceTitle": "School attendance",
+  "@institutionAttendanceTitle": {
+    "description": "Institution school attendance: institutionAttendanceTitle."
+  },
+  "institutionAttendanceDetails": "Session details",
+  "@institutionAttendanceDetails": {
+    "description": "Institution school attendance: institutionAttendanceDetails."
+  },
+  "institutionAttendanceChooseDate": "Choose a date",
+  "@institutionAttendanceChooseDate": {
+    "description": "Institution school attendance: institutionAttendanceChooseDate."
+  },
+  "institutionAttendanceAllDates": "All dates",
+  "@institutionAttendanceAllDates": {
+    "description": "Institution school attendance: institutionAttendanceAllDates."
+  },
+  "institutionAttendanceLimit": "Shows up to 200 recent sessions. Choose a date to see older sessions.",
+  "@institutionAttendanceLimit": {
+    "description": "Institution school attendance: institutionAttendanceLimit."
+  },
+  "institutionAttendanceEmpty": "No attendance sessions.",
+  "@institutionAttendanceEmpty": {
+    "description": "Institution school attendance: institutionAttendanceEmpty."
+  },
+  "institutionAttendanceNoRecords": "No student attendance records in this session.",
+  "@institutionAttendanceNoRecords": {
+    "description": "Institution school attendance: institutionAttendanceNoRecords."
+  },
+  "institutionAttendancePeriod": "Period",
+  "@institutionAttendancePeriod": {
+    "description": "Institution school attendance: institutionAttendancePeriod."
+  },
+  "institutionAttendanceOpen": "Open session",
+  "@institutionAttendanceOpen": {
+    "description": "Institution school attendance: institutionAttendanceOpen."
+  },
+  "institutionAttendanceClosed": "Closed session",
+  "@institutionAttendanceClosed": {
+    "description": "Institution school attendance: institutionAttendanceClosed."
+  },
+  "institutionAttendancePresent": "Present",
+  "@institutionAttendancePresent": {
+    "description": "Institution school attendance: institutionAttendancePresent."
+  },
+  "institutionAttendanceAbsent": "Absent",
+  "@institutionAttendanceAbsent": {
+    "description": "Institution school attendance: institutionAttendanceAbsent."
+  },
+  "institutionAttendanceLate": "Late",
+  "@institutionAttendanceLate": {
+    "description": "Institution school attendance: institutionAttendanceLate."
+  },
+  "institutionAttendanceExcused": "Excused",
+  "@institutionAttendanceExcused": {
+    "description": "Institution school attendance: institutionAttendanceExcused."
   }
 }

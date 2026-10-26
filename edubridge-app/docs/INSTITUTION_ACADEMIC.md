@@ -50,3 +50,15 @@ withdrawn with an end date. The student profile and past enrollments remain.
 Concurrent mutations are blocked; ambiguous writes and conflicting or denied
 responses clear stale controls and require a read, without automatically replaying
 PATCH. No backend routes, permissions or database behavior were modified.
+
+### Institution attendance history
+
+The academic school screen opens read-only attendance sessions and their student
+records through the existing institution attendance GET routes. The list shows at
+most the server's 200 recent sessions; an optional date filter can retrieve older
+sessions. A detail read revalidates organization/school identity and session
+membership before loading records. Responses reject foreign section/subject IDs,
+duplicate session/record/student IDs, mismatched detail session identity, invalid
+statuses and malformed dates. Null daily periods and subjects remain optional.
+Refresh, resume and returning from detail reload server data; denied reads clear
+stale records. This batch does not create sessions or mark student attendance.
