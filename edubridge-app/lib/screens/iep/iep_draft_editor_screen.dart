@@ -10,6 +10,8 @@ import '../academics/academic_choice_field.dart';
 import '../enrollment/enrollment_state.dart';
 import '../evaluation_history/evaluation_history_labels.dart';
 import 'iep_draft_field.dart';
+import 'iep_draft_preview_screen.dart';
+import 'iep_evaluation_reference.dart';
 import 'iep_draft_goal_card.dart';
 import 'iep_goal_editor_screen.dart';
 
@@ -194,9 +196,26 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     });
   }
 
+  Future<void> _preview(IepPlanDraft draft) async {
+    if (!identical(_checked, draft)) return;
+    final childName = widget.childName;
+    final gateway = widget.evaluationGateway;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => IepDraftPreviewScreen(
+          draft: draft,
+          childName: childName,
+          evaluationGateway: gateway,
+        ),
+      ),
+    );
+    if (mounted) await _evaluations.reload();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final checked = _checked;
     String? requiredText(String? v) =>
         v == null || v.trim().isEmpty ? l.academicRequired : null;
     String? date(String? v) =>
@@ -292,6 +311,18 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                               },
                       ),
                       const SizedBox(height: 16),
+                      if (!_evaluations.loading &&
+                          options.containsKey(_evaluationId))
+                        IepEvaluationReference(
+                          key: ValueKey((
+                            widget.childId,
+                            _evaluationId,
+                            widget.evaluationGateway,
+                          )),
+                          childId: widget.childId,
+                          evaluationId: _evaluationId!,
+                          gateway: widget.evaluationGateway,
+                        ),
                       field(
                         'title',
                         l.iepComposePlanTitle,
@@ -375,7 +406,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                             : _verify,
                         child: Text(l.iepComposeVerify),
                       ),
-                      if (_checked != null)
+                      if (checked != null) ...[
                         Semantics(
                           liveRegion: true,
                           child: Text(
@@ -383,6 +414,13 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                             key: const ValueKey('iep-draft-checked'),
                           ),
                         ),
+                        OutlinedButton.icon(
+                          key: const ValueKey('iep-preview-draft'),
+                          onPressed: () => _preview(checked),
+                          icon: const Icon(Icons.preview_outlined),
+                          label: Text(l.iepComposePreview),
+                        ),
+                      ],
                     ],
                   ),
                 ),

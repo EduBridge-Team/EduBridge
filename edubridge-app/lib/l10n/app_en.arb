@@ -11167,5 +11167,11 @@
   "iepComposeVerify": "Check draft entries",
   "@iepComposeVerify": {"description": "Temporary IEP draft preparation; no server write."},
   "iepComposeChecked": "Draft entries are complete and consistent. They have not been saved or submitted for review.",
-  "@iepComposeChecked": {"description": "Temporary IEP draft preparation; no server write."}
+  "@iepComposeChecked": {"description": "Temporary IEP draft preparation; no server write."},
+  "iepComposePreview": "Preview draft",
+  "@iepComposePreview": {"description": "Read-only temporary draft review."},
+  "iepComposePreviewNotice": "This is a temporary draft preview, not saved on the server or submitted for review. Returning to the editor keeps your entries.",
+  "@iepComposePreviewNotice": {"description": "Read-only temporary draft review."},
+  "iepComposeBackToEdit": "Return to editing",
+  "@iepComposeBackToEdit": {"description": "Read-only temporary draft review."}
 }

@@ -7,11 +7,11 @@ class IepDraftGoalCard extends StatelessWidget {
   const IepDraftGoalCard({
     super.key,
     required this.goal,
-    required this.onEdit,
-    required this.onRemove,
+    this.onEdit,
+    this.onRemove,
   });
   final IepDraftGoal goal;
-  final VoidCallback onEdit, onRemove;
+  final VoidCallback? onEdit, onRemove;
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -30,14 +30,17 @@ class IepDraftGoalCard extends StatelessWidget {
               Text('${l.iepResponsible}: ${goal.responsible}'),
             Text('${l.academicStart}: ${day(goal.start)}'),
             Text('${l.academicEnd}: ${day(goal.end)}'),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                TextButton(onPressed: onEdit, child: Text(l.edit)),
-                TextButton(onPressed: onRemove, child: Text(l.delete)),
-              ],
-            ),
+            if (onEdit != null || onRemove != null)
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  if (onEdit != null)
+                    TextButton(onPressed: onEdit, child: Text(l.edit)),
+                  if (onRemove != null)
+                    TextButton(onPressed: onRemove, child: Text(l.delete)),
+                ],
+              ),
           ],
         ),
       ),

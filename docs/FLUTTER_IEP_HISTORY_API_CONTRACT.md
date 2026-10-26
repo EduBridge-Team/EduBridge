@@ -124,3 +124,11 @@ invalidated on edits or refreshed evaluation data; it is never a server receipt.
 Server draft creation, authoritative write permissions, version conflict control,
 idempotency, submission and existing ministry review integration remain pending
 an implemented API contract. No speculative write endpoint is called by Flutter.
+
+A successfully checked preparation snapshot can be opened in a read-only preview.
+It shows the full plan period, review date, authored summary, all goal details and
+accommodations without adding saved IDs or approval state. Returning to the
+editor retains entries; editing or refreshing references invalidates the prior
+check. Both the editor and preview can open the selected reference through a
+fresh, child-scoped evaluation read. Switching references disposes the old
+request UI so a delayed response cannot open the previously selected evaluation.
