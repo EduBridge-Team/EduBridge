@@ -4,6 +4,9 @@ import '../../l10n/l10n.dart';
 import '../../model/schools/academic_catalog.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/institution_academic_repository.dart';
+import '../../services/institution_curriculum_repository.dart';
+import '../../services/schools/curriculum_repository.dart';
+import '../curriculum/curriculum_screen.dart';
 import '../../theme.dart';
 import '../academics/academic_create_screen.dart';
 import 'institution_academic_controller.dart';
@@ -15,10 +18,12 @@ class InstitutionAcademicScreen extends StatefulWidget {
     required this.organizationSlug,
     required this.schoolId,
     this.gateway,
+    this.curriculumGateway,
   });
   final String organizationSlug;
   final int schoolId;
   final InstitutionAcademicGateway? gateway;
+  final CurriculumGateway? curriculumGateway;
   @override
   State<InstitutionAcademicScreen> createState() =>
       _InstitutionAcademicScreenState();
@@ -91,6 +96,21 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     );
   }
 
+  Future<void> _openCurriculum() async {
+    final controller = _state;
+    final records = controller.snapshot;
+    if (!controller.canWrite || records == null) return;
+    final gateway = widget.curriculumGateway ?? InstitutionCurriculumRepository(
+      organizationSlug: records.organizationSlug,
+      schoolId: records.school.id,
+      organizationId: records.organizationId,
+    );
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => CurriculumScreen(gateway: gateway),
+    ));
+    if (mounted && identical(controller, _state)) await controller.reload();
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _state,
@@ -131,6 +151,12 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                   padding: const EdgeInsets.all(16),
                   children: [
                     if (data != null && _state.supportsCreation) ...[
+                      OutlinedButton.icon(
+                        key: const ValueKey('institution-open-curriculum'),
+                        onPressed: _state.canWrite ? _openCurriculum : null,
+                        icon: const Icon(Icons.menu_book_outlined),
+                        label: Text(l.curriculumTitle),
+                      ),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
