@@ -66,7 +66,7 @@ class InstitutionAttendanceFixture {
       }
       afterWrite?.call();
       return http.Response(jsonEncode(createResponse ?? {'attendance_session': session,
-        'students_initialized': bySession[61]?.length ?? 0}), postStatus);
+        'students_initialized': bySession[61]?.length ?? 0}), postStatus, encoding: utf8, headers: {'content-type': 'application/json; charset=utf-8'});
     }, put: (path, body) async {
       paths.add(path); puts.add(body); await beforeWrite?.call();
       if (applyWrites && putStatus == 200) {
@@ -80,7 +80,7 @@ class InstitutionAttendanceFixture {
         if (body['close_session'] == true) sessions.singleWhere((s) => s['id'] == id)['status'] = 'closed';
       }
       afterWrite?.call();
-      return http.Response(jsonEncode(saveResponse), putStatus);
+      return http.Response(jsonEncode(saveResponse), putStatus, encoding: utf8, headers: {'content-type': 'application/json; charset=utf-8'});
     }),
   );
 }
