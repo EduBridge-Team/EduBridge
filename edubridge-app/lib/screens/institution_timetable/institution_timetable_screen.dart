@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+
+import '../../l10n/l10n.dart';
+import '../../model/institutions/institution_timetable.dart';
+import '../../services/institution_timetable_repository.dart';
+import '../../theme.dart';
+import '../academics/academic_choice_field.dart';
+import '../enrollment/enrollment_labels.dart';
+import '../enrollment/enrollment_state.dart';
+import 'institution_substitute_screen.dart';
+import 'institution_timetable_card.dart';
+
+class InstitutionTimetableScreen extends StatefulWidget {
+  const InstitutionTimetableScreen({super.key, required this.gateway});
+  final InstitutionTimetableGateway gateway;
+  @override
+  State<InstitutionTimetableScreen> createState() => _InstitutionTimetableScreenState();
+}
+class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen> with WidgetsBindingObserver {
+  late EnrollmentState<InstitutionTimetable> _state;
+  int _year = 0, _section = 0, _day = 0;
+  void _initialize() { _state = EnrollmentState(widget.gateway.load)..reload(); }
+  @override
+  void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); _initialize(); }
+  @override
+  void didUpdateWidget(covariant InstitutionTimetableScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.gateway != widget.gateway) {
+      _state.dispose(); _year = 0; _section = 0; _day = 0; _initialize();
+    }
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _state.reload();
+  }
+  @override
+  void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }
+  Future<void> _open(InstitutionTimetable data, InstitutionTimetableEntry entry) async {
+    final controller = _state;
+    if (controller.loading) return;
+    final gateway = widget.gateway;
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
+      InstitutionSubstituteScreen(gateway: gateway, timetable: data, entry: entry)));
+    if (mounted && identical(controller, _state)) await controller.reload();
+  }
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(animation: _state, builder: (context, _) {
+    final l = context.l10n, data = _state.snapshot;
+    if (data != null) {
+      if (!data.academic.years.any((y) => y.id == _year)) _year = 0;
+      if (!data.academic.sections.any((s) => s.id == _section && (_year == 0 || s.yearId == _year))) _section = 0;
+    }
+    final entries = data?.entries.where((e) => (_year == 0 || e.yearId == _year) &&
+      (_section == 0 || e.sectionId == _section) && (_day == 0 || e.weekday == _day)).toList();
+    return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(l.timetableTitle),
+      actions: [IconButton(tooltip: l.enrollmentReload, onPressed: _state.loading ? null : _state.reload, icon: const Icon(Icons.refresh))]),
+      body: RefreshIndicator(onRefresh: _state.reload, child: SafeArea(child: Center(child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 840),
+        child: ListView(padding: const EdgeInsets.all(16), physics: const AlwaysScrollableScrollPhysics(), children: [
+          if (_state.loading) const LinearProgressIndicator(),
+          if (_state.error != null) Semantics(liveRegion: true, child: Text(enrollmentFailureMessage(l, _state.error!))),
+          if (data != null) ...[
+            Text(data.academic.school.name, style: Theme.of(context).textTheme.titleLarge),
+            AcademicChoiceField(key: const ValueKey('timetable-year'), label: l.academicYears,
+              options: {0: l.all, for (final y in data.academic.years) y.id: y.name}, value: _year,
+              requiredMessage: l.academicRequired, onChanged: _state.loading ? null : (v) => setState(() { _year = v; _section = 0; })),
+            AcademicChoiceField(key: const ValueKey('timetable-section'), label: l.academicSections,
+              options: {0: l.all, for (final s in data.academic.sections.where((s) => _year == 0 || s.yearId == _year)) s.id: data.sectionLabel(s.id)},
+              value: _section, requiredMessage: l.academicRequired, onChanged: _state.loading ? null : (v) => setState(() => _section = v)),
+            AcademicChoiceField(key: const ValueKey('timetable-day'), label: l.timetableDay, options: timetableDays(l),
+              value: _day, requiredMessage: l.academicRequired, onChanged: _state.loading ? null : (v) => setState(() => _day = v)),
+            if (entries!.isEmpty) Text(l.timetableEmpty),
+            for (final entry in entries) InstitutionTimetableCard(key: ValueKey('timetable-entry-${entry.id}'),
+              timetable: data, entry: entry, onChoose: _state.loading ? null : () => _open(data, entry)),
+          ],
+        ]),
+      )))),
+    );
+  });
+}

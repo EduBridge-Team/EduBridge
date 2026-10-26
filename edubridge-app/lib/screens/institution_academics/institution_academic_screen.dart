@@ -8,6 +8,8 @@ import '../../services/institution_curriculum_repository.dart';
 import '../../services/institution_teacher_assignments_repository.dart';
 import '../../services/institution_enrollment_history_repository.dart';
 import '../../services/institution_attendance_repository.dart';
+import '../../services/institution_timetable_repository.dart';
+import '../institution_timetable/institution_timetable_screen.dart';
 import '../institution_attendance/institution_attendance_screen.dart';
 import '../institution_enrollment/institution_enrollment_history_screen.dart';
 import '../institution_teacher_assignments/institution_teacher_assignments_screen.dart';
@@ -28,6 +30,7 @@ class InstitutionAcademicScreen extends StatefulWidget {
     this.teacherAssignmentsGateway,
     this.enrollmentHistoryGateway,
     this.attendanceGateway,
+    this.timetableGateway,
   });
   final String organizationSlug;
   final int schoolId;
@@ -36,6 +39,7 @@ class InstitutionAcademicScreen extends StatefulWidget {
   final InstitutionTeacherAssignmentsGateway? teacherAssignmentsGateway;
   final InstitutionEnrollmentHistoryGateway? enrollmentHistoryGateway;
   final InstitutionAttendanceGateway? attendanceGateway;
+  final InstitutionTimetableGateway? timetableGateway;
   @override
   State<InstitutionAcademicScreen> createState() =>
       _InstitutionAcademicScreenState();
@@ -106,6 +110,14 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
         ),
       ),
     );
+  }
+
+  Future<void> _openTimetable() async {
+    final records = _state.snapshot;
+    if (records == null || _state.loading || _state.busy) return;
+    final gateway = widget.timetableGateway ?? InstitutionTimetableRepository(
+      organizationSlug: records.organizationSlug, organizationId: records.organizationId, schoolId: records.school.id);
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => InstitutionTimetableScreen(gateway: gateway)));
   }
 
   Future<void> _openAttendance() async {
@@ -212,6 +224,10 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                       icon: const Icon(Icons.fact_check_outlined),
                       label: Text(l.institutionAttendanceTitle),
                     ),
+                    if (data != null) OutlinedButton.icon(
+                      key: const ValueKey('institution-open-timetable'),
+                      onPressed: _state.loading || _state.busy ? null : _openTimetable,
+                      icon: const Icon(Icons.calendar_month_outlined), label: Text(l.timetableTitle)),
                     if (data != null && _state.supportsCreation) ...[
                       OutlinedButton.icon(
                         key: const ValueKey('institution-open-teacher-assignments'),

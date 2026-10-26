@@ -11307,5 +11307,77 @@
   "institutionAttendanceCloseNotice": "إغلاق الجلسة يمنع تعديلها لاحقًا. أكّد فقط بعد مراجعة جميع الطلاب.",
   "@institutionAttendanceCloseNotice": {
     "description": "Institution attendance authoring: institutionAttendanceCloseNotice."
+  },
+  "timetableTitle": "الجدول الدراسي",
+  "@timetableTitle": {
+    "description": "Institution timetable and substitutes: timetableTitle."
+  },
+  "timetableDay": "اليوم",
+  "@timetableDay": {
+    "description": "Institution timetable and substitutes: timetableDay."
+  },
+  "timetableEmpty": "لا توجد حصص مطابقة للتصفية.",
+  "@timetableEmpty": {
+    "description": "Institution timetable and substitutes: timetableEmpty."
+  },
+  "timetableNoTeacher": "لا يوجد معلم مكلّف",
+  "@timetableNoTeacher": {
+    "description": "Institution timetable and substitutes: timetableNoTeacher."
+  },
+  "timetableStarts": "بداية الحصة",
+  "@timetableStarts": {
+    "description": "Institution timetable and substitutes: timetableStarts."
+  },
+  "timetableEnds": "نهاية الحصة",
+  "@timetableEnds": {
+    "description": "Institution timetable and substitutes: timetableEnds."
+  },
+  "timetableRoom": "الغرفة",
+  "@timetableRoom": {
+    "description": "Institution timetable and substitutes: timetableRoom."
+  },
+  "timetableSubstitute": "اختيار معلم بديل",
+  "@timetableSubstitute": {
+    "description": "Institution timetable and substitutes: timetableSubstitute."
+  },
+  "timetableAssign": "تكليف المعلم البديل",
+  "@timetableAssign": {
+    "description": "Institution timetable and substitutes: timetableAssign."
+  },
+  "timetableReplaceNotice": "التكليف الجديد يستبدل أي بديل سابق لهذه الحصة والتاريخ.",
+  "@timetableReplaceNotice": {
+    "description": "Institution timetable and substitutes: timetableReplaceNotice."
+  },
+  "timetableNoSubstitutes": "لا يوجد معلمون بدلاء متاحون لهذه الحصة والتاريخ.",
+  "@timetableNoSubstitutes": {
+    "description": "Institution timetable and substitutes: timetableNoSubstitutes."
+  },
+  "timetableSunday": "الأحد",
+  "@timetableSunday": {
+    "description": "Institution timetable and substitutes: timetableSunday."
+  },
+  "timetableMonday": "الإثنين",
+  "@timetableMonday": {
+    "description": "Institution timetable and substitutes: timetableMonday."
+  },
+  "timetableTuesday": "الثلاثاء",
+  "@timetableTuesday": {
+    "description": "Institution timetable and substitutes: timetableTuesday."
+  },
+  "timetableWednesday": "الأربعاء",
+  "@timetableWednesday": {
+    "description": "Institution timetable and substitutes: timetableWednesday."
+  },
+  "timetableThursday": "الخميس",
+  "@timetableThursday": {
+    "description": "Institution timetable and substitutes: timetableThursday."
+  },
+  "timetableFriday": "الجمعة",
+  "@timetableFriday": {
+    "description": "Institution timetable and substitutes: timetableFriday."
+  },
+  "timetableSaturday": "السبت",
+  "@timetableSaturday": {
+    "description": "Institution timetable and substitutes: timetableSaturday."
   }
 }

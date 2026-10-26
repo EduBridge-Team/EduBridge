@@ -11307,5 +11307,77 @@
   "institutionAttendanceCloseNotice": "Closing this session prevents further changes. Confirm only after reviewing all students.",
   "@institutionAttendanceCloseNotice": {
     "description": "Institution attendance authoring: institutionAttendanceCloseNotice."
+  },
+  "timetableTitle": "School timetable",
+  "@timetableTitle": {
+    "description": "Institution timetable and substitutes: timetableTitle."
+  },
+  "timetableDay": "Weekday",
+  "@timetableDay": {
+    "description": "Institution timetable and substitutes: timetableDay."
+  },
+  "timetableEmpty": "No timetable entries match these filters.",
+  "@timetableEmpty": {
+    "description": "Institution timetable and substitutes: timetableEmpty."
+  },
+  "timetableNoTeacher": "No assigned teacher",
+  "@timetableNoTeacher": {
+    "description": "Institution timetable and substitutes: timetableNoTeacher."
+  },
+  "timetableStarts": "Starts at",
+  "@timetableStarts": {
+    "description": "Institution timetable and substitutes: timetableStarts."
+  },
+  "timetableEnds": "Ends at",
+  "@timetableEnds": {
+    "description": "Institution timetable and substitutes: timetableEnds."
+  },
+  "timetableRoom": "Room",
+  "@timetableRoom": {
+    "description": "Institution timetable and substitutes: timetableRoom."
+  },
+  "timetableSubstitute": "Choose substitute teacher",
+  "@timetableSubstitute": {
+    "description": "Institution timetable and substitutes: timetableSubstitute."
+  },
+  "timetableAssign": "Assign substitute teacher",
+  "@timetableAssign": {
+    "description": "Institution timetable and substitutes: timetableAssign."
+  },
+  "timetableReplaceNotice": "A new assignment replaces any previous substitute for this class and date.",
+  "@timetableReplaceNotice": {
+    "description": "Institution timetable and substitutes: timetableReplaceNotice."
+  },
+  "timetableNoSubstitutes": "No substitute teachers are available for this class and date.",
+  "@timetableNoSubstitutes": {
+    "description": "Institution timetable and substitutes: timetableNoSubstitutes."
+  },
+  "timetableSunday": "Sunday",
+  "@timetableSunday": {
+    "description": "Institution timetable and substitutes: timetableSunday."
+  },
+  "timetableMonday": "Monday",
+  "@timetableMonday": {
+    "description": "Institution timetable and substitutes: timetableMonday."
+  },
+  "timetableTuesday": "Tuesday",
+  "@timetableTuesday": {
+    "description": "Institution timetable and substitutes: timetableTuesday."
+  },
+  "timetableWednesday": "Wednesday",
+  "@timetableWednesday": {
+    "description": "Institution timetable and substitutes: timetableWednesday."
+  },
+  "timetableThursday": "Thursday",
+  "@timetableThursday": {
+    "description": "Institution timetable and substitutes: timetableThursday."
+  },
+  "timetableFriday": "Friday",
+  "@timetableFriday": {
+    "description": "Institution timetable and substitutes: timetableFriday."
+  },
+  "timetableSaturday": "Saturday",
+  "@timetableSaturday": {
+    "description": "Institution timetable and substitutes: timetableSaturday."
   }
 }

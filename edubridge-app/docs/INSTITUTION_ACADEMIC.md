@@ -81,3 +81,24 @@ Saving can retain the open session or close it after a separate confirmation.
 The result is verified by GET, including all statuses, notes and close state.
 Concurrent writes and automatic replay after an uncertain response are blocked.
 No backend code, routes, permissions or notification behavior were modified.
+
+### Timetable and substitute assignments
+
+The school academic screen opens the existing institution timetable GET API,
+with local year, section and weekday filters. API weekdays use Sunday=1 through
+Saturday=7; times, rooms and teacher names retain their server-authored values.
+Rows validate school/year/section/subject relationships, slot ranges and unique
+section slots. This batch views timetable entries; creating/removing entries and
+reporting teacher absence remain follow-up work.
+
+Substitute choices use the existing date-specific availability route, restricted
+to the class weekday within its academic year. Candidates are checked against
+active institution teachers and known busy slots. Every confirmed assignment
+revalidates the class identity and current availability before POST. The UI states
+that this upsert replaces any existing substitute for that class and date. The
+returned database receipt must match the slot, date, original and substitute
+teacher, notes and assigned status; a follow-up availability read must exclude
+the selected teacher. There is no existing substitution-history GET route, so the
+confirmation is shown for this operation without inventing a persistent history.
+Ambiguous/conflicting/denied writes clear stale choices and are not auto-replayed.
+All changes are Flutter-only; no backend routes, permissions or behavior changed.
