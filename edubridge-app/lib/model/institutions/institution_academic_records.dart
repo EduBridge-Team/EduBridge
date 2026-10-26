@@ -36,9 +36,10 @@ class InstitutionAcademicSection {
   }
 }
 
-class InstitutionAcademicRecords {
+class InstitutionAcademicRecords implements AcademicFormData {
   InstitutionAcademicRecords._(
     this.organizationSlug,
+    this.organizationId,
     this.school,
     this.curriculum,
     List<AcademicGrade> grades,
@@ -46,6 +47,9 @@ class InstitutionAcademicRecords {
   ) : grades = List.unmodifiable(grades),
       sections = List.unmodifiable(sections);
   final String organizationSlug;
+  final int organizationId;
+  @override
+  List<AcademicYear> get years => curriculum.years;
   final EnrollmentSchool school;
   final CurriculumCatalog curriculum;
   final List<AcademicGrade> grades;
@@ -97,6 +101,7 @@ class InstitutionAcademicRecords {
     }
     return InstitutionAcademicRecords._(
       slug,
+      organizationId,
       curriculum.school,
       curriculum,
       grades,

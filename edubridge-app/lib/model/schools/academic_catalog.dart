@@ -58,7 +58,14 @@ class AcademicSection {
   }
 }
 
-class AcademicCatalog {
+/// Validated choices shared by academic authoring forms.
+abstract interface class AcademicFormData {
+  EnrollmentSchool get school;
+  List<AcademicYear> get years;
+  List<AcademicGrade> get grades;
+}
+
+class AcademicCatalog implements AcademicFormData {
   AcademicCatalog._(this.school, List<AcademicYear> years,
       List<AcademicGrade> grades, List<AcademicSection> sections)
       : years = List.unmodifiable(years), grades = List.unmodifiable(grades),

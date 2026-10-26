@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
-import '../../model/institutions/institution_academic_records.dart';
+import '../../model/schools/academic_catalog.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/institution_academic_repository.dart';
 import '../../theme.dart';
-import '../enrollment/enrollment_state.dart';
+import '../academics/academic_create_screen.dart';
+import 'institution_academic_controller.dart';
 import 'institution_academic_content.dart';
 
 class InstitutionAcademicScreen extends StatefulWidget {
@@ -25,19 +26,18 @@ class InstitutionAcademicScreen extends StatefulWidget {
 
 class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     with WidgetsBindingObserver {
-  late EnrollmentState<InstitutionAcademicRecords> _state;
+  late InstitutionAcademicController _state;
+  final _editorContextChanges = ValueNotifier<int>(0);
   void _initialize() {
     final slug = widget.organizationSlug, school = widget.schoolId;
     final gateway =
         widget.gateway ??
         InstitutionAcademicRepository(organizationSlug: slug, schoolId: school);
-    _state = EnrollmentState(() async {
-      final data = await gateway.load();
-      if (data.organizationSlug != slug || data.school.id != school) {
-        throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
-      }
-      return data;
-    });
+    _state = InstitutionAcademicController(
+      gateway,
+      organizationSlug: slug,
+      schoolId: school,
+    );
     _state.reload();
   }
 
@@ -56,6 +56,11 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
         oldWidget.gateway != widget.gateway) {
       _state.dispose();
       _initialize();
+      // Disposing a controller ends its listeners. Rebuild any open editor
+      // after this frame so its original, now-inactive context is visible.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _editorContextChanges.value++;
+      });
     }
   }
 
@@ -68,7 +73,22 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _state.dispose();
+    _editorContextChanges.dispose();
     super.dispose();
+  }
+
+  Future<void> _open(AcademicKind kind) async {
+    final controller = _state;
+    if (!controller.canWrite) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AnimatedBuilder(
+          animation: _editorContextChanges,
+          builder: (context, _) =>
+              AcademicCreateScreen(controller: controller, kind: kind),
+        ),
+      ),
+    );
   }
 
   @override
@@ -95,7 +115,7 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
           actions: [
             IconButton(
               tooltip: l.enrollmentReload,
-              onPressed: _state.loading ? null : _state.reload,
+              onPressed: _state.loading || _state.busy ? null : _state.reload,
               icon: const Icon(Icons.refresh),
             ),
           ],
@@ -110,7 +130,39 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
-                    if (_state.loading) const LinearProgressIndicator(),
+                    if (data != null && _state.supportsCreation) ...[
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final kind in AcademicKind.values)
+                            OutlinedButton.icon(
+                              key: ValueKey('institution-add-${kind.name}'),
+                              onPressed:
+                                  _state.canWrite &&
+                                      (kind != AcademicKind.section ||
+                                          (data.years.isNotEmpty &&
+                                              data.grades.isNotEmpty))
+                                  ? () => _open(kind)
+                                  : null,
+                              icon: const Icon(Icons.add),
+                              label: Text(academicTitle(context, kind)),
+                            ),
+                        ],
+                      ),
+                      if (data.years.isEmpty || data.grades.isEmpty)
+                        Text(l.academicSectionPrerequisite),
+                    ],
+                    if (_state.loading || _state.busy)
+                      const LinearProgressIndicator(),
+                    if (_state.saved)
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          l.enrollmentSaved,
+                          key: const ValueKey('institution-academic-saved'),
+                        ),
+                      ),
                     if (error != null)
                       Semantics(liveRegion: true, child: Text(error)),
                     if (data != null)
