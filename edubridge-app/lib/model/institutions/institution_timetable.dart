@@ -1,5 +1,4 @@
 import '../enrollment/enrollment_models.dart';
-import '../schools/academic_catalog.dart';
 import 'institution_academic_records.dart';
 
 // The institution API uses 1=Sunday through 7=Saturday.
