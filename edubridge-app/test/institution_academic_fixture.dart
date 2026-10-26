@@ -60,7 +60,7 @@ class InstitutionAcademicFixture {
     schoolId: 5,
     client: EnrollmentApiClient(
       get: get,
-      post: (_, _) async => throw StateError('Read-only API'),
+      post: (path, body) async => throw StateError('Read-only API'),
     ),
   );
   Future<http.Response> get(String path) async {
