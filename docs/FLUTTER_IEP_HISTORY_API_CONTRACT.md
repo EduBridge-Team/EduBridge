@@ -103,3 +103,24 @@ Next: draft/goal editor and save contracts, followed by policy-driven submission
 and review actions. Reviewer authority, signatures, deadlines and multi-party
 approval remain product/server policy decisions; this read-only phase does not
 resolve them implicitly or replace the existing ministry workflow.
+
+## Temporary Flutter authoring workspace
+
+The preparation editor is separate from saved history. It reads the child's
+reference evaluations through the existing `GET /evaluations/child/{childId}`
+API. It performs no POST, PATCH, approval or persistence operation. Entered data
+lives only in the editor route; leaving discards it after confirmation. The UI
+explicitly states this limitation and never reports a save or submission.
+
+Plan preparation requires an explicitly selected evaluation for the same child,
+a title, ordered plan dates, a review date on/after the start, and at least one
+goal contained in the plan period. Goals require a description, finite baseline
+and target, an explicit unit, a measurement method and ordered dates. Lower and
+equal targets are allowed. The optional responsibility name is authoring text,
+not an account assignment or a permission grant. Accommodations are one per line.
+A successful client check creates only an immutable in-memory snapshot. It is
+invalidated on edits or refreshed evaluation data; it is never a server receipt.
+
+Server draft creation, authoritative write permissions, version conflict control,
+idempotency, submission and existing ministry review integration remain pending
+an implemented API contract. No speculative write endpoint is called by Flutter.
