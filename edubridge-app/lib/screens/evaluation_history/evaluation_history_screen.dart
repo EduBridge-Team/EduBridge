@@ -6,6 +6,8 @@ import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
 import '../../theme.dart';
 import '../enrollment/enrollment_state.dart';
+import '../iep/iep_history_screen.dart';
+import '../../services/iep/iep_history_repository.dart';
 import 'evaluation_history_card.dart';
 import 'evaluation_history_labels.dart';
 import 'evaluation_record_screen.dart';
@@ -16,10 +18,12 @@ class EvaluationHistoryScreen extends StatefulWidget {
     required this.childId,
     this.childName = '',
     this.gateway,
+    this.iepGateway,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? gateway;
+  final IepHistoryGateway? iepGateway;
   @override
   State<EvaluationHistoryScreen> createState() =>
       _EvaluationHistoryScreenState();
@@ -98,6 +102,21 @@ class _EvaluationHistoryScreenState extends State<EvaluationHistoryScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
+                    OutlinedButton.icon(
+                      key: const ValueKey('open-child-iep'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => IepHistoryScreen(
+                            childId: widget.childId,
+                            childName: widget.childName,
+                            gateway: widget.iepGateway,
+                            evaluationGateway: widget.gateway,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.assignment_outlined),
+                      label: Text(l10n.iepTitle),
+                    ),
                     if (widget.childName.trim().isNotEmpty)
                       Text(
                         widget.childName,
