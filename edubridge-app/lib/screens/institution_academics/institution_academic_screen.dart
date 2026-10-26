@@ -82,8 +82,11 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     if (!controller.canWrite) return;
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) =>
-            AcademicCreateScreen(controller: controller, kind: kind),
+        builder: (_) => AnimatedBuilder(
+          animation: _editorContextChanges,
+          builder: (context, _) =>
+              AcademicCreateScreen(controller: controller, kind: kind),
+        ),
       ),
     );
   }
