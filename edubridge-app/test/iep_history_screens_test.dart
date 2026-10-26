@@ -180,7 +180,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tapIep(tester, 'iep-version-103');
-      expect(find.textContaining('أضف وسيلة قياس واضحة'), findsOneWidget);
+      final reason = find.byKey(const ValueKey('iep-return-reason'));
+      await revealIep(tester, reason);
+      expect(
+        tester.widget<SelectableText>(reason).data,
+        contains('أضف وسيلة قياس واضحة'),
+      );
       await tapIep(tester, 'iep-evaluation-reference');
       expect(find.byType(EvaluationRecordScreen), findsNothing);
       final strings = await AppLocalizations.delegate.load(const Locale('en'));

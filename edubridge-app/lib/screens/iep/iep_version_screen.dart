@@ -68,6 +68,7 @@ class IepVersionScreen extends StatelessWidget {
                 if (version.returnReason?.trim().isNotEmpty == true)
                   SelectableText(
                     '${l10n.iepReturnReason}: ${version.returnReason}',
+                    key: const ValueKey('iep-return-reason'),
                   ),
                 IepEvaluationReference(
                   childId: version.childId,
