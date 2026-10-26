@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/interactive_lesson.dart';
+import '../../services/interactive_draft_repository.dart';
 import 'interactive_lesson_player.dart';
 
 /// Local, unsaved adaptation preview; cannot publish or assign a learner.
@@ -18,6 +19,8 @@ class _InteractiveLessonAdaptationScreenState
     extends State<InteractiveLessonAdaptationScreen> {
   late final TextEditingController _title;
   late final TextEditingController _objective;
+  bool _saving = false;
+  bool _saved = false;
 
   @override
   void initState() {
@@ -31,6 +34,38 @@ class _InteractiveLessonAdaptationScreenState
     _title.dispose();
     _objective.dispose();
     super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_saving || _saved) return;
+    final title = _title.text.trim();
+    final objective = _objective.text.trim();
+    if (title.isEmpty || objective.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('أدخل عنوان الدرس والنتاج التعليمي.')),
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      await const InteractiveDraftRepository().save(
+        templateId: widget.template.id,
+        title: title,
+        objective: objective,
+      );
+      if (!mounted) return;
+      setState(() => _saved = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حفظ المسودة في حسابك.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر تأكيد الحفظ. تحقق من مسوداتك قبل إعادة المحاولة.')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   void _preview() {
@@ -62,21 +97,32 @@ class _InteractiveLessonAdaptationScreenState
           body: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              const Text('هذه معاينة محلية فقط. لن يتم حفظ التغييرات أو إسناد الدرس إلى طالب.'),
+              const Text('يمكن حفظ العنوان والنتاج كمسودة خاصة بك. لا يتم إسناد الدرس إلى طالب أو نشره.'),
               const SizedBox(height: 16),
               TextField(
                 key: const ValueKey('adapt-lesson-title'),
                 controller: _title,
+                enabled: !_saving,
+                onChanged: (_) { if (_saved) setState(() => _saved = false); },
                 maxLength: 120,
                 decoration: const InputDecoration(labelText: 'عنوان الدرس'),
               ),
               TextField(
                 key: const ValueKey('adapt-lesson-objective'),
                 controller: _objective,
+                enabled: !_saving,
+                onChanged: (_) { if (_saved) setState(() => _saved = false); },
                 maxLength: 500,
                 maxLines: 3,
                 decoration: const InputDecoration(labelText: 'النتاج التعليمي'),
               ),
+              FilledButton.icon(
+                key: const ValueKey('save-adapted-lesson'),
+                onPressed: _saving || _saved ? null : _save,
+                icon: const Icon(Icons.save_outlined),
+                label: Text(_saving ? 'جارٍ الحفظ' : _saved ? 'تم الحفظ' : 'حفظ مسودة خاصة'),
+              ),
+              const SizedBox(height: 12),
               FilledButton.icon(
                 key: const ValueKey('preview-adapted-lesson'),
                 onPressed: _preview,
