@@ -27,6 +27,7 @@ class InstitutionAcademicScreen extends StatefulWidget {
 class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     with WidgetsBindingObserver {
   late InstitutionAcademicController _state;
+  final _editorContextChanges = ValueNotifier<int>(0);
   void _initialize() {
     final slug = widget.organizationSlug, school = widget.schoolId;
     final gateway =
@@ -55,6 +56,11 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
         oldWidget.gateway != widget.gateway) {
       _state.dispose();
       _initialize();
+      // Disposing a controller ends its listeners. Rebuild any open editor
+      // after this frame so its original, now-inactive context is visible.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _editorContextChanges.value++;
+      });
     }
   }
 
@@ -67,6 +73,7 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _state.dispose();
+    _editorContextChanges.dispose();
     super.dispose();
   }
 
