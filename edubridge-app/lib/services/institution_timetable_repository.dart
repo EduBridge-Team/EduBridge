@@ -1,5 +1,6 @@
 import '../model/enrollment/enrollment_models.dart';
 import '../model/institutions/institution_timetable.dart';
+import '../model/institutions/institution_timetable_draft.dart';
 import '../model/schools/academic_catalog.dart';
 import 'enrollment/enrollment_api_client.dart';
 import 'institution_academic_repository.dart';
@@ -10,13 +11,59 @@ abstract interface class InstitutionTimetableGateway {
   Future<InstitutionSubstituteChoices> available(int entryId, DateTime date);
   Future<InstitutionSubstitutionReceipt> assign(InstitutionSubstituteChoices expected, int teacherId, String? notes);
 }
-class InstitutionTimetableRepository implements InstitutionTimetableGateway {
+abstract interface class InstitutionTimetableCreator implements InstitutionTimetableGateway {
+  Future<TimetableCreationData> loadCreationData();
+  Future<int> createEntry(TimetableEntryDraft draft);
+}
+class InstitutionTimetableRepository implements InstitutionTimetableCreator {
   InstitutionTimetableRepository({required this.organizationSlug, required this.organizationId,
     required this.schoolId, EnrollmentApiClient? client}) : _client = client ?? EnrollmentApiClient();
   final String organizationSlug;
   final int organizationId, schoolId;
   final EnrollmentApiClient _client;
   String get _root => '/institutions/${Uri.encodeComponent(organizationSlug)}/schools/$schoolId/timetable';
+  @override
+  Future<TimetableCreationData> loadCreationData() async {
+    final timetable = await load();
+    final members = await InstitutionTeacherAssignmentsRepository(organizationSlug: organizationSlug,
+      organizationId: organizationId, schoolId: schoolId, client: _client).load();
+    return TimetableCreationData(timetable, members.teachers);
+  }
+  @override
+  Future<int> createEntry(TimetableEntryDraft draft) async {
+    if (!draft.valid) throw const EnrollmentApiException(EnrollmentFailure.validation);
+    final current = await loadCreationData();
+    if (!current.accepts(draft)) throw const EnrollmentApiException(EnrollmentFailure.validation);
+    if (draft.conflicts(current.timetable)) throw const EnrollmentApiException(EnrollmentFailure.conflict);
+    final response = await _client.post(_root, draft.toJson());
+    late final InstitutionTimetableEntry created;
+    try {
+      final row = enrollmentMap(response['timetable_entry']);
+      // POST returns the database row without the teacher-name join used by GET.
+      created = InstitutionTimetableEntry.fromJson(current.timetable.academic, {
+        ...row, 'teacher_name': draft.teacherId == null ? null : current.teachers[draft.teacherId],
+      });
+    } on FormatException {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+    if (!draft.matches(created) || current.timetable.entries.any((e) => e.id == created.id)) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+    late final InstitutionTimetable after;
+    try {
+      after = await load();
+    } on EnrollmentApiException catch (e) {
+      if (e.failure == EnrollmentFailure.session || e.failure == EnrollmentFailure.forbidden ||
+          e.failure == EnrollmentFailure.invalidResponse || e.failure == EnrollmentFailure.unavailable) rethrow;
+      throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+    }
+    final matches = after.entries.where((e) => e.id == created.id);
+    if (matches.length != 1 || !draft.matches(matches.single)) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+    return created.id;
+  }
+
   @override
   Future<InstitutionTimetable> load() async {
     final academic = await InstitutionAcademicRepository(organizationSlug: organizationSlug, schoolId: schoolId, client: _client).load();

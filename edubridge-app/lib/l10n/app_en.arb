@@ -11379,5 +11379,37 @@
   "timetableSaturday": "Saturday",
   "@timetableSaturday": {
     "description": "Institution timetable and substitutes: timetableSaturday."
+  },
+  "timetableCreate": "Create timetable class",
+  "@timetableCreate": {
+    "description": "Institution timetable creation: timetableCreate."
+  },
+  "timetableCreateConflict": "This section, teacher or room is already scheduled for the same weekday and period.",
+  "@timetableCreateConflict": {
+    "description": "Institution timetable creation: timetableCreateConflict."
+  },
+  "timetableCreateTimeHint": "Times are optional. Use 24-hour HH:mm; an end time requires a start time.",
+  "@timetableCreateTimeHint": {
+    "description": "Institution timetable creation: timetableCreateTimeHint."
+  },
+  "timetableCreateTimeInvalid": "Enter a valid 24-hour time, such as 08:00.",
+  "@timetableCreateTimeInvalid": {
+    "description": "Institution timetable creation: timetableCreateTimeInvalid."
+  },
+  "timetableCreateTimeOrder": "The end time must be later than the start time.",
+  "@timetableCreateTimeOrder": {
+    "description": "Institution timetable creation: timetableCreateTimeOrder."
+  },
+  "timetableCreatePeriodInvalid": "Enter a period number from 1 to 20.",
+  "@timetableCreatePeriodInvalid": {
+    "description": "Institution timetable creation: timetableCreatePeriodInvalid."
+  },
+  "timetableCreateRoomInvalid": "The room name must be 80 characters or fewer.",
+  "@timetableCreateRoomInvalid": {
+    "description": "Institution timetable creation: timetableCreateRoomInvalid."
+  },
+  "timetableCreatePrerequisite": "Create an academic year, a section and an active subject first.",
+  "@timetableCreatePrerequisite": {
+    "description": "Institution timetable creation: timetableCreatePrerequisite."
   }
 }

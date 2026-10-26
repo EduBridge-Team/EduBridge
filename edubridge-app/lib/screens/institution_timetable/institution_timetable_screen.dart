@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
 import '../../model/institutions/institution_timetable.dart';
+import '../../model/institutions/institution_timetable_draft.dart';
 import '../../services/institution_timetable_repository.dart';
 import '../../theme.dart';
 import '../academics/academic_choice_field.dart';
@@ -9,6 +10,7 @@ import '../enrollment/enrollment_labels.dart';
 import '../enrollment/enrollment_state.dart';
 import 'institution_substitute_screen.dart';
 import 'institution_timetable_card.dart';
+import 'institution_timetable_create_screen.dart';
 
 class InstitutionTimetableScreen extends StatefulWidget {
   const InstitutionTimetableScreen({super.key, required this.gateway});
@@ -35,6 +37,16 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
   }
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }
+  Future<void> _create() async {
+    final controller = _state, gateway = widget.gateway;
+    if (!controller.canWrite || gateway is! InstitutionTimetableCreator) return;
+    final draft = await Navigator.of(context).push<TimetableEntryDraft>(MaterialPageRoute(builder: (_) =>
+      InstitutionTimetableCreateScreen(writer: gateway)));
+    if (!mounted || !identical(controller, _state)) return;
+    if (draft != null) setState(() { _year = draft.yearId; _section = draft.sectionId; _day = draft.weekday; });
+    await controller.reload();
+    if (mounted && draft != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.enrollmentSaved)));
+  }
   Future<void> _open(InstitutionTimetable data, InstitutionTimetableEntry entry) async {
     final controller = _state;
     if (controller.loading) return;
@@ -61,6 +73,8 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
           if (_state.error != null) Semantics(liveRegion: true, child: Text(enrollmentFailureMessage(l, _state.error!))),
           if (data != null) ...[
             Text(data.academic.school.name, style: Theme.of(context).textTheme.titleLarge),
+            if (widget.gateway is InstitutionTimetableCreator) FilledButton(key: const ValueKey('timetable-open-create'),
+              onPressed: _state.canWrite ? _create : null, child: Text(l.timetableCreate)),
             AcademicChoiceField(key: const ValueKey('timetable-year'), label: l.academicYears,
               options: {0: l.all, for (final y in data.academic.years) y.id: y.name}, value: _year,
               requiredMessage: l.academicRequired, onChanged: _state.loading ? null : (v) => setState(() { _year = v; _section = 0; })),
