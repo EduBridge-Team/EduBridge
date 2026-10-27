@@ -1,3 +1,4 @@
+import '../../theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/interactive_draft_repository.dart';
@@ -64,7 +65,7 @@ class _InteractiveLessonSavedDraftsScreenState extends State<InteractiveLessonSa
   Widget build(BuildContext context) => Directionality(
     textDirection: TextDirection.rtl,
     child: Scaffold(
-      appBar: AppBar(title: const Text('مسودات دروسي المحفوظة')),
+      appBar: BrandAppBar(title: const Text('مسودات دروسي المحفوظة')),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<InteractiveDraftSummary>>(
