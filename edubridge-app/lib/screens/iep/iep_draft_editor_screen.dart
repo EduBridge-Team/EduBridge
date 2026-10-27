@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../../model/evaluations/evaluation_record.dart';
 import '../../model/iep/iep_draft.dart';
+import '../../model/iep/iep_draft_save.dart';
+import '../../services/iep/iep_draft_repository.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
 import '../../theme.dart';
@@ -10,28 +12,32 @@ import '../academics/academic_choice_field.dart';
 import '../enrollment/enrollment_state.dart';
 import '../evaluation_history/evaluation_history_labels.dart';
 import 'iep_draft_field.dart';
+import 'iep_draft_save_screen.dart';
 import 'iep_draft_preview_screen.dart';
 import 'iep_evaluation_reference.dart';
 import 'iep_draft_goal_card.dart';
 import 'iep_goal_editor_screen.dart';
 
-/// Preparation only: no write gateway, persistence or approval is implied.
+/// Authoring remains temporary until an explicitly confirmed server save.
 class IepDraftEditorScreen extends StatelessWidget {
   const IepDraftEditorScreen({
     super.key,
     required this.childId,
     this.childName = '',
     this.evaluationGateway,
+    this.saveGateway,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? evaluationGateway;
+  final IepDraftGateway? saveGateway;
   @override
   Widget build(BuildContext context) => _IepDraftEditorBody(
-    key: ValueKey((childId, evaluationGateway)),
+    key: ValueKey((childId, evaluationGateway, saveGateway)),
     childId: childId,
     childName: childName,
     evaluationGateway: evaluationGateway,
+    saveGateway: saveGateway,
   );
 }
 
@@ -41,10 +47,12 @@ class _IepDraftEditorBody extends StatefulWidget {
     required this.childId,
     required this.childName,
     this.evaluationGateway,
+    this.saveGateway,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? evaluationGateway;
+  final IepDraftGateway? saveGateway;
   @override
   State<_IepDraftEditorBody> createState() => _IepDraftEditorScreenState();
 }
@@ -52,6 +60,7 @@ class _IepDraftEditorBody extends StatefulWidget {
 class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     with WidgetsBindingObserver {
   final _form = GlobalKey<FormState>();
+  final _saveRequestKey = newIepDraftRequestKey();
   final Map<String, String> _values = {};
   final List<IepDraftGoal> _goals = [];
   late EnrollmentState<EvaluationHistory> _evaluations;
@@ -210,6 +219,18 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
       ),
     );
     if (mounted) await _evaluations.reload();
+  }
+
+  Future<void> _saveDraft(IepPlanDraft draft) async {
+    if (!identical(_checked, draft)) return;
+    final saved = await Navigator.of(context).push<IepSavedDraft>(MaterialPageRoute(
+      builder: (_) => IepDraftSaveScreen(draft: draft, childName: widget.childName, gateway: widget.saveGateway, requestKey: _saveRequestKey),
+    ));
+    if (!mounted || saved == null || !saved.matches(draft)) return;
+    setState(() { _dirty = false; _leaving = true; });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.pop(context, true);
+    });
   }
 
   @override
@@ -407,6 +428,12 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                         child: Text(l.iepComposeVerify),
                       ),
                       if (checked != null) ...[
+                        OutlinedButton.icon(
+                          key: const ValueKey('iep-open-server-save'),
+                          onPressed: () => _saveDraft(checked),
+                          icon: const Icon(Icons.cloud_upload_outlined),
+                          label: Text(l.iepSaveTitle),
+                        ),
                         Semantics(
                           liveRegion: true,
                           child: Text(
