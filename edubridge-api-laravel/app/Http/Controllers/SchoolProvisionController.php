@@ -95,7 +95,7 @@ class SchoolProvisionController extends Controller
             // verification link as ordinary registration, after commit.
             try {
                 $account = DB::table('users')->find($userId);
-                app(\\App\\Support\\EmailVerificationSender::class)->send($account);
+                app(\App\Support\EmailVerificationSender::class)->send($account);
             } catch (\\Throwable $mailError) {
                 report($mailError);
                 // The created account can request verification again.
