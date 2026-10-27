@@ -174,11 +174,12 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                                 final current = currentPlans.single;
                                 final versions = current.versions.where((v) => v.id == source.versionId).toList();
                                 if (versions.length != 1 || !source.matches(current, versions.single)) return;
-                                await Navigator.of(context).push(MaterialPageRoute<void>(
+                                final saved = await Navigator.of(context).push<bool>(MaterialPageRoute<bool>(
                                   builder: (_) => IepDraftEditorScreen(childId: widget.childId,
                                     childName: widget.childName, editSource: source,
                                     evaluationGateway: widget.evaluationGateway),
                                 ));
+                                if (mounted && saved == true && identical(state, _state)) await state.reload();
                               },
                               icon: const Icon(Icons.edit_outlined),
                               label: Text(Localizations.localeOf(context).languageCode == 'en'

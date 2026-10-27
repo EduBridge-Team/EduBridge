@@ -14,6 +14,7 @@ import '../enrollment/enrollment_state.dart';
 import '../evaluation_history/evaluation_history_labels.dart';
 import 'iep_draft_field.dart';
 import 'iep_draft_save_screen.dart';
+import 'iep_draft_update_screen.dart';
 import 'iep_draft_preview_screen.dart';
 import 'iep_evaluation_reference.dart';
 import 'iep_draft_goal_card.dart';
@@ -240,7 +241,18 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   }
 
   Future<void> _saveDraft(IepPlanDraft draft) async {
-    if (widget.editSource != null || !identical(_checked, draft)) return;
+    if (!identical(_checked, draft)) return;
+    if (widget.editSource != null) {
+      final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(
+        builder: (_) => IepDraftUpdateScreen(source: widget.editSource!, draft: draft),
+      ));
+      if (!mounted || saved != true) return;
+      setState(() { _dirty = false; _leaving = true; });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.pop(context, true);
+      });
+      return;
+    }
     final saved = await Navigator.of(context).push<IepSavedDraft>(MaterialPageRoute(
       builder: (_) => IepDraftSaveScreen(draft: draft, childName: widget.childName, gateway: widget.saveGateway, requestKey: _saveRequestKey),
     ));
@@ -313,8 +325,8 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                       Text(
                         widget.editSource == null ? l.iepComposeNotice
                           : (Localizations.localeOf(context).languageCode == 'en'
-                            ? 'Editing a temporary copy. Updating the saved version is not available yet. Leaving discards these changes.'
-                            : 'تعديل نسخة مؤقتة. تحديث النسخة المحفوظة غير متاح بعد. مغادرة المحرر تلغي هذه التعديلات.'),
+                            ? 'Editing a temporary copy. Updating the saved version requires service support and confirmed saving. Leaving discards these changes.'
+                            : 'تعديل نسخة مؤقتة. تحديث النسخة المحفوظة يتطلب دعم الخدمة وتأكيد الحفظ. مغادرة المحرر تلغي هذه التعديلات.'),
                         key: const ValueKey('iep-unsaved-notice'),
                       ),
                       const SizedBox(height: 16),
@@ -449,7 +461,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                         child: Text(l.iepComposeVerify),
                       ),
                       if (checked != null) ...[
-                        if (widget.editSource == null) OutlinedButton.icon(
+                        OutlinedButton.icon(
                           key: const ValueKey('iep-open-server-save'),
                           onPressed: () => _saveDraft(checked),
                           icon: const Icon(Icons.cloud_upload_outlined),
