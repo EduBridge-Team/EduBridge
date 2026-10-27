@@ -17,6 +17,8 @@ class _DirectorVerificationCardState extends State<DirectorVerificationCard> {
   int? _selected;
 
   Future<void> _submit() async {
+    final controller = widget.controller;
+    final evidence = controller.evidence;
     final selected = _selected;
     if (selected == null || !widget.controller.canWrite) return;
     final confirm = await showDialog<bool>(
@@ -38,7 +40,13 @@ class _DirectorVerificationCardState extends State<DirectorVerificationCard> {
         ],
       ),
     );
-    if (confirm == true && mounted) await widget.controller.submit(selected);
+    if (confirm == true &&
+        mounted &&
+        identical(controller, widget.controller) &&
+        identical(controller.evidence, evidence) &&
+        controller.canWrite) {
+      await controller.submit(selected);
+    }
   }
 
   @override
@@ -103,7 +111,12 @@ class _DirectorVerificationCardState extends State<DirectorVerificationCard> {
                     widget.controller.canWrite &&
                         verification.status !=
                             DirectorVerificationStatus.pending
-                    ? (value) => setState(() => _selected = value)
+                    ? (value) {
+                        if (widget.controller.canWrite &&
+                            identical(widget.controller.evidence, evidence)) {
+                          setState(() => _selected = value);
+                        }
+                      }
                     : null,
               ),
             const SizedBox(height: 12),
