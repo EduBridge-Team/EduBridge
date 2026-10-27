@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../l10n/l10n.dart';
@@ -43,10 +44,11 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
 
   void _loadController() {
     _controller = DirectorEvidenceController(
-      widget.gateway ?? DirectorEvidenceRepository(
-        school: widget.school,
-        directorId: widget.director.id,
-      ),
+      widget.gateway ??
+          DirectorEvidenceRepository(
+            school: widget.school,
+            directorId: widget.director.id,
+          ),
     )..reload();
   }
 
@@ -93,8 +95,11 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
         ],
       ),
     );
-    if (confirm == true && mounted && identical(controller, _controller) &&
-        identical(controller.evidence, evidence) && controller.canWrite) {
+    if (confirm == true &&
+        mounted &&
+        identical(controller, _controller) &&
+        identical(controller.evidence, evidence) &&
+        controller.canWrite) {
       await controller.remove(document);
     }
   }
@@ -156,7 +161,7 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
                 ),
               if (evidence != null) ...[
                 DropdownButtonFormField<DirectorDocumentKind>(
-                  key: ObjectKey(_controller),
+                  key: ValueKey(('director-document-kind', _controller)),
                   initialValue: _kind,
                   isExpanded: true,
                   decoration: InputDecoration(
@@ -171,7 +176,8 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
                   ],
                   onChanged: _controller.canWrite
                       ? (kind) {
-                          if (kind != null && _controller.canWrite &&
+                          if (kind != null &&
+                              _controller.canWrite &&
                               identical(_controller.evidence, evidence)) {
                             setState(() => _kind = kind);
                           }
@@ -192,7 +198,10 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
                   label: Text(l10n.directorDocumentUpload),
                 ),
                 const SizedBox(height: 16),
-                DirectorVerificationCard(key: ObjectKey(_controller), controller: _controller),
+                DirectorVerificationCard(
+                  key: ObjectKey(_controller),
+                  controller: _controller,
+                ),
                 if (evidence.documents.isEmpty)
                   Text(l10n.directorDocumentEmpty),
                 for (final document in evidence.documents)

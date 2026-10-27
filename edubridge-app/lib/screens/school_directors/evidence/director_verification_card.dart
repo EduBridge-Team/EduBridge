@@ -40,8 +40,11 @@ class _DirectorVerificationCardState extends State<DirectorVerificationCard> {
         ],
       ),
     );
-    if (confirm == true && mounted && identical(controller, widget.controller) &&
-        identical(controller.evidence, evidence) && controller.canWrite) {
+    if (confirm == true &&
+        mounted &&
+        identical(controller, widget.controller) &&
+        identical(controller.evidence, evidence) &&
+        controller.canWrite) {
       await controller.submit(selected);
     }
   }

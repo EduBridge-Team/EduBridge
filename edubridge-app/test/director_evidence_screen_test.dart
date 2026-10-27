@@ -31,6 +31,7 @@ Widget screen(
 Future<void> selectIdentity(WidgetTester tester) async {
   final select = find.byType(DropdownButtonFormField<int>);
   await tester.ensureVisible(select);
+  await tester.pumpAndSettle();
   await tester.tap(select);
   await tester.pumpAndSettle();
   await tester.tap(find.text('identity.pdf').last);
