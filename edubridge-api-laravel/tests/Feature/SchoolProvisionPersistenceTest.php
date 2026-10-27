@@ -183,4 +183,46 @@ class SchoolProvisionPersistenceTest extends TestCase
         $this->assertNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
     }
 
+    public function test_verified_school_email_link_is_single_use_and_allows_login(): void
+    {
+        $email = 'single-use-school@example.test';
+        $created = $this->provision(false, $email);
+        $this->assertSame(201, $created->getStatusCode());
+        $this->assertSame(403, app(AuthController::class)->login(
+            Request::create('/api/auth/login', 'POST', [
+                'email' => $email, 'password' => 'long-test-password-123',
+            ])
+        )->getStatusCode());
+
+        // The plaintext verification token exists only in the email;
+        // simulate that delivered token using a known hash in test storage.
+        $plaintextToken = 'fixture-verification-token';
+        DB::table('email_verification_tokens')->where('email', $email)
+            ->update([
+                'token' => hash('sha256', $plaintextToken),
+                'created_at' => now(),
+            ]);
+        $verifyRequest = Request::create('/api/auth/verify-email', 'GET', [
+            'email' => $email, 'token' => $plaintextToken,
+        ]);
+        $verified = app(AuthController::class)->verifyEmail($verifyRequest);
+        $this->assertSame(302, $verified->getStatusCode());
+        $this->assertStringContainsString('verified=1', $verified->headers->get('Location'));
+        $this->assertNotNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
+        $this->assertSame(0, DB::table('email_verification_tokens')->where('email', $email)->count());
+
+        $replayed = app(AuthController::class)->verifyEmail($verifyRequest);
+        $this->assertSame(302, $replayed->getStatusCode());
+        $this->assertStringContainsString('verified=0', $replayed->headers->get('Location'));
+
+        $login = app(AuthController::class)->login(
+            Request::create('/api/auth/login', 'POST', [
+                'email' => $email, 'password' => 'long-test-password-123',
+            ])
+        );
+        $this->assertSame(200, $login->getStatusCode());
+        $this->assertSame('school', $login->getData(true)['user']['role']);
+        $this->assertNotEmpty($login->getData(true)['token']);
+    }
+
 }
