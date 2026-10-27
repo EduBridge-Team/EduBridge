@@ -20,6 +20,13 @@ class InteractiveLessonStarterLibrary extends StatefulWidget {
 class _InteractiveLessonStarterLibraryState extends State<InteractiveLessonStarterLibrary> {
   String _query = '';
   String _subject = 'all';
+  late final Future<InteractiveLessonCatalog> _catalog;
+
+  @override
+  void initState() {
+    super.initState();
+    _catalog = (widget.repository ?? const InteractiveLessonStarterRepository()).load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +49,7 @@ class _InteractiveLessonStarterLibraryState extends State<InteractiveLessonStart
           ],
         ),
         body: FutureBuilder<InteractiveLessonCatalog>(
-          future: (widget.repository ?? const InteractiveLessonStarterRepository()).load(),
+          future: _catalog,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(child: Text('تعذّر تحميل الدروس. حاول مجددًا.'));
