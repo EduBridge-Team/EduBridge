@@ -8,8 +8,12 @@ abstract interface class InstitutionTeacherAssignmentsGateway {
   Future<void> create(TeacherAssignmentDraft draft);
 }
 
+abstract interface class InstitutionTeacherAssignmentRemover implements InstitutionTeacherAssignmentsGateway {
+  Future<void> remove(InstitutionTeacherAssignments expected, InstitutionTeacherAssignment assignment);
+}
+
 class InstitutionTeacherAssignmentsRepository
-    implements InstitutionTeacherAssignmentsGateway {
+    implements InstitutionTeacherAssignmentRemover {
   InstitutionTeacherAssignmentsRepository({
     required this.organizationSlug,
     required this.organizationId,
@@ -34,6 +38,33 @@ class InstitutionTeacherAssignmentsRepository
     try {
       return InstitutionTeacherAssignments.fromJson(academic, data);
     } on FormatException {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
+  }
+
+  @override
+  Future<void> remove(InstitutionTeacherAssignments expected, InstitutionTeacherAssignment assignment) async {
+    if (expected.academic.organizationSlug != organizationSlug || expected.academic.organizationId != organizationId ||
+        expected.academic.school.id != schoolId || !expected.assignments.any((a) =>
+          a.id == assignment.id && a.draft.identity == assignment.draft.identity)) {
+      throw const EnrollmentApiException(EnrollmentFailure.validation);
+    }
+    final current = await load();
+    final matches = current.assignments.where((a) => a.id == assignment.id);
+    if (matches.length != 1 || matches.single.draft.identity != assignment.draft.identity) {
+      throw const EnrollmentApiException(EnrollmentFailure.conflict);
+    }
+    final receipt = await _client.delete('$_base/academic/teacher-assignments/${assignment.id}');
+    if (receipt['removed'] != true) throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    late final InstitutionTeacherAssignments after;
+    try {
+      after = await load();
+    } on EnrollmentApiException catch (e) {
+      if (e.failure == EnrollmentFailure.session || e.failure == EnrollmentFailure.forbidden ||
+          e.failure == EnrollmentFailure.invalidResponse || e.failure == EnrollmentFailure.unavailable) rethrow;
+      throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+    }
+    if (after.assignments.any((a) => a.id == assignment.id || a.draft.identity == assignment.draft.identity)) {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }
   }

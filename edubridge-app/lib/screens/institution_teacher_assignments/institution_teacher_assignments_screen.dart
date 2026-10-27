@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
 import '../../model/schools/teacher_assignment.dart';
+import '../../model/institutions/institution_teacher_assignments.dart';
 import '../../services/institution_teacher_assignments_repository.dart';
 import '../../theme.dart';
 import '../academics/academic_choice_field.dart';
@@ -18,7 +19,8 @@ class InstitutionTeacherAssignmentsScreen extends StatefulWidget {
 
 class _InstitutionTeacherAssignmentsScreenState
     extends State<InstitutionTeacherAssignmentsScreen> with WidgetsBindingObserver {
-  late final InstitutionTeacherAssignmentsController _state;
+  late InstitutionTeacherAssignmentsController _state;
+  final _scroll = ScrollController();
   final _form = GlobalKey<FormState>();
   int? _teacher, _section, _subject;
   bool _invalid = false;
@@ -29,6 +31,14 @@ class _InstitutionTeacherAssignmentsScreenState
     _state = InstitutionTeacherAssignmentsController(widget.gateway)..reload();
   }
   @override
+  void didUpdateWidget(covariant InstitutionTeacherAssignmentsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.gateway != widget.gateway) {
+      _state.dispose(); _teacher = null; _section = null; _subject = null; _invalid = false;
+      _state = InstitutionTeacherAssignmentsController(widget.gateway)..reload();
+    }
+  }
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _state.reload();
   }
@@ -36,7 +46,27 @@ class _InstitutionTeacherAssignmentsScreenState
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _state.dispose();
+    _scroll.dispose();
     super.dispose();
+  }
+  Future<void> _remove(InstitutionTeacherAssignment assignment) async {
+    final controller = _state, expected = _state.snapshot;
+    if (!controller.canWrite || expected == null) return;
+    final l = context.l10n;
+    final confirmed = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+      scrollable: true, title: Text(l.institutionAssignmentRemove), content: Column(
+        mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(assignment.teacherName), Text(expected.sectionLabel(assignment.draft.sectionId)),
+          Text(expected.academic.curriculum.subjects.firstWhere((s) => s.id == assignment.draft.subjectId).name),
+          Text(l.institutionAssignmentRemoveConfirm),
+        ]), actions: [TextButton(key: const ValueKey('institution-assignment-remove-cancel'),
+          onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
+          FilledButton(key: const ValueKey('institution-assignment-remove-confirm'),
+            onPressed: () => Navigator.pop(context, true), child: Text(l.institutionAssignmentRemove))],
+    ));
+    if (!mounted || !identical(controller, _state) || !identical(expected, controller.snapshot) || confirmed != true) return;
+    await controller.remove(assignment);
+    if (mounted && identical(controller, _state) && _scroll.hasClients) _scroll.jumpTo(0);
   }
   Future<void> _save() async {
     if (!_state.canWrite || !_form.currentState!.validate()) return;
@@ -47,8 +77,9 @@ class _InstitutionTeacherAssignmentsScreenState
       setState(() => _invalid = true);
       return;
     }
-    final saved = await _state.create(draft);
-    if (mounted && saved) setState(() {
+    final controller = _state;
+    final saved = await controller.create(draft);
+    if (mounted && identical(controller, _state) && saved) setState(() {
       _teacher = null;
       _section = null;
       _subject = null;
@@ -77,6 +108,7 @@ class _InstitutionTeacherAssignmentsScreenState
             child: SafeArea(child: Center(child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 840),
               child: ListView(
+                controller: _scroll,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
                 children: [
@@ -118,10 +150,13 @@ class _InstitutionTeacherAssignmentsScreenState
                       ],
                     )),
                     if (data.assignments.isEmpty) Text(l.academicEmpty),
-                    for (final item in data.assignments) Card(child: Padding(
+                    for (final item in data.assignments) Card(key: ValueKey('institution-assignment-${item.id}'), child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                         Text(item.teacherName),
+                        if (widget.gateway is InstitutionTeacherAssignmentRemover) OutlinedButton(
+                          key: ValueKey('institution-assignment-remove-${item.id}'),
+                          onPressed: _state.canWrite ? () => _remove(item) : null, child: Text(l.institutionAssignmentRemove)),
                         Text(data.sectionLabel(item.draft.sectionId)),
                         Text(data.academic.curriculum.subjects.firstWhere((v) => v.id == item.draft.subjectId).name),
                       ]),

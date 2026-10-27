@@ -11491,5 +11491,13 @@
   "attendanceReportClear": "Clear filters",
   "@attendanceReportClear": {
     "description": "Institution attendance report"
+  },
+  "institutionAssignmentRemove": "Remove teacher assignment",
+  "@institutionAssignmentRemove": {
+    "description": "Institution teacher assignment removal"
+  },
+  "institutionAssignmentRemoveConfirm": "Remove this teacher’s assignment to the displayed section and subject? This action cannot be undone.",
+  "@institutionAssignmentRemoveConfirm": {
+    "description": "Institution teacher assignment removal"
   }
 }
