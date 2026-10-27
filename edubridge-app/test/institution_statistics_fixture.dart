@@ -24,5 +24,5 @@ class InstitutionStatisticsFixture {
     }
     await beforeReport?.call();
     return http.Response(jsonEncode(data), status, headers: {'content-type': 'application/json; charset=utf-8'});
-  }, post: (_, _) async => throw StateError('Read-only report')));
+  }, post: (path, body) async => throw StateError('Read-only report')));
 }
