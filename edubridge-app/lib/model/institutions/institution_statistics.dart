@@ -52,7 +52,7 @@ class InstitutionStatistics {
         throw const FormatException('Mismatched statistics period');
       }
       final values = enrollmentMap(data['period_summary']);
-      for (final key in ['schools_created', 'teachers_joined', 'student_files_created', 'enrollments_started']) {
+      for (final key in ['schools_created', 'teachers_joined', 'specialists_joined', 'student_files_created', 'enrollments_started']) {
         periodSummary[key] = _count(values[key]);
       }
     }

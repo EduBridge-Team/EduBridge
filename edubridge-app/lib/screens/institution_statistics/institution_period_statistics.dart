@@ -10,6 +10,7 @@ class InstitutionPeriodStatistics extends StatelessWidget {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final labels = {
       'schools_created': en ? 'Schools created in period' : 'مدارس أُنشئت خلال الفترة',
+      'specialists_joined': en ? 'Specialists joined in period' : 'أخصائيون انضموا خلال الفترة',
       'teachers_joined': en ? 'Teachers joined in period' : 'معلمون انضموا خلال الفترة',
       'student_files_created': en ? 'Student files created in period' : 'ملفات طلاب أُنشئت خلال الفترة',
       'enrollments_started': en ? 'Enrollments started in period' : 'تسجيلات بدأت خلال الفترة',
@@ -17,8 +18,6 @@ class InstitutionPeriodStatistics extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(en ? 'Selected-period statistics' : 'إحصائيات الفترة المختارة',
         style: Theme.of(context).textTheme.titleLarge),
-      if (labels.keys.any((key) => values[key] == null)) Text(
-        en ? 'Some period data is not available yet.' : 'بعض بيانات الفترة غير متاحة بعد.'),
       LayoutBuilder(builder: (context, constraints) {
         final scale = MediaQuery.textScalerOf(context).scale(1);
         final columns = constraints.maxWidth >= 600 * scale ? 2 : 1;
@@ -29,7 +28,6 @@ class InstitutionPeriodStatistics extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Text(label.value), Text(values[label.key]?.toString() ?? '—',
                   style: Theme.of(context).textTheme.headlineSmall),
-                if (values[label.key] == null) Text(en ? 'Period data unavailable' : 'بيانات الفترة غير متاحة'),
               ])))),
         ]);
       }),
