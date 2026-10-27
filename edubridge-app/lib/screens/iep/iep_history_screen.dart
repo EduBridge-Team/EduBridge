@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
 import '../../model/iep/iep_plan_history.dart';
+import '../../model/iep/iep_edit_source.dart';
+import '../../model/iep/iep_version.dart';
 import '../../services/iep/iep_history_repository.dart';
 import '../../services/iep/iep_draft_repository.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
@@ -144,7 +146,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                     if (data != null && data.plans.isEmpty && !_state.loading)
                       Text(l10n.iepEmpty),
                     if (data != null)
-                      for (final plan in data.plans)
+                      for (final plan in data.plans) ...[
                         IepPlanCard(
                           key: ValueKey('iep-plan-${plan.id}'),
                           plan: plan,
@@ -158,6 +160,31 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                             ),
                           ),
                         ),
+                        if (!plan.closed)
+                          for (final version in plan.versions.where((v) => v.status == IepVersionStatus.draft && v.goals.isNotEmpty))
+                            TextButton.icon(
+                              key: ValueKey('iep-edit-copy-${version.id}'),
+                              onPressed: _state.loading ? null : () async {
+                                final source = IepEditSource.capture(plan, version);
+                                final state = _state;
+                                await state.reload();
+                                if (!mounted || !identical(state, _state)) return;
+                                final currentPlans = state.snapshot?.plans.where((p) => p.id == source.planId).toList();
+                                if (currentPlans == null || currentPlans.length != 1) return;
+                                final current = currentPlans.single;
+                                final versions = current.versions.where((v) => v.id == source.versionId).toList();
+                                if (versions.length != 1 || !source.matches(current, versions.single)) return;
+                                await Navigator.of(context).push(MaterialPageRoute<void>(
+                                  builder: (_) => IepDraftEditorScreen(childId: widget.childId,
+                                    childName: widget.childName, editSource: source,
+                                    evaluationGateway: widget.evaluationGateway),
+                                ));
+                              },
+                              icon: const Icon(Icons.edit_outlined),
+                              label: Text(Localizations.localeOf(context).languageCode == 'en'
+                                ? 'Edit a temporary copy' : 'تعديل نسخة مؤقتة'),
+                            ),
+                      ],
                   ],
                 ),
               ),
