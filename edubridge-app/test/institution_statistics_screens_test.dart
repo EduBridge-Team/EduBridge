@@ -16,6 +16,11 @@ void main() {
         final f = InstitutionStatisticsFixture();
         await tester.pumpWidget(curriculumHost(InstitutionStatisticsScreen(gateway: f.repository), language));
         await tester.pumpAndSettle();
+        await tapCurriculum(tester, 'statistics-period');
+        expect(find.byType(DateRangePickerDialog), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        Navigator.of(tester.element(find.byType(DateRangePickerDialog))).pop();
+        await tester.pumpAndSettle();
         await tester.scrollUntilVisible(find.text('مدرسة الأمل'), 200, scrollable: find.byType(Scrollable).last);
         expect(find.text('مدرسة الأمل'), findsOneWidget);
         await resumeCurriculum(tester); expect(f.paths.where((p) => p.contains('management-report')), hasLength(2));
