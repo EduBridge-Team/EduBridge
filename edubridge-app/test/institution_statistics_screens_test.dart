@@ -70,7 +70,7 @@ void main() {
     expect(find.text('—'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('date filter and clear reach the scoped API', (tester) async {
+  testWidgets('date filter reaches the scoped API', (tester) async {
     tester.view.physicalSize = const Size(1280, 1600); tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize); addTearDown(tester.view.resetDevicePixelRatio);
     final f = InstitutionStatisticsFixture();
@@ -89,17 +89,11 @@ void main() {
     await tapCurriculum(tester, 'statistics-period-apply');
     final report = f.paths.lastWhere((p) => p.contains('management-report'));
     expect(Uri.parse(report).queryParameters, {'from': '2026-10-01', 'to': '2026-10-26'});
-    expect(find.text('Selected-period statistics'), findsOneWidget);
-    expect(find.byKey(const ValueKey('statistics-period-schools_created')), findsOneWidget);
+    expect(find.text('Statistics'), findsOneWidget);
+    expect(find.text('Schools'), findsOneWidget);
+    expect(find.text('Specialists'), findsOneWidget);
     expect(find.text('Current totals'), findsNothing);
     expect(find.text('Active teachers'), findsNothing);
-    final specialist = find.byKey(const ValueKey('statistics-period-specialists_joined'));
-    expect(find.descendant(of: specialist, matching: find.text('—')), findsOneWidget);
-    await tapCurriculum(tester, 'statistics-clear');
-    final now = DateTime.now();
-    final reset = Uri.parse(f.paths.lastWhere((p) => p.contains('management-report'))).queryParameters;
-    expect(reset['from'], '${now.year}-${now.month.toString().padLeft(2, '0')}-01');
-    expect(reset['to'], '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}');
     expect(tester.takeException(), isNull);
   });
 }

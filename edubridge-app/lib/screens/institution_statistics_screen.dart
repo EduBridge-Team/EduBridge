@@ -53,30 +53,25 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
   }
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: _state, builder: (context, _) {
-    final data = _state.snapshot, local = MaterialLocalizations.of(context);
+    final data = _state.snapshot;
     return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(_label('الإحصائيات الشاملة', 'Comprehensive Statistics')),
       actions: [IconButton(tooltip: context.l10n.enrollmentReload, onPressed: _state.loading ? null : _state.reload, icon: const Icon(Icons.refresh))]),
       body: RefreshIndicator(onRefresh: _state.reload, child: SafeArea(child: Center(child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(14),
           physics: const AlwaysScrollableScrollPhysics(), children: [
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: TextButton.icon(
+            Row(children: [
+              Expanded(child: Text(_label('الإحصائيات', 'Statistics'),
+                style: Theme.of(context).textTheme.titleLarge)),
+              Flexible(child: TextButton.icon(
                 key: const ValueKey('statistics-period'),
                 onPressed: _state.loading ? null : _chooseRange,
                 icon: const Icon(Icons.calendar_month_outlined),
-                label: Text(_label('اختيار الفترة', 'Choose period')),
-              ),
-            ),
-            Text('${local.formatMediumDate(_range.start)} — ${local.formatMediumDate(_range.end)}'),
-            TextButton(key: const ValueKey('statistics-clear'), onPressed: _state.loading ? null : () => _filter(_thisMonth()),
-              child: Text(_label('هذا الشهر', 'This month'))),
-            Text(_label('الإحصائيات خلال الفترة المختارة. — تعني أن القيمة غير متوفرة.',
-              'Statistics for the selected period. — means the value is unavailable.')),
+                label: Text(_label('اختيار مدة', 'Choose period')),
+              )),
+            ]),
             if (_state.loading) const LinearProgressIndicator(),
             if (_state.error != null) Semantics(liveRegion: true, child: Text(enrollmentFailureMessage(context.l10n, _state.error!))),
             if (data != null) ...[
-              Text('${_label('وقت جلب التقرير', 'Report fetched at')}: ${local.formatMediumDate(data.loadedAt)} ${local.formatTimeOfDay(TimeOfDay.fromDateTime(data.loadedAt))}'),
               InstitutionStatisticsContent(data: data, hasPeriod: true),
             ],
           ]),

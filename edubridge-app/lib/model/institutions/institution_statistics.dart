@@ -34,7 +34,7 @@ class InstitutionStatistics {
   }
   factory InstitutionStatistics.fromJson(int organizationId, String slug, Map<String, dynamic> data, {DateTime? from, DateTime? to}) {
     final rawSummary = enrollmentMap(data['summary']);
-    final summary = {for (final key in ['schools', 'student_files', 'active_teachers', 'active_enrollments', 'attendance_sessions'])
+    final summary = {for (final key in ['schools', 'student_files', 'specialists', 'teachers', 'active_teachers', 'active_enrollments', 'attendance_sessions'])
       key: _count(rawSummary[key])};
     final schools = <InstitutionSchoolStatistics>[];
     final ids = <int>{};

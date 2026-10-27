@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../services/institution_school_repository.dart';
 import 'institutions/institution_school_form_dialog.dart';
 import '../theme.dart';
-import '../l10n/l10n.dart';
-import 'school_directors/school_directors_screen.dart';
 import 'institution_school_record_screen.dart';
 
 /// Institution-scoped operations. The API validates active organization
@@ -146,8 +144,6 @@ class _InstitutionOperationsScreenState
   @override
   Widget build(BuildContext context) {
     final english = Localizations.localeOf(context).languageCode == 'en';
-    final summary = _report?['summary'];
-    final counts = summary is Map ? summary : const {};
     return Scaffold(
       appBar: BrandAppBar(
         leading: const BackButton(),
@@ -173,39 +169,6 @@ class _InstitutionOperationsScreenState
             ),
           if (_loading) const LinearProgressIndicator(),
           if (_report != null) ...[
-            const SizedBox(height: 16),
-            Text(
-              english ? 'Live statistics' : 'إحصائيات فعلية',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                for (final metric in {
-                  (english ? 'Schools' : 'المدارس'): 'schools',
-                }.entries)
-                  Chip(
-                    label: Text('${metric.key}: ${counts[metric.value] ?? 0}'),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    english ? 'Schools' : 'المدارس',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: _loading ? null : _createSchool,
-                  icon: const Icon(Icons.add),
-                  label: Text(english ? 'Add school' : 'إضافة مدرسة'),
-                ),
-              ],
-            ),
             TextField(
               controller: _schoolQuery,
               onChanged: (value) =>
@@ -219,13 +182,15 @@ class _InstitutionOperationsScreenState
               ),
             ),
             const SizedBox(height: 12),
-            if (_schoolSearch.isEmpty)
-              Text(
-                english
-                    ? 'Enter a school name to view its information.'
-                    : 'أدخل اسم المدرسة لعرض معلوماتها.',
-              )
-            else if (_schools.isEmpty)
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton.icon(
+                onPressed: _loading ? null : _createSchool,
+                icon: const Icon(Icons.add),
+                label: Text(english ? 'Add school' : 'إضافة مدرسة'),
+              ),
+            ),
+            if (_schools.isEmpty)
               Text(
                 english
                     ? 'No schools are linked to this institution.'
@@ -264,21 +229,6 @@ class _InstitutionOperationsScreenState
                     ),
                   ),
                 ),
-            const SizedBox(height: 16),
-            Text(
-              'الإدارة والمتابعة',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            ListTile(
-              leading: const Icon(Icons.manage_accounts_outlined),
-              title: Text(context.l10n.directorTitle),
-              subtitle: Text(context.l10n.directorSubtitle),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const SchoolDirectorsScreen(),
-                ),
-              ),
-            ),
           ],
         ],
       ),

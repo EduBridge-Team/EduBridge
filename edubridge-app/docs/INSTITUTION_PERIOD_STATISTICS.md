@@ -32,3 +32,13 @@ unfiltered section, timetable and active-enrollment totals.
 
 Acceptance still requires testing the deployed endpoint with an institution that
 has known records in two different periods; CI fixtures do not prove live data.
+
+## Institution overview revision
+
+The overview now displays four institution-wide totals in two columns: schools,
+student_files, teachers and specialists. `teachers` means all institution-linked
+teachers; active_teachers is not substituted for it. Missing totals display —.
+The selected period continues to filter attendance only. The overview totals do
+not represent period event counts. The visible date/time and explanatory block
+have been removed per product request. Backend still needs to supply the optional
+teachers/specialists totals. No backend changes are included.

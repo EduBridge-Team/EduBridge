@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../model/institutions/institution_statistics.dart';
 import '../../theme.dart';
-import 'institution_period_statistics.dart';
 
 class InstitutionStatisticsContent extends StatelessWidget {
   const InstitutionStatisticsContent({super.key, required this.data, this.hasPeriod = false});
@@ -28,7 +27,15 @@ class InstitutionStatisticsContent extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            InstitutionPeriodStatistics(values: hasPeriod ? data.periodSummary : const {}),
+            LayoutBuilder(builder: (context, constraints) {
+              final width = (constraints.maxWidth - 8) / 2;
+              return Wrap(spacing: 8, runSpacing: 8, children: [
+                SizedBox(width: width, child: _metric(label('المدارس', 'Schools'), data.summary['schools'], Icons.school_outlined)),
+                SizedBox(width: width, child: _metric(label('المعلمون', 'Teachers'), data.summary['teachers'], Icons.person_outline)),
+                SizedBox(width: width, child: _metric(label('الأخصائيون', 'Specialists'), data.summary['specialists'], Icons.medical_services_outlined)),
+                SizedBox(width: width, child: _metric(label('الطلاب', 'Students'), data.summary['student_files'], Icons.groups_outlined)),
+              ]);
+            }),
             Text(label(hasPeriod ? 'الحضور خلال الفترة المختارة' : 'الحضور لكل التواريخ',
               hasPeriod ? 'Attendance in selected period' : 'Attendance across all dates'),
               style: Theme.of(context).textTheme.titleLarge),

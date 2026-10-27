@@ -58,6 +58,16 @@ DashboardHeaderActions(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.institutionTasks,
+                  style: TextStyle(
+                    color: c.heading,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 10),
                 _ActionCard(
                   icon: Icons.apartment_rounded,
                   title: english ? 'School Management' : 'إدارة المدارس',
@@ -86,16 +96,6 @@ DashboardHeaderActions(
                   color: AppColors.brandBlue,
                   onTap: () => _open(context, const SchoolDirectorsScreen()),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  context.l10n.institutionTasks,
-                  style: TextStyle(
-                    color: c.heading,
-                    fontSize: 21,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 10),
                 _ActionCard(
                   icon: AppIcons.lesson,
                   title: context.l10n.lessonLibrary,
