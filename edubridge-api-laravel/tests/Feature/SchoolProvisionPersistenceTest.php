@@ -16,6 +16,8 @@ class SchoolProvisionPersistenceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Login issues a signed token: use a deterministic test-only secret.
+        config()->set('services.jwt.secret', str_repeat('test-jwt-secret-', 4));
         Schema::create('users', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->string('email')->unique();
             $t->string('password_hash'); $t->string('role'); $t->timestamps();
