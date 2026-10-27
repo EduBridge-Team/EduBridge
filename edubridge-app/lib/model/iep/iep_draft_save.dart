@@ -52,7 +52,7 @@ class IepSavedDraft {
 
   bool matches(IepPlanDraft draft) {
     if (plan.childId != draft.childId || plan.closed || plan.currentApprovedId != null ||
-        plan.title != draft.title || plan.versions.length != 1) return false;
+        plan.title != draft.title || plan.versions.length != 1) { return false; }
     final v = version;
     if (v.status != IepVersionStatus.draft || v.number != 1 ||
         v.evaluationId != draft.evaluationId || (v.summary ?? '') != draft.summary ||
@@ -61,7 +61,7 @@ class IepSavedDraft {
         iepDraftDay(v.end) != iepDraftDay(draft.end) ||
         iepDraftDay(v.reviewOn) != iepDraftDay(draft.reviewOn) ||
         v.goals.length != draft.goals.length ||
-        v.accommodations.length != draft.accommodations.length) return false;
+        v.accommodations.length != draft.accommodations.length) { return false; }
     for (var i = 0; i < v.accommodations.length; i++) {
       if (v.accommodations[i] != draft.accommodations[i]) return false;
     }
@@ -71,7 +71,7 @@ class IepSavedDraft {
           goal.target != expected.target || goal.unit != expected.unit ||
           goal.method != expected.method || (goal.responsible ?? '') != expected.responsible ||
           iepDraftDay(goal.start) != iepDraftDay(expected.start) ||
-          iepDraftDay(goal.end) != iepDraftDay(expected.end)) return false;
+          iepDraftDay(goal.end) != iepDraftDay(expected.end)) { return false; }
     }
     return true;
   }
