@@ -52,7 +52,7 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
       final l = context.l10n;
       final data = _state.snapshot;
       final dates = MaterialLocalizations.of(context);
-      return Scaffold(
+      return PopScope(canPop: !_state.busy, child: Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(), title: Text(l.schoolHistoryTitle),
           actions: [IconButton(
@@ -93,7 +93,7 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
                               final controller = _state;
                               final confirmed = await showDialog<bool>(context: context,
                                 builder: (context) => InstitutionWithdrawalDialog(data: data, record: record));
-                              if (confirmed == true && mounted && identical(controller, _state) && controller.canWrite) {
+                              if (confirmed == true && mounted && identical(controller, _state) && identical(controller.snapshot, data) && controller.canWrite) {
                                 await controller.withdraw(record.id);
                               }
                             },
@@ -106,7 +106,7 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
                               final controller = _state;
                               final target = await showDialog<int>(context: context,
                                 builder: (context) => InstitutionTransferDialog(data: data, record: record));
-                              if (target != null && mounted && identical(controller, _state) && controller.canWrite) {
+                              if (target != null && mounted && identical(controller, _state) && identical(controller.snapshot, data) && controller.canWrite) {
                                 await controller.transfer(record.id, target);
                               }
                             },
@@ -121,7 +121,7 @@ class _InstitutionEnrollmentHistoryScreenState extends State<InstitutionEnrollme
             ),
           ))),
         ),
-      );
+      ));
     },
   );
 }

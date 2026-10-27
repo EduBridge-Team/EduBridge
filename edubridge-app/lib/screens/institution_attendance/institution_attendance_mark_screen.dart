@@ -25,6 +25,14 @@ class _InstitutionAttendanceMarkScreenState extends State<InstitutionAttendanceM
     WidgetsBinding.instance.addObserver(this);
   }
   @override
+  void didUpdateWidget(covariant InstitutionAttendanceMarkScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.writer != oldWidget.writer || widget.sessionId != oldWidget.sessionId || widget.date != oldWidget.date) {
+      _state.dispose();
+      _state = AttendanceMarkController(widget.writer, widget.sessionId, widget.date)..reload();
+    }
+  }
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _state.reload();
   }
@@ -33,9 +41,10 @@ class _InstitutionAttendanceMarkScreenState extends State<InstitutionAttendanceM
     WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose();
   }
   Future<void> _save(AttendanceEditorData expected, Map<int, AttendanceMark> marks, bool close) async {
-    if (!_state.canWrite) return;
-    await _state.save(expected, marks, close);
-    if (mounted && _state.saved) Navigator.pop(context, true);
+    final controller = _state;
+    if (!controller.canWrite || !identical(controller.snapshot, expected)) return;
+    await controller.save(expected, marks, close);
+    if (mounted && identical(controller, _state) && controller.saved) Navigator.pop(context, true);
   }
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: _state, builder: (context, _) {

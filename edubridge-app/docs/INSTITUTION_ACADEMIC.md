@@ -149,3 +149,12 @@ apply institution scope, and implement authoritative event queries before these
 counters become operational. This PR modifies Flutter only.
 
 Enrollment lifecycle review: guardian enrollment now replaces/disposes its controller and clears search when child or gateway changes; school inbox replaces its controller when gateway changes. Submission/cancellation/decision confirmations capture the original controller and snapshot, and are discarded if either changes before confirmation. Timetable removal follows the same snapshot rule and blocks back navigation while a delete is pending. No API or backend changes.
+
+### متابعة مراجعة القيد والحضور — 27 أكتوبر 2026
+
+- تأكيد نقل القيد أو سحبه يرتبط بنسخة البيانات التي فُتح منها؛ تحديث البيانات أثناء التأكيد يلغي تنفيذ الطلب القديم. الرجوع محجوب أثناء تنفيذ العملية.
+- تبديل مصدر بيانات إنشاء الحضور أو تاريخ البداية يمسح المسودة ويحمّل المرجع الجديد. تبديل مصدر محرر الحضور أو الجلسة أو تاريخها يعيد تحميل المحرر.
+- اكتمال حفظ من سياق سابق لا يغلق شاشة السياق الجديد، ونتيجة منتقي تاريخ قديم لا تُطبّق بعد تبديل المصدر.
+- تغطي اختبارات الواجهات تبديل المصدر وإبطال التأكيد بعد الاستئناف بالعربية والإنجليزية بعروض 320 و720 و1280 مع تكبير النص. لا تتضمن هذه الدفعة تغييرات باك أو إثبات نشر أو قبولًا على بيانات إنتاج حقيقية.
+
+- اختيارات تكليف المعلم المفتوحة قبل تبديل المصدر أو تحديث البيانات لا تعيد تعبئة نموذج السياق الجديد.

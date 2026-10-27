@@ -30,6 +30,19 @@ class _InstitutionAttendanceCreateScreenState extends State<InstitutionAttendanc
     WidgetsBinding.instance.addObserver(this);
   }
   @override
+  void didUpdateWidget(covariant InstitutionAttendanceCreateScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.writer != oldWidget.writer || widget.initialDate != oldWidget.initialDate) {
+      _state.dispose();
+      _section = null;
+      _subject = 0;
+      _period.clear();
+      _notes.clear();
+      _date = widget.initialDate ?? DateTime.now();
+      _state = AttendanceCreateController(widget.writer)..reload();
+    }
+  }
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _state.reload();
   }
@@ -41,11 +54,13 @@ class _InstitutionAttendanceCreateScreenState extends State<InstitutionAttendanc
   }
   Future<void> _save() async {
     if (!_state.canWrite || !(_form.currentState?.validate() ?? false)) return;
-    await _state.create(AttendanceSessionDraft(sectionId: _section!, date: _date,
+    final controller = _state;
+    final date = _date;
+    await controller.create(AttendanceSessionDraft(sectionId: _section!, date: _date,
       subjectId: _subject == 0 ? null : _subject, period: int.tryParse(_period.text.trim()),
       note: _notes.text.isEmpty ? null : _notes.text));
-    if (mounted && _state.saved && _state.createdId != null) {
-      Navigator.pop(context, (_state.createdId!, _date));
+    if (mounted && identical(controller, _state) && controller.saved && controller.createdId != null) {
+      Navigator.pop(context, (controller.createdId!, date));
     }
   }
   @override
@@ -68,14 +83,19 @@ class _InstitutionAttendanceCreateScreenState extends State<InstitutionAttendanc
               options: {for (final section in data.academic.sections) section.id:
                 '${data.academic.years.firstWhere((y) => y.id == section.yearId).name} — ${data.academic.grades.firstWhere((g) => g.id == section.gradeId).name} — ${section.name}'},
               value: _section, requiredMessage: l.academicRequired,
-              onChanged: enabled ? (v) => setState(() => _section = v) : null),
+              onChanged: enabled ? (v) {
+                if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _section = v);
+              } : null),
             AcademicChoiceField(key: const ValueKey('attendance-create-subject'), label: l.curriculumSubjects,
               options: {0: l.institutionAttendanceNoSubject, for (final subject in data.academic.curriculum.subjects.where((s) => s.active)) subject.id: subject.name},
               value: _subject, requiredMessage: l.academicRequired,
-              onChanged: enabled ? (v) => setState(() => _subject = v) : null),
+              onChanged: enabled ? (v) {
+                if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _subject = v);
+              } : null),
             OutlinedButton(key: const ValueKey('attendance-create-date'), onPressed: !enabled ? null : () async {
+              final controller = _state;
               final date = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(1900), lastDate: DateTime(2100, 12, 31));
-              if (mounted && date != null && _state.canWrite) setState(() => _date = date);
+              if (mounted && date != null && identical(controller, _state) && identical(controller.snapshot, data) && controller.canWrite) setState(() => _date = date);
             }, child: Text(MaterialLocalizations.of(context).formatMediumDate(_date))),
             TextFormField(key: const ValueKey('attendance-create-period'), controller: _period, enabled: enabled,
               keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l.institutionAttendancePeriodOptional),

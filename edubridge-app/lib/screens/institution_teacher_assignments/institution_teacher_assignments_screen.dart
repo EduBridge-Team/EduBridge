@@ -125,21 +125,27 @@ class _InstitutionTeacherAssignmentsScreenState
                           key: const ValueKey('institution-assignment-teacher'),
                           label: l.teacherAssignmentTeacher, options: data.teachers,
                           value: _teacher, requiredMessage: l.academicRequired,
-                          onChanged: _state.canWrite ? (v) => setState(() => _teacher = v) : null,
+                          onChanged: _state.canWrite ? (v) {
+                            if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _teacher = v);
+                          } : null,
                         ),
                         AcademicChoiceField(
                           key: const ValueKey('institution-assignment-section'),
                           label: l.enrollmentSection,
                           options: {for (final v in data.academic.sections) v.id: data.sectionLabel(v.id)},
                           value: _section, requiredMessage: l.academicRequired,
-                          onChanged: _state.canWrite ? (v) => setState(() => _section = v) : null,
+                          onChanged: _state.canWrite ? (v) {
+                            if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _section = v);
+                          } : null,
                         ),
                         AcademicChoiceField(
                           key: const ValueKey('institution-assignment-subject'),
                           label: l.subject,
                           options: {for (final v in data.academic.curriculum.subjects.where((v) => v.active)) v.id: v.name},
                           value: _subject, requiredMessage: l.academicRequired,
-                          onChanged: _state.canWrite ? (v) => setState(() => _subject = v) : null,
+                          onChanged: _state.canWrite ? (v) {
+                            if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _subject = v);
+                          } : null,
                         ),
                         if (_invalid) Text(l.teacherAssignmentInvalid),
                         FilledButton(
