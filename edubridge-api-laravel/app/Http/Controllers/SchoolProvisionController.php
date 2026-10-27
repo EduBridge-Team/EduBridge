@@ -91,6 +91,15 @@ class SchoolProvisionController extends Controller
                 ]);
                 return [$schoolId, $userId];
             });
+            // Provisioning is not proof of mailbox ownership. Send the same
+            // verification link as ordinary registration, after commit.
+            try {
+                $account = DB::table('users')->find($userId);
+                app(\\App\\Support\\EmailVerificationSender::class)->send($account);
+            } catch (\\Throwable $mailError) {
+                report($mailError);
+                // The created account can request verification again.
+            }
             return response()->json([
                 'school' => ['id' => $schoolId, 'name' => $name, 'organization_id' => $organizationId],
                 'account' => ['id' => $userId, 'email' => $email, 'role' => 'school'],
