@@ -152,4 +152,31 @@ class SchoolProvisionPersistenceTest extends TestCase
         $this->assertSame('SCHOOL_ACCESS_UNAVAILABLE', $denied->getData(true)['code']);
     }
 
+    public function test_school_email_verification_rejects_invalid_and_expired_tokens(): void
+    {
+        $email = 'verify-school@example.test';
+        $created = $this->provision(false, $email);
+        $this->assertSame(201, $created->getStatusCode());
+
+        $record = DB::table('email_verification_tokens')->where('email', $email)->first();
+        $this->assertNotNull($record);
+        $this->assertSame(64, strlen($record->token));
+        $this->assertNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
+
+        $invalid = Request::create('/api/auth/verify-email', 'GET', [
+            'email' => $email, 'token' => 'incorrect-verification-token',
+        ]);
+        $response = app(AuthController::class)->verifyEmail($invalid);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringContainsString('verified=0', $response->headers->get('Location'));
+        $this->assertNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
+
+        DB::table('email_verification_tokens')->where('email', $email)
+            ->update(['created_at' => now()->subHours(25)]);
+        $expired = app(AuthController::class)->verifyEmail($invalid);
+        $this->assertSame(302, $expired->getStatusCode());
+        $this->assertStringContainsString('verified=0', $expired->headers->get('Location'));
+        $this->assertNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
+    }
+
 }
