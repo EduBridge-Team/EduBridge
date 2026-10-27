@@ -9,10 +9,25 @@ import 'interactive_lesson_step_editor.dart';
 
 /// Standalone preview of the starter templates.
 /// No backend publishing, assignment or progress writes occur here.
-class InteractiveLessonStarterLibrary extends StatelessWidget {
+class InteractiveLessonStarterLibrary extends StatefulWidget {
   const InteractiveLessonStarterLibrary({super.key, this.repository});
 
   final InteractiveLessonStarterRepository? repository;
+
+  @override
+  State<InteractiveLessonStarterLibrary> createState() => _InteractiveLessonStarterLibraryState();
+}
+
+class _InteractiveLessonStarterLibraryState extends State<InteractiveLessonStarterLibrary> {
+  String _query = '';
+  String _subject = 'all';
+  late final Future<InteractiveLessonCatalog> _catalog;
+
+  @override
+  void initState() {
+    super.initState();
+    _catalog = (widget.repository ?? const InteractiveLessonStarterRepository()).load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +50,7 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
           ],
         ),
         body: FutureBuilder<InteractiveLessonCatalog>(
-          future: (repository ?? const InteractiveLessonStarterRepository()).load(),
+          future: _catalog,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(child: Text('تعذّر تحميل الدروس. حاول مجددًا.'));
@@ -43,11 +58,38 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
-            final lessons = snapshot.data!.templates;
-            if (lessons.isEmpty) {
-              return const Center(child: Text('لا توجد دروس جاهزة حاليًا.'));
-            }
-            return ListView.builder(
+            final lessons = snapshot.data!.templates.where((lesson) {
+              final q = _query.trim().toLowerCase();
+              final matchesText = q.isEmpty || lesson.title.toLowerCase().contains(q) || lesson.objective.toLowerCase().contains(q);
+              return matchesText && (_subject == 'all' || lesson.subject == _subject);
+            }).toList();
+            return Column(children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(children: [
+                  TextField(
+                    key: const ValueKey('search-interactive-lessons'),
+                    decoration: const InputDecoration(labelText: 'البحث في الدروس', prefixIcon: Icon(Icons.search)),
+                    onChanged: (value) => setState(() => _query = value),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    key: const ValueKey('filter-interactive-lessons-subject'),
+                    initialValue: _subject,
+                    decoration: const InputDecoration(labelText: 'المادة'),
+                    items: const [
+                      DropdownMenuItem(value: 'all', child: Text('جميع المواد')),
+                      DropdownMenuItem(value: 'arabic', child: Text('اللغة العربية')),
+                      DropdownMenuItem(value: 'math', child: Text('الرياضيات')),
+                      DropdownMenuItem(value: 'life_skills', child: Text('المهارات الحياتية')),
+                    ],
+                    onChanged: (value) { if (value != null) setState(() => _subject = value); },
+                  ),
+                ]),
+              ),
+              Expanded(child: lessons.isEmpty
+                ? const Center(child: Text('لا توجد دروس مطابقة للبحث.'))
+                : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: lessons.length,
               itemBuilder: (context, index) {
@@ -56,25 +98,30 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                   child: ListTile(
                     title: Text(lesson.title),
                     subtitle: Text(lesson.objective),
-                    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                      IconButton(
-                        key: ValueKey('edit-lesson-steps-${lesson.id}'),
-                        tooltip: 'تحرير الخطوات للمعاينة',
-                        icon: const Icon(Icons.format_list_numbered),
-                        onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                          builder: (_) => InteractiveLessonStepEditor(template: lesson),
-                        )),
-                      ),
-                      IconButton(
-                      key: ValueKey('adapt-lesson-${lesson.id}'),
-                      tooltip: 'تخصيص للمعاينة',
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => InteractiveLessonAdaptationScreen(template: lesson),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          key: ValueKey('edit-lesson-steps-${lesson.id}'),
+                          tooltip: 'تحرير خطوات الدرس للمعاينة',
+                          icon: const Icon(Icons.format_list_numbered),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => InteractiveLessonStepEditor(template: lesson),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                        IconButton(
+                          key: ValueKey('adapt-lesson-${lesson.id}'),
+                          tooltip: 'تخصيص للمعاينة',
+                          icon: const Icon(Icons.edit_outlined),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => InteractiveLessonAdaptationScreen(template: lesson),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
@@ -84,7 +131,8 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                   ),
                 );
               },
-            );
+            )),
+            ]);
           },
         ),
       ),
