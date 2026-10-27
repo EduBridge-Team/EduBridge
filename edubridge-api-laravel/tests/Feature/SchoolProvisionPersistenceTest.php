@@ -136,6 +136,13 @@ class SchoolProvisionPersistenceTest extends TestCase
             'email' => 'signin-affiliated@example.test',
             'password' => 'long-test-password-123',
         ]);
+        $beforeVerification = app(AuthController::class)->login($request);
+        $this->assertSame(403, $beforeVerification->getStatusCode());
+        $this->assertSame('EMAIL_NOT_VERIFIED', $beforeVerification->getData(true)['code']);
+        $this->assertSame(1, DB::table('email_verification_tokens')
+            ->where('email', $request->input('email'))->count());
+        DB::table('users')->where('email', $request->input('email'))
+            ->update(['email_verified_at' => now()]);
         $login = app(AuthController::class)->login($request);
         $this->assertSame(200, $login->getStatusCode());
         $this->assertSame('school', $login->getData(true)['user']['role']);
