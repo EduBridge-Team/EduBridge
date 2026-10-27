@@ -96,7 +96,7 @@ class SchoolProvisionController extends Controller
             try {
                 $account = DB::table('users')->find($userId);
                 app(\App\Support\EmailVerificationSender::class)->send($account);
-            } catch (\\Throwable $mailError) {
+            } catch (\Throwable $mailError) {
                 report($mailError);
                 // The created account can request verification again.
             }
