@@ -19,7 +19,7 @@ void main() {
     await expectLater(f.repository.loadReport(from: DateTime(2026, 10, 26), to: DateTime(2026, 10, 1)), throwsA(isA<EnrollmentApiException>()));
     await expectLater(f.repository.loadReport(sectionId: 999), throwsA(isA<EnrollmentApiException>()));
     (f.academic.data['school'] as Map)['organization_id'] = 99;
-    await expectLater(f.repository.loadReport(), throwsA(isA<EnrollmentApiException>().having((e) => e.failure, 'failure', EnrollmentFailure.forbidden)));
+    await expectLater(f.repository.loadReport(), throwsA(isA<EnrollmentApiException>().having((e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)));
     expect(f.paths.where((p) => p.contains('/attendance/report')), isEmpty);
   });
   test('empty and denied reports are distinct', () async {
