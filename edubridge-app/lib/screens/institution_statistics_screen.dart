@@ -6,6 +6,7 @@ import '../theme.dart';
 import 'enrollment/enrollment_labels.dart';
 import 'enrollment/enrollment_state.dart';
 import 'institution_statistics/institution_statistics_content.dart';
+import 'institution_statistics/institution_period_dialog.dart';
 
 class InstitutionStatisticsScreen extends StatefulWidget {
   const InstitutionStatisticsScreen({super.key, this.gateway});
@@ -45,18 +46,7 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
     final controller = _state;
     final range = await showDialog<DateTimeRange>(
       context: context,
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        clipBehavior: Clip.antiAlias,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 640, maxHeight: 680),
-          child: DateRangePickerDialog(
-            firstDate: DateTime(1900),
-            lastDate: DateTime(2100, 12, 31),
-            initialDateRange: _range,
-          ),
-        ),
-      ),
+      builder: (context) => InstitutionPeriodDialog(initialRange: _range),
     );
     if (!mounted || !identical(controller, _state) || controller.loading || range == null) return;
     _filter(range);
