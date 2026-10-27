@@ -55,8 +55,17 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                 return Card(
                   child: ListTile(
                     title: Text(lesson.title),
-                    subtitle: Text('${lesson.objective} — اضغط مطولًا لتحرير الخطوات'),
-                    trailing: IconButton(
+                    subtitle: Text(lesson.objective),
+                    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                      IconButton(
+                        key: ValueKey('edit-lesson-steps-${lesson.id}'),
+                        tooltip: 'تحرير الخطوات للمعاينة',
+                        icon: const Icon(Icons.format_list_numbered),
+                        onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                          builder: (_) => InteractiveLessonStepEditor(template: lesson),
+                        )),
+                      ),
+                      IconButton(
                       key: ValueKey('adapt-lesson-${lesson.id}'),
                       tooltip: 'تخصيص للمعاينة',
                       icon: const Icon(Icons.edit_outlined),
@@ -66,9 +75,7 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                         ),
                       ),
                     ),
-                    onLongPress: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                      builder: (_) => InteractiveLessonStepEditor(template: lesson),
-                    )),
+                    ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) => InteractiveLessonPlayer(lesson: lesson),
