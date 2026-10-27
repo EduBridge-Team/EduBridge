@@ -1,4 +1,6 @@
 import '../utils/notification_presentation.dart';
+import '../features/notifications/domain/notification_destination.dart';
+import '../features/notifications/presentation/notification_child_destination_screen.dart';
 import '../l10n/l10n.dart';
 // lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
@@ -190,6 +192,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final date = n['created_at'] != null
         ? DateTime.tryParse(n['created_at'].toString())
         : null;
+    final role = await _roleFuture;
+    if (!mounted) return;
+    final childDestination = role == 'parent' ? notificationChildDestination(type) : null;
     final canOpenSuggestion = type == 'specialist_suggestion' ||
         type == 'suggestion_accepted' ||
         type == 'suggestion_rejected';
@@ -199,7 +204,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => SafeArea(
-        child: Container(
+        child: SingleChildScrollView(child: Container(
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
           decoration: BoxDecoration(
@@ -290,6 +295,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   )),
                 ],
               ),
+              if (childDestination != null) ...[
+                const SizedBox(height: 18),
+                FilledButton.icon(key: const ValueKey('notification-open-records'),
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
+                      NotificationChildDestinationScreen(destination: childDestination)));
+                  }, icon: const Icon(Icons.open_in_new_rounded),
+                  label: Text(context.l10n.openRelatedDetails)),
+              ],
               if (canOpenSuggestion) ...[
                 const SizedBox(height: 18),
                 FilledButton.icon(
@@ -308,7 +323,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ],
             ],
           ),
-        ),
+        )),
       ),
     );
   }
