@@ -1,4 +1,6 @@
 import '../model/enrollment/enrollment_models.dart';
+import '../model/institutions/institution_teacher_absence.dart';
+import 'institution_teacher_absence_repository.dart';
 import '../model/institutions/institution_timetable.dart';
 import '../model/institutions/institution_timetable_draft.dart';
 import '../model/schools/academic_catalog.dart';
@@ -18,13 +20,21 @@ abstract interface class InstitutionTimetableCreator implements InstitutionTimet
 abstract interface class InstitutionTimetableRemover implements InstitutionTimetableGateway {
   Future<void> removeEntry(InstitutionTimetableEntry expected);
 }
-class InstitutionTimetableRepository implements InstitutionTimetableCreator, InstitutionTimetableRemover {
+class InstitutionTimetableRepository implements InstitutionTimetableCreator, InstitutionTimetableRemover, InstitutionTeacherAbsenceGateway {
   InstitutionTimetableRepository({required this.organizationSlug, required this.organizationId,
     required this.schoolId, EnrollmentApiClient? client}) : _client = client ?? EnrollmentApiClient();
   final String organizationSlug;
   final int organizationId, schoolId;
   final EnrollmentApiClient _client;
   String get _root => '/institutions/${Uri.encodeComponent(organizationSlug)}/schools/$schoolId/timetable';
+  InstitutionTeacherAbsenceRepository get _absences => InstitutionTeacherAbsenceRepository(
+    schoolId: schoolId, path: '/institutions/${Uri.encodeComponent(organizationSlug)}/schools/$schoolId/teacher-absences',
+    client: _client, loadData: loadCreationData);
+  @override
+  Future<TimetableCreationData> loadAbsenceData() => _absences.loadAbsenceData();
+  @override
+  Future<InstitutionTeacherAbsenceReceipt> reportAbsence(int teacherId, DateTime date, String? reason) =>
+    _absences.reportAbsence(teacherId, date, reason);
   @override
   Future<void> removeEntry(InstitutionTimetableEntry expected) async {
     if (expected.schoolId != schoolId) {

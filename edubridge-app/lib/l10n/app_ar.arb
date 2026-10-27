@@ -11427,5 +11427,33 @@
   "timetableDeleted": "تم حذف الحصة",
   "@timetableDeleted": {
     "description": "Timetable removal action and confirmation"
+  },
+  "teacherAbsenceTitle": "تسجيل غياب المعلم",
+  "@teacherAbsenceTitle": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceNotice": "إعادة تسجيل الغياب لنفس المعلم والتاريخ تحدّث السبب.",
+  "@teacherAbsenceNotice": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceReason": "السبب (اختياري)",
+  "@teacherAbsenceReason": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceAffected": "حصص الجدول المتأثرة",
+  "@teacherAbsenceAffected": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceEmpty": "لا توجد حصص في الجدول متأثرة في هذا اليوم من الأسبوع.",
+  "@teacherAbsenceEmpty": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceOutsideYear": "اختيار البديل غير متاح للحصص التي يقع تاريخ الغياب خارج عامها الدراسي.",
+  "@teacherAbsenceOutsideYear": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceReceiptNotice": "هذه الحصص أُعيدت عند حفظ الغياب. أعد فتح الصفحة لتسجيل غياب آخر.",
+  "@teacherAbsenceReceiptNotice": {
+    "description": "Institution teacher absence flow"
   }
 }

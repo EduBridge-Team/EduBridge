@@ -14,6 +14,8 @@ class InstitutionTimetableFixture {
   int deleteStatus = 200;
   bool applyWrite = true;
   Map<String, dynamic>? response, createResponse;
+  final absences = <Map<String, dynamic>>[];
+  Map<String, dynamic>? absenceResponse;
   final creations = <Map<String, dynamic>>[];
   void addSection() {
     final sections = academic.data['sections'] as List;
@@ -56,6 +58,13 @@ class InstitutionTimetableFixture {
       afterWrite?.call();
       return json(response ?? {'message': 'Deleted'}, deleteStatus);
     }, post: (path, body) async {
+      if (path == '/institutions/demo-institution/schools/5/teacher-absences') {
+        paths.add(path); absences.add(body); await beforeWrite?.call(); afterWrite?.call();
+        final date = DateTime.parse(body['absence_date'] as String);
+        return json(absenceResponse ?? {'absence': {'id': 100, 'school_id': 5,
+          ...body, 'status': 'confirmed'}, 'affected_classes': rows.where((r) =>
+          r['teacher_id'] == body['teacher_id'] && r['weekday'] == date.weekday % 7 + 1).toList()}, postStatus);
+      }
       if (path == '/institutions/demo-institution/schools/5/timetable') {
         paths.add(path); creations.add(body); await beforeWrite?.call();
         final row = <String, dynamic>{...body, 'id': 81, 'school_id': 5,

@@ -11427,5 +11427,33 @@
   "timetableDeleted": "Class deleted",
   "@timetableDeleted": {
     "description": "Timetable removal action and confirmation"
+  },
+  "teacherAbsenceTitle": "Record teacher absence",
+  "@teacherAbsenceTitle": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceNotice": "Recording absence again for the same teacher and date updates the reason.",
+  "@teacherAbsenceNotice": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceReason": "Reason (optional)",
+  "@teacherAbsenceReason": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceAffected": "Affected timetable classes",
+  "@teacherAbsenceAffected": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceEmpty": "No timetable classes are affected on this weekday.",
+  "@teacherAbsenceEmpty": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceOutsideYear": "Substitution is unavailable for classes outside their academic year on this date.",
+  "@teacherAbsenceOutsideYear": {
+    "description": "Institution teacher absence flow"
+  },
+  "teacherAbsenceReceiptNotice": "These are the classes returned when this absence was saved. Reopen this page to record another absence.",
+  "@teacherAbsenceReceiptNotice": {
+    "description": "Institution teacher absence flow"
   }
 }
