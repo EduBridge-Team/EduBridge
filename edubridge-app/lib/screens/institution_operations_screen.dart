@@ -152,17 +152,17 @@ class _InstitutionOperationsScreenState
       appBar: BrandAppBar(
         leading: const BackButton(),
         title: Text(english ? 'School Management' : 'إدارة المدارس'),
+        actions: [
+          IconButton(
+            tooltip: english ? 'Refresh institution data' : 'تحديث بيانات المؤسسة',
+            onPressed: _loading ? null : _connect,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          FilledButton.icon(
-            onPressed: _loading ? null : _connect,
-            icon: const Icon(Icons.refresh),
-            label: Text(
-              english ? 'Refresh institution data' : 'تحديث بيانات المؤسسة',
-            ),
-          ),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
