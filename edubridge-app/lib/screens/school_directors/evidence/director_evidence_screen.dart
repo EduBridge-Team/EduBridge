@@ -32,20 +32,36 @@ class DirectorEvidenceScreen extends StatefulWidget {
 }
 
 class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
-  late final DirectorEvidenceController _controller;
+  late DirectorEvidenceController _controller;
   DirectorDocumentKind _kind = DirectorDocumentKind.identity;
 
   @override
   void initState() {
     super.initState();
+    _loadController();
+  }
+
+  void _loadController() {
     _controller = DirectorEvidenceController(
-      widget.gateway ??
-          DirectorEvidenceRepository(
-            school: widget.school,
-            directorId: widget.director.id,
-          ),
-    );
-    _controller.reload();
+      widget.gateway ?? DirectorEvidenceRepository(
+        school: widget.school,
+        directorId: widget.director.id,
+      ),
+    )..reload();
+  }
+
+  @override
+  void didUpdateWidget(covariant DirectorEvidenceScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.gateway != oldWidget.gateway ||
+        widget.school.id != oldWidget.school.id ||
+        widget.school.organizationId != oldWidget.school.organizationId ||
+        widget.school.organizationSlug != oldWidget.school.organizationSlug ||
+        widget.director.id != oldWidget.director.id) {
+      _controller.dispose();
+      _kind = DirectorDocumentKind.identity;
+      _loadController();
+    }
   }
 
   @override
@@ -55,6 +71,9 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
   }
 
   Future<void> _remove(DirectorDocument document) async {
+    final controller = _controller;
+    final evidence = controller.evidence;
+    if (!controller.canWrite) return;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -74,7 +93,10 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
         ],
       ),
     );
-    if (confirm == true && mounted) await _controller.remove(document);
+    if (confirm == true && mounted && identical(controller, _controller) &&
+        identical(controller.evidence, evidence) && controller.canWrite) {
+      await controller.remove(document);
+    }
   }
 
   Future<bool> _launch(Uri uri) =>
@@ -134,6 +156,7 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
                 ),
               if (evidence != null) ...[
                 DropdownButtonFormField<DirectorDocumentKind>(
+                  key: ObjectKey(_controller),
                   initialValue: _kind,
                   isExpanded: true,
                   decoration: InputDecoration(
@@ -147,7 +170,12 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
                       ),
                   ],
                   onChanged: _controller.canWrite
-                      ? (kind) => setState(() => _kind = kind!)
+                      ? (kind) {
+                          if (kind != null && _controller.canWrite &&
+                              identical(_controller.evidence, evidence)) {
+                            setState(() => _kind = kind);
+                          }
+                        }
                       : null,
                 ),
                 const SizedBox(height: 8),
@@ -164,7 +192,7 @@ class _DirectorEvidenceScreenState extends State<DirectorEvidenceScreen> {
                   label: Text(l10n.directorDocumentUpload),
                 ),
                 const SizedBox(height: 16),
-                DirectorVerificationCard(controller: _controller),
+                DirectorVerificationCard(key: ObjectKey(_controller), controller: _controller),
                 if (evidence.documents.isEmpty)
                   Text(l10n.directorDocumentEmpty),
                 for (final document in evidence.documents)
