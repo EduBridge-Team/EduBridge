@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\SchoolContextController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SchoolProvisionController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -15,6 +16,8 @@ class SchoolProvisionPersistenceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Login issues a signed token: use a deterministic test-only secret.
+        config()->set('services.jwt.secret', str_repeat('test-jwt-secret-', 4));
         Schema::create('users', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->string('email')->unique();
             $t->string('password_hash'); $t->string('role'); $t->timestamps();
@@ -95,4 +98,38 @@ class SchoolProvisionPersistenceTest extends TestCase
         $this->assertSame(1, DB::table('schools')->count());
         $this->assertSame(1, DB::table('school_accounts')->count());
     }
+    public function test_newly_provisioned_independent_school_can_log_in(): void
+    {
+        $created = $this->provision(false, 'signin-independent@example.test');
+        $this->assertSame(201, $created->getStatusCode());
+        $userId = $created->getData(true)['account']['id'];
+        $request = Request::create('/api/auth/login', 'POST', [
+            'email' => 'signin-independent@example.test',
+            'password' => 'long-test-password-123',
+        ]);
+        $login = app(AuthController::class)->login($request);
+        $this->assertSame(200, $login->getStatusCode());
+        $data = $login->getData(true);
+        $this->assertSame($userId, $data['user']['id']);
+        $this->assertSame('school', $data['user']['role']);
+        $this->assertNotEmpty($data['token']);
+    }
+
+    public function test_newly_provisioned_affiliated_school_can_log_in_only_while_tenant_active(): void
+    {
+        $created = $this->provision(true, 'signin-affiliated@example.test');
+        $this->assertSame(201, $created->getStatusCode());
+        $request = Request::create('/api/auth/login', 'POST', [
+            'email' => 'signin-affiliated@example.test',
+            'password' => 'long-test-password-123',
+        ]);
+        $login = app(AuthController::class)->login($request);
+        $this->assertSame(200, $login->getStatusCode());
+        $this->assertSame('school', $login->getData(true)['user']['role']);
+        DB::table('organizations')->where('id', 1)->update(['is_active' => false]);
+        $denied = app(AuthController::class)->login($request);
+        $this->assertSame(403, $denied->getStatusCode());
+        $this->assertSame('SCHOOL_ACCESS_UNAVAILABLE', $denied->getData(true)['code']);
+    }
+
 }
