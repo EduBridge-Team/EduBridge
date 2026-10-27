@@ -11491,5 +11491,13 @@
   "attendanceReportClear": "مسح الفلاتر",
   "@attendanceReportClear": {
     "description": "Institution attendance report"
+  },
+  "institutionAssignmentRemove": "إلغاء تكليف المعلم",
+  "@institutionAssignmentRemove": {
+    "description": "Institution teacher assignment removal"
+  },
+  "institutionAssignmentRemoveConfirm": "إلغاء تكليف هذا المعلم بالشعبة والمادة المعروضتين؟ لا يمكن التراجع عن هذا الإجراء.",
+  "@institutionAssignmentRemoveConfirm": {
+    "description": "Institution teacher assignment removal"
   }
 }
