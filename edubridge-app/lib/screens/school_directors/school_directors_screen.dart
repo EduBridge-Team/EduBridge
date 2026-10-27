@@ -16,12 +16,18 @@ class SchoolDirectorsScreen extends StatefulWidget {
   State<SchoolDirectorsScreen> createState() => _SchoolDirectorsScreenState();
 }
 
-class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen> {
-  late final SchoolDirectorsController _controller;
+class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen>
+    with WidgetsBindingObserver {
+  late SchoolDirectorsController _controller;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initializeController();
+  }
+
+  void _initializeController() {
     _controller = SchoolDirectorsController(
       widget.gateway ?? SchoolDirectorRepository(),
     );
@@ -29,7 +35,22 @@ class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen> {
   }
 
   @override
+  void didUpdateWidget(covariant SchoolDirectorsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.gateway != oldWidget.gateway) {
+      _controller.dispose();
+      _initializeController();
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _controller.reload();
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
   }
@@ -39,7 +60,9 @@ class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen> {
     animation: _controller,
     builder: (context, child) {
       final l10n = context.l10n;
-      return Scaffold(
+      final controller = _controller;
+      final schools = controller.schools;
+      return PopScope(canPop: !controller.saving, child: Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
           title: Text(l10n.directorTitle),
@@ -80,10 +103,12 @@ class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen> {
                   onChanged: _controller.saving
                       ? null
                       : (id) {
-                          if (id != null)
-                            _controller.select(
-                              _controller.schools.firstWhere((s) => s.id == id),
-                            );
+                          if (id != null && identical(controller, _controller) &&
+                              identical(controller.schools, schools) &&
+                              !controller.saving) {
+                            final matches = schools.where((school) => school.id == id);
+                            if (matches.length == 1) controller.select(matches.single);
+                          }
                         },
                 ),
                 const SizedBox(height: 16),
@@ -136,7 +161,7 @@ class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen> {
             ],
           ),
         ),
-      );
+      ));
     },
   );
 }
