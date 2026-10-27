@@ -9,6 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class SchoolProvisionPersistenceTest extends TestCase
@@ -16,11 +17,16 @@ class SchoolProvisionPersistenceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Mail::fake();
         // Login issues a signed token: use a deterministic test-only secret.
         config()->set('services.jwt.secret', str_repeat('test-jwt-secret-', 4));
         Schema::create('users', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->string('email')->unique();
-            $t->string('password_hash'); $t->string('role'); $t->timestamps();
+            $t->string('password_hash'); $t->string('role');
+            $t->timestamp('email_verified_at')->nullable(); $t->timestamps();
+        });
+        Schema::create('email_verification_tokens', function (Blueprint $t) {
+            $t->string('email')->primary(); $t->string('token'); $t->timestamp('created_at');
         });
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->boolean('is_active');
@@ -46,7 +52,7 @@ class SchoolProvisionPersistenceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['school_accounts', 'schools', 'organization_user', 'organizations', 'users'] as $table) {
+        foreach (['school_accounts', 'schools', 'organization_user', 'organizations', 'email_verification_tokens', 'users'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -107,6 +113,13 @@ class SchoolProvisionPersistenceTest extends TestCase
             'email' => 'signin-independent@example.test',
             'password' => 'long-test-password-123',
         ]);
+        $beforeVerification = app(AuthController::class)->login($request);
+        $this->assertSame(403, $beforeVerification->getStatusCode());
+        $this->assertSame('EMAIL_NOT_VERIFIED', $beforeVerification->getData(true)['code']);
+        $this->assertSame(1, DB::table('email_verification_tokens')
+            ->where('email', $request->input('email'))->count());
+        DB::table('users')->where('email', $request->input('email'))
+            ->update(['email_verified_at' => now()]);
         $login = app(AuthController::class)->login($request);
         $this->assertSame(200, $login->getStatusCode());
         $data = $login->getData(true);
@@ -123,6 +136,13 @@ class SchoolProvisionPersistenceTest extends TestCase
             'email' => 'signin-affiliated@example.test',
             'password' => 'long-test-password-123',
         ]);
+        $beforeVerification = app(AuthController::class)->login($request);
+        $this->assertSame(403, $beforeVerification->getStatusCode());
+        $this->assertSame('EMAIL_NOT_VERIFIED', $beforeVerification->getData(true)['code']);
+        $this->assertSame(1, DB::table('email_verification_tokens')
+            ->where('email', $request->input('email'))->count());
+        DB::table('users')->where('email', $request->input('email'))
+            ->update(['email_verified_at' => now()]);
         $login = app(AuthController::class)->login($request);
         $this->assertSame(200, $login->getStatusCode());
         $this->assertSame('school', $login->getData(true)['user']['role']);
