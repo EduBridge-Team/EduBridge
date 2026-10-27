@@ -26,35 +26,35 @@ class _InteractiveLessonStepEditorState extends State<InteractiveLessonStepEdito
   String _newId() => 'edited-${DateTime.now().microsecondsSinceEpoch}-${_sequence++}';
 
   Future<void> _addExplanation() async {
-    final controller = TextEditingController();
+    var explanation = '';
     final text = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('إضافة خطوة شرح'),
         content: TextField(
           key: const ValueKey('lesson-step-explanation-input'),
-          controller: controller,
+          onChanged: (value) => explanation = value,
           maxLines: 3,
           decoration: const InputDecoration(labelText: 'نص الشرح'),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('إلغاء')),
           FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+            onPressed: () => Navigator.pop(dialogContext, explanation.trim()),
             child: const Text('إضافة'),
           ),
         ],
       ),
     );
-    controller.dispose();
+
     if (!mounted || text == null || text.isEmpty) return;
     setState(() => _steps.add(LessonExplanation(_newId(), text)));
   }
 
   Future<void> _addQuestion() async {
-    final prompt = TextEditingController();
-    final first = TextEditingController();
-    final second = TextEditingController();
+    var prompt = '';
+    var first = '';
+    var second = '';
     var answerIndex = 0;
     final result = await showDialog<(String, String, String, int)>(
       context: context,
@@ -63,11 +63,11 @@ class _InteractiveLessonStepEditorState extends State<InteractiveLessonStepEdito
           title: const Text('إضافة سؤال اختيار'),
           content: SingleChildScrollView(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              TextField(key: const ValueKey('lesson-question-prompt'), controller: prompt,
+              TextField(key: const ValueKey('lesson-question-prompt'), onChanged: (value) => prompt = value,
                 decoration: const InputDecoration(labelText: 'نص السؤال')),
-              TextField(key: const ValueKey('lesson-question-first'), controller: first,
+              TextField(key: const ValueKey('lesson-question-first'), onChanged: (value) => first = value,
                 decoration: const InputDecoration(labelText: 'الخيار الأول')),
-              TextField(key: const ValueKey('lesson-question-second'), controller: second,
+              TextField(key: const ValueKey('lesson-question-second'), onChanged: (value) => second = value,
                 decoration: const InputDecoration(labelText: 'الخيار الثاني')),
               DropdownButtonFormField<int>(
                 initialValue: answerIndex,
@@ -84,16 +84,14 @@ class _InteractiveLessonStepEditorState extends State<InteractiveLessonStepEdito
             TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('إلغاء')),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext,
-                (prompt.text.trim(), first.text.trim(), second.text.trim(), answerIndex)),
+                (prompt.trim(), first.trim(), second.trim(), answerIndex)),
               child: const Text('إضافة'),
             ),
           ],
         ),
       ),
     );
-    prompt.dispose();
-    first.dispose();
-    second.dispose();
+
     if (!mounted || result == null) return;
     final (question, optionA, optionB, correct) = result;
     if (question.isEmpty || optionA.isEmpty || optionB.isEmpty || optionA == optionB) {
