@@ -28,36 +28,19 @@ class InstitutionStatisticsContent extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(label('الإجماليات الحالية', 'Current totals'),
-              style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            LayoutBuilder(builder: (context, constraints) {
-              final scale = MediaQuery.textScalerOf(context).scale(1);
-              final columns = constraints.maxWidth >= 720 * scale ? 3
-                  : constraints.maxWidth >= 360 * scale ? 2 : 1;
-              final width = (constraints.maxWidth - (columns - 1) * 8) / columns;
-              return Wrap(spacing: 8, runSpacing: 8, children: [
-                for (final metric in <Widget>[
-                  _metric(label('المدارس', 'Schools'), data.summary['schools'], Icons.school_outlined),
-                  _metric(label('ملفات الطلاب', 'Student files'), data.summary['student_files'], Icons.groups_outlined),
-                  _metric(label('المعلمون النشطون', 'Active teachers'), data.summary['active_teachers'], Icons.person_outline),
-                  _metric(label('الأخصائيون', 'Specialists'), null, Icons.medical_services_outlined),
-                  _metric(label('التسجيلات النشطة', 'Active enrollments'), data.summary['active_enrollments'], Icons.fact_check_outlined),
-                ])
-                  SizedBox(width: width, child: metric),
-              ]);
-            }),
-            const SizedBox(height: 6),
-            Text(label('عدد الأخصائيين غير متاح في API الحالي.',
-                'Specialist count is not provided by the current API.')),
-            const SizedBox(height: 20),
-            if (hasPeriod) InstitutionPeriodStatistics(values: data.periodSummary),
+            InstitutionPeriodStatistics(values: hasPeriod ? data.periodSummary : const {}),
             Text(label(hasPeriod ? 'الحضور خلال الفترة المختارة' : 'الحضور لكل التواريخ',
               hasPeriod ? 'Attendance in selected period' : 'Attendance across all dates'),
               style: Theme.of(context).textTheme.titleLarge),
             _metric(label('جلسات الحضور', 'Attendance sessions'), data.summary['attendance_sessions'], Icons.calendar_month_outlined),
 
-            Text(label('تفاصيل المدارس', 'School breakdown'),
+            ...[
+              for (final status in ['present', 'absent', 'late', 'excused'])
+                _line(label({'present': 'حاضر', 'absent': 'غائب', 'late': 'متأخر', 'excused': 'بعذر'}[status]!,
+                  {'present': 'Present', 'absent': 'Absent', 'late': 'Late', 'excused': 'Excused'}[status]!), data.attendanceTotal(status)),
+              _line(label('نسبة الحضور', 'Present rate'), data.presentRate == null ? null : '${data.presentRate!.toStringAsFixed(1)}%'),
+            ],
+            Text(label('الحضور حسب المدرسة', 'Attendance by school'),
               style: Theme.of(context).textTheme.titleLarge),
             if (data.schools.isEmpty)
               Padding(padding: const EdgeInsets.all(14),
@@ -71,9 +54,6 @@ class InstitutionStatisticsContent extends StatelessWidget {
                     Text(school.name,
                       style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    _line(label('الشعب الدراسية', 'Sections'), school.counts['sections']),
-                    _line(label('التسجيلات النشطة', 'Active enrollments'), school.counts['active_enrollments']),
-                    _line(label('حصص الجدول', 'Timetable entries'), school.counts['timetable_entries']),
                     _line(label('جلسات الحضور', 'Attendance sessions'), school.counts['attendance_sessions']),
                     const Divider(),
                     Text(label('الحضور والغياب', 'Attendance status'),
@@ -95,7 +75,7 @@ class InstitutionStatisticsContent extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 2),
     child: Row(children: [
       Expanded(child: Text(name)),
-      Text(number is num ? '$number' : '—',
+      Text(number?.toString() ?? '—',
         style: const TextStyle(fontWeight: FontWeight.w700)),
     ]),
   );

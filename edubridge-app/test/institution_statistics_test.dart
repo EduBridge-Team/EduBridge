@@ -16,10 +16,11 @@ void main() {
     final f = InstitutionStatisticsFixture();
     final from = DateTime(2026, 10, 1), to = DateTime(2026, 10, 26);
     expect((await f.repository.load(from: from, to: to)).periodSummary, isEmpty);
-    f.periodSummary = {'schools_created': 0, 'teachers_joined': 3, 'student_files_created': 4, 'enrollments_started': 6};
+    f.periodSummary = {'schools_created': 0, 'teachers_joined': 3, 'student_files_created': 4, 'enrollments_started': 6, 'specialists_joined': 2};
     final result = await f.repository.load(from: from, to: to);
     expect(result.periodSummary['schools_created'], 0);
     expect(result.periodSummary['teachers_joined'], 3);
+    expect(result.periodSummary['specialists_joined'], 2);
     expect(result.summary['active_teachers'], 2);
     expect(() => result.periodSummary.clear(), throwsUnsupportedError);
     f.wrongPeriod = true;

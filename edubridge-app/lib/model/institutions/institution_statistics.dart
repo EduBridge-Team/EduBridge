@@ -22,6 +22,16 @@ class InstitutionStatistics {
   final Map<String, int?> summary, periodSummary;
   final List<InstitutionSchoolStatistics> schools;
   final DateTime loadedAt;
+  int? attendanceTotal(String status) {
+    if (schools.any((school) => school.attendance[status] == null)) return null;
+    return schools.fold<int>(0, (sum, school) => sum + school.attendance[status]!);
+  }
+  double? get presentRate {
+    final counts = [for (final status in ['present', 'absent', 'late', 'excused']) attendanceTotal(status)];
+    if (counts.any((count) => count == null)) return null;
+    final total = counts.fold<int>(0, (sum, count) => sum + count!);
+    return total == 0 ? null : counts.first! * 100 / total;
+  }
   factory InstitutionStatistics.fromJson(int organizationId, String slug, Map<String, dynamic> data, {DateTime? from, DateTime? to}) {
     final rawSummary = enrollmentMap(data['summary']);
     final summary = {for (final key in ['schools', 'student_files', 'active_teachers', 'active_enrollments', 'attendance_sessions'])
@@ -52,7 +62,7 @@ class InstitutionStatistics {
         throw const FormatException('Mismatched statistics period');
       }
       final values = enrollmentMap(data['period_summary']);
-      for (final key in ['schools_created', 'teachers_joined', 'student_files_created', 'enrollments_started']) {
+      for (final key in ['schools_created', 'teachers_joined', 'specialists_joined', 'student_files_created', 'enrollments_started']) {
         periodSummary[key] = _count(values[key]);
       }
     }
