@@ -25,7 +25,7 @@ class ParentEnrollmentScreen extends StatefulWidget {
 
 class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
     with WidgetsBindingObserver {
-  late final ParentEnrollmentController _controller;
+  late ParentEnrollmentController _controller;
   final _query = TextEditingController();
   @override
   void initState() {
@@ -37,6 +37,16 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
     _controller.reload();
   }
 
+  @override
+  void didUpdateWidget(covariant ParentEnrollmentScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.childId != widget.childId || oldWidget.gateway != widget.gateway) {
+      _controller.dispose(); _query.clear();
+      _controller = ParentEnrollmentController(
+        widget.gateway ?? ParentEnrollmentRepository(childId: widget.childId),
+      )..reload();
+    }
+  }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _controller.reload();
@@ -70,19 +80,23 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
       ) ??
       false;
   Future<void> _submit(EnrollmentSchool school) async {
+    final controller = _controller, expected = _controller.snapshot;
+    if (!controller.canWrite || expected == null) return;
     final confirmed = await _confirm(
       school.name,
       context.l10n.enrollmentSubmitNotice,
     );
-    if (mounted && confirmed) await _controller.submit(school);
+    if (mounted && confirmed && identical(controller, _controller) && identical(expected, controller.snapshot)) await controller.submit(school);
   }
 
   Future<void> _cancel(EnrollmentRequest request) async {
+    final controller = _controller, expected = _controller.snapshot;
+    if (!controller.canWrite || expected == null) return;
     final confirmed = await _confirm(
       context.l10n.enrollmentCancelRequest,
       context.l10n.enrollmentCancelNotice,
     );
-    if (mounted && confirmed) await _controller.cancel(request);
+    if (mounted && confirmed && identical(controller, _controller) && identical(expected, controller.snapshot)) await controller.cancel(request);
   }
 
   @override

@@ -40,8 +40,8 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }
   Future<void> _remove(InstitutionTimetableEntry entry) async {
-    final controller = _state;
-    if (!controller.canWrite) return;
+    final controller = _state, expected = _state.snapshot;
+    if (!controller.canWrite || expected == null) return;
     final l = context.l10n;
     final confirmed = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
       title: Text(l.timetableDelete), content: Text(l.timetableDeleteConfirm),
@@ -50,7 +50,7 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
           onPressed: () => Navigator.pop(context, true), child: Text(l.timetableDelete))],
       scrollable: true,
     ));
-    if (!mounted || !identical(controller, _state) || confirmed != true) return;
+    if (!mounted || !identical(controller, _state) || !identical(expected, controller.snapshot) || confirmed != true) return;
     await controller.remove(entry);
     if (mounted && identical(controller, _state) && controller.saved) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.timetableDeleted)));
@@ -90,7 +90,7 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
     }
     final entries = data?.entries.where((e) => (_year == 0 || e.yearId == _year) &&
       (_section == 0 || e.sectionId == _section) && (_day == 0 || e.weekday == _day)).toList();
-    return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(l.timetableTitle),
+    return PopScope(canPop: !_state.busy, child: Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(l.timetableTitle),
       actions: [IconButton(tooltip: l.enrollmentReload, onPressed: _state.loading || _state.busy ? null : _state.reload, icon: const Icon(Icons.refresh))]),
       body: RefreshIndicator(onRefresh: _state.reload, child: SafeArea(child: Center(child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 840),
@@ -118,6 +118,6 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
           ],
         ]),
       )))),
-    );
+    ));
   });
 }
