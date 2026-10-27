@@ -172,8 +172,12 @@ class SchoolProvisionPersistenceTest extends TestCase
         $this->assertNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
 
         DB::table('email_verification_tokens')->where('email', $email)
-            ->update(['created_at' => now()->subHours(25)]);
-        $expired = app(AuthController::class)->verifyEmail($invalid);
+            ->update(['token' => hash('sha256', 'known-expired-token'),
+                'created_at' => now()->subHours(25)]);
+        $expiredRequest = Request::create('/api/auth/verify-email', 'GET', [
+            'email' => $email, 'token' => 'known-expired-token',
+        ]);
+        $expired = app(AuthController::class)->verifyEmail($expiredRequest);
         $this->assertSame(302, $expired->getStatusCode());
         $this->assertStringContainsString('verified=0', $expired->headers->get('Location'));
         $this->assertNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
