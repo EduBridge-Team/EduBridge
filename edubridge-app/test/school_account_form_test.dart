@@ -140,6 +140,7 @@ void main() {
           findsOneWidget,
         );
         expect(find.byType(TextFormField), findsNothing);
+        expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
@@ -191,6 +192,7 @@ void main() {
       pending.complete(created());
       await tester.pumpAndSettle();
       expect(find.text('School account created successfully.'), findsOneWidget);
+      expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget);
       expect(submit, findsNothing);
     },
   );
