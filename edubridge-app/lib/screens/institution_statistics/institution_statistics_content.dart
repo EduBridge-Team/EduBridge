@@ -37,8 +37,8 @@ class InstitutionStatisticsContent extends StatelessWidget {
             ...[
               for (final status in ['present', 'absent', 'late', 'excused'])
                 _line(label({'present': 'حاضر', 'absent': 'غائب', 'late': 'متأخر', 'excused': 'بعذر'}[status]!,
-                  {'present': 'Present', 'absent': 'Absent', 'late': 'Late', 'excused': 'Excused'}[status]!), _attendanceTotal(status)),
-              _line(label('نسبة الحضور', 'Present rate'), _presentRate()),
+                  {'present': 'Present', 'absent': 'Absent', 'late': 'Late', 'excused': 'Excused'}[status]!), data.attendanceTotal(status)),
+              _line(label('نسبة الحضور', 'Present rate'), data.presentRate == null ? null : '${data.presentRate!.toStringAsFixed(1)}%'),
             ],
             Text(label('الحضور حسب المدرسة', 'Attendance by school'),
               style: Theme.of(context).textTheme.titleLarge),
@@ -70,16 +70,6 @@ class InstitutionStatisticsContent extends StatelessWidget {
             ],
           ],
         );
-  }
-  int? _attendanceTotal(String status) {
-    if (data.schools.any((school) => school.attendance[status] == null)) return null;
-    return data.schools.fold<int>(0, (sum, school) => sum + school.attendance[status]!);
-  }
-  String? _presentRate() {
-    final counts = [for (final status in ['present', 'absent', 'late', 'excused']) _attendanceTotal(status)];
-    if (counts.any((count) => count == null)) return null;
-    final total = counts.fold<int>(0, (sum, count) => sum + count!);
-    return total == 0 ? null : '${(counts.first! * 100 / total).toStringAsFixed(1)}%';
   }
   Widget _line(String name, dynamic number) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 2),
