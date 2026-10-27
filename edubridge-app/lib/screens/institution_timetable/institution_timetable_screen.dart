@@ -5,6 +5,8 @@ import '../../model/institutions/institution_timetable.dart';
 import '../../model/institutions/institution_timetable_draft.dart';
 import '../../services/institution_timetable_repository.dart';
 import '../../theme.dart';
+import '../../services/institution_teacher_absence_repository.dart';
+import 'institution_teacher_absence_screen.dart';
 import '../academics/academic_choice_field.dart';
 import '../enrollment/enrollment_labels.dart';
 import 'institution_timetable_controller.dart';
@@ -54,6 +56,13 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.timetableDeleted)));
     }
   }
+  Future<void> _absence() async {
+    final controller = _state, gateway = widget.gateway;
+    if (!controller.canWrite || gateway is! InstitutionTeacherAbsenceGateway) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
+      InstitutionTeacherAbsenceScreen(gateway: gateway, timetableGateway: gateway)));
+    if (mounted && identical(controller, _state)) await controller.reload();
+  }
   Future<void> _create() async {
     final controller = _state, gateway = widget.gateway;
     if (!controller.canWrite || gateway is! InstitutionTimetableCreator) return;
@@ -90,6 +99,8 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
           if (_state.error != null) Semantics(liveRegion: true, child: Text(enrollmentFailureMessage(l, _state.error!))),
           if (data != null) ...[
             Text(data.academic.school.name, style: Theme.of(context).textTheme.titleLarge),
+            if (widget.gateway is InstitutionTeacherAbsenceGateway) FilledButton(key: const ValueKey('timetable-open-absence'),
+              onPressed: _state.canWrite ? _absence : null, child: Text(l.teacherAbsenceTitle)),
             if (widget.gateway is InstitutionTimetableCreator) FilledButton(key: const ValueKey('timetable-open-create'),
               onPressed: _state.canWrite ? _create : null, child: Text(l.timetableCreate)),
             AcademicChoiceField(key: const ValueKey('timetable-year'), label: l.academicYears,

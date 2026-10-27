@@ -121,3 +121,5 @@ return to the list, whose filters follow the created class. Ambiguous writes and
 denied/conflicting/invalid responses never auto-replay POST. No backend changes.
 
 Timetable classes can be deleted after explicit confirmation that related substitute assignments are removed. Flutter revalidates the displayed class before DELETE and verifies its absence before confirming success. Ambiguous results require a read-only refresh; deletion is never automatically replayed.
+
+Teacher absence reporting uses the existing school teacher-absences POST. It revalidates active institution membership, validates the scoped confirmed receipt and affected recurring slots, and passes the exact absence date to substitute selection. Repeat reports update the reason for that teacher/date; the UI confirms this before writing. The returned classes are a saved receipt, not absence history. Academic-year boundaries gate substitute selection. No automatic replay after ambiguous responses.
