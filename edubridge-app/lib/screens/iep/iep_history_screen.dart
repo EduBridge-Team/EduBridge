@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../../model/iep/iep_plan_history.dart';
 import '../../services/iep/iep_history_repository.dart';
+import '../../services/iep/iep_draft_repository.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../theme.dart';
@@ -19,11 +20,13 @@ class IepHistoryScreen extends StatefulWidget {
     this.childName = '',
     this.gateway,
     this.evaluationGateway,
+    this.saveGateway,
   });
   final int childId;
   final String childName;
   final IepHistoryGateway? gateway;
   final EvaluationHistoryGateway? evaluationGateway;
+  final IepDraftGateway? saveGateway;
   @override
   State<IepHistoryScreen> createState() => _IepHistoryScreenState();
 }
@@ -108,15 +111,19 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                         _state.error != EnrollmentFailure.forbidden)
                       OutlinedButton.icon(
                         key: const ValueKey('iep-prepare-draft'),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
+                        onPressed: () async {
+                          final saved = await Navigator.of(context).push<bool>(
+                          MaterialPageRoute<bool>(
                             builder: (_) => IepDraftEditorScreen(
                               childId: widget.childId,
                               childName: widget.childName,
                               evaluationGateway: widget.evaluationGateway,
+                              saveGateway: widget.saveGateway,
                             ),
                           ),
-                        ),
+                          );
+                          if (mounted && saved == true) await _state.reload();
+                        },
                         icon: const Icon(Icons.edit_note),
                         label: Text(l10n.iepComposeTitle),
                       ),

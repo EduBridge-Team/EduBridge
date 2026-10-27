@@ -11126,8 +11126,8 @@
   "@iepLoadFailed": {"description": "Child individual plan versions and goals."},
   "iepComposeTitle": "Prepare an individual plan",
   "@iepComposeTitle": {"description": "Temporary IEP draft preparation; no server write."},
-  "iepComposeNotice": "This is a temporary preparation space. The draft is not saved on the server and will be lost when you leave this screen. Saving and submitting for review are currently unavailable.",
-  "@iepComposeNotice": {"description": "Temporary IEP draft preparation; no server write."},
+  "iepComposeNotice": "Entries remain temporary until a server save is confirmed. Review and preview the draft, then open the save screen to check availability and permission. Leaving the editor before saving discards the entries.",
+  "@iepComposeNotice": {"description":"Temporary authoring until an explicit server save is confirmed."},
   "iepComposeDiscardNotice": "There are unsaved entries. Leave this screen and discard them?",
   "@iepComposeDiscardNotice": {"description": "Temporary IEP draft preparation; no server write."},
   "iepComposeDiscard": "Leave and discard",
@@ -11499,5 +11499,21 @@
   "institutionAssignmentRemoveConfirm": "Remove this teacher’s assignment to the displayed section and subject? This action cannot be undone.",
   "@institutionAssignmentRemoveConfirm": {
     "description": "Institution teacher assignment removal"
-  }
+  },
+  "iepSaveTitle": "Save plan draft",
+  "iepSaveNotice": "Saving a draft does not approve the plan or submit it to the ministry.",
+  "iepSaveConfirm": "Save this plan as a new draft on the server?",
+  "iepSaveSuccess": "The plan draft was saved and confirmed by the server.",
+  "iepSaveUncertain": "The save result could not be confirmed. Check plan history before creating another draft; the request will not be sent again automatically.",
+  "iepSaveUnavailable": "Plan draft saving is not available yet. Return to the editor to keep working while its screen remains open.",
+  "iepSaveReferenceUnavailable": "The selected reference evaluation is not available for saving. Go back and refresh the evaluations.",
+  "iepSaveForbidden": "You do not have permission to save a plan draft for this child.",
+  "@iepSaveTitle": {"description":"IEP server draft saving: iepSaveTitle"},
+  "@iepSaveNotice": {"description":"IEP server draft saving: iepSaveNotice"},
+  "@iepSaveConfirm": {"description":"IEP server draft saving: iepSaveConfirm"},
+  "@iepSaveSuccess": {"description":"IEP server draft saving: iepSaveSuccess"},
+  "@iepSaveUncertain": {"description":"IEP server draft saving: iepSaveUncertain"},
+  "@iepSaveUnavailable": {"description":"IEP server draft saving: iepSaveUnavailable"},
+  "@iepSaveReferenceUnavailable": {"description":"IEP server draft saving: iepSaveReferenceUnavailable"},
+  "@iepSaveForbidden": {"description":"IEP server draft saving: iepSaveForbidden"}
 }

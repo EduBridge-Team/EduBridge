@@ -11126,8 +11126,8 @@
   "@iepLoadFailed": {"description": "Child individual plan versions and goals."},
   "iepComposeTitle": "تحضير خطة فردية",
   "@iepComposeTitle": {"description": "Temporary IEP draft preparation; no server write."},
-  "iepComposeNotice": "هذه مساحة تحضير مؤقتة فقط. المسودة غير محفوظة على السيرفر، وستُفقد عند مغادرة هذه الشاشة. الحفظ والإرسال للمراجعة غير متاحين حاليًا.",
-  "@iepComposeNotice": {"description": "Temporary IEP draft preparation; no server write."},
+  "iepComposeNotice": "تظل المدخلات مؤقتة حتى تأكيد حفظ المسودة من السيرفر. يمكنك مراجعتها ومعاينتها، ثم فتح شاشة الحفظ للتحقق من إتاحة الخدمة والصلاحية. إغلاق المحرر قبل الحفظ يفقد المدخلات.",
+  "@iepComposeNotice": {"description":"Temporary authoring until an explicit server save is confirmed."},
   "iepComposeDiscardNotice": "توجد مدخلات غير محفوظة. هل تريد مغادرة الشاشة وفقدان هذه المدخلات؟",
   "@iepComposeDiscardNotice": {"description": "Temporary IEP draft preparation; no server write."},
   "iepComposeDiscard": "مغادرة وفقدان المدخلات",
@@ -11499,5 +11499,21 @@
   "institutionAssignmentRemoveConfirm": "إلغاء تكليف هذا المعلم بالشعبة والمادة المعروضتين؟ لا يمكن التراجع عن هذا الإجراء.",
   "@institutionAssignmentRemoveConfirm": {
     "description": "Institution teacher assignment removal"
-  }
+  },
+  "iepSaveTitle": "حفظ مسودة الخطة",
+  "iepSaveNotice": "حفظ المسودة لا يعني اعتماد الخطة أو إرسالها إلى الوزارة.",
+  "iepSaveConfirm": "هل تريد حفظ مسودة جديدة لهذه الخطة على السيرفر؟",
+  "iepSaveSuccess": "تم حفظ مسودة الخطة وتأكيدها من السيرفر.",
+  "iepSaveUncertain": "تعذّر تأكيد نتيجة الحفظ. راجع سجل الخطط قبل إنشاء مسودة أخرى؛ لن يُعاد إرسال الطلب تلقائيًا.",
+  "iepSaveUnavailable": "خدمة حفظ مسودات الخطة غير متاحة حاليًا. يمكنك الرجوع إلى المحرر والاحتفاظ بمدخلاتك ما دامت الشاشة مفتوحة.",
+  "iepSaveReferenceUnavailable": "التقييم المرجعي المختار غير متاح لحفظ المسودة. ارجع وحدّث قائمة التقييمات.",
+  "iepSaveForbidden": "لا تملك صلاحية حفظ مسودة خطة لهذا الطفل.",
+  "@iepSaveTitle": {"description":"IEP server draft saving: iepSaveTitle"},
+  "@iepSaveNotice": {"description":"IEP server draft saving: iepSaveNotice"},
+  "@iepSaveConfirm": {"description":"IEP server draft saving: iepSaveConfirm"},
+  "@iepSaveSuccess": {"description":"IEP server draft saving: iepSaveSuccess"},
+  "@iepSaveUncertain": {"description":"IEP server draft saving: iepSaveUncertain"},
+  "@iepSaveUnavailable": {"description":"IEP server draft saving: iepSaveUnavailable"},
+  "@iepSaveReferenceUnavailable": {"description":"IEP server draft saving: iepSaveReferenceUnavailable"},
+  "@iepSaveForbidden": {"description":"IEP server draft saving: iepSaveForbidden"}
 }

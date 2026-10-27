@@ -108,9 +108,11 @@ resolve them implicitly or replace the existing ministry workflow.
 
 The preparation editor is separate from saved history. It reads the child's
 reference evaluations through the existing `GET /evaluations/child/{childId}`
-API. It performs no POST, PATCH, approval or persistence operation. Entered data
-lives only in the editor route; leaving discards it after confirmation. The UI
-explicitly states this limitation and never reports a save or submission.
+API. Entered data lives in the editor route until an explicit server save is
+confirmed; leaving beforehand discards it after confirmation. A separate save
+screen now implements the proposed create contract, described in
+`edubridge-app/docs/IEP_DRAFT_SAVE_CONTRACT.md`. Unavailable options disable saving;
+no server write is attempted from preparation, preview or refresh alone.
 
 Plan preparation requires an explicitly selected evaluation for the same child,
 a title, ordered plan dates, a review date on/after the start, and at least one
@@ -121,9 +123,11 @@ not an account assignment or a permission grant. Accommodations are one per line
 A successful client check creates only an immutable in-memory snapshot. It is
 invalidated on edits or refreshed evaluation data; it is never a server receipt.
 
-Server draft creation, authoritative write permissions, version conflict control,
-idempotency, submission and existing ministry review integration remain pending
-an implemented API contract. No speculative write endpoint is called by Flutter.
+Server implementation of draft creation, authoritative permissions and idempotency
+remains pending. Flutter has a gated new-draft create client; editing existing
+server versions, submission and ministry review integration remain later phases.
+The documented create endpoint is only called after a successful authorization
+options response and explicit user confirmation.
 
 A successfully checked preparation snapshot can be opened in a read-only preview.
 It shows the full plan period, review date, authored summary, all goal details and
