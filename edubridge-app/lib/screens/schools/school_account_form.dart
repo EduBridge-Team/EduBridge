@@ -5,6 +5,7 @@ import '../../model/schools/school_account.dart';
 import '../../services/schools/school_account_repository.dart';
 import '../../theme.dart';
 import 'school_account_failure_message.dart';
+import 'school_account_receipt.dart';
 
 enum SchoolAccountScope { independent, affiliated }
 
@@ -19,22 +20,39 @@ class SchoolAccountForm extends StatefulWidget {
 }
 
 class _SchoolAccountFormState extends State<SchoolAccountForm> {
-  final _formKey = GlobalKey<FormState>();
+  var _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
   final _password = TextEditingController();
   final _confirmation = TextEditingController();
-  late final SchoolAccountRepository _repository;
+  late SchoolAccountRepository _repository;
   bool _submitting = false;
-  bool _created = false;
+  SchoolAccount? _createdAccount;
+  int _generation = 0;
   SchoolAccountException? _error;
 
   @override
   void initState() {
     super.initState();
     _repository = widget.repository ?? SchoolAccountRepository();
+  }
+
+  @override
+  void didUpdateWidget(covariant SchoolAccountForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scope != widget.scope || oldWidget.repository != widget.repository) {
+      _generation++;
+      _formKey = GlobalKey<FormState>();
+      _repository = widget.repository ?? SchoolAccountRepository();
+      _submitting = false;
+      _createdAccount = null;
+      _error = null;
+      for (final controller in [_name, _email, _phone, _address, _password, _confirmation]) {
+        controller.clear();
+      }
+    }
   }
 
   @override
@@ -53,7 +71,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   }
 
   Future<void> _submit() async {
-    if (_submitting || _created) return;
+    if (_submitting || _createdAccount != null) return;
     setState(() => _error = null);
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
@@ -65,21 +83,22 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       password: _password.text,
       passwordConfirmation: _confirmation.text,
     );
+    final generation = _generation;
+    final repository = _repository;
+    final scope = widget.scope;
     setState(() => _submitting = true);
     try {
-      if (widget.scope == SchoolAccountScope.independent) {
-        await _repository.createIndependent(request);
-      } else {
-        await _repository.createAffiliated(request);
-      }
-      if (!mounted) return;
+      final account = scope == SchoolAccountScope.independent
+          ? await repository.createIndependent(request)
+          : await repository.createAffiliated(request);
+      if (!mounted || generation != _generation) return;
       _password.clear();
       _confirmation.clear();
-      setState(() => _created = true);
+      setState(() => _createdAccount = account);
     } on SchoolAccountException catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (mounted && generation == _generation) setState(() => _error = error);
     } on Exception {
-      if (mounted) {
+      if (mounted && generation == _generation) {
         setState(
           () => _error = const SchoolAccountException(
             SchoolAccountFailure.uncertain,
@@ -87,7 +106,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
         );
       }
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (mounted && generation == _generation) setState(() => _submitting = false);
     }
   }
 
@@ -128,7 +147,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final independent = widget.scope == SchoolAccountScope.independent;
-    return Scaffold(
+    return PopScope(canPop: !_submitting, child: Scaffold(
       appBar: BrandAppBar(
           leading: const BackButton(),
         title: Text(
@@ -143,14 +162,8 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
             constraints: const BoxConstraints(maxWidth: 600),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
-              child: _created
-                  ? Semantics(
-                      liveRegion: true,
-                      child: Text(
-                        l10n.schoolAccountSuccess,
-                        key: const ValueKey('school-account-success'),
-                      ),
-                    )
+              child: _createdAccount != null
+                  ? SchoolAccountReceipt(account: _createdAccount!)
                   : Form(
                       key: _formKey,
                       child: Column(
@@ -247,6 +260,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
           ),
         ),
       ),
-    );
+    ));
   }
 }
