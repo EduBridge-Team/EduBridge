@@ -147,3 +147,5 @@ Unknown/missing counters remain unavailable. Existing summary/schools fields kee
 their current meaning. Backend must define membership event/deduplication rules,
 apply institution scope, and implement authoritative event queries before these
 counters become operational. This PR modifies Flutter only.
+
+Enrollment lifecycle review: guardian enrollment now replaces/disposes its controller and clears search when child or gateway changes; school inbox replaces its controller when gateway changes. Submission/cancellation/decision confirmations capture the original controller and snapshot, and are discarded if either changes before confirmation. Timetable removal follows the same snapshot rule and blocks back navigation while a delete is pending. No API or backend changes.

@@ -25,7 +25,7 @@ class SchoolDashboardScreen extends StatefulWidget {
 
 class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
     with WidgetsBindingObserver {
-  late final SchoolEnrollmentController _controller;
+  late SchoolEnrollmentController _controller;
   @override
   void initState() {
     super.initState();
@@ -36,6 +36,14 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
     _controller.reload();
   }
 
+  @override
+  void didUpdateWidget(covariant SchoolDashboardScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.gateway != widget.gateway) {
+      _controller.dispose();
+      _controller = SchoolEnrollmentController(widget.gateway ?? SchoolEnrollmentRepository())..reload();
+    }
+  }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _controller.reload();
@@ -58,17 +66,18 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
   }
 
   Future<void> _decide(EnrollmentRequest request, bool approve) async {
-    if (!_controller.canWrite) return;
+    final controller = _controller, expected = _controller.snapshot;
+    if (!controller.canWrite || expected == null) return;
     final decision = await showDialog<EnrollmentDecision>(
       context: context,
       builder: (_) => SchoolEnrollmentDecisionDialog(
         approve: approve,
         request: request,
-        sections: _controller.snapshot!.sections,
+        sections: expected.sections,
       ),
     );
-    if (mounted && decision != null) {
-      await _controller.decide(request, decision);
+    if (mounted && decision != null && identical(controller, _controller) && identical(expected, controller.snapshot)) {
+      await controller.decide(request, decision);
     }
   }
 
