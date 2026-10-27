@@ -127,3 +127,23 @@ Teacher absence reporting uses the existing school teacher-absences POST. It rev
 The attendance list opens a read-only aggregate report using the existing school attendance/report endpoint. Optional from/to and section filters are validated against fresh school academic scope. Counts accept integer PostgreSQL aggregate strings and must reconcile across student rows and summary; duplicate students and malformed rates are rejected. The rate follows the API's present / total-recorded-sessions definition, not school-day attendance; late/excused stay separate. Empty reports and failed requests remain distinct. Refresh/resume are GET-only.
 
 Institution teacher assignments support confirmed removal using the existing DELETE academic/teacher-assignments/{assignment} endpoint. The confirmation identifies teacher, section and subject. Fresh scope and assignment identity are checked before deletion; removed:true plus a scoped read proving the ID/identity absent are required for success. Busy operations serialize, ambiguous writes are never replayed, and read-only gateway implementations retain compatibility.
+
+Institution statistics support an optional inclusive from/to date range, clearing filters, manual/pull/resume refresh, and a fetch timestamp. The API filters only attendance sessions and status counts; all other metrics remain current totals and the UI explicitly explains this. A scoped repository resolves and rechecks the authenticated institution, validates counts/duplicate schools/available aggregate totals, and keeps missing values unavailable rather than zero. Failed refresh clears stale results. Existing screen routes/constructors remain compatible; all requests are GET-only.
+
+### Prepared Flutter period counters — backend work pending
+
+When a date range is selected, Flutter additionally renders four independent
+period counters: schools created, teachers joined the institution, student files
+created, and enrollment records started in the inclusive period. These are event
+counts, not historical active headcounts or net changes. Missing data displays
+unavailable, never current totals or an invented zero.
+
+Proposed additive response on the existing management-report GET (not currently
+implemented by backend): `period: {from: YYYY-MM-DD, to: YYYY-MM-DD}` and
+`period_summary: {schools_created: int|null, teachers_joined: int|null,
+student_files_created: int|null, enrollments_started: int|null}`. The echoed dates
+must exactly match the selected range; counts must be nonnegative integers.
+Unknown/missing counters remain unavailable. Existing summary/schools fields keep
+their current meaning. Backend must define membership event/deduplication rules,
+apply institution scope, and implement authoritative event queries before these
+counters become operational. This PR modifies Flutter only.
