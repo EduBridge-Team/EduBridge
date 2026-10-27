@@ -1,3 +1,4 @@
+import '../../theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/interactive_lesson.dart';
@@ -33,7 +34,7 @@ class _InteractiveLessonStarterLibraryState extends State<InteractiveLessonStart
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
+        appBar: BrandAppBar(
           title: const Text('الدروس التفاعلية الجاهزة'),
           actions: [
             IconButton(

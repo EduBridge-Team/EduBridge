@@ -1,3 +1,4 @@
+import '../../theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/interactive_lesson.dart';
@@ -104,7 +105,7 @@ class _InteractiveLessonAdaptationScreenState
   Widget build(BuildContext context) => Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: AppBar(title: const Text('تخصيص نسخة للمعاينة')),
+          appBar: BrandAppBar(title: const Text('تخصيص نسخة للمعاينة')),
           body: ListView(
             padding: const EdgeInsets.all(20),
             children: [

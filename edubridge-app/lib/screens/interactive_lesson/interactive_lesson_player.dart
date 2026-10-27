@@ -1,3 +1,4 @@
+import '../../theme.dart';
 import '../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../../models/interactive_lesson.dart';
@@ -31,7 +32,7 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
     final finished = _index == steps.length;
     final step = finished ? null : steps[_index];
     return Scaffold(
-        appBar: AppBar(title: Text(widget.lesson.title)),
+        appBar: BrandAppBar(title: Text(widget.lesson.title)),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(20),
