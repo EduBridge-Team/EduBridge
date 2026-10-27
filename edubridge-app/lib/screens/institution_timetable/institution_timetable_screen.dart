@@ -60,7 +60,7 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
     final controller = _state, gateway = widget.gateway;
     if (!controller.canWrite || gateway is! InstitutionTeacherAbsenceGateway) return;
     await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
-      InstitutionTeacherAbsenceScreen(gateway: gateway, timetableGateway: gateway)));
+      InstitutionTeacherAbsenceScreen(gateway: gateway as InstitutionTeacherAbsenceGateway, timetableGateway: gateway)));
     if (mounted && identical(controller, _state)) await controller.reload();
   }
   Future<void> _create() async {
