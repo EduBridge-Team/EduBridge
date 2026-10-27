@@ -81,7 +81,7 @@ class _IepDraftSaveBodyState extends State<_IepDraftSaveBody> with WidgetsBindin
     return PopScope(canPop: _leaving, onPopInvokedWithResult: (didPop, _) {
       if (!didPop) _back();
     }, child: Scaffold(
-      appBar: BrandAppBar(leading: BackButton(onPressed: _back), title: Text(l.iepSaveTitle)),
+      appBar: BrandAppBar(leading: BackButton(onPressed: _back), title: Text(l.iepSaveTitle, softWrap: true, overflow: TextOverflow.visible)),
       body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 840),
         child: ListView(padding: const EdgeInsets.all(16), children: [
           if (widget.childName.trim().isNotEmpty) Text(widget.childName),
