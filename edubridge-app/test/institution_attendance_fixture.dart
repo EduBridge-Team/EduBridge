@@ -9,6 +9,11 @@ import 'institution_academic_fixture.dart';
 class InstitutionAttendanceFixture {
   final academic = InstitutionAcademicFixture();
   int status = 200;
+  Map<String, dynamic> report = {
+    'summary': {'present': 2, 'absent': 1, 'late': 1, 'excused': 0},
+    'students': [<String, dynamic>{'child_id': 9, 'child_name': 'نور', 'total_sessions': '4',
+      'present_count': '2', 'absent_count': '1', 'late_count': '1', 'excused_count': '0', 'attendance_rate': 50.0}],
+  };
   bool filterDates = true;
   int postStatus = 201, putStatus = 200;
   bool applyWrites = true;
@@ -44,6 +49,8 @@ class InstitutionAttendanceFixture {
       Map<String, dynamic>? body;
       if (uri.path == root) {
         body = {'attendance_sessions': sessions.where((s) => !filterDates || uri.queryParameters['date'] == null || s['attendance_date'] == uri.queryParameters['date']).toList()};
+      } else if (uri.path == '$root/report') {
+        body = report;
       } else if (uri.path == '/institutions/demo-institution/schools/5/academic/student-enrollments') {
         body = {'enrollments': enrollments};
       } else if (uri.path.startsWith('$root/')) {
