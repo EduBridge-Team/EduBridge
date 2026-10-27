@@ -31,7 +31,7 @@ class InstitutionStatisticsRepository implements InstitutionStatisticsGateway {
     final data = await _client.get(query.isEmpty ? path : '$path?${Uri(queryParameters: query).query}');
     if (await _context() != scope) throw const EnrollmentApiException(EnrollmentFailure.forbidden);
     try {
-      return InstitutionStatistics.fromJson(scope.$1, scope.$2, data);
+      return InstitutionStatistics.fromJson(scope.$1, scope.$2, data, from: from, to: to);
     } on FormatException {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }

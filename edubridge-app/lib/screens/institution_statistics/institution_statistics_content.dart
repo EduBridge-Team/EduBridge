@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../model/institutions/institution_statistics.dart';
 import '../../theme.dart';
+import 'institution_period_statistics.dart';
 
 class InstitutionStatisticsContent extends StatelessWidget {
-  const InstitutionStatisticsContent({super.key, required this.data});
+  const InstitutionStatisticsContent({super.key, required this.data, this.hasPeriod = false});
   final InstitutionStatistics data;
+  final bool hasPeriod;
   String _label(BuildContext context, String ar, String en) => Localizations.localeOf(context).languageCode == 'en' ? en : ar;
   Widget _metric(String label, int? count, IconData icon) => Card(
     child: Padding(
@@ -26,7 +28,7 @@ class InstitutionStatisticsContent extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(label('ملخص المؤسسة', 'Institution overview'),
+            Text(label('الإجماليات الحالية', 'Current totals'),
               style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 10),
             LayoutBuilder(builder: (context, constraints) {
@@ -41,7 +43,6 @@ class InstitutionStatisticsContent extends StatelessWidget {
                   _metric(label('المعلمون النشطون', 'Active teachers'), data.summary['active_teachers'], Icons.person_outline),
                   _metric(label('الأخصائيون', 'Specialists'), null, Icons.medical_services_outlined),
                   _metric(label('التسجيلات النشطة', 'Active enrollments'), data.summary['active_enrollments'], Icons.fact_check_outlined),
-                  _metric(label('جلسات الحضور', 'Attendance sessions'), data.summary['attendance_sessions'], Icons.calendar_month_outlined),
                 ])
                   SizedBox(width: width, child: metric),
               ]);
@@ -50,6 +51,12 @@ class InstitutionStatisticsContent extends StatelessWidget {
             Text(label('عدد الأخصائيين غير متاح في API الحالي.',
                 'Specialist count is not provided by the current API.')),
             const SizedBox(height: 20),
+            if (hasPeriod) InstitutionPeriodStatistics(values: data.periodSummary),
+            Text(label(hasPeriod ? 'الحضور خلال الفترة المختارة' : 'الحضور لكل التواريخ',
+              hasPeriod ? 'Attendance in selected period' : 'Attendance across all dates'),
+              style: Theme.of(context).textTheme.titleLarge),
+            _metric(label('جلسات الحضور', 'Attendance sessions'), data.summary['attendance_sessions'], Icons.calendar_month_outlined),
+
             Text(label('تفاصيل المدارس', 'School breakdown'),
               style: Theme.of(context).textTheme.titleLarge),
             if (data.schools.isEmpty)

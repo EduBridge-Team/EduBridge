@@ -9,6 +9,8 @@ class InstitutionStatisticsFixture {
   int contextReads = 0;
   final paths = <String>[];
   Future<void> Function()? beforeReport;
+  Map<String, dynamic>? periodSummary;
+  bool wrongPeriod = false;
   Map<String, dynamic> data = {
     'summary': {'schools': 1, 'student_files': 10, 'active_teachers': 2, 'active_enrollments': 5, 'attendance_sessions': 3},
     'schools': [<String, dynamic>{'school_id': 5, 'school_name': 'مدرسة الأمل', 'sections': 2,
@@ -23,6 +25,12 @@ class InstitutionStatisticsFixture {
         'slug': 'demo-institution'}}), 200);
     }
     await beforeReport?.call();
-    return http.Response(jsonEncode(data), status, headers: {'content-type': 'application/json; charset=utf-8'});
+    final query = Uri.parse(path).queryParameters;
+    final body = <String, dynamic>{...data,
+      if (periodSummary != null && query.containsKey('from')) ...{
+        'period': {'from': wrongPeriod ? '2026-01-01' : query['from'], 'to': query['to']},
+        'period_summary': periodSummary,
+      }};
+    return http.Response(jsonEncode(body), status, headers: {'content-type': 'application/json; charset=utf-8'});
   }, post: (path, body) async => throw StateError('Read-only report')));
 }

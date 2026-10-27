@@ -1,4 +1,5 @@
 import '../enrollment/enrollment_models.dart';
+import '../schools/academic_catalog.dart';
 
 int? _count(dynamic value) {
   if (value == null) return null;
@@ -14,14 +15,14 @@ class InstitutionSchoolStatistics {
 }
 class InstitutionStatistics {
   InstitutionStatistics(this.organizationId, this.organizationSlug, Map<String, int?> summary,
-    List<InstitutionSchoolStatistics> schools, this.loadedAt)
-    : summary = Map.unmodifiable(summary), schools = List.unmodifiable(schools);
+    List<InstitutionSchoolStatistics> schools, this.loadedAt, {Map<String, int?> periodSummary = const {}})
+    : summary = Map.unmodifiable(summary), schools = List.unmodifiable(schools), periodSummary = Map.unmodifiable(periodSummary);
   final int organizationId;
   final String organizationSlug;
-  final Map<String, int?> summary;
+  final Map<String, int?> summary, periodSummary;
   final List<InstitutionSchoolStatistics> schools;
   final DateTime loadedAt;
-  factory InstitutionStatistics.fromJson(int organizationId, String slug, Map<String, dynamic> data) {
+  factory InstitutionStatistics.fromJson(int organizationId, String slug, Map<String, dynamic> data, {DateTime? from, DateTime? to}) {
     final rawSummary = enrollmentMap(data['summary']);
     final summary = {for (final key in ['schools', 'student_files', 'active_teachers', 'active_enrollments', 'attendance_sessions'])
       key: _count(rawSummary[key])};
@@ -44,6 +45,17 @@ class InstitutionStatistics {
         throw const FormatException('School totals mismatch');
       }
     }
-    return InstitutionStatistics(organizationId, slug, summary, schools, DateTime.now());
+    final periodSummary = <String, int?>{};
+    if (data['period_summary'] != null) {
+      final period = enrollmentMap(data['period']);
+      if (from == null || to == null || academicDate(period['from']) != from || academicDate(period['to']) != to) {
+        throw const FormatException('Mismatched statistics period');
+      }
+      final values = enrollmentMap(data['period_summary']);
+      for (final key in ['schools_created', 'teachers_joined', 'student_files_created', 'enrollments_started']) {
+        periodSummary[key] = _count(values[key]);
+      }
+    }
+    return InstitutionStatistics(organizationId, slug, summary, schools, DateTime.now(), periodSummary: periodSummary);
   }
 }
