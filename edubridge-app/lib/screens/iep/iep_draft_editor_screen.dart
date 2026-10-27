@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../../model/evaluations/evaluation_record.dart';
 import '../../model/iep/iep_draft.dart';
+import '../../model/iep/iep_edit_source.dart';
 import '../../model/iep/iep_draft_save.dart';
 import '../../services/iep/iep_draft_repository.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
@@ -26,18 +27,21 @@ class IepDraftEditorScreen extends StatelessWidget {
     this.childName = '',
     this.evaluationGateway,
     this.saveGateway,
+    this.editSource,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepDraftGateway? saveGateway;
+  final IepEditSource? editSource;
   @override
   Widget build(BuildContext context) => _IepDraftEditorBody(
-    key: ValueKey((childId, evaluationGateway, saveGateway)),
+    key: ValueKey((childId, evaluationGateway, saveGateway, editSource)),
     childId: childId,
     childName: childName,
     evaluationGateway: evaluationGateway,
     saveGateway: saveGateway,
+    editSource: editSource,
   );
 }
 
@@ -48,11 +52,13 @@ class _IepDraftEditorBody extends StatefulWidget {
     required this.childName,
     this.evaluationGateway,
     this.saveGateway,
+    this.editSource,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepDraftGateway? saveGateway;
+  final IepEditSource? editSource;
   @override
   State<_IepDraftEditorBody> createState() => _IepDraftEditorScreenState();
 }
@@ -73,6 +79,18 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    final source = widget.editSource;
+    if (source != null) {
+      final draft = source.draft;
+      if (draft.childId != widget.childId) throw ArgumentError('Foreign IEP draft');
+      String day(DateTime date) => date.toIso8601String().substring(0, 10);
+      _values.addAll({'title': draft.title, 'summary': draft.summary,
+        'start': day(draft.start), 'end': day(draft.end), 'review': day(draft.reviewOn),
+        'accommodations': draft.accommodations.join('\n')});
+      _goals.addAll(draft.goals);
+      _evaluationId = draft.evaluationId;
+    }
+
     final childId = widget.childId;
     final gateway =
         widget.evaluationGateway ??
@@ -222,7 +240,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   }
 
   Future<void> _saveDraft(IepPlanDraft draft) async {
-    if (!identical(_checked, draft)) return;
+    if (widget.editSource != null || !identical(_checked, draft)) return;
     final saved = await Navigator.of(context).push<IepSavedDraft>(MaterialPageRoute(
       builder: (_) => IepDraftSaveScreen(draft: draft, childName: widget.childName, gateway: widget.saveGateway, requestKey: _saveRequestKey),
     ));
@@ -293,7 +311,10 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       Text(
-                        l.iepComposeNotice,
+                        widget.editSource == null ? l.iepComposeNotice
+                          : (Localizations.localeOf(context).languageCode == 'en'
+                            ? 'Editing a temporary copy. Updating the saved version is not available yet. Leaving discards these changes.'
+                            : 'تعديل نسخة مؤقتة. تحديث النسخة المحفوظة غير متاح بعد. مغادرة المحرر تلغي هذه التعديلات.'),
                         key: const ValueKey('iep-unsaved-notice'),
                       ),
                       const SizedBox(height: 16),
@@ -428,7 +449,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                         child: Text(l.iepComposeVerify),
                       ),
                       if (checked != null) ...[
-                        OutlinedButton.icon(
+                        if (widget.editSource == null) OutlinedButton.icon(
                           key: const ValueKey('iep-open-server-save'),
                           onPressed: () => _saveDraft(checked),
                           icon: const Icon(Icons.cloud_upload_outlined),
