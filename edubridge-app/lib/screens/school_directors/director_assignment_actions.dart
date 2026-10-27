@@ -11,7 +11,8 @@ Future<void> assignSchoolDirector(
   SchoolDirector director,
 ) async {
   if (!controller.canMutate) return;
-  final previous = controller.directory?.current;
+  final expected = controller.directory;
+  final previous = expected?.current;
   final today = DateUtils.dateOnly(DateTime.now());
   final start = await showDatePicker(
     context: context,
@@ -20,7 +21,8 @@ Future<void> assignSchoolDirector(
     firstDate: previous?.startsOn ?? DateTime(1900),
     lastDate: today,
   );
-  if (start == null || !context.mounted || !controller.canMutate) return;
+  if (start == null || !context.mounted || !controller.canMutate ||
+      !identical(controller.directory, expected)) return;
   final confirm = await _confirm(
     context,
     context.l10n.directorConfirmAssign,
@@ -28,7 +30,10 @@ Future<void> assignSchoolDirector(
         ? context.l10n.directorAssignNotice
         : context.l10n.directorReplaceNotice,
   );
-  if (confirm && context.mounted) await controller.assign(director.id, start);
+  if (confirm && context.mounted && controller.canMutate &&
+      identical(controller.directory, expected)) {
+    await controller.assign(director.id, start);
+  }
 }
 
 Future<void> endSchoolDirector(
@@ -37,6 +42,7 @@ Future<void> endSchoolDirector(
   DirectorAssignment assignment,
 ) async {
   if (!controller.canMutate) return;
+  final expected = controller.directory;
   final today = DateUtils.dateOnly(DateTime.now());
   final end = await showDatePicker(
     context: context,
@@ -45,13 +51,17 @@ Future<void> endSchoolDirector(
     firstDate: assignment.startsOn,
     lastDate: today,
   );
-  if (end == null || !context.mounted || !controller.canMutate) return;
+  if (end == null || !context.mounted || !controller.canMutate ||
+      !identical(controller.directory, expected)) return;
   final confirm = await _confirm(
     context,
     context.l10n.directorEnd,
     context.l10n.directorEndNotice,
   );
-  if (confirm && context.mounted) await controller.end(assignment, end);
+  if (confirm && context.mounted && controller.canMutate &&
+      identical(controller.directory, expected)) {
+    await controller.end(assignment, end);
+  }
 }
 
 Future<bool> _confirm(

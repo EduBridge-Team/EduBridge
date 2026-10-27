@@ -102,7 +102,9 @@ class _DirectorProfileFormState extends State<DirectorProfileForm> {
     final l10n = context.l10n;
     return AnimatedBuilder(
       animation: widget.controller,
-      builder: (context, child) => Scaffold(
+      builder: (context, child) => PopScope(
+        canPop: !widget.controller.saving,
+        child: Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
           title: Text(
@@ -203,7 +205,7 @@ class _DirectorProfileFormState extends State<DirectorProfileForm> {
             ),
           ),
         ),
-      ),
+      )),
     );
   }
 }
