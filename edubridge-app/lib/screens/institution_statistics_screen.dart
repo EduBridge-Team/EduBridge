@@ -43,7 +43,21 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
   void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }
   Future<void> _chooseRange() async {
     final controller = _state;
-    final range = await showDateRangePicker(context: context, firstDate: DateTime(1900), lastDate: DateTime(2100, 12, 31), initialDateRange: _range);
+    final range = await showDialog<DateTimeRange>(
+      context: context,
+      builder: (context) => Dialog(
+        insetPadding: const EdgeInsets.all(16),
+        clipBehavior: Clip.antiAlias,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 640, maxHeight: 680),
+          child: DateRangePickerDialog(
+            firstDate: DateTime(1900),
+            lastDate: DateTime(2100, 12, 31),
+            initialDateRange: _range,
+          ),
+        ),
+      ),
+    );
     if (!mounted || !identical(controller, _state) || controller.loading || range == null) return;
     _filter(range);
   }
@@ -55,8 +69,16 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
       body: RefreshIndicator(onRefresh: _state.reload, child: SafeArea(child: Center(child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(14),
           physics: const AlwaysScrollableScrollPhysics(), children: [
-            OutlinedButton(key: const ValueKey('statistics-period'), onPressed: _state.loading ? null : _chooseRange,
-              child: Text('${local.formatMediumDate(_range.start)} — ${local.formatMediumDate(_range.end)}')),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton.icon(
+                key: const ValueKey('statistics-period'),
+                onPressed: _state.loading ? null : _chooseRange,
+                icon: const Icon(Icons.calendar_month_outlined),
+                label: Text(_label('اختيار الفترة', 'Choose period')),
+              ),
+            ),
+            Text('${local.formatMediumDate(_range.start)} — ${local.formatMediumDate(_range.end)}'),
             TextButton(key: const ValueKey('statistics-clear'), onPressed: _state.loading ? null : () => _filter(_thisMonth()),
               child: Text(_label('هذا الشهر', 'This month'))),
             Text(_label('الإحصائيات خلال الفترة المختارة. — تعني أن القيمة غير متوفرة.',

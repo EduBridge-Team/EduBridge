@@ -72,6 +72,11 @@ void main() {
     await tester.pumpAndSettle();
     final strings = MaterialLocalizations.of(tester.element(find.byType(InstitutionStatisticsScreen)));
     await tapCurriculum(tester, 'statistics-period');
+    expect(find.byType(DateRangePickerDialog), findsOneWidget);
+    final popup = tester.getRect(find.byType(DateRangePickerDialog));
+    expect(popup.width, lessThan(1280));
+    expect(popup.center.dx, closeTo(640, 1));
+    expect(popup.center.dy, closeTo(800, 1));
     await tester.tap(find.byTooltip(strings.inputDateModeButtonLabel)); await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).at(0), '10/01/2026');
     await tester.enterText(find.byType(TextField).at(1), '10/26/2026');
