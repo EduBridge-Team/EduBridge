@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:edubridge_app/screens/institution_attendance/institution_attendance_create_screen.dart';
 import 'package:edubridge_app/screens/institution_attendance/institution_attendance_mark_screen.dart';
 import 'package:edubridge_app/screens/institution_enrollment/institution_enrollment_history_screen.dart';
+import 'package:edubridge_app/screens/institution_teacher_assignments/institution_teacher_assignments_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,6 +11,7 @@ import 'curriculum_ui_support.dart';
 import 'institution_attendance_fixture.dart';
 import 'institution_attendance_write_screens_test.dart' show attendanceText;
 import 'institution_enrollment_history_fixture.dart';
+import 'institution_teacher_assignments_fixture.dart';
 
 void main() {
   for (final language in ['ar', 'en']) {
@@ -56,6 +58,27 @@ void main() {
         expect(note.controller!.text, 'replacement record');
         expect(first.puts, isEmpty);
         expect(second.puts, isEmpty);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('old assignment choice cannot populate a replacement scope $language $width', (tester) async {
+        viewport(tester);
+        final first = InstitutionAssignmentsFixture(), second = InstitutionAssignmentsFixture();
+        final firstGateway = first.repository, secondGateway = second.repository;
+        await tester.pumpWidget(curriculumHost(InstitutionTeacherAssignmentsScreen(gateway: firstGateway), language));
+        await tester.pumpAndSettle();
+        final field = find.byKey(const ValueKey('institution-assignment-teacher'));
+        await tester.tap(find.descendant(of: field, matching: find.byType(OutlinedButton)));
+        await tester.pumpAndSettle();
+        await tester.pumpWidget(curriculumHost(InstitutionTeacherAssignmentsScreen(gateway: secondGateway), language));
+        await tester.pumpAndSettle();
+        final option = find.descendant(of: find.byType(SimpleDialog), matching: find.byType(SimpleDialogOption)).first;
+        await tester.ensureVisible(option);
+        await tester.tap(option);
+        await tester.pumpAndSettle();
+        expect(find.descendant(of: field, matching: find.textContaining('—')), findsOneWidget);
+        expect(first.writes, isEmpty);
+        expect(second.writes, isEmpty);
         expect(tester.takeException(), isNull);
       });
 
