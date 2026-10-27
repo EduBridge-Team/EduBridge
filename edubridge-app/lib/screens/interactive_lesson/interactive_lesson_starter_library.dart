@@ -5,6 +5,7 @@ import '../../services/interactive_lesson_starter_repository.dart';
 import 'interactive_lesson_player.dart';
 import 'interactive_lesson_adaptation_screen.dart';
 import 'interactive_lesson_saved_drafts_screen.dart';
+import 'interactive_lesson_step_editor.dart';
 
 /// Standalone preview of the starter templates.
 /// No backend publishing, assignment or progress writes occur here.
@@ -97,15 +98,30 @@ class _InteractiveLessonStarterLibraryState extends State<InteractiveLessonStart
                   child: ListTile(
                     title: Text(lesson.title),
                     subtitle: Text(lesson.objective),
-                    trailing: IconButton(
-                      key: ValueKey('adapt-lesson-${lesson.id}'),
-                      tooltip: 'تخصيص للمعاينة',
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => InteractiveLessonAdaptationScreen(template: lesson),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          key: ValueKey('edit-lesson-steps-${lesson.id}'),
+                          tooltip: 'تحرير خطوات الدرس للمعاينة',
+                          icon: const Icon(Icons.format_list_numbered),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => InteractiveLessonStepEditor(template: lesson),
+                            ),
+                          ),
                         ),
-                      ),
+                        IconButton(
+                          key: ValueKey('adapt-lesson-${lesson.id}'),
+                          tooltip: 'تخصيص للمعاينة',
+                          icon: const Icon(Icons.edit_outlined),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => InteractiveLessonAdaptationScreen(template: lesson),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
