@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 import 'iep_http_fixture.dart';
 
+const iepSaveHeaders = {'content-type': 'application/json; charset=utf-8'};
+
 IepPlanDraft saveDraft() => IepPlanDraft(
   childId: 8, evaluationId: 11, title: 'خطة جديدة',
   start: DateTime(2026, 9, 1), end: DateTime(2027, 6, 30), reviewOn: DateTime(2027, 1, 1),
@@ -39,10 +41,10 @@ class IepDraftSaveFixture {
       paths.add(path);
       if (path.endsWith('iep-draft-options')) return http.Response(jsonEncode(optionsOverride ?? {
         'child_id': 8, 'can_create_draft': canCreate, 'evaluation_ids': evaluationIds,
-      }), optionsStatus);
+      }), optionsStatus, headers: iepSaveHeaders);
       if (path == '/children/8/iep-plans') return http.Response(jsonEncode({
         'child_id': 8, 'plans': ((saved && !failConfirmation) || duplicateId) ? [plan] : <Object>[],
-      }), 200);
+      }), 200, headers: iepSaveHeaders);
       throw StateError('Unexpected GET $path');
     },
     post: (path, body) async {
@@ -51,7 +53,7 @@ class IepDraftSaveFixture {
       if (postStatus == 201) saved = true;
       final receipt = <String, dynamic>{'child_id': 8, 'request_key': body['request_key'], 'plan': plan};
       changeReceipt?.call(receipt);
-      return http.Response(jsonEncode(receipt), postStatus);
+      return http.Response(jsonEncode(receipt), postStatus, headers: iepSaveHeaders);
     },
   );
 }

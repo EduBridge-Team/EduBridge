@@ -11507,5 +11507,13 @@
   "iepSaveUncertain": "The save result could not be confirmed. Check plan history before creating another draft; the request will not be sent again automatically.",
   "iepSaveUnavailable": "Plan draft saving is not available yet. Return to the editor to keep working while its screen remains open.",
   "iepSaveReferenceUnavailable": "The selected reference evaluation is not available for saving. Go back and refresh the evaluations.",
-  "iepSaveForbidden": "You do not have permission to save a plan draft for this child."
+  "iepSaveForbidden": "You do not have permission to save a plan draft for this child.",
+  "@iepSaveTitle": {"description":"IEP server draft saving: iepSaveTitle"},
+  "@iepSaveNotice": {"description":"IEP server draft saving: iepSaveNotice"},
+  "@iepSaveConfirm": {"description":"IEP server draft saving: iepSaveConfirm"},
+  "@iepSaveSuccess": {"description":"IEP server draft saving: iepSaveSuccess"},
+  "@iepSaveUncertain": {"description":"IEP server draft saving: iepSaveUncertain"},
+  "@iepSaveUnavailable": {"description":"IEP server draft saving: iepSaveUnavailable"},
+  "@iepSaveReferenceUnavailable": {"description":"IEP server draft saving: iepSaveReferenceUnavailable"},
+  "@iepSaveForbidden": {"description":"IEP server draft saving: iepSaveForbidden"}
 }
