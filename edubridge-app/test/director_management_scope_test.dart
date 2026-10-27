@@ -38,8 +38,8 @@ void main() {
         expect(find.byKey(const ValueKey('director-add')), findsOneWidget);
         await tester.pumpWidget(host(SchoolDirectorsScreen(gateway: second), language, scale: 2));
         await tester.pumpAndSettle();
-        final chooser = tester.widget<DropdownButtonFormField<int>>(find.byType(DropdownButtonFormField<int>));
-        expect(chooser.items!.map((item) => item.value), [20]);
+        expect(find.byKey(const ValueKey('director-school-0')), findsOneWidget);
+        expect(find.text('School A'), findsNothing);
         expect(find.byKey(const ValueKey('director-add')), findsNothing);
         expect(first.writes, 0);
         expect(second.writes, 0);
