@@ -115,8 +115,8 @@ void main() {
       }, () => MockClient((request) async => http.Response(jsonEncode(
         request.url.path.endsWith('/my-organization')
           ? {'organization': {'id': 4, 'slug': 'demo-institution'}}
-          : {'summary': {'schools': 1, 'student_files': 5,
-              'active_teachers': 2, 'active_enrollments': 5, 'attendance_sessions': 3},
+          : {'summary': {'schools': 0, 'student_files': 5,
+              'active_teachers': 2, 'active_enrollments': 0, 'attendance_sessions': 0},
              'schools': []}), 200)));
     });
   }
