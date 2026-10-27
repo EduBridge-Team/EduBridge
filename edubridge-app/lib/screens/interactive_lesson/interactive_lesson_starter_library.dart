@@ -5,6 +5,7 @@ import '../../services/interactive_lesson_starter_repository.dart';
 import 'interactive_lesson_player.dart';
 import 'interactive_lesson_adaptation_screen.dart';
 import 'interactive_lesson_saved_drafts_screen.dart';
+import 'interactive_lesson_step_editor.dart';
 
 /// Standalone preview of the starter templates.
 /// No backend publishing, assignment or progress writes occur here.
@@ -54,7 +55,7 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                 return Card(
                   child: ListTile(
                     title: Text(lesson.title),
-                    subtitle: Text(lesson.objective),
+                    subtitle: Text('${lesson.objective} — اضغط مطولًا لتحرير الخطوات'),
                     trailing: IconButton(
                       key: ValueKey('adapt-lesson-${lesson.id}'),
                       tooltip: 'تخصيص للمعاينة',
@@ -65,6 +66,9 @@ class InteractiveLessonStarterLibrary extends StatelessWidget {
                         ),
                       ),
                     ),
+                    onLongPress: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                      builder: (_) => InteractiveLessonStepEditor(template: lesson),
+                    )),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) => InteractiveLessonPlayer(lesson: lesson),
