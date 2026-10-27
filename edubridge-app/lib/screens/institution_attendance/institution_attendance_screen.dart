@@ -4,6 +4,8 @@ import '../../l10n/l10n.dart';
 import '../../model/institutions/institution_attendance.dart';
 import '../../services/institution_attendance_repository.dart';
 import '../../theme.dart';
+import '../../services/institution_attendance_report_repository.dart';
+import 'institution_attendance_report_screen.dart';
 import '../enrollment/enrollment_labels.dart';
 import '../enrollment/enrollment_state.dart';
 import 'institution_attendance_content.dart';
@@ -59,6 +61,12 @@ class _InstitutionAttendanceScreenState extends State<InstitutionAttendanceScree
     setState(() => _date = date);
     await controller.reload();
   }
+  Future<void> _report() async {
+    final gateway = widget.gateway;
+    if (_state.loading || gateway is! InstitutionAttendanceReportGateway) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
+      InstitutionAttendanceReportScreen(gateway: gateway as InstitutionAttendanceReportGateway)));
+  }
   Future<void> _create() async {
     final gateway = widget.gateway;
     final controller = _state;
@@ -105,6 +113,8 @@ class _InstitutionAttendanceScreenState extends State<InstitutionAttendanceScree
         constraints: const BoxConstraints(maxWidth: 840),
         child: ListView(padding: const EdgeInsets.all(16), physics: const AlwaysScrollableScrollPhysics(), children: [
           if (widget.sessionId == null) ...[
+            if (widget.gateway is InstitutionAttendanceReportGateway) OutlinedButton(key: const ValueKey('attendance-open-report'),
+              onPressed: _state.loading ? null : _report, child: Text(l.attendanceReportTitle)),
             OutlinedButton.icon(key: const ValueKey('attendance-date'), onPressed: _state.loading ? null : _chooseDate,
               icon: const Icon(Icons.calendar_today), label: Text(_date == null ? l.institutionAttendanceChooseDate
                 : MaterialLocalizations.of(context).formatMediumDate(_date!))),

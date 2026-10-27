@@ -11455,5 +11455,41 @@
   "teacherAbsenceReceiptNotice": "These are the classes returned when this absence was saved. Reopen this page to record another absence.",
   "@teacherAbsenceReceiptNotice": {
     "description": "Institution teacher absence flow"
+  },
+  "attendanceReportTitle": "Attendance report",
+  "@attendanceReportTitle": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportDefinition": "Counts are attendance records per class session, not unique school days. Rate = present ÷ all recorded sessions; late and excused are separate statuses.",
+  "@attendanceReportDefinition": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportEmpty": "No recorded attendance matches these filters.",
+  "@attendanceReportEmpty": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportSummary": "Attendance totals",
+  "@attendanceReportSummary": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportSessions": "Recorded sessions",
+  "@attendanceReportSessions": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportRate": "Attendance rate",
+  "@attendanceReportRate": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportNoRate": "No measurements",
+  "@attendanceReportNoRate": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportPeriod": "Choose date range (all dates by default)",
+  "@attendanceReportPeriod": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportClear": "Clear filters",
+  "@attendanceReportClear": {
+    "description": "Institution attendance report"
   }
 }

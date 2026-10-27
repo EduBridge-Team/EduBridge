@@ -11455,5 +11455,41 @@
   "teacherAbsenceReceiptNotice": "هذه الحصص أُعيدت عند حفظ الغياب. أعد فتح الصفحة لتسجيل غياب آخر.",
   "@teacherAbsenceReceiptNotice": {
     "description": "Institution teacher absence flow"
+  },
+  "attendanceReportTitle": "تقرير الحضور",
+  "@attendanceReportTitle": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportDefinition": "الأعداد لسجلات الحضور في الحصص وليست لأيام دراسية منفردة. النسبة = الحضور ÷ جميع الحصص المسجلة؛ التأخر والغياب بعذر حالتان منفصلتان.",
+  "@attendanceReportDefinition": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportEmpty": "لا توجد سجلات حضور تطابق هذه الفلاتر.",
+  "@attendanceReportEmpty": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportSummary": "إجماليات الحضور",
+  "@attendanceReportSummary": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportSessions": "الحصص المسجلة",
+  "@attendanceReportSessions": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportRate": "نسبة الحضور",
+  "@attendanceReportRate": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportNoRate": "لا توجد قياسات",
+  "@attendanceReportNoRate": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportPeriod": "اختيار الفترة (كل التواريخ افتراضياً)",
+  "@attendanceReportPeriod": {
+    "description": "Institution attendance report"
+  },
+  "attendanceReportClear": "مسح الفلاتر",
+  "@attendanceReportClear": {
+    "description": "Institution attendance report"
   }
 }

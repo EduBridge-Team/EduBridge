@@ -1,4 +1,6 @@
 import '../model/institutions/institution_attendance.dart';
+import '../model/institutions/institution_attendance_report.dart';
+import 'institution_attendance_report_repository.dart';
 import '../model/institutions/institution_attendance_draft.dart';
 import '../model/institutions/institution_enrollment_history.dart';
 import '../model/enrollment/enrollment_models.dart';
@@ -17,13 +19,18 @@ abstract interface class InstitutionAttendanceWriter implements InstitutionAtten
   Future<void> saveAttendance(AttendanceEditorData expected, Map<int, AttendanceMark> marks, {required bool closeSession});
 }
 
-class InstitutionAttendanceRepository implements InstitutionAttendanceWriter {
+class InstitutionAttendanceRepository implements InstitutionAttendanceWriter, InstitutionAttendanceReportGateway {
   InstitutionAttendanceRepository({required this.organizationSlug, required this.organizationId,
     required this.schoolId, EnrollmentApiClient? client}) : _client = client ?? EnrollmentApiClient();
   final String organizationSlug;
   final int organizationId, schoolId;
   final EnrollmentApiClient _client;
   String get _root => '/institutions/${Uri.encodeComponent(organizationSlug)}/schools/$schoolId/attendance';
+
+  @override
+  Future<InstitutionAttendanceReport> loadReport({DateTime? from, DateTime? to, int? sectionId}) =>
+    InstitutionAttendanceReportRepository(organizationSlug: organizationSlug, organizationId: organizationId,
+      schoolId: schoolId, client: _client).loadReport(from: from, to: to, sectionId: sectionId);
 
   Future<T> _verify<T>(Future<T> Function() read) async {
     try {
