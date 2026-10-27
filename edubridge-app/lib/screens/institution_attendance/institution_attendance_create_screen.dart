@@ -83,15 +83,19 @@ class _InstitutionAttendanceCreateScreenState extends State<InstitutionAttendanc
               options: {for (final section in data.academic.sections) section.id:
                 '${data.academic.years.firstWhere((y) => y.id == section.yearId).name} — ${data.academic.grades.firstWhere((g) => g.id == section.gradeId).name} — ${section.name}'},
               value: _section, requiredMessage: l.academicRequired,
-              onChanged: enabled ? (v) => setState(() => _section = v) : null),
+              onChanged: enabled ? (v) {
+                if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _section = v);
+              } : null),
             AcademicChoiceField(key: const ValueKey('attendance-create-subject'), label: l.curriculumSubjects,
               options: {0: l.institutionAttendanceNoSubject, for (final subject in data.academic.curriculum.subjects.where((s) => s.active)) subject.id: subject.name},
               value: _subject, requiredMessage: l.academicRequired,
-              onChanged: enabled ? (v) => setState(() => _subject = v) : null),
+              onChanged: enabled ? (v) {
+                if (_state.canWrite && identical(_state.snapshot, data)) setState(() => _subject = v);
+              } : null),
             OutlinedButton(key: const ValueKey('attendance-create-date'), onPressed: !enabled ? null : () async {
               final controller = _state;
               final date = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(1900), lastDate: DateTime(2100, 12, 31));
-              if (mounted && date != null && identical(controller, _state) && controller.canWrite) setState(() => _date = date);
+              if (mounted && date != null && identical(controller, _state) && identical(controller.snapshot, data) && controller.canWrite) setState(() => _date = date);
             }, child: Text(MaterialLocalizations.of(context).formatMediumDate(_date))),
             TextFormField(key: const ValueKey('attendance-create-period'), controller: _period, enabled: enabled,
               keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l.institutionAttendancePeriodOptional),

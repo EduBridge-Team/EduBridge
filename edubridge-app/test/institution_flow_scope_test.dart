@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:edubridge_app/screens/institution_attendance/institution_attendance_create_screen.dart';
 import 'package:edubridge_app/screens/institution_attendance/institution_attendance_mark_screen.dart';
 import 'package:edubridge_app/screens/institution_enrollment/institution_enrollment_history_screen.dart';
@@ -76,4 +78,26 @@ void main() {
       }
     }
   }
+  testWidgets('back cannot hide a pending enrollment withdrawal', (tester) async {
+    final f = InstitutionHistoryFixture(), gate = Completer<void>();
+    f.beforeWithdrawal = () => gate.future;
+    final gateway = f.repository;
+    await tester.pumpWidget(curriculumHost(Builder(builder: (context) => Scaffold(body: TextButton(
+      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => InstitutionEnrollmentHistoryScreen(gateway: gateway))),
+      child: const Text('Open history')))), 'en'));
+    await tester.tap(find.text('Open history'));
+    await tester.pumpAndSettle();
+    await tapCurriculum(tester, 'institution-withdraw-2');
+    await tester.tap(find.byKey(const ValueKey('confirm-institution-withdrawal')));
+    await tester.pump();
+    await tester.pageBack();
+    await tester.pump();
+    expect(find.byType(InstitutionEnrollmentHistoryScreen), findsOneWidget);
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(f.patches, hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
 }
