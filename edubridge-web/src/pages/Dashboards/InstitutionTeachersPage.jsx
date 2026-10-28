@@ -261,6 +261,7 @@ export default function InstitutionTeachersPage() {
                     <div className="institution-panel" key={item.id}>
                       <b>{item.teacher_name}</b>
                       <p>{item.subject_name}{subjectCodes[item.subject_id] ? ` (${subjectCodes[item.subject_id]})` : ''} — {item.grade_name} / {item.section_name}</p>
+                      <Link className="btn outline" to={`/institution/timetable?school=${encodeURIComponent(schoolId)}&teacher=${encodeURIComponent(item.teacher_id)}&section=${encodeURIComponent(item.section_id)}&subject=${encodeURIComponent(item.subject_id)}`}>عرض حصص هذا التكليف</Link>
                       <button type="button" className="btn outline" disabled={saving} onClick={() => removeAssignment(item.id)}>إلغاء التعيين</button>
                     </div>
                   ))}

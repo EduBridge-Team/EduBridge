@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   fetchInstitutionSchools, fetchInstitutionAcademicOverview, fetchInstitutionParticipants,
   fetchInstitutionTimetable, createInstitutionTimetableEntry, deleteInstitutionTimetableEntry,
@@ -12,6 +12,11 @@ const EMPTY = { academic_year_id: '', section_id: '', subject_id: '', teacher_id
 
 export default function InstitutionTimetablePage() {
   const { slug, loading: contextLoading } = useInstitution()
+  const [searchParams] = useSearchParams()
+  const requestedSchool = searchParams.get('school') || ''
+  const requestedTeacher = searchParams.get('teacher') || ''
+  const requestedSection = searchParams.get('section') || ''
+  const requestedSubject = searchParams.get('subject') || ''
   const [schools, setSchools] = useState([])
   const [schoolId, setSchoolId] = useState('')
   const [academic, setAcademic] = useState(null)
@@ -32,10 +37,10 @@ export default function InstitutionTimetablePage() {
     if (!slug) return
     let active = true
     fetchInstitutionSchools(slug).then(({ schools: data = [] }) => {
-      if (active) { setSchools(data); setSchoolId((current) => current || String(data[0]?.id || '')) }
+      if (active) { setSchools(data); setSchoolId((current) => current || (data.some((school) => String(school.id) === requestedSchool) ? requestedSchool : String(data[0]?.id || ''))) }
     }).catch((err) => { if (active) setError(err.message) })
     return () => { active = false }
-  }, [slug])
+  }, [slug, requestedSchool])
 
   useEffect(() => {
     if (!slug || !schoolId) return
@@ -51,11 +56,14 @@ export default function InstitutionTimetablePage() {
       setAcademic(a); setParticipants(p); setEntries(t.timetable || [])
       const year = (a.academic_years || []).find((y) => y.is_current) || a.academic_years?.[0]
       setForm({ ...EMPTY, academic_year_id: String(year?.id || '') })
+      setFilterTeacher(requestedTeacher && (p.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
+      setFilterSection(requestedSection && (a.sections || []).some((section) => String(section.id) === requestedSection) ? requestedSection : '')
+      setFilterSubject(requestedSubject && (a.subjects || []).some((subject) => String(subject.id) === requestedSubject) ? requestedSubject : '')
       setError('')
     }).catch((err) => { if (active) setError(err.message) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
-  }, [slug, schoolId])
+  }, [slug, schoolId, requestedTeacher, requestedSection, requestedSubject])
 
   async function refresh() {
     const data = await fetchInstitutionTimetable(slug, schoolId)
