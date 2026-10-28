@@ -22,7 +22,7 @@ class InstitutionTimetableScreen extends StatefulWidget {
 }
 class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen> with WidgetsBindingObserver {
   late InstitutionTimetableController _state;
-  int _year = 0, _section = 0, _day = 0;
+  int _year = 0, _section = 0, _day = 0, _teacher = 0, _subject = 0;
   void _initialize() { _state = InstitutionTimetableController(widget.gateway)..reload(); }
   @override
   void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); _initialize(); }
@@ -30,7 +30,7 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
   void didUpdateWidget(covariant InstitutionTimetableScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.gateway != widget.gateway) {
-      _state.dispose(); _year = 0; _section = 0; _day = 0; _initialize();
+      _state.dispose(); _year = 0; _section = 0; _day = 0; _teacher = 0; _subject = 0; _initialize();
     }
   }
   @override
@@ -87,9 +87,12 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
     if (data != null) {
       if (!data.academic.years.any((y) => y.id == _year)) _year = 0;
       if (!data.academic.sections.any((s) => s.id == _section && (_year == 0 || s.yearId == _year))) _section = 0;
+      if (!data.entries.any((e) => e.teacherId == _teacher)) _teacher = 0;
+      if (!data.academic.curriculum.subjects.any((s) => s.id == _subject)) _subject = 0;
     }
     final entries = data?.entries.where((e) => (_year == 0 || e.yearId == _year) &&
-      (_section == 0 || e.sectionId == _section) && (_day == 0 || e.weekday == _day)).toList();
+      (_section == 0 || e.sectionId == _section) && (_day == 0 || e.weekday == _day) &&
+      (_teacher == 0 || e.teacherId == _teacher) && (_subject == 0 || e.subjectId == _subject)).toList();
     return PopScope(canPop: !_state.busy, child: Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(l.timetableTitle),
       actions: [IconButton(tooltip: l.enrollmentReload, onPressed: _state.loading || _state.busy ? null : _state.reload, icon: const Icon(Icons.refresh))]),
       body: RefreshIndicator(onRefresh: _state.reload, child: SafeArea(child: Center(child: ConstrainedBox(
@@ -111,6 +114,12 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
               value: _section, requiredMessage: l.academicRequired, onChanged: !_state.canWrite ? null : (v) => setState(() => _section = v)),
             AcademicChoiceField(key: const ValueKey('timetable-day'), label: l.timetableDay, options: timetableDays(l),
               value: _day, requiredMessage: l.academicRequired, onChanged: !_state.canWrite ? null : (v) => setState(() => _day = v)),
+            AcademicChoiceField(key: const ValueKey('timetable-teacher'), label: l.teacherAssignmentTeacher,
+              options: {0: l.all, for (final e in data.entries.where((e) => e.teacherId != null && e.teacherName != null)) e.teacherId!: e.teacherName!},
+              value: _teacher, requiredMessage: l.academicRequired, onChanged: (v) => setState(() => _teacher = v)),
+            AcademicChoiceField(key: const ValueKey('timetable-subject'), label: l.curriculumSubjects,
+              options: {0: l.all, for (final s in data.academic.curriculum.subjects) s.id: s.name},
+              value: _subject, requiredMessage: l.academicRequired, onChanged: (v) => setState(() => _subject = v)),
             if (entries!.isEmpty) Text(l.timetableEmpty),
             for (final entry in entries) InstitutionTimetableCard(key: ValueKey('timetable-entry-${entry.id}'),
               timetable: data, entry: entry,
