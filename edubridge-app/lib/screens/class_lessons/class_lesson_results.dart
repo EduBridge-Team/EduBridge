@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../../model/class_lessons/class_lesson_catalog.dart';
 
 class ClassLessonResults extends StatelessWidget {
-  const ClassLessonResults({super.key, required this.section});
+  const ClassLessonResults({super.key, required this.section, this.onRecord});
   final ClassLessonSection section;
+  final void Function(ClassLesson lesson, ClassLessonStudent student)? onRecord;
   @override
   Widget build(BuildContext context) {
     final english = Localizations.localeOf(context).languageCode == 'en';
@@ -27,6 +28,10 @@ class ClassLessonResults extends StatelessWidget {
               Text('${label('النتيجة', 'Result')}: ${student.score == null ? '—' : '${student.score} / ${student.maximum}'}'),
               Text('${label('هدف IEP المرتبط', 'Linked IEP goal')}: ${student.goalTitle ?? '—'}'),
               if (student.adaptation?.trim().isNotEmpty == true) SelectableText(student.adaptation!),
+              if (lesson.assignmentId != null && onRecord != null)
+                OutlinedButton.icon(key: ValueKey(('class-record-result', lesson.assignmentId, student.childId)),
+                  onPressed: () => onRecord!(lesson, student), icon: const Icon(Icons.fact_check_outlined),
+                  label: Text(label('تسجيل نتيجة الطالب', 'Record student result'))),
             ])),
         ])),
       ),

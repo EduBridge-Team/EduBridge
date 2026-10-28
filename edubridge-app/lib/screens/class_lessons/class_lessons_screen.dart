@@ -8,6 +8,8 @@ import '../enrollment/enrollment_labels.dart';
 import '../enrollment/enrollment_state.dart';
 import 'class_lesson_results.dart';
 import 'class_assignment_screen.dart';
+import '../../model/class_lessons/class_lesson_result.dart';
+import '../class_lesson_results/class_result_screen.dart';
 
 class ClassLessonsScreen extends StatefulWidget {
   const ClassLessonsScreen({super.key, this.gateway});
@@ -73,7 +75,11 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
                     builder: (_) => ClassAssignmentScreen(section: selected.single)));
                   if (mounted) await _reload();
                 }),
-              ClassLessonResults(section: selected.single),
+              ClassLessonResults(section: selected.single, onRecord: (lesson, student) async {
+                await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => ClassResultScreen(
+                  source: ClassResultSource(section: selected.single, lesson: lesson, student: student))));
+                if (mounted) await _reload();
+              }),
             ],
           ]),
       )))),
