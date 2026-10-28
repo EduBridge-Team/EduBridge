@@ -48,9 +48,9 @@ void main() {
     await tester.pumpWidget(curriculumHost(Scaffold(body: TeacherSectionsTab(gateway: f.repository, studentListBuilder: students)), 'en'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const ValueKey('teacher-sections-search')), 'شعبة 2'); await tester.pumpAndSettle();
-    expect(find.text('شعبة 1'), findsNothing); expect(find.text('شعبة 2'), findsOneWidget);
+    expect(find.byKey(const ValueKey('teacher-section-1')), findsNothing); expect(find.byKey(const ValueKey('teacher-section-2')), findsOneWidget);
     f.sectionStatus = 403; await resumeCurriculum(tester);
-    expect(find.text('شعبة 2'), findsNothing);
+    expect(find.byKey(const ValueKey('teacher-section-2')), findsNothing);
   });
   testWidgets('roster denial and source replacement clear old students', (tester) async {
     final f = TeacherSectionsFixture(), next = TeacherSectionsFixture()..rosterStatus = 404;
