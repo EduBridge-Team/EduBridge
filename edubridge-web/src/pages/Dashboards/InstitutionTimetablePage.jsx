@@ -73,6 +73,18 @@ export default function InstitutionTimetablePage() {
   async function add(e) {
     e.preventDefault()
     if (busy) return
+    const conflict = entries.find((entry) =>
+      String(entry.academic_year_id) === form.academic_year_id &&
+      Number(entry.weekday) === Number(form.weekday) &&
+      Number(entry.period_number) === Number(form.period_number) &&
+      (String(entry.section_id) === form.section_id ||
+        (form.teacher_id && String(entry.teacher_id) === form.teacher_id) ||
+        (form.room.trim() && entry.room?.trim() === form.room.trim())))
+    if (conflict) {
+      setError('تعارض في الجدول: توجد حصة لنفس الشعبة أو المعلم أو الغرفة في هذا اليوم ورقم الحصة.')
+      setMessage('')
+      return
+    }
     setBusy(true); setError(''); setMessage('')
     try {
       await createInstitutionTimetableEntry(slug, schoolId, {
