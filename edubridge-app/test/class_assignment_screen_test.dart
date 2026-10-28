@@ -40,6 +40,9 @@ void main() {
         await chooseAssignment(tester, 'class-assignment-goal-100', 'هدف الطالب 100');
         final adaptation = find.byKey(const ValueKey('class-assignment-adaptation-100'));
         await revealCurriculum(tester, adaptation); await tester.enterText(adaptation, 'وقت إضافي');
+        await revealAssignment(tester, find.byKey(const ValueKey('class-assignment-submit')));
+        await revealAssignment(tester, adaptation);
+        expect(tester.widget<EditableText>(find.descendant(of: adaptation, matching: find.byType(EditableText))).controller.text, 'وقت إضافي');
         await tapAssignmentSubmit(tester);
         await tester.tap(find.byKey(const ValueKey('class-assignment-confirm'))); await tester.pumpAndSettle();
         expect(f.posts, 1);

@@ -5,12 +5,13 @@ import '../academics/academic_choice_field.dart';
 /// Presentation only. The coordinator rejects callbacks from old option snapshots.
 class ClassAssignmentForm extends StatelessWidget {
   const ClassAssignmentForm({super.key, required this.options, required this.enabled,
-    required this.lessonId, required this.goalIds, required this.onLesson,
+    required this.lessonId, required this.goalIds, required this.adaptations, required this.onLesson,
     required this.onGoal, required this.onAdaptation});
   final ClassAssignmentOptions options;
   final bool enabled;
   final int? lessonId;
   final Map<int, int> goalIds;
+  final Map<int, String> adaptations;
   final ValueChanged<int> onLesson;
   final void Function(int childId, int goalId) onGoal;
   final void Function(int childId, String text) onAdaptation;
@@ -33,6 +34,7 @@ class ClassAssignmentForm extends StatelessWidget {
             value: goalIds[student.id] ?? 0, requiredMessage: '',
             onChanged: enabled ? (id) => onGoal(student.id, id) : null),
           TextFormField(key: ValueKey('class-assignment-adaptation-${student.id}'),
+            initialValue: adaptations[student.id] ?? '',
             enabled: enabled, minLines: 2, maxLines: null, maxLength: 2000,
             decoration: InputDecoration(label: Text(label('تكييف الطالب (اختياري)', 'Student adaptation (optional)'))),
             onChanged: (value) => onAdaptation(student.id, value)),

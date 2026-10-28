@@ -16,6 +16,7 @@ class ClassAssignmentController extends ChangeNotifier {
   bool get editable => !_disposed && !loading && !busy && !locked && assignmentId == null && options?.canAssign == true;
   bool get canSubmit => editable && lessonId != null && draft().fits(options!);
   ClassAssignmentGoal? goal(int childId) => _goals[childId];
+  String adaptation(int childId) => _adaptations[childId] ?? '';
   void _emit() { if (!_disposed) notifyListeners(); }
   bool accepts(ClassAssignmentOptions expected, int epoch) => editable &&
     identical(options, expected) && generation == epoch;

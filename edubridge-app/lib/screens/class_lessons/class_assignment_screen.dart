@@ -76,6 +76,7 @@ class _ClassAssignmentBodyState extends State<_ClassAssignmentBody> with Widgets
               'Assign to every student shown. Each student’s goal link and adaptation are optional.')),
             ClassAssignmentForm(key: ValueKey(epoch), options: options, enabled: _state.editable,
               lessonId: _state.lessonId, goalIds: {for (final s in options.students) s.id: _state.goal(s.id)?.id ?? 0},
+              adaptations: {for (final s in options.students) s.id: _state.adaptation(s.id)},
               onLesson: (id) => _state.chooseLesson(id, options, epoch),
               onGoal: (child, goal) => _state.chooseGoal(child, goal, options, epoch),
               onAdaptation: (child, text) => _state.adapt(child, text, options, epoch)),
