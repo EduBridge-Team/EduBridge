@@ -150,15 +150,19 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                         IepPlanCard(
                           key: ValueKey('iep-plan-${plan.id}'),
                           plan: plan,
-                          onOpen: (version) => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
+                          onOpen: (version) async {
+                            final state = _state;
+                            final done = await Navigator.of(context).push<bool>(
+                            MaterialPageRoute<bool>(
                               builder: (_) => IepVersionScreen(
                                 plan: plan,
                                 version: version,
                                 evaluationGateway: widget.evaluationGateway,
                               ),
                             ),
-                          ),
+                          );
+                            if (mounted && done == true && identical(state, _state)) await state.reload();
+                          },
                         ),
                         if (!plan.closed)
                           for (final version in plan.versions.where((v) => v.status == IepVersionStatus.draft && v.goals.isNotEmpty))

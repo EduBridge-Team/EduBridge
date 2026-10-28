@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../../model/iep/iep_plan_history.dart';
 import '../../model/iep/iep_version.dart';
+import '../../model/iep/iep_review.dart';
+import 'iep_review_screen.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
 import '../../theme.dart';
 import 'iep_evaluation_reference.dart';
@@ -46,6 +48,17 @@ class IepVersionScreen extends StatelessWidget {
                 Text('${l10n.iepVersionNumber}: ${version.number}'),
                 Text(iepStatusLabel(l10n, version.status)),
                 if (plan.closed) Text(l10n.iepClosed),
+                if (!plan.closed) OutlinedButton.icon(
+                  key: const ValueKey('iep-open-review'),
+                  icon: const Icon(Icons.fact_check_outlined),
+                  label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Review actions' : 'إجراءات المراجعة'),
+                  onPressed: () async {
+                    final done = await Navigator.of(context).push<bool>(MaterialPageRoute<bool>(
+                      builder: (_) => IepReviewScreen(source: IepReviewSource(plan, version)),
+                    ));
+                    if (context.mounted && done == true) Navigator.pop(context, true);
+                  },
+                ),
                 if (plan.currentApprovedId == version.id)
                   Text(l10n.iepCurrentApproved),
                 if (version.author?.trim().isNotEmpty == true)
