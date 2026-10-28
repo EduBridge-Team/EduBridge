@@ -237,7 +237,9 @@ export default function InstitutionTeachersPage() {
                 </select></label>
                 <button className="btn" type="submit" disabled={saving || loading || !teachers.length || !sections.length || !subjects.length}>{saving ? 'جارِ الحفظ…' : 'ربط المعلم'}</button>
               </form>
-              <h3>التعيينات الحالية</h3>
+              <div className="section-heading compact"><div><h3>التعيينات الحالية</h3><p>يمكنك الاطلاع على جدول الحصص الأسبوعي بعد اختيار المعلم.</p></div>
+                <Link className="btn outline" to="/institution/timetable">عرض جدول الحصص</Link>
+              </div>
               <div className="institution-school-form">
                 <label>عرض حسب المعلم
                   <select value={assignmentTeacher} onChange={(event) => setAssignmentTeacher(event.target.value)}>
