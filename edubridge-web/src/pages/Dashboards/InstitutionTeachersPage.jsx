@@ -180,6 +180,13 @@ export default function InstitutionTeachersPage() {
     (!assignmentSubject || String(item.subject_id) === assignmentSubject) &&
     (!assignmentSection || String(item.section_id) === assignmentSection))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [subject.id, subject.code]))
+  const assignmentSubjectTotals = subjects.map((subject) => ({
+    id: subject.id,
+    name: subject.name,
+    code: subject.code,
+    count: assignments.filter((item) => String(item.subject_id) === String(subject.id)).length,
+    teacherCount: new Set(assignments.filter((item) => String(item.subject_id) === String(subject.id)).map((item) => String(item.teacher_id))).size,
+  })).filter((subject) => subject.count > 0)
   const teacherAssignmentCounts = assignments.reduce((counts, assignment) => {
     const key = String(assignment.teacher_id)
     counts[key] = (counts[key] || 0) + 1
@@ -288,6 +295,17 @@ export default function InstitutionTeachersPage() {
                   ))}
                 </div>
               )}
+              <section className="institution-panel" aria-label="توزيع تكليفات المواد">
+                <h3>توزيع تكليفات المواد</h3>
+                <p>ملخص التكليفات الحالية للمدرسة المحددة، وليس سجلًا وظيفيًا تاريخيًا.</p>
+                {assignmentSubjectTotals.length === 0 ? <p>لا توجد تكليفات مواد مسجلة بعد.</p> : (
+                  <ul>
+                    {assignmentSubjectTotals.map((subject) => <li key={subject.id}>
+                      {subject.name}{subject.code ? ` (${subject.code})` : ''}: {subject.count} تكليف، {subject.teacherCount} معلم
+                    </li>)}
+                  </ul>
+                )}
+              </section>
               <h3>عضويات المعلمين في المؤسسة</h3>
               {memberships.length === 0 ? <p>لا توجد عضويات معلمين بعد.</p> : (
                 <div className="institution-actions">
