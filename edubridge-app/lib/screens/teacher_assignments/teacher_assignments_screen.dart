@@ -19,7 +19,7 @@ class TeacherAssignmentsScreen extends StatefulWidget {
 
 class _TeacherAssignmentsScreenState extends State<TeacherAssignmentsScreen>
     with WidgetsBindingObserver {
-  late final TeacherAssignmentsController _controller;
+  late TeacherAssignmentsController _controller;
   @override
   void initState() {
     super.initState();
@@ -28,6 +28,17 @@ class _TeacherAssignmentsScreenState extends State<TeacherAssignmentsScreen>
       widget.gateway ?? TeacherAssignmentsRepository(),
     );
     _controller.reload();
+  }
+
+  @override
+  void didUpdateWidget(covariant TeacherAssignmentsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.gateway != oldWidget.gateway) {
+      _controller.dispose();
+      _controller = TeacherAssignmentsController(
+        widget.gateway ?? TeacherAssignmentsRepository(),
+      )..reload();
+    }
   }
 
   @override
@@ -43,7 +54,8 @@ class _TeacherAssignmentsScreenState extends State<TeacherAssignmentsScreen>
   }
 
   Future<void> _remove(TeacherAssignment assignment) async {
-    final data = _controller.snapshot;
+    final controller = _controller;
+    final data = controller.snapshot;
     if (!_controller.canWrite || data == null) return;
     final teacher = data.teachers.firstWhere(
       (v) => v.id == assignment.teacherId,
@@ -73,7 +85,10 @@ class _TeacherAssignmentsScreenState extends State<TeacherAssignmentsScreen>
         ],
       ),
     );
-    if (mounted && confirmed == true) await _controller.remove(assignment);
+    if (mounted && confirmed == true && identical(controller, _controller) &&
+        identical(data, controller.snapshot)) {
+      await controller.remove(assignment);
+    }
   }
 
   @override
@@ -88,7 +103,7 @@ class _TeacherAssignmentsScreenState extends State<TeacherAssignmentsScreen>
           data.academic.sections.isNotEmpty &&
           data.teachers.any((v) => v.active) &&
           data.subjects.any((v) => v.active);
-      return Scaffold(
+      return PopScope(canPop: !_controller.busy, child: Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
           title: Text(l10n.teacherAssignmentsTitle),
@@ -165,7 +180,7 @@ class _TeacherAssignmentsScreenState extends State<TeacherAssignmentsScreen>
             ),
           ),
         ),
-      );
+      ));
     },
   );
 }

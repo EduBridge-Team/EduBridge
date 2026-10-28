@@ -75,7 +75,7 @@ void main() {
       await tester.pumpWidget(curriculumHost(Scaffold(body: SingleChildScrollView(child: ClassLessonResults(
         section: f.source.section, onRecord: (lesson, student) { child = student.childId; expect(lesson.assignmentId, 77); }))), 'en'));
       await tester.pumpAndSettle();
-      final button = find.byKey(const ValueKey(('class-record-result', 77, 100)));
+      final button = find.widgetWithText(OutlinedButton, 'Record student result');
       if (hasAssignment) { await revealCurriculum(tester, button); await tester.tap(button); expect(child, 100); }
       else { expect(button, findsNothing); expect(child, isNull); }
     }
