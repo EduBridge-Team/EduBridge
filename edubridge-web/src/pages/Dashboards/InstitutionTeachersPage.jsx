@@ -11,6 +11,8 @@ export default function InstitutionTeachersPage() {
   const [academic, setAcademic] = useState(null)
   const [participants, setParticipants] = useState(null)
   const [form, setForm] = useState({ teacher_id: '', section_id: '', subject_id: '' })
+  const [assignmentTeacher, setAssignmentTeacher] = useState('')
+  const [assignmentSubject, setAssignmentSubject] = useState('')
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -167,6 +169,10 @@ export default function InstitutionTeachersPage() {
   const assignments = participants?.teacher_assignments || []
   const sections = academic?.sections || []
   const subjects = academic?.subjects || []
+  const visibleAssignments = assignments.filter((item) =>
+    (!assignmentTeacher || String(item.teacher_id) === assignmentTeacher) &&
+    (!assignmentSubject || String(item.subject_id) === assignmentSubject))
+  const subjectCodes = Object.fromEntries(subjects.map((subject) => [subject.id, subject.code]))
 
   return (
     <div className="role-page role-institution institution-operations-page">
@@ -198,7 +204,7 @@ export default function InstitutionTeachersPage() {
         <section className="institution-panel">
           <div className="section-heading compact"><div><h2>اختر المدرسة</h2><p>تُعرض التعيينات الخاصة بالمدرسة المحددة فقط.</p></div></div>
           <label>المدرسة
-            <select value={schoolId} onChange={(event) => { setSchoolId(event.target.value); setForm({ teacher_id: '', section_id: '', subject_id: '' }); setMessage('') }}>
+            <select value={schoolId} onChange={(event) => { setSchoolId(event.target.value); setForm({ teacher_id: '', section_id: '', subject_id: '' }); setAssignmentTeacher(''); setAssignmentSubject(''); setMessage('') }}>
               <option value="">اختر المدرسة</option>
               {schools.map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
             </select>
@@ -227,17 +233,32 @@ export default function InstitutionTeachersPage() {
                 </select></label>
                 <label>المادة<select required value={form.subject_id} onChange={(event) => setForm({ ...form, subject_id: event.target.value })}>
                   <option value="">اختر المادة</option>
-                  {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}{s.code ? ` — ${s.code}` : ''}</option>)}
                 </select></label>
                 <button className="btn" type="submit" disabled={saving || loading || !teachers.length || !sections.length || !subjects.length}>{saving ? 'جارِ الحفظ…' : 'ربط المعلم'}</button>
               </form>
               <h3>التعيينات الحالية</h3>
+              <div className="institution-school-form">
+                <label>عرض حسب المعلم
+                  <select value={assignmentTeacher} onChange={(event) => setAssignmentTeacher(event.target.value)}>
+                    <option value="">جميع المعلمين</option>
+                    {teachers.map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name}</option>)}
+                  </select>
+                </label>
+                <label>عرض حسب المادة
+                  <select value={assignmentSubject} onChange={(event) => setAssignmentSubject(event.target.value)}>
+                    <option value="">جميع المواد</option>
+                    {subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}{subject.code ? ` — ${subject.code}` : ''}</option>)}
+                  </select>
+                </label>
+              </div>
+              <p>التعيينات المطابقة: {visibleAssignments.length}</p>
               {assignments.length === 0 ? <div className="state">لم يتم تعيين معلمين لهذه المدرسة بعد.</div> : (
                 <div className="institution-actions">
-                  {assignments.map((item) => (
+                  {visibleAssignments.map((item) => (
                     <div className="institution-panel" key={item.id}>
                       <b>{item.teacher_name}</b>
-                      <p>{item.subject_name} — {item.grade_name} / {item.section_name}</p>
+                      <p>{item.subject_name}{subjectCodes[item.subject_id] ? ` (${subjectCodes[item.subject_id]})` : ''} — {item.grade_name} / {item.section_name}</p>
                       <button type="button" className="btn outline" disabled={saving} onClick={() => removeAssignment(item.id)}>إلغاء التعيين</button>
                     </div>
                   ))}
