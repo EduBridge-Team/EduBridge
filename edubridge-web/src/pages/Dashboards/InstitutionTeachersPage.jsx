@@ -180,6 +180,11 @@ export default function InstitutionTeachersPage() {
     (!assignmentSubject || String(item.subject_id) === assignmentSubject) &&
     (!assignmentSection || String(item.section_id) === assignmentSection))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [subject.id, subject.code]))
+  const teacherAssignmentCounts = assignments.reduce((counts, assignment) => {
+    const key = String(assignment.teacher_id)
+    counts[key] = (counts[key] || 0) + 1
+    return counts
+  }, {})
   const duplicateAssignment = Boolean(form.teacher_id && form.section_id && form.subject_id && assignments.some((item) =>
     String(item.teacher_id) === form.teacher_id && String(item.section_id) === form.section_id && String(item.subject_id) === form.subject_id))
 
@@ -290,6 +295,8 @@ export default function InstitutionTeachersPage() {
                     <b>{teacher.name}</b>
                     <p>{teacher.email}</p>
                     <p>{teacher.is_active ? 'عضوية مفعّلة' : 'عضوية معطلة'}</p>
+                    <p>التكليفات الحالية في المدرسة المحددة: {teacherAssignmentCounts[String(teacher.id)] || 0}</p>
+                    <Link className="btn outline" to={`/institution/timetable?school=${encodeURIComponent(schoolId)}&teacher=${encodeURIComponent(teacher.id)}`}>عرض جدول المعلم</Link>
                     <button type="button" className="btn outline" disabled={saving}
                       onClick={() => changeTeacherActive(teacher)}>
                       {teacher.is_active ? 'تعطيل العضوية' : 'إعادة التفعيل'}
