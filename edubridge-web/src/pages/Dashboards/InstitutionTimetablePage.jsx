@@ -131,6 +131,16 @@ export default function InstitutionTimetablePage() {
     (!filterDay || String(e.weekday) === filterDay))
     .sort((a, b) => Number(a.weekday) - Number(b.weekday) || Number(a.period_number) - Number(b.period_number))
 
+  // Reflect actual scheduled lessons; never invent target weekly periods.
+  const subjectDistribution = subjects.map((subject) => {
+    const lessons = filtered.filter((entry) => String(entry.subject_id) === String(subject.id))
+    const weekdays = DAYS.map((name, index) => ({
+      name,
+      count: lessons.filter((entry) => Number(entry.weekday) === index + 1).length,
+    })).filter((day) => day.count > 0)
+    return { id: subject.id, name: subject.name, code: subject.code, count: lessons.length, weekdays }
+  }).filter((subject) => subject.count > 0)
+
   return <div className="role-page role-institution institution-operations-page" dir="rtl">
     <main className="container container-wide role-dashboard institution-dashboard-v2">
       <section className="role-hero"><div className="role-hero-copy">
@@ -223,6 +233,21 @@ export default function InstitutionTimetablePage() {
               {DAYS.map((day, i) => <option key={day} value={i+1}>{day}</option>)}
             </select>
           </label>
+          <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
+            <h3>توزيع المواد على أيام الأسبوع</h3>
+            <p>ملخص للحصص المسجلة فعليًا حسب الفلاتر المختارة. الأعداد تمثل الحصص المسجلة وليست الحصص الأسبوعية المطلوبة.</p>
+            {!subjectDistribution.length ? <p>لا توجد حصص لعرض توزيع المواد.</p> : (
+              <div className="institution-actions">
+                {subjectDistribution.map((subject) => <div key={subject.id} className="institution-panel">
+                  <b>{subject.name}{subject.code ? ` — ${subject.code}` : ''}</b>
+                  <p>مجموع الحصص المعروضة: {subject.count}</p>
+                  <ul>
+                    {subject.weekdays.map((day) => <li key={day.name}>{day.name}: {day.count} حصة</li>)}
+                  </ul>
+                </div>)}
+              </div>
+            )}
+          </section>
           {!filtered.length ? <p>لا توجد حصص مطابقة.</p> : <div className="institution-actions">
             {DAYS.map((day, index) => {
               const dayEntries = filtered.filter((entry) => Number(entry.weekday) === index + 1)
