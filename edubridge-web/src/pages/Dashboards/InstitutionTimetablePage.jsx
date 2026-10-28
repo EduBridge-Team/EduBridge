@@ -108,6 +108,7 @@ export default function InstitutionTimetablePage() {
   const sections = (academic?.sections || []).filter((s) => !form.academic_year_id || String(s.academic_year_id) === form.academic_year_id)
   const subjects = academic?.subjects || []
   const teachers = participants?.teachers || []
+  const subjectCodes = Object.fromEntries(subjects.map((subject) => [String(subject.id), subject.code]))
   const filtered = entries.filter((e) => (!filterYear || String(e.academic_year_id) === filterYear) &&
     (!filterSection || String(e.section_id) === filterSection) &&
     (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
@@ -154,7 +155,7 @@ export default function InstitutionTimetablePage() {
             <label>المادة
               <select required value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value })}>
                 <option value="">اختر المادة</option>
-                {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}{s.code ? ` — ${s.code}` : ''}</option>)}
               </select>
             </label>
             <label>المعلم (اختياري)
@@ -215,7 +216,7 @@ export default function InstitutionTimetablePage() {
                 <div className="institution-actions">
                   {dayEntries.map((entry) => <div key={entry.id} className="institution-panel">
                     <b>الحصة {entry.period_number}</b>
-                    <p>{entry.grade_name} / {entry.section_name} — {entry.subject_name}</p>
+                    <p>{entry.grade_name} / {entry.section_name} — {entry.subject_name}{subjectCodes[String(entry.subject_id)] ? ` (${subjectCodes[String(entry.subject_id)]})` : ''}</p>
                     <p>المعلم: {entry.teacher_name || 'لم يحدد'}{entry.room ? ` — الغرفة: ${entry.room}` : ''}</p>
                     <button className="btn outline" type="button" disabled={busy} onClick={() => remove(entry)}>حذف الحصة</button>
                   </div>)}
