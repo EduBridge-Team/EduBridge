@@ -14,3 +14,7 @@ Updating the original draft remains unfinished. It requires a server-issued
 revision token, authoritative edit permission, atomic expected-revision update,
 a conflict response, and a validated updated-version receipt. A client-side
 baseline comparison cannot replace that transaction. No backend is changed here.
+
+The update-contract batch adds a separate save-review screen. Create-save is
+never used for an existing version. The proposed update capability must load
+before saving becomes enabled; see IEP_DRAFT_UPDATE_CONTRACT.md.
