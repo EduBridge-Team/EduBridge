@@ -128,6 +128,11 @@ export default function InstitutionTeachersPage() {
   async function assign(event) {
     event.preventDefault()
     if (!slug || !schoolId || saving) return
+    if (participants?.teacher_assignments?.some((item) => String(item.teacher_id) === form.teacher_id &&
+      String(item.section_id) === form.section_id && String(item.subject_id) === form.subject_id)) {
+      setError('هذا المعلم مكلّف بالفعل بهذه المادة والشعبة. لا يمكن إضافة التكليف نفسه مرتين.')
+      return
+    }
     setSaving(true)
     setError('')
     setMessage('')
@@ -175,6 +180,8 @@ export default function InstitutionTeachersPage() {
     (!assignmentSubject || String(item.subject_id) === assignmentSubject) &&
     (!assignmentSection || String(item.section_id) === assignmentSection))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [subject.id, subject.code]))
+  const duplicateAssignment = Boolean(form.teacher_id && form.section_id && form.subject_id && assignments.some((item) =>
+    String(item.teacher_id) === form.teacher_id && String(item.section_id) === form.section_id && String(item.subject_id) === form.subject_id))
 
   return (
     <div className="role-page role-institution institution-operations-page">
@@ -237,7 +244,8 @@ export default function InstitutionTeachersPage() {
                   <option value="">اختر المادة</option>
                   {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}{s.code ? ` — ${s.code}` : ''}</option>)}
                 </select></label>
-                <button className="btn" type="submit" disabled={saving || loading || !teachers.length || !sections.length || !subjects.length}>{saving ? 'جارِ الحفظ…' : 'ربط المعلم'}</button>
+                {duplicateAssignment && <p className="state error" role="alert">هذا التكليف موجود بالفعل لنفس المعلم والمادة والشعبة.</p>}
+                <button className="btn" type="submit" disabled={saving || loading || duplicateAssignment || !teachers.length || !sections.length || !subjects.length}>{saving ? 'جارِ الحفظ…' : 'ربط المعلم'}</button>
               </form>
               <div className="section-heading compact"><div><h3>التعيينات الحالية</h3><p>يمكنك الاطلاع على جدول الحصص الأسبوعي بعد اختيار المعلم.</p></div>
                 <Link className="btn outline" to="/institution/timetable">عرض جدول الحصص</Link>
