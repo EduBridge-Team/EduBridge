@@ -35,8 +35,9 @@ class ClassLessonStudent {
   }
 }
 class ClassLesson {
-  ClassLesson._(this.id, this.title, List<ClassLessonStudent> students) : students = List.unmodifiable(students);
+  ClassLesson._(this.id, this.title, this.assignmentId, List<ClassLessonStudent> students) : students = List.unmodifiable(students);
   final int id;
+  final int? assignmentId;
   final String title;
   final List<ClassLessonStudent> students;
   factory ClassLesson.fromJson(Map<String, dynamic> data) {
@@ -44,7 +45,8 @@ class ClassLesson {
     if (students.map((s) => s.childId).toSet().length != students.length) {
       throw const FormatException('Duplicate student result');
     }
-    return ClassLesson._(enrollmentId(data['lesson_id']), enrollmentText(data['title']), students);
+    return ClassLesson._(enrollmentId(data['lesson_id']), enrollmentText(data['title']),
+      data['assignment_id'] == null ? null : enrollmentId(data['assignment_id']), students);
   }
 }
 class ClassLessonSection {
