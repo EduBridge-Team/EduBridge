@@ -191,12 +191,21 @@ export default function InstitutionTimetablePage() {
             </select>
           </label>
           {!filtered.length ? <p>لا توجد حصص مطابقة.</p> : <div className="institution-actions">
-            {filtered.map((entry) => <div key={entry.id} className="institution-panel">
-              <b>{DAYS[Number(entry.weekday)-1]} — الحصة {entry.period_number}</b>
-              <p>{entry.grade_name} / {entry.section_name} — {entry.subject_name}</p>
-              <p>المعلم: {entry.teacher_name || 'لم يحدد'}{entry.room ? ` — الغرفة: ${entry.room}` : ''}</p>
-              <button className="btn outline" type="button" disabled={busy} onClick={() => remove(entry)}>حذف الحصة</button>
-            </div>)}
+            {DAYS.map((day, index) => {
+              const dayEntries = filtered.filter((entry) => Number(entry.weekday) === index + 1)
+              if (!dayEntries.length) return null
+              return <section key={day} className="institution-panel" aria-label={`حصص ${day}`}>
+                <h3>{day} — {dayEntries.length} حصة</h3>
+                <div className="institution-actions">
+                  {dayEntries.map((entry) => <div key={entry.id} className="institution-panel">
+                    <b>الحصة {entry.period_number}</b>
+                    <p>{entry.grade_name} / {entry.section_name} — {entry.subject_name}</p>
+                    <p>المعلم: {entry.teacher_name || 'لم يحدد'}{entry.room ? ` — الغرفة: ${entry.room}` : ''}</p>
+                    <button className="btn outline" type="button" disabled={busy} onClick={() => remove(entry)}>حذف الحصة</button>
+                  </div>)}
+                </div>
+              </section>
+            })}
           </div>}
         </section>
       </>}
