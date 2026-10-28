@@ -5,9 +5,23 @@ import 'package:edubridge_app/screens/class_lessons/class_assignment_controller.
 import 'curriculum_ui_support.dart';
 import 'class_assignment_fixture.dart';
 
+Future<void> revealAssignment(WidgetTester tester, Finder target) async {
+  FocusManager.instance.primaryFocus?.unfocus();
+  await tester.pumpAndSettle();
+  final scrollable = find.byType(Scrollable).first;
+  tester.state<ScrollableState>(scrollable).position.jumpTo(0);
+  await tester.pumpAndSettle();
+  await tester.scrollUntilVisible(target, 250, scrollable: scrollable);
+  await revealCurriculum(tester, target);
+}
+Future<void> tapAssignmentSubmit(WidgetTester tester) async {
+  final button = find.byKey(const ValueKey('class-assignment-submit'));
+  await revealAssignment(tester, button);
+  await tester.tap(button); await tester.pumpAndSettle();
+}
 Future<void> chooseAssignment(WidgetTester tester, String key, String name) async {
   final button = find.descendant(of: find.byKey(ValueKey(key)), matching: find.byType(OutlinedButton));
-  await revealCurriculum(tester, button); await tester.tap(button); await tester.pumpAndSettle();
+  await revealAssignment(tester, button); await tester.tap(button); await tester.pumpAndSettle();
   final option = find.descendant(of: find.byType(SimpleDialog), matching: find.text(name));
   await tester.ensureVisible(option); await tester.tap(option); await tester.pumpAndSettle();
 }
@@ -20,12 +34,13 @@ void main() {
         final f = ClassAssignmentFixture();
         await tester.pumpWidget(curriculumHost(ClassAssignmentScreen(section: f.section, gateway: f.repository), language));
         await tester.pumpAndSettle();
+        await revealAssignment(tester, find.byKey(const ValueKey('class-assignment-submit')));
         expect(tester.widget<FilledButton>(find.byKey(const ValueKey('class-assignment-submit'))).onPressed, isNull);
         await chooseAssignment(tester, 'class-assignment-lesson', 'الدرس الأصلي');
         await chooseAssignment(tester, 'class-assignment-goal-100', 'هدف الطالب 100');
         final adaptation = find.byKey(const ValueKey('class-assignment-adaptation-100'));
         await revealCurriculum(tester, adaptation); await tester.enterText(adaptation, 'وقت إضافي');
-        await tapCurriculum(tester, 'class-assignment-submit');
+        await tapAssignmentSubmit(tester);
         await tester.tap(find.byKey(const ValueKey('class-assignment-confirm'))); await tester.pumpAndSettle();
         expect(f.posts, 1);
         final students = f.body!['students'] as List;
@@ -40,10 +55,11 @@ void main() {
     final f = ClassAssignmentFixture();
     await tester.pumpWidget(curriculumHost(ClassAssignmentScreen(section: f.section, gateway: f.repository), 'en'));
     await tester.pumpAndSettle(); await chooseAssignment(tester, 'class-assignment-lesson', 'الدرس الأصلي');
-    await tapCurriculum(tester, 'class-assignment-submit');
+    await tapAssignmentSubmit(tester);
     await resumeCurriculum(tester);
     await tester.tap(find.byKey(const ValueKey('class-assignment-confirm'))); await tester.pumpAndSettle();
     expect(f.posts, 0);
+    await revealAssignment(tester, find.byKey(const ValueKey('class-assignment-submit')));
     expect(tester.widget<FilledButton>(find.byKey(const ValueKey('class-assignment-submit'))).onPressed, isNull);
   });
   testWidgets('source replacement drops form and never posts to old source', (tester) async {
