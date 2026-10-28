@@ -53,6 +53,11 @@ class _TeacherAssignmentCreateScreenState
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_syncCatalog);
       widget.controller.addListener(_syncCatalog);
+      _teacher = null;
+      _section = null;
+      _subject = null;
+      _school = widget.controller.snapshot?.schoolId;
+      _attempted = false;
       _syncCatalog();
     }
   }
@@ -96,8 +101,9 @@ class _TeacherAssignmentCreateScreenState
     if (!_form.currentState!.validate() ||
         !widget.controller.snapshot!.canCreate(_draft))
       return;
-    final saved = await widget.controller.create(_draft);
-    if (mounted && saved) Navigator.of(context).pop();
+    final controller = widget.controller;
+    final saved = await controller.create(_draft);
+    if (mounted && identical(controller, widget.controller) && saved) Navigator.of(context).pop();
   }
 
   @override
@@ -141,7 +147,10 @@ class _TeacherAssignmentCreateScreenState
                             },
                             value: _teacher,
                             requiredMessage: l10n.academicRequired,
-                            onChanged: _canWrite ? _selectTeacher : null,
+                            onChanged: _canWrite ? (value) {
+                              if (identical(controller, widget.controller) &&
+                                  identical(data, controller.snapshot)) _selectTeacher(value);
+                            } : null,
                           ),
                           AcademicChoiceField(
                             key: const ValueKey('assignment-section'),
@@ -152,7 +161,10 @@ class _TeacherAssignmentCreateScreenState
                             },
                             value: _section,
                             requiredMessage: l10n.academicRequired,
-                            onChanged: _canWrite ? _selectSection : null,
+                            onChanged: _canWrite ? (value) {
+                              if (identical(controller, widget.controller) &&
+                                  identical(data, controller.snapshot)) _selectSection(value);
+                            } : null,
                           ),
                           AcademicChoiceField(
                             key: const ValueKey('assignment-subject'),
@@ -165,7 +177,10 @@ class _TeacherAssignmentCreateScreenState
                             },
                             value: _subject,
                             requiredMessage: l10n.academicRequired,
-                            onChanged: _canWrite ? _selectSubject : null,
+                            onChanged: _canWrite ? (value) {
+                              if (identical(controller, widget.controller) &&
+                                  identical(data, controller.snapshot)) _selectSubject(value);
+                            } : null,
                           ),
                           if (_attempted && !data.canCreate(_draft))
                             Semantics(
