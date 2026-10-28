@@ -45,14 +45,16 @@ void main() {
     await tester.pumpWidget(curriculumHost(IepReviewScreen(
       source: IepReviewSource(plan, plan.versions.single), gateway: gateway), 'en'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const ValueKey('iep-review-return')));
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('iep-review-return')), 120, scrollable: find.byType(Scrollable).first);
     await tester.tap(find.byKey(const ValueKey('iep-review-return'))); await tester.pumpAndSettle();
     expect(gateway.writes, 0); expect(find.byType(AlertDialog), findsNothing);
-    await tester.ensureVisible(find.byKey(const ValueKey('iep-review-approve')));
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('iep-review-approve')), 120, scrollable: find.byType(Scrollable).first);
     await tester.tap(find.byKey(const ValueKey('iep-review-approve'))); await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('iep-review-confirm'))); await tester.pumpAndSettle();
     expect(gateway.writes, 1);
     await resumeCurriculum(tester);
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('iep-review-approve')), 120, scrollable: find.byType(Scrollable).first);
+    expect(tester.widget<FilledButton>(find.byKey(const ValueKey('iep-review-approve'))).onPressed, isNull);
     for (final button in tester.widgetList<FilledButton>(find.byType(FilledButton))) {
       expect(button.onPressed, isNull);
     }
