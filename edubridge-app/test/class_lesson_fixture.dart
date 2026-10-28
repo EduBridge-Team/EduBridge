@@ -15,7 +15,8 @@ Map<String, dynamic> classLessonSection(int id, String name) => {
 };
 class ClassLessonFixture {
   int status = 200, reads = 0;
-  Map<String, dynamic> data = {'contract_version': 1, 'sections': [classLessonSection(1, 'A'), classLessonSection(2, 'B')]};
+  Map<String, dynamic> data = jsonDecode(jsonEncode({'contract_version': 1,
+    'sections': [classLessonSection(1, 'A'), classLessonSection(2, 'B')]})) as Map<String, dynamic>;
   ClassLessonRepository get repository => ClassLessonRepository(client: EnrollmentApiClient(
     get: (path) async {
       if (path != '/teachers/me/class-lessons') throw StateError('Unexpected route');
