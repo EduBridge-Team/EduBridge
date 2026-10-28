@@ -55,6 +55,22 @@ void main() {
     expect(find.byKey(const ValueKey('class-assignment-submit')), findsNothing);
     expect(old.posts, 0); expect(next.posts, 0); expect(tester.takeException(), isNull);
   });
+  test('refresh clears lesson, per-student goal/adaptation and old callbacks', () async {
+    final f = ClassAssignmentFixture();
+    final state = ClassAssignmentController(f.repository);
+    await state.reload();
+    final expected = state.options!, epoch = state.generation;
+    state.chooseLesson(10, expected, epoch);
+    state.chooseGoal(100, 103, expected, epoch);
+    state.adapt(100, 'old adaptation', expected, epoch);
+    expect(state.draft().payloadStudents.first['adaptation'], 'old adaptation');
+    await state.reload();
+    state.chooseLesson(10, expected, epoch);
+    expect(state.lessonId, isNull); expect(state.goal(100), isNull);
+    state.chooseLesson(10, state.options!, state.generation);
+    expect(state.draft().payloadStudents.first['adaptation'], '');
+    expect(f.posts, 0); state.dispose();
+  });
   for (final mode in ['uncertain', 'conflict']) {
     test('controller locks $mode across refresh and rejects stale selection', () async {
       final f = ClassAssignmentFixture();

@@ -69,9 +69,9 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
               OutlinedButton.icon(key: const ValueKey('class-lesson-assign'), icon: const Icon(Icons.playlist_add),
                 label: Text(label('إسناد درس للشعبة', 'Assign class lesson')),
                 onPressed: () async {
-                  final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(
+                  await Navigator.of(context).push<bool>(MaterialPageRoute(
                     builder: (_) => ClassAssignmentScreen(section: selected.single)));
-                  if (mounted && saved == true) await _reload();
+                  if (mounted) await _reload();
                 }),
               ClassLessonResults(section: selected.single),
             ],

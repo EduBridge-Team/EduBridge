@@ -14,7 +14,7 @@ class ClassAssignmentController extends ChangeNotifier {
   bool loading = false, busy = false, locked = false, _disposed = false;
   int generation = 0;
   bool get editable => !_disposed && !loading && !busy && !locked && assignmentId == null && options?.canAssign == true;
-  bool get canSubmit => editable && lessonId != null && options!.students.isNotEmpty;
+  bool get canSubmit => editable && lessonId != null && draft().fits(options!);
   ClassAssignmentGoal? goal(int childId) => _goals[childId];
   void _emit() { if (!_disposed) notifyListeners(); }
   bool accepts(ClassAssignmentOptions expected, int epoch) => editable &&
@@ -38,6 +38,7 @@ class ClassAssignmentController extends ChangeNotifier {
   void adapt(int childId, String value, ClassAssignmentOptions expected, int epoch) {
     if (!accepts(expected, epoch) || !expected.students.any((s) => s.id == childId)) return;
     _adaptations[childId] = value;
+    _emit();
   }
   ClassAssignmentDraft draft() => ClassAssignmentDraft(lessonId!, [for (final s in options!.students)
     ClassAssignmentChoice(childId: s.id, goal: _goals[s.id], adaptation: _adaptations[s.id] ?? '')]);
