@@ -40,6 +40,12 @@ Widget _buildLessonsTab(
                 context.l10n.lessonLibraryDescription,
                 style: TextStyle(fontSize: 13, color: c.muted),
               ),
+              OutlinedButton.icon(
+                key: const ValueKey('teacher-class-lessons'),
+                icon: const Icon(Icons.groups_outlined),
+                label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Class lessons' : 'دروس الشُّعب'),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ClassLessonsScreen())),
+              ),
               const StarterLessonLibraryEntry(),
               const SizedBox(height: 12),
               TextField(
