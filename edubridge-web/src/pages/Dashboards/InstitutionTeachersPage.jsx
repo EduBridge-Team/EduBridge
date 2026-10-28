@@ -13,6 +13,7 @@ export default function InstitutionTeachersPage() {
   const [form, setForm] = useState({ teacher_id: '', section_id: '', subject_id: '' })
   const [assignmentTeacher, setAssignmentTeacher] = useState('')
   const [assignmentSubject, setAssignmentSubject] = useState('')
+  const [assignmentSection, setAssignmentSection] = useState('')
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -171,7 +172,8 @@ export default function InstitutionTeachersPage() {
   const subjects = academic?.subjects || []
   const visibleAssignments = assignments.filter((item) =>
     (!assignmentTeacher || String(item.teacher_id) === assignmentTeacher) &&
-    (!assignmentSubject || String(item.subject_id) === assignmentSubject))
+    (!assignmentSubject || String(item.subject_id) === assignmentSubject) &&
+    (!assignmentSection || String(item.section_id) === assignmentSection))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [subject.id, subject.code]))
 
   return (
@@ -204,7 +206,7 @@ export default function InstitutionTeachersPage() {
         <section className="institution-panel">
           <div className="section-heading compact"><div><h2>اختر المدرسة</h2><p>تُعرض التعيينات الخاصة بالمدرسة المحددة فقط.</p></div></div>
           <label>المدرسة
-            <select value={schoolId} onChange={(event) => { setSchoolId(event.target.value); setForm({ teacher_id: '', section_id: '', subject_id: '' }); setAssignmentTeacher(''); setAssignmentSubject(''); setMessage('') }}>
+            <select value={schoolId} onChange={(event) => { setSchoolId(event.target.value); setForm({ teacher_id: '', section_id: '', subject_id: '' }); setAssignmentTeacher(''); setAssignmentSubject(''); setAssignmentSection(''); setMessage('') }}>
               <option value="">اختر المدرسة</option>
               {schools.map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
             </select>
@@ -254,8 +256,14 @@ export default function InstitutionTeachersPage() {
                   </select>
                 </label>
               </div>
+              <label>عرض حسب الصف والشعبة
+                <select value={assignmentSection} onChange={(event) => setAssignmentSection(event.target.value)}>
+                  <option value="">جميع الصفوف والشعب</option>
+                  {sections.map((section) => <option key={section.id} value={section.id}>{section.grade_name} — {section.name} ({section.academic_year_name})</option>)}
+                </select>
+              </label>
               <p>التعيينات المطابقة: {visibleAssignments.length}</p>
-              {assignments.length === 0 ? <div className="state">لم يتم تعيين معلمين لهذه المدرسة بعد.</div> : (
+              {visibleAssignments.length === 0 ? <div className="state">{assignments.length ? 'لا توجد تكليفات مطابقة للفلاتر المحددة.' : 'لم يتم تعيين معلمين لهذه المدرسة بعد.'}</div> : (
                 <div className="institution-actions">
                   {visibleAssignments.map((item) => (
                     <div className="institution-panel" key={item.id}>
