@@ -19,6 +19,9 @@ export default function InstitutionTimetablePage() {
   const [entries, setEntries] = useState([])
   const [form, setForm] = useState(EMPTY)
   const [filterSection, setFilterSection] = useState('')
+  const [filterTeacher, setFilterTeacher] = useState('')
+  const [filterSubject, setFilterSubject] = useState('')
+  const [filterDay, setFilterDay] = useState('')
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -96,7 +99,11 @@ export default function InstitutionTimetablePage() {
   const sections = (academic?.sections || []).filter((s) => !form.academic_year_id || String(s.academic_year_id) === form.academic_year_id)
   const subjects = academic?.subjects || []
   const teachers = participants?.teachers || []
-  const filtered = entries.filter((e) => !filterSection || String(e.section_id) === filterSection)
+  const filtered = entries.filter((e) => (!filterSection || String(e.section_id) === filterSection) &&
+    (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
+    (!filterSubject || String(e.subject_id) === filterSubject) &&
+    (!filterDay || String(e.weekday) === filterDay))
+    .sort((a, b) => Number(a.weekday) - Number(b.weekday) || Number(a.period_number) - Number(b.period_number))
 
   return <div className="role-page role-institution institution-operations-page" dir="rtl">
     <main className="container container-wide role-dashboard institution-dashboard-v2">
@@ -108,7 +115,7 @@ export default function InstitutionTimetablePage() {
       </div></section>
       <section className="institution-panel">
         <h2>اختر المدرسة</h2>
-        <select aria-label="المدرسة" value={schoolId} onChange={(e) => { setSchoolId(e.target.value); setFilterSection(''); setMessage('') }}>
+        <select aria-label="المدرسة" value={schoolId} onChange={(e) => { setSchoolId(e.target.value); setFilterSection(''); setFilterTeacher(''); setFilterSubject(''); setFilterDay(''); setMessage('') }}>
           <option value="">اختر المدرسة</option>
           {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
@@ -163,6 +170,24 @@ export default function InstitutionTimetablePage() {
             <select value={filterSection} onChange={(e) => setFilterSection(e.target.value)}>
               <option value="">جميع الشعب</option>
               {(academic.sections || []).map((s) => <option key={s.id} value={s.id}>{s.grade_name} — {s.name}</option>)}
+            </select>
+          </label>
+          <label>تصفية حسب المعلم
+            <select value={filterTeacher} onChange={(e) => setFilterTeacher(e.target.value)}>
+              <option value="">جميع المعلمين</option>
+              {teachers.map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name}</option>)}
+            </select>
+          </label>
+          <label>تصفية حسب المادة
+            <select value={filterSubject} onChange={(e) => setFilterSubject(e.target.value)}>
+              <option value="">جميع المواد</option>
+              {subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}{subject.code ? ` — ${subject.code}` : ''}</option>)}
+            </select>
+          </label>
+          <label>تصفية حسب اليوم
+            <select value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
+              <option value="">جميع الأيام</option>
+              {DAYS.map((day, i) => <option key={day} value={i+1}>{day}</option>)}
             </select>
           </label>
           {!filtered.length ? <p>لا توجد حصص مطابقة.</p> : <div className="institution-actions">
