@@ -217,7 +217,7 @@ export default function InstitutionTimetablePage() {
             <span>الشعب: <b>{distinctSections}</b></span>
             <span>المواد: <b>{distinctSubjects}</b></span>
           </div>
-          {hasFilters && <button className="btn outline" type="button" onClick={resetFilters}>مسح فلاتر الجدول</button>}
+          {hasFilters && <button className="btn outline" type="button" onClick={resetFilters}>مسح فلاتر الجدول</button>}}
           <label>تصفية حسب السنة الدراسية
             <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setFilterSection('') }}>
               <option value="">جميع السنوات الدراسية</option>
