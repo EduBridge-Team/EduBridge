@@ -108,6 +108,9 @@ export default function InstitutionTimetablePage() {
   const sections = (academic?.sections || []).filter((s) => !form.academic_year_id || String(s.academic_year_id) === form.academic_year_id)
   const subjects = academic?.subjects || []
   const teachers = participants?.teachers || []
+  const assignments = participants?.teacher_assignments || []
+  const eligibleTeachers = teachers.filter((teacher) => !form.section_id || !form.subject_id || assignments.some((assignment) =>
+    String(assignment.teacher_id) === String(teacher.id) && String(assignment.section_id) === form.section_id && String(assignment.subject_id) === form.subject_id))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [String(subject.id), subject.code]))
   const filtered = entries.filter((e) => (!filterYear || String(e.academic_year_id) === filterYear) &&
     (!filterSection || String(e.section_id) === filterSection) &&
@@ -141,19 +144,19 @@ export default function InstitutionTimetablePage() {
             ? <p>أضف السنة الدراسية والشعب والمواد من إدارة المدارس أولًا.</p> : null}
           <form className="institution-school-form" onSubmit={add}>
             <label>السنة الدراسية
-              <select required value={form.academic_year_id} onChange={(e) => setForm({ ...form, academic_year_id: e.target.value, section_id: '' })}>
+              <select required value={form.academic_year_id} onChange={(e) => setForm({ ...form, academic_year_id: e.target.value, section_id: '', teacher_id: '' })}>
                 <option value="">اختر السنة</option>
                 {years.map((y) => <option key={y.id} value={y.id}>{y.name}</option>)}
               </select>
             </label>
             <label>الشعبة
-              <select required value={form.section_id} onChange={(e) => setForm({ ...form, section_id: e.target.value })}>
+              <select required value={form.section_id} onChange={(e) => setForm({ ...form, section_id: e.target.value, teacher_id: '' })}>
                 <option value="">اختر الشعبة</option>
                 {sections.map((s) => <option key={s.id} value={s.id}>{s.grade_name} — {s.name}</option>)}
               </select>
             </label>
             <label>المادة
-              <select required value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value })}>
+              <select required value={form.subject_id} onChange={(e) => setForm({ ...form, subject_id: e.target.value, teacher_id: '' })}>
                 <option value="">اختر المادة</option>
                 {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}{s.code ? ` — ${s.code}` : ''}</option>)}
               </select>
@@ -161,8 +164,9 @@ export default function InstitutionTimetablePage() {
             <label>المعلم (اختياري)
               <select value={form.teacher_id} onChange={(e) => setForm({ ...form, teacher_id: e.target.value })}>
                 <option value="">دون معلم حاليًا</option>
-                {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                {eligibleTeachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
+              {form.section_id && form.subject_id && !eligibleTeachers.length && <small>لا يوجد معلم مرتبط بهذه المادة والشعبة. أضف التكليف من إدارة المعلمين أولًا.</small>}
             </label>
             <label>اليوم
               <select value={form.weekday} onChange={(e) => setForm({ ...form, weekday: e.target.value })}>
