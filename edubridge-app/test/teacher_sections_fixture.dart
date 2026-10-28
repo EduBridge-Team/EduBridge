@@ -20,7 +20,7 @@ class TeacherSectionsFixture {
       if (path == '/teachers/me/sections/$id/students') { rosterReads++; return response(rosters[id]!, rosterStatus); }
     }
     throw StateError('Unscoped request $path');
-  }, post: (_, _) async => throw StateError('Read only')));
+  }, post: (path, body) async => throw StateError('Read only')));
   http.Response response(Object value, int status) => http.Response(jsonEncode(value), status,
     headers: {'content-type': 'application/json; charset=utf-8'});
 }
