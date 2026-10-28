@@ -7,6 +7,7 @@ import '../academics/academic_choice_field.dart';
 import '../enrollment/enrollment_labels.dart';
 import '../enrollment/enrollment_state.dart';
 import 'class_lesson_results.dart';
+import 'class_assignment_screen.dart';
 
 class ClassLessonsScreen extends StatefulWidget {
   const ClassLessonsScreen({super.key, this.gateway});
@@ -64,7 +65,16 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
                     !sections.any((s) => s.id == id)) return;
                 setState(() => _sectionId = id);
               }),
-            if (selected.length == 1) ClassLessonResults(section: selected.single),
+            if (selected.length == 1) ...[
+              OutlinedButton.icon(key: const ValueKey('class-lesson-assign'), icon: const Icon(Icons.playlist_add),
+                label: Text(label('إسناد درس للشعبة', 'Assign class lesson')),
+                onPressed: () async {
+                  final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(
+                    builder: (_) => ClassAssignmentScreen(section: selected.single)));
+                  if (mounted && saved == true) await _reload();
+                }),
+              ClassLessonResults(section: selected.single),
+            ],
           ]),
       )))),
     );
