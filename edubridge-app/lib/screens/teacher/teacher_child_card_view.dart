@@ -4,300 +4,37 @@ extension _TeacherChildCardView on _TeacherChildCardState {
   Widget buildView(BuildContext context) {
     final name = (child['name'] ?? '').toString();
     final progress = _progressPercent;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: c.card,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: c.line, width: 1.2),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 66,
-                  height: 66,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    PresentationText.initial(name, fallback: '؟'),
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: color,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w800,
-                          color: c.heading,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        _followStatus,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: c.muted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.brandBlue.withValues(alpha: .07),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${progress.toStringAsFixed(0)}%',
-                        style: TextStyle(
-                          color: c.infoText,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(width: 7),
-                      const Icon(
-                        AppIcons.starFilled,
-                        size: 20,
-                        color: AppColors.brandTeal,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: SizedBox(
-                    height: 54,
-                    child: FilledButton.icon(
-                      onPressed: () => _openProfile(context),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.brandBlue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon: const Icon(Icons.folder_open_rounded, size: 21),
-                      label: Text(
-                        context.l10n.openStudentProfile,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: 54,
-                    child: OutlinedButton.icon(
-                      onPressed: () => _openApprovedPlan(context, child),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: c.infoText,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        side: BorderSide(color: c.line, width: 1.3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon: const Icon(AppIcons.view, size: 20),
-                      label: Text(
-                        context.l10n.plan,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            InkWell(
-              onTap: _toggleExpanded,
-              borderRadius: BorderRadius.circular(14),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.tune_rounded,
-                      color: AppColors.brandBlue,
-                      size: 23,
-                    ),
-                    const SizedBox(width: 9),
-                    Expanded(
-                      child: Text(
-                        context.l10n.quickActions,
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: c.heading,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      _expanded
-                          ? Icons.keyboard_arrow_up_rounded
-                          : Icons.keyboard_arrow_down_rounded,
-                      color: c.infoText,
-                      size: 27,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            AnimatedCrossFade(
-              duration: const Duration(milliseconds: 180),
-              crossFadeState: _expanded
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
-              secondChild: const SizedBox.shrink(),
-              firstChild: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _quickAction(
-                            context: context,
-                            icon: AppIcons.report,
-                            label: context.l10n.reports,
-                            color: AppColors.brandBlue,
-                            onTap: () => _openDetailsTab(context, 2),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _quickAction(
-                            context: context,
-                            icon: AppIcons.edit,
-                            label: context.l10n.homeworks,
-                            color: AppColors.brandBlue,
-                            onTap: () => _openDetailsTab(context, 0),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _quickAction(
-                            context: context,
-                            icon: AppIcons.forum,
-                            label: context.l10n.caseStudy,
-                            color: AppColors.brandBlue,
-                            onTap: () => _openDetailsTab(context, 3),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _quickAction(
-                            context: context,
-                            icon: AppIcons.lesson,
-                            label: context.l10n.lessons,
-                            color: AppColors.brandBlue,
-                            onTap: () => _openDetailsTab(context, 1),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Material(
-                      color: c.card,
-                      borderRadius: BorderRadius.circular(18),
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChildProgressScreen(
-                              childId: child['id'] as int,
-                              childName: name,
-                            ),
-                          ),
-                        ),
-                        borderRadius: BorderRadius.circular(18),
-                        child: Container(
-                          width: double.infinity,
-                          constraints: const BoxConstraints(minHeight: 60),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: AppColors.purple.withValues(alpha: .55),
-                              width: 1.4,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                AppIcons.specialist,
-                                size: 22,
-                                color: AppColors.purple,
-                              ),
-                              const SizedBox(width: 9),
-                              Text(
-                                context.l10n.progress,
-                                style: TextStyle(
-                                  color: c.heading,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    Widget action(IconData icon, String label, VoidCallback onTap) => OutlinedButton.icon(
+      onPressed: onTap, icon: Icon(icon), label: Text(label));
+    return Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          CircleAvatar(backgroundColor: color.withValues(alpha: .12), foregroundColor: color,
+            child: Text(PresentationText.initial(name, fallback: '؟'))),
+          const SizedBox(width: 12),
+          Expanded(child: Text(name, style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800, color: c.heading))),
+        ]),
+        const SizedBox(height: 8),
+        Text('${_followStatus} · ${context.l10n.progress}: ${progress == null ? '—' : '${progress.toStringAsFixed(0)}%'}'),
+        const SizedBox(height: 12),
+        FilledButton.icon(onPressed: () => _openProfile(context), icon: const Icon(Icons.folder_open_rounded),
+          label: Text(context.l10n.openStudentProfile)),
+        action(AppIcons.view, context.l10n.plan, () => _openApprovedPlan(context, child)),
+        TextButton.icon(onPressed: _toggleExpanded,
+          icon: Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded),
+          label: Text(context.l10n.quickActions)),
+        if (_expanded) ...[
+          action(AppIcons.report, context.l10n.reports, () => _openDetailsTab(context, 2)),
+          action(AppIcons.edit, context.l10n.homeworks, () => _openDetailsTab(context, 0)),
+          action(AppIcons.forum, context.l10n.caseStudy, () => _openDetailsTab(context, 3)),
+          action(AppIcons.lesson, context.l10n.lessons, () => _openDetailsTab(context, 1)),
+          action(AppIcons.specialist, context.l10n.progress, () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => ChildProgressScreen(
+              childId: child['id'] as int, childName: name)));
+            if (context.mounted) await onReload();
+          }),
+        ],
+      ],
+    )));
   }
 }

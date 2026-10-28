@@ -5,7 +5,6 @@ Widget _buildTeacherHeader({
   required BuildContext context,
   required JisrColors c,
   required int tabIndex,
-  required int childrenCount,
   required Future<void> Function() onLogout,
   required Future<bool> Function() onVerify,
   required Future<void> Function() onLoadData,
@@ -25,7 +24,7 @@ Widget _buildTeacherHeader({
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.teacherRole, subtitle: switch (tabIndex) { 0 => context.l10n.teacherChildrenResponsibility(childrenCount), 1 => context.l10n.teacherLessonsDescription, _ => context.l10n.teacherHomeworkDescription })),
+Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.teacherRole, subtitle: switch (tabIndex) { 0 => Localizations.localeOf(context).languageCode == 'en' ? 'Your assigned sections and their students' : 'شُعبك المكلّف بها وطلاب كل شعبة', 1 => context.l10n.teacherLessonsDescription, _ => context.l10n.teacherHomeworkDescription })),
 const SizedBox(width: 8),
 DashboardHeaderActions(
                   actions: [

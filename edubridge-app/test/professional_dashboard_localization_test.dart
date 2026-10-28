@@ -28,6 +28,9 @@ http.Response _response(Object data, [int status = 200]) => http.Response(
 );
 
 MockClient _client({bool hasLesson = false, bool verified = true}) => MockClient((request) async {
+  if (request.url.path.endsWith('/teachers/me/sections')) {
+    return _response({'contract_version': 1, 'sections': []});
+  }
   if (request.url.path.endsWith('/me/verification')) {
     return _response({'verification': {'verification_status': verified ? 'approved' : 'none'}});
   }
@@ -68,7 +71,7 @@ void main() {
               await _open(tester, teacher ? TeacherScreen(initialTab: tab)
                   : SpecialistDashboardScreen(initialTab: tab), language, scale);
               final strings = await AppLocalizations.delegate.load(Locale(language));
-              expect(find.text(strings.children), findsWidgets);
+              expect(find.text(teacher ? strings.academicSections : strings.children), findsWidgets);
               if (tab == 1) {
                 await tester.scrollUntilVisible(find.text(strings.noLessonsYet), 120,
                   scrollable: find.descendant(of: find.byType(CustomScrollView),
@@ -77,7 +80,7 @@ void main() {
               } else if (teacher && tab == 2) {
                 expect(find.text(strings.noHomeworkInCategory), findsOneWidget);
               } else {
-                expect(find.text(teacher ? strings.noAssignedTeacherChildren : strings.noAssignedChildren), findsOneWidget);
+                expect(find.text(teacher ? (language == 'en' ? 'No sections currently assigned to you.' : 'لا توجد شُعب مكلّف بها حاليًا.') : strings.noAssignedChildren), findsOneWidget);
               }
               expect(tester.takeException(), isNull);
               await tester.pumpWidget(const SizedBox.shrink());
