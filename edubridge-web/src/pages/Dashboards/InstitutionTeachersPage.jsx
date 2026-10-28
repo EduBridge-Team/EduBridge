@@ -296,7 +296,7 @@ export default function InstitutionTeachersPage() {
                 <span>المواد: <b>{filteredSubjectCount}</b></span>
                 <span>الشعب: <b>{filteredSectionCount}</b></span>
               </div>
-              {hasAssignmentFilters && <button className="btn outline" type="button" onClick={resetAssignmentFilters}>مسح فلاتر التكليفات</button>
+              {hasAssignmentFilters && <button className="btn outline" type="button" onClick={resetAssignmentFilters}>مسح فلاتر التكليفات</button>}
               {visibleAssignments.length === 0 ? <div className="state">{assignments.length ? 'لا توجد تكليفات مطابقة للفلاتر المحددة.' : 'لم يتم تعيين معلمين لهذه المدرسة بعد.'}</div> : (
                 <div className="institution-actions">
                   {visibleAssignments.map((item) => (
