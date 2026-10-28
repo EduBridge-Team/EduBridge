@@ -18,6 +18,7 @@ export default function InstitutionTimetablePage() {
   const [participants, setParticipants] = useState(null)
   const [entries, setEntries] = useState([])
   const [form, setForm] = useState(EMPTY)
+  const [filterYear, setFilterYear] = useState('')
   const [filterSection, setFilterSection] = useState('')
   const [filterTeacher, setFilterTeacher] = useState('')
   const [filterSubject, setFilterSubject] = useState('')
@@ -99,7 +100,8 @@ export default function InstitutionTimetablePage() {
   const sections = (academic?.sections || []).filter((s) => !form.academic_year_id || String(s.academic_year_id) === form.academic_year_id)
   const subjects = academic?.subjects || []
   const teachers = participants?.teachers || []
-  const filtered = entries.filter((e) => (!filterSection || String(e.section_id) === filterSection) &&
+  const filtered = entries.filter((e) => (!filterYear || String(e.academic_year_id) === filterYear) &&
+    (!filterSection || String(e.section_id) === filterSection) &&
     (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
     (!filterSubject || String(e.subject_id) === filterSubject) &&
     (!filterDay || String(e.weekday) === filterDay))
@@ -115,7 +117,7 @@ export default function InstitutionTimetablePage() {
       </div></section>
       <section className="institution-panel">
         <h2>اختر المدرسة</h2>
-        <select aria-label="المدرسة" value={schoolId} onChange={(e) => { setSchoolId(e.target.value); setFilterSection(''); setFilterTeacher(''); setFilterSubject(''); setFilterDay(''); setMessage('') }}>
+        <select aria-label="المدرسة" value={schoolId} onChange={(e) => { setSchoolId(e.target.value); setFilterYear(''); setFilterSection(''); setFilterTeacher(''); setFilterSubject(''); setFilterDay(''); setMessage('') }}>
           <option value="">اختر المدرسة</option>
           {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
@@ -166,10 +168,16 @@ export default function InstitutionTimetablePage() {
         <section className="institution-panel">
           <h2>الحصص المدرسية</h2>
           <p>عدد الحصص: {filtered.length}</p>
+          <label>تصفية حسب السنة الدراسية
+            <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setFilterSection('') }}>
+              <option value="">جميع السنوات الدراسية</option>
+              {years.map((year) => <option key={year.id} value={year.id}>{year.name}</option>)}
+            </select>
+          </label>
           <label>تصفية حسب الشعبة
             <select value={filterSection} onChange={(e) => setFilterSection(e.target.value)}>
               <option value="">جميع الشعب</option>
-              {(academic.sections || []).map((s) => <option key={s.id} value={s.id}>{s.grade_name} — {s.name}</option>)}
+              {(academic.sections || []).filter((s) => !filterYear || String(s.academic_year_id) === filterYear).map((s) => <option key={s.id} value={s.id}>{s.grade_name} — {s.name}</option>)}
             </select>
           </label>
           <label>تصفية حسب المعلم
