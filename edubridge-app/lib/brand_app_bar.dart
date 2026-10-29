@@ -113,7 +113,8 @@ class _BrandToolbarSlot extends StatelessWidget {
   Widget build(BuildContext context) => Align(
     alignment: Alignment.bottomCenter, widthFactor: 1,
     child: Padding(padding: const EdgeInsets.only(bottom: BrandAppBar.controlBottomInset),
-      child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48),
-        child: Center(widthFactor: 1, heightFactor: 1, child: child))),
+      child: IntrinsicHeight(
+        child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48),
+          child: Center(widthFactor: 1, heightFactor: 1, child: child)))),
   );
 }

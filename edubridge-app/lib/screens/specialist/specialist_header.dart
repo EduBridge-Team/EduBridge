@@ -24,6 +24,7 @@ Widget _buildHeader({
                 Expanded(
                   child: tabIndex == 1
                       ? Align(
+                          heightFactor: 1,
                           alignment: AlignmentDirectional.centerStart,
                           child: Text(
                             context.l10n.lessons,
