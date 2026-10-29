@@ -33,7 +33,8 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.textContaining('0 ${source.goal.unit}'), findsOneWidget);
         await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-measurement-1')));
-        expect(find.textContaining('—'), findsOneWidget);
+        expect(tester.widget<Text>(find.byKey(const ValueKey('iep-evidence-measurement-1'))).data,
+            endsWith(': —'));
         expect(find.byType(LinearProgressIndicator), findsNothing);
         expect(tester.takeException(), isNull);
       });
