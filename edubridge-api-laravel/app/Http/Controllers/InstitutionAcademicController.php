@@ -211,12 +211,35 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
-        DB::table('teacher_assignments')->updateOrInsert(
-            ['section_id' => $data['section_id'], 'subject_id' => $data['subject_id'], 'teacher_id' => $data['teacher_id']],
-            ['updated_at' => now(), 'created_at' => now()]
-        );
+        $organization = $request->attributes->get('organization');
+        $created = DB::transaction(function () use ($data, $organization, $school, $request) {
+            // Serialize duplicate requests against the teacher's user row.
+            DB::table('users')->where('id', $data['teacher_id'])->lockForUpdate()->first();
+            $criteria = ['section_id' => $data['section_id'], 'subject_id' => $data['subject_id'], 'teacher_id' => $data['teacher_id']];
+            if (DB::table('teacher_assignments')->where($criteria)->exists()) {
+                return false;
+            }
+            DB::table('teacher_assignments')->insert([...$criteria, 'created_at' => now(), 'updated_at' => now()]);
+            if ($organization && $organization->slug === 'jabalia') {
+                DB::table('jabalia_teacher_assignment_history')->insert([
+                    'organization_id' => $organization->id,
+                    'school_id' => $school,
+                    'teacher_id' => $data['teacher_id'],
+                    'section_id' => $data['section_id'],
+                    'subject_id' => $data['subject_id'],
+                    'starts_on' => now()->toDateString(),
+                    'ends_on' => null,
+                    'status' => 'active',
+                    'reason' => null,
+                    'recorded_by' => $request->attributes->get('jwt_user')?->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            return true;
+        });
 
-        return response()->json(['assigned' => true], 201);
+        return response()->json(['assigned' => true, 'created' => $created], $created ? 201 : 200);
     }
 
     public function removeTeacherAssignment(Request $request, string $organizationSlug, int $school, int $assignment): JsonResponse
@@ -238,8 +261,39 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'التعيين غير موجود'], 404);
         }
 
-        DB::table('teacher_assignments')->where('id', $assignment)->delete();
-        return response()->json(['removed' => true]);
+        $organization = $request->attributes->get('organization');
+        return DB::transaction(function () use ($assignment, $organization, $school, $request) {
+            $current = DB::table('teacher_assignments')->where('id', $assignment)->lockForUpdate()->first();
+            if (!$current) {
+                return response()->json(['error' => 'التعيين غير موجود'], 404);
+            }
+            if ($organization && $organization->slug === 'jabalia') {
+                $open = DB::table('jabalia_teacher_assignment_history')
+                    ->where('organization_id', $organization->id)->where('school_id', $school)
+                    ->where('teacher_id', $current->teacher_id)->where('section_id', $current->section_id)
+                    ->where('subject_id', $current->subject_id)->where('status', 'active')->whereNull('ends_on');
+                if ($open->exists()) {
+                    $open->update(['ends_on' => now()->toDateString(), 'status' => 'ended',
+                        'reason' => 'إلغاء التكليف من إدارة المعلمين',
+                        'recorded_by' => $request->attributes->get('jwt_user')?->id,
+                        'updated_at' => now()]);
+                } else {
+                    // Pre-existing assignments have no reliable historic start date.
+                    // Do not invent one; record only the end event.
+                    DB::table('jabalia_teacher_assignment_history')->insert([
+                        'organization_id' => $organization->id, 'school_id' => $school,
+                        'teacher_id' => $current->teacher_id, 'section_id' => $current->section_id,
+                        'subject_id' => $current->subject_id, 'starts_on' => now()->toDateString(),
+                        'ends_on' => now()->toDateString(), 'status' => 'ended',
+                        'reason' => 'إلغاء تكليف سابق؛ تاريخ بدايته غير موثق',
+                        'recorded_by' => $request->attributes->get('jwt_user')?->id,
+                        'created_at' => now(), 'updated_at' => now(),
+                    ]);
+                }
+            }
+            DB::table('teacher_assignments')->where('id', $assignment)->delete();
+            return response()->json(['removed' => true]);
+        });
     }
 
     public function enrollStudent(Request $request, string $organizationSlug, int $school): JsonResponse

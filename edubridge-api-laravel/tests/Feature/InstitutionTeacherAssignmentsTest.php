@@ -30,6 +30,21 @@ class InstitutionTeacherAssignmentsTest extends TestCase
             $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
         });
 
+        Schema::create('jabalia_teacher_assignment_history', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('organization_id');
+            $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('teacher_id');
+            $t->unsignedBigInteger('section_id')->nullable();
+            $t->unsignedBigInteger('subject_id')->nullable();
+            $t->date('starts_on');
+            $t->date('ends_on')->nullable();
+            $t->string('status');
+            $t->string('reason')->nullable();
+            $t->unsignedBigInteger('recorded_by')->nullable();
+            $t->timestamps();
+        });
+
         DB::table('schools')->insert([
             ['id' => 1, 'organization_id' => 1, 'name' => 'Jabalia'],
             ['id' => 2, 'organization_id' => 2, 'name' => 'Other'],
@@ -54,7 +69,7 @@ class InstitutionTeacherAssignmentsTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['teacher_assignments', 'sections', 'subjects', 'grades', 'schools'] as $table) {
+        foreach (['jabalia_teacher_assignment_history', 'teacher_assignments', 'sections', 'subjects', 'grades', 'schools'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -86,6 +101,7 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         $removed = $controller->removeTeacherAssignment($this->request(), 'jabalia', 1, 1);
         $this->assertSame(200, $removed->getStatusCode());
         $this->assertDatabaseMissing('teacher_assignments', ['id' => 1]);
+        $this->assertDatabaseHas('jabalia_teacher_assignment_history', ['school_id' => 1, 'teacher_id' => 1, 'section_id' => 1, 'subject_id' => 1, 'status' => 'ended']);
         $this->assertDatabaseHas('teacher_assignments', ['id' => 2]);
     }
 }
