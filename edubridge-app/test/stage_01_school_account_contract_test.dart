@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -117,4 +118,37 @@ void main() {
       ),
     ));
   });
+  test('socket failure while reading institution is a network error and never posts', () async {
+    var posts = 0;
+    final repo = SchoolAccountRepository(
+      get: (_) async => throw const SocketException('offline'),
+      post: (_, __) async {
+        posts++;
+        return http.Response(success(organizationId: 7), 201);
+      },
+    );
+    await expectLater(repo.createAffiliated(request), throwsA(
+      isA<SchoolAccountException>().having(
+        (e) => e.failure, 'failure', SchoolAccountFailure.network,
+      ),
+    ));
+    expect(posts, 0);
+  });
+
+  test('socket failure after POST stays uncertain and never retries', () async {
+    var posts = 0;
+    final repo = SchoolAccountRepository(
+      post: (_, __) async {
+        posts++;
+        throw const SocketException('connection dropped');
+      },
+    );
+    await expectLater(repo.createIndependent(request), throwsA(
+      isA<SchoolAccountException>().having(
+        (e) => e.failure, 'failure', SchoolAccountFailure.uncertain,
+      ),
+    ));
+    expect(posts, 1);
+  });
+
 }
