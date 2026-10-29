@@ -2,10 +2,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
+import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile } from '../../api/institutions'
 import '../../styles/institution-operations.css'
 
 export default function InstitutionTeachersPage() {
   const { slug, loading: contextLoading } = useInstitution()
+  const [selectedHistoryTeacher, setSelectedHistoryTeacher] = useState('')
+  const [teacherHistory, setTeacherHistory] = useState(null)
+  const [profileDraft, setProfileDraft] = useState({ qualification: '', specialization: '', experience_years: '', professional_notes: '' })
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [profileSaving, setProfileSaving] = useState(false)
   const [schools, setSchools] = useState([])
   const [schoolId, setSchoolId] = useState('')
   const [academic, setAcademic] = useState(null)
@@ -168,6 +174,34 @@ export default function InstitutionTeachersPage() {
     }
   }
 
+  async function viewTeacherHistory(teacherId) {
+    setSelectedHistoryTeacher(String(teacherId))
+    setTeacherHistory(null)
+    setHistoryLoading(true)
+    setError('')
+    try {
+      const data = await fetchJabaliaTeacherHistory(slug, schoolId, teacherId)
+      setTeacherHistory(data)
+      const p = data.profile || {}
+      setProfileDraft({ qualification: p.qualification || '', specialization: p.specialization || '',
+        experience_years: p.experience_years ?? '', professional_notes: p.professional_notes || '' })
+    } catch (err) { setError(err.message) }
+    finally { setHistoryLoading(false) }
+  }
+
+  async function saveTeacherProfile(event) {
+    event.preventDefault()
+    if (profileSaving || !selectedHistoryTeacher) return
+    setProfileSaving(true); setError(''); setMessage('')
+    try {
+      const payload = { ...profileDraft, experience_years: profileDraft.experience_years === '' ? null : Number(profileDraft.experience_years) }
+      const data = await updateJabaliaTeacherProfile(slug, schoolId, selectedHistoryTeacher, payload)
+      setTeacherHistory((old) => ({ ...old, profile: data.profile }))
+      setMessage('تم حفظ الملف المهني للمعلم.')
+    } catch (err) { setError(err.message) }
+    finally { setProfileSaving(false) }
+  }
+
   if (contextLoading) return <main className="container">جارِ تحميل المؤسسة…</main>
   if (!slug) return <main className="container state error">هذه الصفحة متاحة من نطاق المؤسسة المخصص فقط.</main>
 
@@ -306,6 +340,23 @@ export default function InstitutionTeachersPage() {
                   </ul>
                 )}
               </section>
+              {slug === 'jabalia' && selectedHistoryTeacher && <section className="institution-panel" aria-label="الملف المهني وتاريخ التكليفات">
+                <h3>السجل المهني للمعلم: {memberships.find((teacher) => String(teacher.id) === selectedHistoryTeacher)?.name || selectedHistoryTeacher}</h3>
+                {historyLoading ? <p>جارِ تحميل السجل…</p> : teacherHistory && <>
+                  <form className="institution-school-form" onSubmit={saveTeacherProfile}>
+                    <label>المؤهل العلمي<input maxLength="160" value={profileDraft.qualification} onChange={(event) => setProfileDraft((p) => ({ ...p, qualification: event.target.value }))} /></label>
+                    <label>التخصص<input maxLength="160" value={profileDraft.specialization} onChange={(event) => setProfileDraft((p) => ({ ...p, specialization: event.target.value }))} /></label>
+                    <label>سنوات الخبرة<input type="number" min="0" max="80" value={profileDraft.experience_years} onChange={(event) => setProfileDraft((p) => ({ ...p, experience_years: event.target.value }))} /></label>
+                    <label>ملاحظات مهنية<textarea maxLength="5000" value={profileDraft.professional_notes} onChange={(event) => setProfileDraft((p) => ({ ...p, professional_notes: event.target.value }))} /></label>
+                    <button className="btn" type="submit" disabled={profileSaving}>{profileSaving ? 'جارِ الحفظ…' : 'حفظ الملف المهني'}</button>
+                  </form>
+                  <h4>سجل التكليفات المسجلة</h4>
+                  {!teacherHistory.history?.data?.length ? <p>لا توجد أحداث تكليف مؤرشفة لهذه المدرسة بعد.</p> : <ul>
+                    {teacherHistory.history.data.map((item) => <li key={item.id}>{item.subject_name || 'مادة محذوفة'} — {item.section_name || 'شعبة محذوفة'}، من {item.starts_on} {item.ends_on ? `إلى ${item.ends_on}` : 'حتى الآن'} ({item.status}){item.reason ? ` — ${item.reason}` : ''}</li>)}
+                  </ul>}
+                  {teacherHistory.history?.next_page_url && <p>يوجد المزيد من السجلات. عرض أول 30 حدثًا فقط.</p>}
+                </>}
+              </section>}
               <h3>عضويات المعلمين في المؤسسة</h3>
               {memberships.length === 0 ? <p>لا توجد عضويات معلمين بعد.</p> : (
                 <div className="institution-actions">
@@ -315,6 +366,7 @@ export default function InstitutionTeachersPage() {
                     <p>{teacher.is_active ? 'عضوية مفعّلة' : 'عضوية معطلة'}</p>
                     <p>التكليفات الحالية في المدرسة المحددة: {teacherAssignmentCounts[String(teacher.id)] || 0}</p>
                     <Link className="btn outline" to={`/institution/timetable?school=${encodeURIComponent(schoolId)}&teacher=${encodeURIComponent(teacher.id)}`}>عرض جدول المعلم</Link>
+                    {slug === 'jabalia' && <button className="btn outline" type="button" onClick={() => viewTeacherHistory(teacher.id)} disabled={historyLoading}>السجل المهني والتاريخ</button>}
                     <button type="button" className="btn outline" disabled={saving}
                       onClick={() => changeTeacherActive(teacher)}>
                       {teacher.is_active ? 'تعطيل العضوية' : 'إعادة التفعيل'}
