@@ -65,6 +65,8 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::patch('/schools/{school}', [InstitutionSchoolController::class, 'update'])->whereNumber('school');
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
         Route::get('/schools/{school}/participants', [InstitutionParticipantController::class, 'index'])->whereNumber('school');
+        Route::get('/schools/{school}/teachers/{teacher}/history', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
+        Route::patch('/schools/{school}/teachers/{teacher}/profile', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'updateProfile'])->whereNumber('school')->whereNumber('teacher');
 
         Route::prefix('/schools/{school}/academic')->whereNumber('school')->group(function () {
             Route::get('/', [InstitutionAcademicController::class, 'overview']);
