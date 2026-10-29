@@ -46,6 +46,7 @@ RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
         storage/framework/sessions \
         storage/framework/views \
         storage/logs \
+        storage/app/private/jabalia-teacher-documents \
         bootstrap/cache \
         /tmp/edubridge-nginx/client_body \
         /tmp/edubridge-nginx/proxy \
