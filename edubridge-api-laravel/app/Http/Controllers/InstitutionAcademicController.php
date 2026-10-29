@@ -318,10 +318,13 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'الطالب لا يتبع هذه المؤسسة'], 422);
         }
 
-        return DB::transaction(function () use ($data, $school) {
+        return DB::transaction(function () use ($data, $school, $organization) {
             // Serialize competing enrollments for the same child across schools/sections.
             DB::table('children')->where('id', $data['child_id'])->lockForUpdate()->first();
-            $targetYear = DB::table('sections')->where('id', $data['section_id'])->value('academic_year_id');
+            // Lock the section to serialize competing enrollments against its capacity.
+            $section = DB::table('sections')->where('id', $data['section_id'])->lockForUpdate()->first();
+            if (!$section) return response()->json(['error' => 'الشعبة غير موجودة'], 404);
+            $targetYear = $section->academic_year_id;
             $existing = DB::table('student_enrollments as se')
                 ->join('sections as s', 's.id', '=', 'se.section_id')
                 ->where('se.child_id', $data['child_id'])
@@ -333,6 +336,13 @@ class InstitutionAcademicController extends Controller
             if (DB::table('student_enrollments')->where('section_id', $data['section_id'])
                 ->where('child_id', $data['child_id'])->exists()) {
                 return response()->json(['error' => 'يوجد سجل سابق لهذا الطالب في الشعبة؛ اختر شعبة أخرى.'], 409);
+            }
+            if (($organization->slug ?? null) === 'jabalia' && $section->capacity !== null) {
+                $activeCount = DB::table('student_enrollments')
+                    ->where('section_id', $data['section_id'])->where('status', 'active')->count();
+                if ($activeCount >= (int) $section->capacity) {
+                    return response()->json(['error' => 'الشعبة ممتلئة، اختر شعبة أخرى أو عدّل السعة'], 409);
+                }
             }
             DB::table('student_enrollments')->insert([
                 'section_id' => $data['section_id'], 'child_id' => $data['child_id'],
