@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
-import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument } from '../../api/institutions'
+import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument, fetchJabaliaTeacherTransfers, transferJabaliaTeacher } from '../../api/institutions'
 import '../../styles/institution-operations.css'
 
 export default function InstitutionTeachersPage() {
   const { slug, loading: contextLoading } = useInstitution()
+  const [transfers, setTransfers] = useState([])
+  const [transferForm, setTransferForm] = useState({ to_school_id: '', effective_on: '', reason: '' })
+  const [transferSaving, setTransferSaving] = useState(false)
   const [documents, setDocuments] = useState([])
   const [documentPage, setDocumentPage] = useState({ current_page: 1, last_page: 1, total: 0 })
   const [uploadFiles, setUploadFiles] = useState({})
@@ -123,6 +126,7 @@ export default function InstitutionTeachersPage() {
     setSelectedHistoryTeacher('')
     setTeacherHistory(null)
     setDocuments([])
+    setTransfers([])
     setDocumentPage({ current_page: 1, last_page: 1, total: 0 })
     setUploadFiles({})
   }, [slug, schoolId])
@@ -197,6 +201,8 @@ export default function InstitutionTeachersPage() {
     try {
       const data = await fetchJabaliaTeacherHistory(slug, schoolId, teacherId)
       setTeacherHistory(data)
+      const transfersResponse = await fetchJabaliaTeacherTransfers(slug, schoolId, teacherId)
+      setTransfers(transfersResponse.transfers?.data || [])
       const documentResponse = await fetchJabaliaTeacherDocuments(slug, schoolId, teacherId)
       setDocuments(documentResponse.documents?.data || [])
       setDocumentPage(documentResponse.documents || { current_page: 1, last_page: 1, total: 0 })
@@ -285,6 +291,25 @@ export default function InstitutionTeachersPage() {
       setMessage('تم حذف سجل الوثيقة.')
     } catch (err) { setError(err.message) }
     finally { setDocumentSaving(false) }
+  }
+
+  async function submitTeacherTransfer(event) {
+    event.preventDefault()
+    if (transferSaving || !selectedHistoryTeacher) return
+    if (!window.confirm('سيتم إنهاء تكليفات المعلم في المدرسة الحالية، دون إنشاء تكليفات في المدرسة الجديدة. متابعة؟')) return
+    setTransferSaving(true); setError(''); setMessage('')
+    try {
+      const response = await transferJabaliaTeacher(slug, schoolId, selectedHistoryTeacher, {
+        to_school_id: Number(transferForm.to_school_id), effective_on: transferForm.effective_on,
+        reason: transferForm.reason || null,
+      })
+      const history = await fetchJabaliaTeacherTransfers(slug, schoolId, selectedHistoryTeacher)
+      setTransfers(history.transfers?.data || [])
+      setTransferForm({ to_school_id: '', effective_on: '', reason: '' })
+      setMessage(`تم تسجيل نقل المعلم وإغلاق ${response.closed_assignments} تكليفًا. يجب تكليفه بالشعب والمواد في المدرسة الجديدة.`)
+      await refresh()
+    } catch (err) { setError(err.message) }
+    finally { setTransferSaving(false) }
   }
 
   async function saveTeacherProfile(event) {
@@ -448,6 +473,20 @@ export default function InstitutionTeachersPage() {
                     <label>ملاحظات مهنية<textarea maxLength="5000" value={profileDraft.professional_notes} onChange={(event) => setProfileDraft((p) => ({ ...p, professional_notes: event.target.value }))} /></label>
                     <button className="btn" type="submit" disabled={profileSaving}>{profileSaving ? 'جارِ الحفظ…' : 'حفظ الملف المهني'}</button>
                   </form>
+                  <h4>نقل المعلم بين المدارس</h4>
+                  <form className="institution-school-form" onSubmit={submitTeacherTransfer}>
+                    <label>المدرسة المستقبلة
+                      <select required value={transferForm.to_school_id} onChange={(event) => setTransferForm((p) => ({ ...p, to_school_id: event.target.value }))}>
+                        <option value="">اختر المدرسة</option>
+                        {schools.filter((school) => String(school.id) !== String(schoolId)).map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
+                      </select>
+                    </label>
+                    <label>تاريخ النقل<input type="date" required value={transferForm.effective_on} onChange={(event) => setTransferForm((p) => ({ ...p, effective_on: event.target.value }))} /></label>
+                    <label>السبب<input maxLength="255" value={transferForm.reason} onChange={(event) => setTransferForm((p) => ({ ...p, reason: event.target.value }))} /></label>
+                    <button className="btn outline" type="submit" disabled={transferSaving || !transferForm.to_school_id || !transferForm.effective_on}>{transferSaving ? 'جارِ النقل…' : 'تسجيل نقل المعلم'}</button>
+                  </form>
+                  <p>النقل يُنهي تكليفات المدرسة الحالية، ولا ينشئ تكليفات تلقائية في المدرسة الجديدة.</p>
+                  {transfers.length > 0 && <ul>{transfers.map((transfer) => <li key={transfer.id}>{transfer.from_school_name} ← {transfer.to_school_name} — {transfer.effective_on}{transfer.reason ? ` — ${transfer.reason}` : ''}</li>)}</ul>}
                   <h4>العقود والشهادات المهنية</h4>
                   <p>يمكن إرفاق ملف PDF أو صورة JPEG أو PNG أو WebP بحد أقصى 5 ميجابايت لكل وثيقة.</p>
                   <form className="institution-school-form" onSubmit={addTeacherDocument}>
