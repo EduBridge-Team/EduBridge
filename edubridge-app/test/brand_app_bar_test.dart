@@ -159,7 +159,7 @@ void main() {
         final bottom = tester.getBottomLeft(find.byType(BrandHeaderSurface)).dy;
         for (final target in [find.byType(BackButton), find.byKey(const ValueKey('bottom-title')),
             find.byTooltip('refresh-bottom')]) {
-          expect(tester.getCenter(target).dy, closeTo(bottom - 44, 1));
+          expect(tester.getCenter(target).dy, closeTo(bottom - 44, 1), reason: target.description);
           expect(target.hitTestable(), findsOneWidget);
         }
         expect(tester.takeException(), isNull);

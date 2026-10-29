@@ -92,10 +92,10 @@ class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
         : scaffold?.hasEndDrawer == true ? <Widget>[const EndDrawerButton()] : null;
     return AppBar(
       automaticallyImplyLeading: false,
-      leading: navigation == null ? null : _BrandToolbarSlot(child: navigation),
+      leading: navigation == null ? null : _BrandToolbarSlot(height: toolbarHeight, child: navigation),
       leadingWidth: leadingWidth,
-      title: title == null ? null : _BrandToolbarSlot(child: title!),
-      actions: trailing?.map((action) => _BrandToolbarSlot(child: action)).toList(),
+      title: title == null ? null : _BrandToolbarSlot(height: toolbarHeight, child: title!),
+      actions: trailing?.map((action) => _BrandToolbarSlot(height: toolbarHeight, child: action)).toList(),
       centerTitle: centerTitle, titleSpacing: titleSpacing,
       toolbarHeight: toolbarHeight, elevation: elevation,
       backgroundColor: backgroundColor, foregroundColor: foregroundColor,
@@ -107,14 +107,17 @@ class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _BrandToolbarSlot extends StatelessWidget {
-  const _BrandToolbarSlot({required this.child});
+  const _BrandToolbarSlot({required this.height, required this.child});
+  final double height;
   final Widget child;
   @override
-  Widget build(BuildContext context) => Align(
+  // AppBar's title box measures its child with an unbounded height. Give every
+  // slot the same explicit extent before applying bottom alignment.
+  Widget build(BuildContext context) => SizedBox(height: height, child: Align(
     alignment: Alignment.bottomCenter, widthFactor: 1,
     child: Padding(padding: const EdgeInsets.only(bottom: BrandAppBar.controlBottomInset),
       child: IntrinsicHeight(
         child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48),
           child: Center(widthFactor: 1, heightFactor: 1, child: child)))),
-  );
+  ));
 }
