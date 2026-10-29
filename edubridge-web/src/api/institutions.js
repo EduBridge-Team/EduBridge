@@ -224,3 +224,37 @@ export function createJabaliaTeacherDocument(slug, schoolId, teacherId, payload)
 export function deleteJabaliaTeacherDocument(slug, schoolId, teacherId, documentId) {
   return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/documents/${documentId}`), { method: 'DELETE' })
 }
+
+export async function uploadJabaliaTeacherDocument(slug, schoolId, teacherId, documentId, file) {
+  const form = new FormData()
+  form.append('file', file)
+  const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}${schoolPath(slug, schoolId, `/teachers/${teacherId}/documents/${documentId}/file`)}`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-EduBridge-Client': 'web' },
+    body: form,
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(data.error || data.message || `فشل رفع الملف (HTTP ${response.status})`)
+  return data
+}
+
+export async function downloadJabaliaTeacherDocument(slug, schoolId, teacherId, documentId, filename) {
+  const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}${schoolPath(slug, schoolId, `/teachers/${teacherId}/documents/${documentId}/file`)}`, {
+    credentials: 'same-origin',
+    headers: { 'X-EduBridge-Client': 'web' },
+  })
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}))
+    throw new Error(data.error || data.message || `فشل تنزيل الملف (HTTP ${response.status})`)
+  }
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename || 'document'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000)
+}
