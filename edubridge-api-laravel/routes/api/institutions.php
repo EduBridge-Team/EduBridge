@@ -89,6 +89,7 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::get('/student-enrollments', [InstitutionStudentEnrollmentController::class, 'history']);
             Route::patch('/student-enrollments/{enrollment}/status', [InstitutionStudentEnrollmentController::class, 'close'])->whereNumber('enrollment');
             Route::post('/student-enrollments/{enrollment}/transfer', [InstitutionStudentEnrollmentController::class, 'transfer'])->whereNumber('enrollment');
+            Route::post('/student-enrollments/{enrollment}/promote', [\App\Http\Controllers\JabaliaAnnualPromotionController::class, 'promote'])->whereNumber('enrollment');
         });
 
         Route::prefix('/schools/{school}/attendance')->whereNumber('school')->group(function () {
