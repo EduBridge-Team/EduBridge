@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -95,6 +96,12 @@ class SchoolAccountRepository {
     try {
       return await send().timeout(_timeout);
     } on TimeoutException {
+      throw SchoolAccountException(
+        mutation
+            ? SchoolAccountFailure.uncertain
+            : SchoolAccountFailure.network,
+      );
+    } on SocketException {
       throw SchoolAccountException(
         mutation
             ? SchoolAccountFailure.uncertain
