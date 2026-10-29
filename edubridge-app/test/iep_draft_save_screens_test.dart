@@ -41,6 +41,7 @@ void main() {
         await tester.pumpWidget(curriculumHost(IepDraftSaveScreen(draft: saveDraft(), gateway: f.repository), language));
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('iep-save-error')), findsOneWidget);
+        await revealDraft(tester, find.byKey(const ValueKey('iep-save-to-server')));
         expect(tester.widget<FilledButton>(find.byKey(const ValueKey('iep-save-to-server'))).onPressed, isNull);
         expect(find.byKey(const ValueKey('iep-server-saved')), findsNothing);
         expect(f.posts, isEmpty);

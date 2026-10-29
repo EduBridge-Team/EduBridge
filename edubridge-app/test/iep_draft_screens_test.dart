@@ -14,6 +14,11 @@ import 'iep_http_fixture.dart';
 Future<void> revealDraft(WidgetTester tester, Finder finder) async {
   FocusManager.instance.primaryFocus?.unfocus();
   await tester.pumpAndSettle();
+  if (finder.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(finder, 180,
+      scrollable: find.descendant(of: find.byType(ListView).last,
+        matching: find.byType(Scrollable)).first);
+  }
   await Scrollable.ensureVisible(tester.element(finder), alignment: 0.5);
   await tester.pumpAndSettle();
 }
