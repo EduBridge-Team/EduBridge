@@ -66,7 +66,7 @@ class InstitutionStudentEnrollmentController extends Controller
             // the same capacity serialization point. Only Jabalia applies this rule.
             $targetSection = DB::table('sections')->where('id', $target->id)->lockForUpdate()->first();
             if (!$targetSection) return response()->json(['error' => 'الشعبة غير موجودة'], 404);
-            if ($org->slug === 'jabalia' && $targetSection->capacity !== null) {
+            if (($org->slug ?? null) === 'jabalia' && $targetSection->capacity !== null) {
                 $occupied = DB::table('student_enrollments')->where('section_id', $target->id)
                     ->where('status', 'active')->count();
                 if ($occupied >= (int) $targetSection->capacity) {
