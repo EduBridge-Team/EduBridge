@@ -11,6 +11,7 @@ class SpecialistSchoolStudentsFixture {
   String role = 'specialist';
   bool badReceipt = false, failAfter = false, skipPersistence = false;
   Completer<void>? pending;
+  Completer<void>? pendingRoster;
   void Function()? afterRoster;
   final paths = <String>[], posts = <Map<String, dynamic>>[];
   Map<String, dynamic> directory = specialistCopy({
@@ -46,6 +47,7 @@ class SpecialistSchoolStudentsFixture {
     else if (path == '/specialists/me/schools/2/students' || path == '/specialists/me/schools/3/students') {
       final id = int.parse(path.split('/')[4]);
       data = specialistCopy(rosters[id]!); code = failAfter && posts.isNotEmpty ? 503 : status;
+      await pendingRoster?.future;
       afterRoster?.call();
     } else { throw StateError('Unexpected endpoint $path'); }
     return http.Response(jsonEncode(data), code, headers: {'content-type': 'application/json; charset=utf-8'});

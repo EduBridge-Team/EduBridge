@@ -25,12 +25,17 @@ class _SchoolsBody extends StatefulWidget {
   State<_SchoolsBody> createState() => _SchoolsBodyState();
 }
 class _SchoolsBodyState extends State<_SchoolsBody> with WidgetsBindingObserver {
-  late final _state = EnrollmentState(widget.gateway.schools)..reload();
+  late EnrollmentState<SpecialistSchoolDirectory> _state = EnrollmentState(widget.gateway.schools)..reload();
   @override
   void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _state.reload();
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        _state.dispose();
+        _state = EnrollmentState(widget.gateway.schools)..reload();
+      });
+    }
   }
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }

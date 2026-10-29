@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:edubridge_app/screens/specialist_schools/specialist_schools_screen.dart';
 import 'package:edubridge_app/screens/specialist_schools/specialist_school_students_screen.dart';
@@ -13,6 +14,19 @@ Future<void> tapSchoolStudent(WidgetTester tester, String key) async {
   await tester.tap(target); await tester.pumpAndSettle();
 }
 void main() {
+  testWidgets('resume ignores a pre-background roster response after access revocation', (tester) async {
+    final f = SpecialistSchoolStudentsFixture(), directory = await f.repository.schools();
+    final pending = Completer<void>(); f.pendingRoster = pending;
+    await tester.pumpWidget(curriculumHost(SpecialistSchoolStudentsScreen(
+      specialistId: 7, school: directory.schools.first, gateway: f.repository), 'en'));
+    await tester.pump();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    f.status = 403;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump(); pending.complete(); await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('specialist-school-student-20')), findsNothing);
+    expect(f.posts, isEmpty); expect(tester.takeException(), isNull);
+  });
   for (final language in ['ar', 'en']) {
     for (final width in [320.0, 720.0, 1280.0]) {
       testWidgets('school roster explicit selection and search $language $width at 2x', (tester) async {

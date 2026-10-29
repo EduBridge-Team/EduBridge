@@ -25,13 +25,18 @@ class _RosterBody extends StatefulWidget {
   State<_RosterBody> createState() => _RosterBodyState();
 }
 class _RosterBodyState extends State<_RosterBody> with WidgetsBindingObserver {
-  late final _state = SpecialistSchoolStudentsController(widget.gateway, widget.specialistId, widget.school)..reload();
+  late SpecialistSchoolStudentsController _state = SpecialistSchoolStudentsController(widget.gateway, widget.specialistId, widget.school)..reload();
   final _search = TextEditingController();
   @override
   void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _state.reload();
+    if (state == AppLifecycleState.resumed && !_state.busy) {
+      setState(() {
+        _state.dispose();
+        _state = SpecialistSchoolStudentsController(widget.gateway, widget.specialistId, widget.school)..reload();
+      });
+    }
   }
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _search.dispose(); _state.dispose(); super.dispose(); }
