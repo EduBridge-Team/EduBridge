@@ -62,6 +62,16 @@ class InstitutionStudentEnrollmentController extends Controller
                 $target->id === $current->section_id) {
                 return response()->json(['error' => 'اختر شعبة مختلفة من نفس المدرسة والسنة الدراسية'], 422);
             }
+            // Serialize transfers targeting the same Jabalia section to protect its capacity.
+            if (($org->slug ?? null) === 'jabalia') {
+                $locked = DB::table('sections')->where('id', $target->id)->lockForUpdate()->first();
+                if (!$locked) return response()->json(['error' => 'الشعبة غير موجودة'], 404);
+                if ($locked->capacity !== null &&
+                    DB::table('student_enrollments')->where('section_id', $target->id)
+                        ->where('status', 'active')->count() >= (int) $locked->capacity) {
+                    return response()->json(['error' => 'الشعبة المستقبلة ممتلئة'], 409);
+                }
+            }
             if (DB::table('student_enrollments')->where('child_id', $current->child_id)
                 ->where('section_id', $target->id)->exists()) {
                 return response()->json(['error' => 'سبق تسجيل الطالب في الشعبة المطلوبة'], 409);
