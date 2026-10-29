@@ -9,6 +9,9 @@ import '../../services/institution_teacher_assignments_repository.dart';
 import '../../services/institution_enrollment_history_repository.dart';
 import '../../services/institution_attendance_repository.dart';
 import '../../services/institution_timetable_repository.dart';
+import '../../services/school_specialist_assignments_repository.dart';
+import '../institution_specialists/school_specialists_screen.dart';
+import '../institution_specialists/school_specialists_labels.dart';
 import '../institution_timetable/institution_timetable_screen.dart';
 import '../institution_attendance/institution_attendance_screen.dart';
 import '../institution_enrollment/institution_enrollment_history_screen.dart';
@@ -31,6 +34,7 @@ class InstitutionAcademicScreen extends StatefulWidget {
     this.enrollmentHistoryGateway,
     this.attendanceGateway,
     this.timetableGateway,
+    this.specialistAssignmentsGateway,
   });
   final String organizationSlug;
   final int schoolId;
@@ -40,6 +44,7 @@ class InstitutionAcademicScreen extends StatefulWidget {
   final InstitutionEnrollmentHistoryGateway? enrollmentHistoryGateway;
   final InstitutionAttendanceGateway? attendanceGateway;
   final InstitutionTimetableGateway? timetableGateway;
+  final SchoolSpecialistAssignmentsGateway? specialistAssignmentsGateway;
   @override
   State<InstitutionAcademicScreen> createState() =>
       _InstitutionAcademicScreenState();
@@ -158,6 +163,15 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
     if (mounted && identical(controller, _state)) await controller.reload();
   }
 
+  Future<void> _openSpecialists() async {
+    final records = _state.snapshot;
+    if (!_state.canWrite || records == null) return;
+    final gateway = widget.specialistAssignmentsGateway ?? SchoolSpecialistAssignmentsRepository(
+      organizationSlug: records.organizationSlug, organizationId: records.organizationId,
+      schoolId: records.school.id);
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SchoolSpecialistsScreen(gateway: gateway)));
+  }
+
   Future<void> _openCurriculum() async {
     final controller = _state;
     final records = controller.snapshot;
@@ -229,6 +243,10 @@ class _InstitutionAcademicScreenState extends State<InstitutionAcademicScreen>
                       onPressed: _state.loading || _state.busy ? null : _openTimetable,
                       icon: const Icon(Icons.calendar_month_outlined), label: Text(l.timetableTitle)),
                     if (data != null && _state.supportsCreation) ...[
+                      OutlinedButton.icon(key: const ValueKey('institution-open-specialists'),
+                        onPressed: _state.canWrite ? _openSpecialists : null,
+                        icon: const Icon(Icons.medical_services_outlined),
+                        label: Text(SchoolSpecialistsLabels(context).title)),
                       OutlinedButton.icon(
                         key: const ValueKey('institution-open-teacher-assignments'),
                         onPressed: _state.canWrite ? _openTeachers : null,
