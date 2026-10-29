@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { enrollInstitutionStudent, fetchInstitutionStudentHistory, closeInstitutionStudentEnrollment, transferInstitutionStudent, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
+import { enrollInstitutionStudent, fetchInstitutionStudentHistory, closeInstitutionStudentEnrollment, transferInstitutionStudent, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools, previewJabaliaBulkPromotion, approveJabaliaBulkPromotion } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -13,6 +13,9 @@ export default function InstitutionStudentsPage() {
   const [studentId, setStudentId] = useState('')
   const [history, setHistory] = useState([])
   const [transferTargets, setTransferTargets] = useState({})
+  const [promotion, setPromotion] = useState({ source_section_id: '', target_section_id: '', promoted_on: '' })
+  const [promotionPreview, setPromotionPreview] = useState(null)
+  const [promotionSelected, setPromotionSelected] = useState([])
   const [sectionId, setSectionId] = useState('')
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -37,6 +40,8 @@ export default function InstitutionStudentsPage() {
     setLoading(true)
     setAcademic(null)
     setParticipants(null)
+    setPromotionPreview(null)
+    setPromotionSelected([])
     Promise.all([
       fetchInstitutionAcademicOverview(slug, schoolId),
       fetchInstitutionParticipants(slug, schoolId),
@@ -108,6 +113,42 @@ export default function InstitutionStudentsPage() {
     finally { setSaving(false) }
   }
 
+  async function previewPromotion(event) {
+    event.preventDefault()
+    if (saving) return
+    setSaving(true); setError(''); setMessage(''); setPromotionPreview(null); setPromotionSelected([])
+    try {
+      const data = await previewJabaliaBulkPromotion(slug, schoolId, {
+        source_section_id: Number(promotion.source_section_id),
+        target_section_id: Number(promotion.target_section_id),
+        promoted_on: promotion.promoted_on,
+      })
+      setPromotionPreview(data)
+      setPromotionSelected((data.rows || []).filter((item) => item.eligible).map((item) => item.enrollment_id))
+    } catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
+
+  async function confirmPromotion() {
+    if (!promotionPreview || saving || !promotionSelected.length || promotionPreview.truncated) return
+    if (!window.confirm(`تأكيد ترفيع ${promotionSelected.length} طالبًا؟ سيتم إغلاق التسجيلات القديمة وإنشاء تسجيلات جديدة.`)) return
+    setSaving(true); setError(''); setMessage('')
+    try {
+      const result = await approveJabaliaBulkPromotion(slug, schoolId, {
+        source_section_id: Number(promotionPreview.source_section_id),
+        target_section_id: Number(promotionPreview.target_section_id),
+        promoted_on: promotionPreview.promoted_on,
+        enrollment_ids: promotionSelected,
+      })
+      await refreshRecords()
+      setPromotionPreview(null); setPromotionSelected([])
+      setMessage(`تم ترفيع ${result.promoted_count} طالبًا بنجاح مع الاحتفاظ بسجلاتهم السابقة.`)
+    } catch (err) {
+      setError(err.message + ' — أعد المعاينة قبل المحاولة مجددًا.')
+      setPromotionPreview(null); setPromotionSelected([])
+    } finally { setSaving(false) }
+  }
+
   if (contextLoading) return <main className="container">جارِ تحميل المؤسسة…</main>
   if (!slug) return <main className="container state error">هذه الصفحة متاحة من نطاق المؤسسة فقط.</main>
 
@@ -127,7 +168,7 @@ export default function InstitutionStudentsPage() {
         <label>المدرسة
           <select value={schoolId} onChange={(event) => {
             setSchoolId(event.target.value)
-            setStudentId(''); setSectionId(''); setMessage('')
+            setStudentId(''); setSectionId(''); setMessage(''); setPromotionPreview(null); setPromotionSelected([])
           }}>
             <option value="">اختر المدرسة</option>
             {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -162,6 +203,41 @@ export default function InstitutionStudentsPage() {
               {saving ? 'جارِ الحفظ…' : 'تسجيل الطالب'}
             </button>
           </form>
+          {slug === 'jabalia' && <>
+            <h3>الترفيع السنوي الجماعي</h3>
+            <p>ابدأ بمعاينة الطلاب ثم اختر المؤهلين واعتمد الترفيع. لا تُحفظ أي تغييرات أثناء المعاينة.</p>
+            <form className="institution-school-form" onSubmit={previewPromotion}>
+              <label>الشعبة الحالية
+                <select required value={promotion.source_section_id} onChange={(e) => { setPromotion((p) => ({...p, source_section_id:e.target.value})); setPromotionPreview(null) }}>
+                  <option value="">اختر شعبة السنة السابقة</option>
+                  {sections.map((item) => <option value={item.id} key={item.id}>{item.grade_name} — {item.name} ({item.academic_year_name})</option>)}
+                </select>
+              </label>
+              <label>الشعبة المستقبلة
+                <select required value={promotion.target_section_id} onChange={(e) => { setPromotion((p) => ({...p, target_section_id:e.target.value})); setPromotionPreview(null) }}>
+                  <option value="">اختر شعبة الصف التالي</option>
+                  {sections.filter((item) => String(item.id) !== String(promotion.source_section_id)).map((item) => <option key={item.id} value={item.id}>{item.grade_name} — {item.name} ({item.academic_year_name})</option>)}
+                </select>
+              </label>
+              <label>تاريخ الترفيع<input type="date" required value={promotion.promoted_on} onChange={(e) => { setPromotion((p) => ({...p, promoted_on:e.target.value})); setPromotionPreview(null) }} /></label>
+              <button type="submit" className="btn outline" disabled={saving}>معاينة الترفيع</button>
+            </form>
+            {promotionPreview && <div className="institution-panel">
+              <h4>نتيجة المعاينة</h4>
+              <p>مؤهلون: {promotionPreview.eligible_count} — متعذر: {promotionPreview.blocked_count} — إجمالي التسجيلات: {promotionPreview.total_active}</p>
+              <p>المقاعد المشغولة: {promotionPreview.occupied} — السعة: {promotionPreview.capacity ?? 'غير محددة'}</p>
+              {promotionPreview.truncated && <div className="state error" role="alert">المعاينة تعرض أول 500 تسجيل فقط؛ لا يمكن اعتماد الدفعة من هذه القائمة.</div>}
+              <div className="institution-actions">{(promotionPreview.rows || []).map((item) => <label key={item.enrollment_id}>
+                <input type="checkbox" disabled={!item.eligible || saving || promotionPreview.truncated}
+                  checked={promotionSelected.includes(item.enrollment_id)}
+                  onChange={(e) => setPromotionSelected((old) => e.target.checked ? [...old, item.enrollment_id] : old.filter((id) => id !== item.enrollment_id))} />
+                {item.child_name} — {item.eligible ? 'مؤهل' : item.reason}
+              </label>)}</div>
+              <button className="btn" type="button" disabled={saving || promotionPreview.truncated || promotionSelected.length === 0} onClick={confirmPromotion}>
+                {saving ? 'جارِ الاعتماد…' : `اعتماد ترفيع ${promotionSelected.length} طالبًا`}
+              </button>
+            </div>}
+          </>}
           <h3>التسجيلات الحالية</h3>
           {enrollments.length === 0 ? <p>لا توجد تسجيلات طلاب نشطة في هذه المدرسة.</p> : (
             <div className="institution-actions">{enrollments.map((item) => <div key={item.id} className="institution-panel">
