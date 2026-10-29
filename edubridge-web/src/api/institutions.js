@@ -210,3 +210,17 @@ export function updateJabaliaTeacherProfile(slug, schoolId, teacherId, payload) 
     body: JSON.stringify(payload),
   })
 }
+
+export function fetchJabaliaTeacherDocuments(slug, schoolId, teacherId) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/documents`))
+}
+
+export function createJabaliaTeacherDocument(slug, schoolId, teacherId, payload) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/documents`), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function deleteJabaliaTeacherDocument(slug, schoolId, teacherId, documentId) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/documents/${documentId}`), { method: 'DELETE' })
+}
