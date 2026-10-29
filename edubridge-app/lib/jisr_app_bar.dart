@@ -9,12 +9,11 @@ class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
   const JisrAppBar({super.key, required this.title, this.actions, this.leading});
 
   @override
-  Size get preferredSize => const Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(BrandAppBar.standardToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
     return BrandAppBar(
-      toolbarHeight: 100,
       leading: leading,
       titleSpacing: 16,
       title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
