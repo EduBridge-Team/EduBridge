@@ -70,6 +70,9 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::get('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::post('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
         Route::delete('/schools/{school}/teachers/{teacher}/documents/{document}', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'destroy'])->whereNumber('school')->whereNumber('teacher')->whereNumber('document');
+        Route::post('/schools/{school}/teachers/{teacher}/documents/{document}/file', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'upload'])->whereNumber('school')->whereNumber('teacher')->whereNumber('document');
+        Route::get('/schools/{school}/teachers/{teacher}/documents/{document}/file', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'download'])->whereNumber('school')->whereNumber('teacher')->whereNumber('document');
+
 
         Route::prefix('/schools/{school}/academic')->whereNumber('school')->group(function () {
             Route::get('/', [InstitutionAcademicController::class, 'overview']);

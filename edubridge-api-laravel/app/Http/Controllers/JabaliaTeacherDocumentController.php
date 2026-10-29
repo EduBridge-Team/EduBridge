@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class JabaliaTeacherDocumentController extends Controller
 {
@@ -47,13 +49,59 @@ class JabaliaTeacherDocumentController extends Controller
         return response()->json(['document' => DB::table('jabalia_teacher_documents')->where('id', $id)->first()], 201);
     }
 
+    public function upload(Request $request, string $organizationSlug, int $school, int $teacher, int $document): JsonResponse
+    {
+        $org = $this->tenant($request, $organizationSlug, $school, $teacher);
+        if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
+        $row = DB::table('jabalia_teacher_documents')->where('id', $document)
+            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first();
+        if (!$row) return response()->json(['error' => 'السجل غير موجود'], 404);
+        $validated = $request->validate([
+            'file' => ['required', 'file', 'max:5120', 'mimetypes:application/pdf,image/jpeg,image/png,image/webp'],
+        ]);
+        $file = $validated['file'];
+        $ext = match ($file->getMimeType()) {
+            'application/pdf' => 'pdf', 'image/jpeg' => 'jpg',
+            'image/png' => 'png', 'image/webp' => 'webp',
+            default => null,
+        };
+        if (!$ext) return response()->json(['error' => 'نوع الملف غير مدعوم'], 422);
+        $path = Storage::disk('local')->putFileAs('jabalia-teacher-documents', $file, Str::uuid().'.'.$ext);
+        if (!$path) return response()->json(['error' => 'تعذر حفظ الملف'], 500);
+        DB::table('jabalia_teacher_documents')->where('id', $document)
+            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)
+            ->update(['storage_path' => $path,
+                'original_filename' => mb_substr(basename($file->getClientOriginalName()), 0, 255),
+                'mime_type' => $file->getMimeType(), 'file_size' => $file->getSize(), 'updated_at' => now()]);
+        if ($row->storage_path) Storage::disk('local')->delete($row->storage_path);
+        return response()->json(['uploaded' => true]);
+    }
+
+    public function download(Request $request, string $organizationSlug, int $school, int $teacher, int $document)
+    {
+        $org = $this->tenant($request, $organizationSlug, $school, $teacher);
+        if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
+        $row = DB::table('jabalia_teacher_documents')->where('id', $document)
+            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first();
+        if (!$row || !$row->storage_path || !Storage::disk('local')->exists($row->storage_path)) {
+            return response()->json(['error' => 'الملف غير موجود'], 404);
+        }
+        return Storage::disk('local')->download($row->storage_path, $row->original_filename ?: 'document', [
+            'Cache-Control' => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     public function destroy(Request $request, string $organizationSlug, int $school, int $teacher, int $document): JsonResponse
     {
         $org = $this->tenant($request, $organizationSlug, $school, $teacher);
         if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
+        $row = DB::table('jabalia_teacher_documents')->where('id', $document)
+            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first();
         $removed = DB::table('jabalia_teacher_documents')->where('id', $document)
             ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->delete();
         if (!$removed) return response()->json(['error' => 'السجل غير موجود'], 404);
+        if ($row?->storage_path) Storage::disk('local')->delete($row->storage_path);
         return response()->json(['removed' => true]);
     }
 }
