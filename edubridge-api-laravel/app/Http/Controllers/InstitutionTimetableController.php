@@ -64,6 +64,32 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
+        // Jabalia's association-confirmed standard week, with a five-period day.
+        // These rules are the initial defaults; configurable institution settings follow.
+        $org = $request->attributes->get('organization');
+        if (($org->slug ?? null) === 'jabalia') {
+            $slots = [
+                1 => ['08:30', '09:10'],
+                2 => ['09:10', '09:50'],
+                3 => ['09:50', '10:30'],
+                4 => ['10:40', '11:20'],
+                5 => ['11:20', '12:00'],
+            ];
+            // ISO weekdays: Sunday=7, Monday=1, ..., Thursday=4.
+            $weekday = (int) $data['weekday'];
+            $period = (int) $data['period_number'];
+            if (!in_array($weekday, [7, 1, 2, 3, 4], true) || !isset($slots[$period])) {
+                return response()->json(['error' => 'الدوام من الأحد إلى الخميس، وخمس حصص يوميًا'], 422);
+            }
+            [$start, $end] = $slots[$period];
+            if ((!empty($data['starts_at']) && $data['starts_at'] !== $start)
+                || (!empty($data['ends_at']) && $data['ends_at'] !== $end)) {
+                return response()->json(['error' => 'وقت الحصة لا يوافق الجدول المعتمد'], 422);
+            }
+            $data['starts_at'] = $start;
+            $data['ends_at'] = $end;
+        }
+
         $conflict = DB::table('timetable_entries')
             ->where('school_id', $school)
             ->where('academic_year_id', $data['academic_year_id'])
