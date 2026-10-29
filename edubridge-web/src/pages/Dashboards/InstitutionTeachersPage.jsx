@@ -143,6 +143,7 @@ export default function InstitutionTeachersPage() {
         subject_id: Number(form.subject_id),
       })
       setMessage('تم ربط المعلم بالمادة والشعبة بنجاح.')
+      setAssignmentTeacher(''); setAssignmentSubject(''); setAssignmentSection('')
       setForm({ teacher_id: '', section_id: '', subject_id: '' })
       await refresh()
     } catch (err) {
@@ -180,6 +181,13 @@ export default function InstitutionTeachersPage() {
     (!assignmentSubject || String(item.subject_id) === assignmentSubject) &&
     (!assignmentSection || String(item.section_id) === assignmentSection))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [subject.id, subject.code]))
+  const filteredTeacherCount = new Set(visibleAssignments.map((item) => String(item.teacher_id))).size
+  const filteredSubjectCount = new Set(visibleAssignments.map((item) => String(item.subject_id))).size
+  const filteredSectionCount = new Set(visibleAssignments.map((item) => String(item.section_id))).size
+  const hasAssignmentFilters = Boolean(assignmentTeacher || assignmentSubject || assignmentSection)
+  const resetAssignmentFilters = () => {
+    setAssignmentTeacher(''); setAssignmentSubject(''); setAssignmentSection('')
+  }
   const assignmentSubjectTotals = subjects.map((subject) => ({
     id: subject.id,
     name: subject.name,
@@ -282,7 +290,13 @@ export default function InstitutionTeachersPage() {
                   {sections.map((section) => <option key={section.id} value={section.id}>{section.grade_name} — {section.name} ({section.academic_year_name})</option>)}
                 </select>
               </label>
-              <p>التعيينات المطابقة: {visibleAssignments.length}</p>
+              <div className="academic-setup-summary" aria-label="ملخص التكليفات المطابقة">
+                <span>التكليفات: <b>{visibleAssignments.length}</b></span>
+                <span>المعلمون: <b>{filteredTeacherCount}</b></span>
+                <span>المواد: <b>{filteredSubjectCount}</b></span>
+                <span>الشعب: <b>{filteredSectionCount}</b></span>
+              </div>
+              {hasAssignmentFilters && <button className="btn outline" type="button" onClick={resetAssignmentFilters}>مسح فلاتر التكليفات</button>}
               {visibleAssignments.length === 0 ? <div className="state">{assignments.length ? 'لا توجد تكليفات مطابقة للفلاتر المحددة.' : 'لم يتم تعيين معلمين لهذه المدرسة بعد.'}</div> : (
                 <div className="institution-actions">
                   {visibleAssignments.map((item) => (

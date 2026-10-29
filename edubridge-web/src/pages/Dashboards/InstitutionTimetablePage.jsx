@@ -98,6 +98,7 @@ export default function InstitutionTimetablePage() {
       })
       await refresh()
       setMessage('تمت إضافة الحصة إلى الجدول.')
+      resetFilters()
       setForm((old) => ({ ...old, section_id: '', subject_id: '', teacher_id: '', room: '' }))
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
@@ -124,6 +125,9 @@ export default function InstitutionTimetablePage() {
   const eligibleTeachers = teachers.filter((teacher) => !form.section_id || !form.subject_id || assignments.some((assignment) =>
     String(assignment.teacher_id) === String(teacher.id) && String(assignment.section_id) === form.section_id && String(assignment.subject_id) === form.subject_id))
   const subjectCodes = Object.fromEntries(subjects.map((subject) => [String(subject.id), subject.code]))
+  const resetFilters = () => {
+    setFilterYear(''); setFilterSection(''); setFilterTeacher(''); setFilterSubject(''); setFilterDay('')
+  }
   const filtered = entries.filter((e) => (!filterYear || String(e.academic_year_id) === filterYear) &&
     (!filterSection || String(e.section_id) === filterSection) &&
     (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
@@ -140,6 +144,11 @@ export default function InstitutionTimetablePage() {
     })).filter((day) => day.count > 0)
     return { id: subject.id, name: subject.name, code: subject.code, count: lessons.length, weekdays }
   }).filter((subject) => subject.count > 0)
+
+  const distinctTeachers = new Set(filtered.filter((entry) => entry.teacher_id != null).map((entry) => String(entry.teacher_id))).size
+  const distinctSections = new Set(filtered.map((entry) => String(entry.section_id))).size
+  const distinctSubjects = new Set(filtered.map((entry) => String(entry.subject_id))).size
+  const hasFilters = Boolean(filterYear || filterSection || filterTeacher || filterSubject || filterDay)
 
   return <div className="role-page role-institution institution-operations-page" dir="rtl">
     <main className="container container-wide role-dashboard institution-dashboard-v2">
@@ -202,7 +211,13 @@ export default function InstitutionTimetablePage() {
         </section>
         <section className="institution-panel">
           <h2>الحصص المدرسية</h2>
-          <p>عدد الحصص: {filtered.length}</p>
+          <div className="academic-setup-summary" aria-label="ملخص الجدول حسب الفلاتر">
+            <span>الحصص: <b>{filtered.length}</b></span>
+            <span>المعلمون: <b>{distinctTeachers}</b></span>
+            <span>الشعب: <b>{distinctSections}</b></span>
+            <span>المواد: <b>{distinctSubjects}</b></span>
+          </div>
+          {hasFilters && <button className="btn outline" type="button" onClick={resetFilters}>مسح فلاتر الجدول</button>}
           <label>تصفية حسب السنة الدراسية
             <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setFilterSection('') }}>
               <option value="">جميع السنوات الدراسية</option>
