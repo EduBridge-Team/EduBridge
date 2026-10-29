@@ -31,7 +31,8 @@ void main() {
         expect(target, findsOneWidget);
         await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-measurement-2')));
         await tester.pumpAndSettle();
-        expect(find.textContaining('0 ${source.goal.unit}'), findsOneWidget);
+        expect(tester.widget<Text>(find.byKey(const ValueKey('iep-evidence-measurement-2'))).data,
+            contains('0 ${source.goal.unit}'));
         await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-measurement-1')));
         expect(tester.widget<Text>(find.byKey(const ValueKey('iep-evidence-measurement-1'))).data,
             endsWith(': —'));

@@ -41,6 +41,27 @@ goal, child, version or gateway discards old state and ignores late responses.
 The read endpoint is not present in the reviewed backend. Unsupported service is
 shown as unavailable, not an empty success. Existing plan viewing/review remains.
 
+## Flutter measurement presentation (same read contract)
+
+The evidence page now presents baseline, target and the latest numeric measurement
+by observation date (recorded timestamp/ID break ties using the validated history).
+Qualitative evidence is never converted to zero. No percentage, average, automatic
+goal-achieved status, improvement direction or interpolated trend is calculated.
+Higher measurements are not universally better; the original unit is retained.
+
+A scatter plot positions observations by actual observed date, with dashed
+baseline and solid target reference lines. It shows up to the latest 50 numeric
+observations with this limit stated. The expandable accessible list contains all
+numeric values/dates/sources/authors. All-zero/equal and extreme finite values are
+normalized without overflow. Exact values remain available as text.
+
+Local search, numeric/qualitative/all filters and date-order selection affect only
+the evidence cards. The global measurement summary uses all authorized evidence;
+this distinction is stated in the UI. No filtered subset is sent as a new server
+history or used to alter scope. Loading/error/source replacement hides summaries,
+plots and evidence. Resume replaces pending reads so pre-background responses
+cannot restore stale summaries or evidence after a newer denial.
+
 ## Acceptance still pending
 
 Agree the service contract with backend, then verify qualitative and numeric
