@@ -47,6 +47,14 @@ Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
     Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
         ->middleware(['role:school', 'throttle:120,1']);
+    Route::get('/school/academic', [\App\Http\Controllers\SchoolAcademicController::class, 'index'])
+        ->middleware(['role:school', 'throttle:120,1']);
+    Route::post('/school/academic/years', [\App\Http\Controllers\SchoolAcademicController::class, 'storeYear'])
+        ->middleware(['role:school', 'throttle:20,1']);
+    Route::post('/school/academic/grades', [\App\Http\Controllers\SchoolAcademicController::class, 'storeGrade'])
+        ->middleware(['role:school', 'throttle:20,1']);
+    Route::post('/school/academic/sections', [\App\Http\Controllers\SchoolAcademicController::class, 'storeSection'])
+        ->middleware(['role:school', 'throttle:20,1']);
     Route::get('/school/academic/curriculum', [\App\Http\Controllers\SchoolCurriculumCatalogController::class, 'index'])
         ->middleware(['role:school', 'throttle:120,1']);
     Route::get('/school/enrollment-options', [\App\Http\Controllers\SchoolEnrollmentOptionsController::class, 'index'])
