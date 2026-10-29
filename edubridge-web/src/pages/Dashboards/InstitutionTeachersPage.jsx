@@ -189,6 +189,16 @@ export default function InstitutionTeachersPage() {
     finally { setHistoryLoading(false) }
   }
 
+  async function changeHistoryPage(page) {
+    if (historyLoading || !selectedHistoryTeacher || page < 1) return
+    setHistoryLoading(true); setError('')
+    try {
+      const result = await fetchJabaliaTeacherHistory(slug, schoolId, selectedHistoryTeacher, page)
+      setTeacherHistory((current) => ({ ...current, history: result.history }))
+    } catch (err) { setError(err.message) }
+    finally { setHistoryLoading(false) }
+  }
+
   async function saveTeacherProfile(event) {
     event.preventDefault()
     if (profileSaving || !selectedHistoryTeacher) return
@@ -354,7 +364,11 @@ export default function InstitutionTeachersPage() {
                   {!teacherHistory.history?.data?.length ? <p>لا توجد أحداث تكليف مؤرشفة لهذه المدرسة بعد.</p> : <ul>
                     {teacherHistory.history.data.map((item) => <li key={item.id}>{item.subject_name || 'مادة محذوفة'} — {item.section_name || 'شعبة محذوفة'}، من {item.starts_on} {item.ends_on ? `إلى ${item.ends_on}` : 'حتى الآن'} ({item.status}){item.reason ? ` — ${item.reason}` : ''}</li>)}
                   </ul>}
-                  {teacherHistory.history?.next_page_url && <p>يوجد المزيد من السجلات. عرض أول 30 حدثًا فقط.</p>}
+                  {teacherHistory.history?.last_page > 1 && <div className="institution-actions" aria-label="صفحات سجل التكليفات">
+                    <button type="button" className="btn outline" disabled={historyLoading || teacherHistory.history.current_page <= 1} onClick={() => changeHistoryPage(teacherHistory.history.current_page - 1)}>السابق</button>
+                    <span>صفحة {teacherHistory.history.current_page} من {teacherHistory.history.last_page} — إجمالي {teacherHistory.history.total} سجل</span>
+                    <button type="button" className="btn outline" disabled={historyLoading || teacherHistory.history.current_page >= teacherHistory.history.last_page} onClick={() => changeHistoryPage(teacherHistory.history.current_page + 1)}>التالي</button>
+                  </div>}
                 </>}
               </section>}
               <h3>عضويات المعلمين في المؤسسة</h3>
