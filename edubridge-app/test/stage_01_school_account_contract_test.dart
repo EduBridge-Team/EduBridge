@@ -151,4 +151,37 @@ void main() {
     expect(posts, 1);
   });
 
+  for (final entry in {
+    401: SchoolAccountFailure.unauthorized,
+    403: SchoolAccountFailure.forbidden,
+  }.entries) {
+    test('role/identity denial ${entry.key} is not mistaken for success', () async {
+      final repo = SchoolAccountRepository(
+        post: (_, __) async => http.Response('{}', entry.key),
+      );
+      await expectLater(repo.createIndependent(request), throwsA(
+        isA<SchoolAccountException>().having(
+          (e) => e.failure, 'failure', entry.value,
+        ),
+      ));
+    });
+  }
+
+  test('affiliated institution access denial sends no credentials', () async {
+    var writes = 0;
+    final repo = SchoolAccountRepository(
+      get: (_) async => http.Response('{}', 403),
+      post: (_, __) async {
+        writes++;
+        return http.Response(success(organizationId: 7), 201);
+      },
+    );
+    await expectLater(repo.createAffiliated(request), throwsA(
+      isA<SchoolAccountException>().having(
+        (e) => e.failure, 'failure', SchoolAccountFailure.forbidden,
+      ),
+    ));
+    expect(writes, 0);
+  });
+
 }
