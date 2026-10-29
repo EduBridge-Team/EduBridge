@@ -32,6 +32,9 @@ class BrandHeaderSurface extends StatelessWidget {
 
 /// A solid brand fallback keeps white controls visible beneath the gradient.
 class BrandAppBar extends AppBar {
+  /// Profile header reference height, excluding the system status inset.
+  static const standardToolbarHeight = 124.0;
+
   BrandAppBar({
     super.key,
     super.title,
@@ -40,10 +43,14 @@ class BrandAppBar extends AppBar {
     super.leadingWidth,
     super.centerTitle = false,
     super.titleSpacing = 4,
-    super.toolbarHeight = 100,
+    double toolbarHeight = standardToolbarHeight,
     super.elevation = 0,
     ShapeBorder? shape,
   }) : super(
+          // Older per-page sizes cannot shrink the shared profile-sized header.
+          // Keep larger accessibility layouts requested by existing pages.
+          toolbarHeight: toolbarHeight < standardToolbarHeight
+              ? standardToolbarHeight : toolbarHeight,
           backgroundColor: AppColors.brandBlue,
           foregroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,

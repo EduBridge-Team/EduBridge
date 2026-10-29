@@ -272,7 +272,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
-          100 +
+          BrandAppBar.standardToolbarHeight +
               (MediaQuery.textScalerOf(context).scale(20) - 20)
                       .clamp(0.0, 80.0)
                       .toDouble() *

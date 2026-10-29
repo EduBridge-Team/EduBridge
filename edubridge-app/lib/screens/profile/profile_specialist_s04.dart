@@ -4,7 +4,7 @@ part of 'profile_screen.dart';
 extension _SpecialistS04Profile on _ProfileScreenState {
   Widget _s04Header(JisrColors c) {
     return SizedBox(
-      height: 124,
+      height: BrandAppBar.standardToolbarHeight,
       child: BrandHeaderSurface(child: Stack(
         children: [
           Positioned(

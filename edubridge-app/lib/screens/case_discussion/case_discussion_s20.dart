@@ -69,15 +69,13 @@ class CaseDiscussionHeaderS20 extends StatelessWidget
   final VoidCallback onBack;
   final VoidCallback onRefresh;
 
-  // Status bar height is added by AppBar/Scaffold, giving ~116 logical px
-  // including the typical 24px status bar, as in the S20 reference.
+  // Scaffold adds the status inset to the shared profile-sized toolbar.
   @override
-  Size get preferredSize => const Size.fromHeight(92);
+  Size get preferredSize => const Size.fromHeight(BrandAppBar.standardToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
     return BrandAppBar(
-      toolbarHeight: 92,
       // Keep the RTL title beside the back arrow, rather than centered
       // with a large gap on narrow mobile screens.
       centerTitle: false,

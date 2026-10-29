@@ -18,7 +18,7 @@ void main() {
               icon: const Icon(Icons.notifications_outlined))]),
         ))));
       final bar = tester.widget<BrandAppBar>(find.byType(BrandAppBar));
-      expect(bar.preferredSize.height, 74);
+      expect(bar.preferredSize.height, BrandAppBar.standardToolbarHeight);
       expect(bar.foregroundColor, Colors.white);
       expect(bar.scrolledUnderElevation, 0);
       expect(bar.backgroundColor, AppColors.brandBlue);
@@ -42,7 +42,7 @@ void main() {
     await tester.tap(find.text('افتح'));
     await tester.pumpAndSettle();
     final bar = tester.widget<BrandAppBar>(find.byType(BrandAppBar));
-    expect(bar.preferredSize.height, 100);
+    expect(bar.preferredSize.height, BrandAppBar.standardToolbarHeight);
     expect(bar.shape, isA<RoundedRectangleBorder>());
     expect(bar.clipBehavior, Clip.antiAlias);
     await tester.tap(find.byType(BackButton));
@@ -80,9 +80,9 @@ void main() {
       final bar = tester.widget<BrandAppBar>(find.byType(BrandAppBar));
       expect(bar.backgroundColor, AppColors.brandBlue);
       expect(bar.foregroundColor, Colors.white);
-      expect(bar.preferredSize.height, 100);
+      expect(bar.preferredSize.height, BrandAppBar.standardToolbarHeight);
       final surface = find.byType(BrandHeaderSurface);
-      expect(tester.getSize(surface).height, 124);
+      expect(tester.getSize(surface).height, BrandAppBar.standardToolbarHeight + 24);
       final logo = find.byWidgetPredicate((widget) => widget is Image && widget.semanticLabel == 'EduBridge');
       expect(tester.getCenter(find.byTooltip('المزيد من الخيارات')).dx,
         greaterThan(tester.getCenter(logo).dx));
@@ -93,6 +93,47 @@ void main() {
       expect(taps, 1);
       expect(tester.takeException(), isNull);
     });
+  }
+
+  for (final language in ['ar', 'en']) {
+    for (final width in [320.0, 720.0, 1280.0]) {
+      testWidgets('profile-sized header across legacy sizes $language $width at 2x', (tester) async {
+        tester.view.physicalSize = Size(width, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        for (final requested in [76.0, 92.0, 96.0, 100.0, 116.0, 180.0]) {
+          var taps = 0;
+          await tester.pumpWidget(MaterialApp(
+            locale: Locale(language),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                padding: const EdgeInsets.only(top: 24),
+                textScaler: const TextScaler.linear(2)), child: child!),
+            home: Scaffold(appBar: BrandAppBar(
+              toolbarHeight: requested,
+              leading: BackButton(onPressed: () => taps++),
+              title: Text(language == 'ar' ? 'الملف الشخصي' : 'Profile'),
+              actions: [IconButton(tooltip: 'refresh',
+                onPressed: () => taps++, icon: const Icon(Icons.refresh))],
+            )),
+          ));
+          await tester.pumpAndSettle();
+          final expected = requested > BrandAppBar.standardToolbarHeight
+              ? requested : BrandAppBar.standardToolbarHeight;
+          final bar = tester.widget<BrandAppBar>(find.byType(BrandAppBar));
+          expect(bar.preferredSize.height, expected);
+          expect(tester.getSize(find.byType(BrandHeaderSurface)).width, width);
+          expect(tester.getSize(find.byType(BrandHeaderSurface)).height, expected + 24);
+          await tester.tap(find.byType(BackButton));
+          await tester.tap(find.byTooltip('refresh'));
+          expect(taps, 2);
+          expect(tester.takeException(), isNull);
+        }
+      });
+    }
   }
 
 }

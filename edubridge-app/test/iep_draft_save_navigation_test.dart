@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'curriculum_ui_support.dart' show curriculumHost;
 import 'evaluation_history_fixture.dart';
 import 'iep_draft_save_fixture.dart';
-import 'iep_draft_screens_test.dart' show fillPlan, addDraftGoal, tapDraft;
+import 'iep_draft_screens_test.dart' show fillPlan, addDraftGoal, tapDraft, revealDraft;
 
 void main() {
   testWidgets('confirmed draft returns to fresh saved history without another create', (tester) async {
@@ -36,7 +36,9 @@ void main() {
     await tapDraft(tester, 'iep-confirm-save');
     expect(find.byKey(const ValueKey('iep-server-saved')), findsOneWidget);
     final l = await AppLocalizations.delegate.load(const Locale('en'));
-    await tester.tap(find.widgetWithText(FilledButton, l.iepTitle));
+    final historyButton = find.widgetWithText(FilledButton, l.iepTitle);
+    await revealDraft(tester, historyButton);
+    await tester.tap(historyButton);
     await tester.pumpAndSettle();
     expect(find.byType(IepDraftEditorScreen), findsNothing);
     expect(find.byType(IepHistoryScreen), findsOneWidget);
