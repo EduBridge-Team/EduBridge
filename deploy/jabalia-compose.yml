@@ -51,7 +51,7 @@ services:
       SESSION_ENCRYPT: "true"
       CACHE_STORE: file
     volumes:
-      - edubridge-jabalia-private-uploads:/var/www/html/storage/app/private/jabalia-teacher-documents
+      - edubridge-jabalia-private-uploads:/app/storage/app/private/jabalia-teacher-documents
     depends_on:
       postgres:
         condition: service_healthy
