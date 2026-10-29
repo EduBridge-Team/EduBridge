@@ -24,6 +24,15 @@ Unknown types retain notification details. Existing specialist-suggestion links
 remain unchanged. Other role/type combinations are not guessed or directed to
 unrelated pages. The added picker and details sheet support large text and scrolling.
 
+## Flutter lifecycle hardening
+
+The picker hides old child names immediately while a directory refresh is pending.
+Moving to inactive/hidden/paused discards the current directory controller and any
+pending open operation. Late authorization or directory completions cannot restore
+old data or push a destination. Resume loads a fresh authorized directory, including
+when a previous open was pending. It never automatically replays the open. Returning
+from an already opened child page retains that page's own authorization boundaries.
+
 ## Required backend follow-up (not implemented here)
 
 Add a versioned structured destination to notification storage and read responses:

@@ -21,11 +21,13 @@ class _NotificationChildDestinationScreenState extends State<NotificationChildDe
   late NotificationDestinationGateway _gateway;
   late EnrollmentState<NotificationChildDirectory> _state;
   bool _opening = false;
+  bool _suspended = false;
   EnrollmentFailure? _openError;
   String label(String ar, String en) => Localizations.localeOf(context).languageCode == 'en' ? en : ar;
   void _initialize() {
     _gateway = widget.gateway ?? NotificationDestinationRepository();
-    _state = EnrollmentState(_gateway.load)..reload();
+    _state = EnrollmentState(_gateway.load);
+    if (!_suspended) _state.reload();
   }
   @override
   void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); _initialize(); }
@@ -38,14 +40,30 @@ class _NotificationChildDestinationScreenState extends State<NotificationChildDe
   }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && !_opening) _reload();
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        _suspended = false;
+        _state.dispose();
+        _opening = false;
+        _openError = null;
+        _initialize();
+      });
+    } else if (!_suspended) {
+      setState(() {
+        _suspended = true;
+        _state.dispose();
+        _opening = false;
+        _openError = null;
+        _state = EnrollmentState(_gateway.load);
+      });
+    }
   }
-  Future<void> _reload() async { if (_opening) return; setState(() => _openError = null); await _state.reload(); }
+  Future<void> _reload() async { if (_opening || _suspended) return; setState(() => _openError = null); await _state.reload(); }
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }
   Future<void> _open(int childId) async {
     final controller = _state, gateway = _gateway, expected = _state.snapshot, destination = widget.destination;
-    if (_opening || !controller.canWrite || expected == null) return;
+    if (_opening || _suspended || !controller.canWrite || expected == null) return;
     setState(() { _opening = true; _openError = null; });
     try {
       final child = await gateway.authorize(expected, childId);
@@ -68,14 +86,14 @@ class _NotificationChildDestinationScreenState extends State<NotificationChildDe
   }
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: _state, builder: (context, _) {
-    final data = _state.snapshot;
+    final data = _state.loading || _suspended ? null : _state.snapshot;
     final title = switch (widget.destination) {
       NotificationChildDestination.enrollment => label('الالتحاق المدرسي', 'School enrollment'),
       NotificationChildDestination.evaluations => label('سجل التقييمات', 'Evaluation history'),
       NotificationChildDestination.weeklyReports => label('التقارير الأسبوعية', 'Weekly reports'),
     };
     return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(title), actions: [
-      IconButton(tooltip: context.l10n.enrollmentReload, onPressed: _state.loading || _opening ? null : _reload, icon: const Icon(Icons.refresh))]),
+      IconButton(tooltip: context.l10n.enrollmentReload, onPressed: _state.loading || _opening || _suspended ? null : _reload, icon: const Icon(Icons.refresh))]),
       body: RefreshIndicator(onRefresh: _reload, child: SafeArea(child: Center(child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 840), child: ListView(padding: const EdgeInsets.all(16),
           physics: const AlwaysScrollableScrollPhysics(), children: [

@@ -9,6 +9,7 @@ class NotificationDestinationFixture {
   final children = <Map<String, dynamic>>[{'id': 9, 'name': 'نور'}, {'id': 8, 'name': 'أحمد'}];
   final paths = <String>[];
   Future<void> Function()? beforeDetail;
+  Future<void> Function()? beforeList;
   void Function()? afterList, afterDetail;
   NotificationDestinationRepository get repository => NotificationDestinationRepository(client: EnrollmentApiClient(get: (path) async {
     paths.add(path);
@@ -16,6 +17,7 @@ class NotificationDestinationFixture {
     if (path == '/me') {
       body = {'user': {'id': userId, 'role': role}};
     } else if (path == '/children') {
+      await beforeList?.call();
       body = {'children': children}; status = listStatus; afterList?.call();
     } else if (path == '/children/9') {
       await beforeDetail?.call(); afterDetail?.call();
