@@ -23,9 +23,11 @@ class IepMeasurementSeries {
   double dateFraction(DateTime date) {
     final points = plotted;
     if (points.length < 2) return 0.5;
-    final span = points.last.observedOn.difference(points.first.observedOn).inDays;
+    final span = _calendarDays(points.last.observedOn, points.first.observedOn);
     if (span == 0) return 0.5;
-    return (date.difference(points.first.observedOn).inDays / span).clamp(0.0, 1.0).toDouble();
+    return (_calendarDays(date, points.first.observedOn) / span).clamp(0.0, 1.0).toDouble();
   }
+  int _calendarDays(DateTime a, DateTime b) => DateTime.utc(a.year, a.month, a.day)
+      .difference(DateTime.utc(b.year, b.month, b.day)).inDays;
 }
 
