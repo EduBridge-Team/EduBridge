@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
-import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile } from '../../api/institutions'
+import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument } from '../../api/institutions'
 import '../../styles/institution-operations.css'
 
 export default function InstitutionTeachersPage() {
   const { slug, loading: contextLoading } = useInstitution()
+  const [documents, setDocuments] = useState([])
+  const [documentDraft, setDocumentDraft] = useState({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
+  const [documentSaving, setDocumentSaving] = useState(false)
   const [selectedHistoryTeacher, setSelectedHistoryTeacher] = useState('')
   const [teacherHistory, setTeacherHistory] = useState(null)
   const [profileDraft, setProfileDraft] = useState({ qualification: '', specialization: '', experience_years: '', professional_notes: '' })
@@ -177,11 +180,14 @@ export default function InstitutionTeachersPage() {
   async function viewTeacherHistory(teacherId) {
     setSelectedHistoryTeacher(String(teacherId))
     setTeacherHistory(null)
+    setDocuments([])
     setHistoryLoading(true)
     setError('')
     try {
       const data = await fetchJabaliaTeacherHistory(slug, schoolId, teacherId)
       setTeacherHistory(data)
+      const documentResponse = await fetchJabaliaTeacherDocuments(slug, schoolId, teacherId)
+      setDocuments(documentResponse.documents?.data || [])
       const p = data.profile || {}
       setProfileDraft({ qualification: p.qualification || '', specialization: p.specialization || '',
         experience_years: p.experience_years ?? '', professional_notes: p.professional_notes || '' })
@@ -197,6 +203,32 @@ export default function InstitutionTeachersPage() {
       setTeacherHistory((current) => ({ ...current, history: result.history }))
     } catch (err) { setError(err.message) }
     finally { setHistoryLoading(false) }
+  }
+
+  async function addTeacherDocument(event) {
+    event.preventDefault()
+    if (documentSaving || !selectedHistoryTeacher) return
+    setDocumentSaving(true); setError(''); setMessage('')
+    try {
+      const payload = Object.fromEntries(Object.entries(documentDraft).map(([key, value]) => [key, value || null]))
+      const result = await createJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, payload)
+      setDocuments((current) => [result.document, ...current])
+      setDocumentDraft({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
+      setMessage('تم تسجيل بيانات الوثيقة.')
+    } catch (err) { setError(err.message) }
+    finally { setDocumentSaving(false) }
+  }
+
+  async function removeTeacherDocument(id) {
+    if (documentSaving || !selectedHistoryTeacher) return
+    if (!window.confirm('هل تريد حذف بيانات هذه الوثيقة؟')) return
+    setDocumentSaving(true); setError(''); setMessage('')
+    try {
+      await deleteJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, id)
+      setDocuments((current) => current.filter((item) => item.id !== id))
+      setMessage('تم حذف سجل الوثيقة.')
+    } catch (err) { setError(err.message) }
+    finally { setDocumentSaving(false) }
   }
 
   async function saveTeacherProfile(event) {
@@ -360,6 +392,20 @@ export default function InstitutionTeachersPage() {
                     <label>ملاحظات مهنية<textarea maxLength="5000" value={profileDraft.professional_notes} onChange={(event) => setProfileDraft((p) => ({ ...p, professional_notes: event.target.value }))} /></label>
                     <button className="btn" type="submit" disabled={profileSaving}>{profileSaving ? 'جارِ الحفظ…' : 'حفظ الملف المهني'}</button>
                   </form>
+                  <h4>العقود والشهادات المهنية</h4>
+                  <p>إدارة بيانات الوثائق فقط؛ ملفات PDF والصور غير مدعومة في هذه المرحلة.</p>
+                  <form className="institution-school-form" onSubmit={addTeacherDocument}>
+                    <label>نوع الوثيقة<select value={documentDraft.type} onChange={(event) => setDocumentDraft((p) => ({ ...p, type: event.target.value }))}><option value="certificate">شهادة</option><option value="contract">عقد</option></select></label>
+                    <label>العنوان<input required maxLength="200" value={documentDraft.title} onChange={(event) => setDocumentDraft((p) => ({ ...p, title: event.target.value }))} /></label>
+                    <label>الجهة المصدرة<input maxLength="200" value={documentDraft.issuer} onChange={(event) => setDocumentDraft((p) => ({ ...p, issuer: event.target.value }))} /></label>
+                    <label>تاريخ الإصدار<input type="date" value={documentDraft.issued_on} onChange={(event) => setDocumentDraft((p) => ({ ...p, issued_on: event.target.value }))} /></label>
+                    <label>تاريخ الانتهاء<input type="date" value={documentDraft.expires_on} onChange={(event) => setDocumentDraft((p) => ({ ...p, expires_on: event.target.value }))} /></label>
+                    <label>ملاحظات<textarea maxLength="5000" value={documentDraft.notes} onChange={(event) => setDocumentDraft((p) => ({ ...p, notes: event.target.value }))} /></label>
+                    <button className="btn" type="submit" disabled={documentSaving}>{documentSaving ? 'جارِ الحفظ…' : 'إضافة وثيقة'}</button>
+                  </form>
+                  {documents.length === 0 ? <p>لا توجد عقود أو شهادات مسجلة لهذا المعلم.</p> : <ul>
+                    {documents.map((item) => <li key={item.id}>{item.type === 'contract' ? 'عقد' : 'شهادة'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} <button type="button" className="btn outline" disabled={documentSaving} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
+                  </ul>}
                   <h4>سجل التكليفات المسجلة</h4>
                   {!teacherHistory.history?.data?.length ? <p>لا توجد أحداث تكليف مؤرشفة لهذه المدرسة بعد.</p> : <ul>
                     {teacherHistory.history.data.map((item) => <li key={item.id}>{item.subject_name || 'مادة محذوفة'} — {item.section_name || 'شعبة محذوفة'}، من {item.starts_on} {item.ends_on ? `إلى ${item.ends_on}` : 'حتى الآن'} ({item.status}){item.reason ? ` — ${item.reason}` : ''}</li>)}
