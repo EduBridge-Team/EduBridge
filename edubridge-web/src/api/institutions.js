@@ -211,8 +211,8 @@ export function updateJabaliaTeacherProfile(slug, schoolId, teacherId, payload) 
   })
 }
 
-export function fetchJabaliaTeacherDocuments(slug, schoolId, teacherId) {
-  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/documents`))
+export function fetchJabaliaTeacherDocuments(slug, schoolId, teacherId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/documents?page=${encodeURIComponent(page)}`))
 }
 
 export function createJabaliaTeacherDocument(slug, schoolId, teacherId, payload) {

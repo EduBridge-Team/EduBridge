@@ -8,6 +8,7 @@ import '../../styles/institution-operations.css'
 export default function InstitutionTeachersPage() {
   const { slug, loading: contextLoading } = useInstitution()
   const [documents, setDocuments] = useState([])
+  const [documentPage, setDocumentPage] = useState({ current_page: 1, last_page: 1, total: 0 })
   const [uploadFiles, setUploadFiles] = useState({})
   const [documentDraft, setDocumentDraft] = useState({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
   const [documentSaving, setDocumentSaving] = useState(false)
@@ -119,6 +120,14 @@ export default function InstitutionTeachersPage() {
   }, [slug, schoolId])
 
   useEffect(() => {
+    setSelectedHistoryTeacher('')
+    setTeacherHistory(null)
+    setDocuments([])
+    setDocumentPage({ current_page: 1, last_page: 1, total: 0 })
+    setUploadFiles({})
+  }, [slug, schoolId])
+
+  useEffect(() => {
     let active = true
     setAcademic(null)
     setParticipants(null)
@@ -190,6 +199,7 @@ export default function InstitutionTeachersPage() {
       setTeacherHistory(data)
       const documentResponse = await fetchJabaliaTeacherDocuments(slug, schoolId, teacherId)
       setDocuments(documentResponse.documents?.data || [])
+      setDocumentPage(documentResponse.documents || { current_page: 1, last_page: 1, total: 0 })
       const p = data.profile || {}
       setProfileDraft({ qualification: p.qualification || '', specialization: p.specialization || '',
         experience_years: p.experience_years ?? '', professional_notes: p.professional_notes || '' })
@@ -207,6 +217,17 @@ export default function InstitutionTeachersPage() {
     finally { setHistoryLoading(false) }
   }
 
+  async function changeDocumentPage(page) {
+    if (documentSaving || !selectedHistoryTeacher || page < 1 || page > documentPage.last_page) return
+    setDocumentSaving(true); setError('')
+    try {
+      const response = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher, page)
+      setDocuments(response.documents?.data || [])
+      setDocumentPage(response.documents || { current_page: 1, last_page: 1, total: 0 })
+    } catch (err) { setError(err.message) }
+    finally { setDocumentSaving(false) }
+  }
+
   async function addTeacherDocument(event) {
     event.preventDefault()
     if (documentSaving || !selectedHistoryTeacher) return
@@ -214,7 +235,9 @@ export default function InstitutionTeachersPage() {
     try {
       const payload = Object.fromEntries(Object.entries(documentDraft).map(([key, value]) => [key, value || null]))
       const result = await createJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, payload)
-      setDocuments((current) => [result.document, ...current])
+      const updated = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher, 1)
+      setDocuments(updated.documents?.data || [])
+      setDocumentPage(updated.documents || { current_page: 1, last_page: 1, total: 0 })
       setDocumentDraft({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
       setMessage('تم تسجيل بيانات الوثيقة.')
     } catch (err) { setError(err.message) }
@@ -233,6 +256,7 @@ export default function InstitutionTeachersPage() {
       await uploadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, file)
       const result = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher)
       setDocuments(result.documents?.data || [])
+      setDocumentPage(result.documents || { current_page: 1, last_page: 1, total: 0 })
       setUploadFiles((current) => { const next = { ...current }; delete next[item.id]; return next })
       setMessage('تم رفع ملف الوثيقة بنجاح.')
     } catch (err) { setError(err.message) }
@@ -435,6 +459,11 @@ export default function InstitutionTeachersPage() {
                       <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id]} onClick={() => uploadTeacherFile(item)}>{item.storage_path ? 'استبدال الملف' : 'رفع الملف'}</button>
                       <button type="button" className="btn outline" disabled={documentSaving} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
                   </ul>}
+                  {documentPage.last_page > 1 && <div className="institution-actions" aria-label="صفحات وثائق المعلم">
+                    <button type="button" className="btn outline" disabled={documentSaving || documentPage.current_page <= 1} onClick={() => changeDocumentPage(documentPage.current_page - 1)}>السابق</button>
+                    <span>صفحة {documentPage.current_page} من {documentPage.last_page} — {documentPage.total} وثيقة</span>
+                    <button type="button" className="btn outline" disabled={documentSaving || documentPage.current_page >= documentPage.last_page} onClick={() => changeDocumentPage(documentPage.current_page + 1)}>التالي</button>
+                  </div>}
                   <h4>سجل التكليفات المسجلة</h4>
                   {!teacherHistory.history?.data?.length ? <p>لا توجد أحداث تكليف مؤرشفة لهذه المدرسة بعد.</p> : <ul>
                     {teacherHistory.history.data.map((item) => <li key={item.id}>{item.subject_name || 'مادة محذوفة'} — {item.section_name || 'شعبة محذوفة'}، من {item.starts_on} {item.ends_on ? `إلى ${item.ends_on}` : 'حتى الآن'} ({item.status}){item.reason ? ` — ${item.reason}` : ''}</li>)}
