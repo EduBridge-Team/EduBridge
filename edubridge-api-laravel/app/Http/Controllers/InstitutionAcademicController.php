@@ -213,6 +213,17 @@ class InstitutionAcademicController extends Controller
 
         $organization = $request->attributes->get('organization');
         $created = DB::transaction(function () use ($data, $organization, $school, $request) {
+            // Lock the section shared by all competing assignments, not just the
+            // teacher row: two different teachers must not race into one slot.
+            if (($organization->slug ?? null) === 'jabalia') {
+                DB::table('sections')->where('id', $data['section_id'])->lockForUpdate()->first();
+                $existing = DB::table('teacher_assignments')
+                    ->where('section_id', $data['section_id'])
+                    ->where('subject_id', $data['subject_id'])->first();
+                if ($existing && (int) $existing->teacher_id !== (int) $data['teacher_id']) {
+                    return 'subject_teacher_conflict';
+                }
+            }
             // Serialize duplicate requests against the teacher's user row.
             DB::table('users')->where('id', $data['teacher_id'])->lockForUpdate()->first();
             $criteria = ['section_id' => $data['section_id'], 'subject_id' => $data['subject_id'], 'teacher_id' => $data['teacher_id']];
@@ -238,6 +249,10 @@ class InstitutionAcademicController extends Controller
             }
             return true;
         });
+
+        if ($created === 'subject_teacher_conflict') {
+            return response()->json(['error' => 'هذه المادة في الشعبة مسندة بالفعل إلى معلم آخر'], 409);
+        }
 
         return response()->json(['assigned' => true, 'created' => $created], $created ? 201 : 200);
     }
