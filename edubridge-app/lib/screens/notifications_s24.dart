@@ -24,22 +24,6 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
         onPressed: _loading ? null : _load,
         style: IconButton.styleFrom(backgroundColor: const Color(0x33FFFFFF)),
         icon: const Icon(Icons.refresh_rounded, size: 23)),
-      ValueListenableBuilder<int>(
-        valueListenable: NotificationListenerService.instance.unreadCount,
-        builder: (context, count, _) => MediaQuery.textScalerOf(context).scale(13) > 18
-            ? IconButton(
-                tooltip: context.l10n.markAllRead,
-                onPressed: count == 0 || _markingAll || _loadingMore ? null : _markAllRead,
-                icon: const Icon(Icons.done_all_rounded),
-              )
-            : TextButton(
-          onPressed: count == 0 || _markingAll || _loadingMore
-              ? null : _markAllRead,
-          child: Text(context.l10n.markAllRead, style: TextStyle(
-            color: count == 0 ? const Color(0x99FFFFFF) : Colors.white,
-            fontSize: 13, fontWeight: FontWeight.w700)),
-        ),
-      ),
       const SizedBox(width: 4),
     ],
   );
@@ -109,40 +93,6 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _s24Body(JisrColors colors) {
-    if (_loading || _error != null) return _buildBody(colors);
-    return ValueListenableBuilder<List<dynamic>>(
-      valueListenable: NotificationListenerService.instance.notifications,
-      builder: (context, list, _) {
-        if (list.isEmpty) return _buildBody(colors);
-        return RefreshIndicator(
-          onRefresh: _load,
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
-            itemCount: list.length + 1,
-            itemBuilder: (context, index) {
-              if (index < list.length) {
-                final entry = list[index];
-                return entry is Map ? _s24Tile(entry, colors)
-                    : const SizedBox.shrink();
-              }
-              return ValueListenableBuilder<bool>(
-                valueListenable: NotificationListenerService.instance.hasMore,
-                builder: (context, more, _) => more
-                    ? TextButton(
-                        onPressed: _loadingMore || _markingAll ? null : _loadMore,
-                        child: Text(_loadingMore
-                            ? context.l10n.loadingDots : context.l10n.loadOlderNotifications))
-                    : const SizedBox.shrink(),
-              );
-            },
-          ),
-        );
-      },
     );
   }
 
@@ -217,7 +167,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F8FC),
       appBar: _s24AppBar(),
-      body: _s24Body(colors),
+      body: _buildBody(colors),
       bottomNavigationBar: role == 'specialist' ? _s24Navigation(colors)
           : role == 'teacher' ? const TeacherNavigationBar() : null,
     );
