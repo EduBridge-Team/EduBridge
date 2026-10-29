@@ -258,3 +258,10 @@ export async function downloadJabaliaTeacherDocument(slug, schoolId, teacherId, 
   link.remove()
   window.setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
+
+export function fetchJabaliaTeacherTransfers(slug, schoolId, teacherId) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/transfers`))
+}
+export function transferJabaliaTeacher(slug, schoolId, teacherId, payload) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/transfers`), { method: 'POST', body: JSON.stringify(payload) })
+}
