@@ -30,7 +30,7 @@ Map<String, dynamic> evidenceCopy(Map<String, dynamic> data) =>
     jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
 
 class EvidenceFixture {
-  EvidenceFixture(this.source) : data = evidenceJson(source);
+  EvidenceFixture(this.source) : data = evidenceCopy(evidenceJson(source));
   final IepEvidenceSource source;
   Map<String, dynamic> data;
   final paths = <String>[];

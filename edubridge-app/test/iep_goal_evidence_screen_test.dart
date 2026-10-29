@@ -9,6 +9,14 @@ import 'iep_draft_save_fixture.dart';
 import 'iep_goal_evidence_fixture.dart';
 import 'evaluation_history_fixture.dart';
 
+Future<void> revealEvidence(WidgetTester tester, Finder target) async {
+  final scroll = find.descendant(of: find.byType(ListView).first,
+      matching: find.byType(Scrollable)).first;
+  await tester.scrollUntilVisible(target, 250, scrollable: scroll);
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   for (final locale in ['ar', 'en']) {
     for (final width in [320.0, 720.0, 1280.0]) {
@@ -19,12 +27,12 @@ void main() {
         await tester.pumpWidget(curriculumHost(IepGoalEvidenceScreen(source: source, gateway: f.repository), locale));
         await tester.pumpAndSettle();
         final target = find.byKey(const ValueKey('iep-evidence-2'));
-        await tester.scrollUntilVisible(target, 300);
+        await revealEvidence(tester, target);
         expect(target, findsOneWidget);
-        await tester.ensureVisible(find.byKey(const ValueKey('iep-evidence-measurement-2')));
+        await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-measurement-2')));
         await tester.pumpAndSettle();
         expect(find.textContaining('0 ${source.goal.unit}'), findsOneWidget);
-        await tester.scrollUntilVisible(find.byKey(const ValueKey('iep-evidence-measurement-1')), 300);
+        await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-measurement-1')));
         expect(find.textContaining('—'), findsOneWidget);
         expect(find.byType(LinearProgressIndicator), findsNothing);
         expect(tester.takeException(), isNull);
@@ -35,11 +43,12 @@ void main() {
     final source = evidenceSource(), f = EvidenceFixture(evidenceSource());
     await tester.pumpWidget(curriculumHost(IepGoalEvidenceScreen(source: source, gateway: f.repository), 'en'));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.byKey(const ValueKey('iep-evidence-2')), 250);
+    await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-2')));
     f.pending = Completer<void>(); f.status = 403;
     await tester.tap(find.byIcon(Icons.refresh)); await tester.pump();
     expect(find.byKey(const ValueKey('iep-evidence-2')), findsNothing);
     f.pending!.complete(); await tester.pumpAndSettle();
+    await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-error')));
     expect(find.byKey(const ValueKey('iep-evidence-error')), findsOneWidget);
     expect(find.byKey(const ValueKey('iep-evidence-2')), findsNothing);
     expect(f.paths, hasLength(2));
@@ -52,10 +61,12 @@ void main() {
     await tester.pumpWidget(curriculumHost(IepGoalEvidenceScreen(source: source, gateway: next.repository), 'en'));
     await tester.pumpAndSettle();
     old.pending!.complete(); await tester.pumpAndSettle();
+    await revealEvidence(tester, find.byKey(const ValueKey('iep-evidence-error')));
     expect(find.byKey(const ValueKey('iep-evidence-error')), findsOneWidget);
     expect(find.byKey(const ValueKey('iep-evidence-2')), findsNothing);
     next.status = 200; next.data['evidence'] = <Object>[];
     await resumeCurriculum(tester);
+    await revealEvidence(tester, find.text('No documented evidence for this goal yet.'));
     expect(find.text('No documented evidence for this goal yet.'), findsOneWidget);
     expect(next.paths, hasLength(2));
     expect(tester.takeException(), isNull);
@@ -67,7 +78,7 @@ void main() {
         evaluationGateway: EvaluationHistoryHttpFixture().repository, evidenceGateway: f.repository), 'en'));
     await tester.pumpAndSettle();
     final button = find.byKey(ValueKey('iep-goal-evidence-${source.goal.id}'));
-    await tester.scrollUntilVisible(button, 300);
+    await revealEvidence(tester, button);
     await tester.tap(button); await tester.pumpAndSettle();
     expect(find.byType(IepGoalEvidenceScreen), findsOneWidget);
     expect(f.paths.single, contains('/goals/${source.goal.id}/evidence'));
