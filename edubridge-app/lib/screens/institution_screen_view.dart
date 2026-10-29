@@ -8,20 +8,7 @@ extension _InstitutionScreenView on InstitutionScreen {
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: AppColors.appBarGradient,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 26),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
+          BrandDashboardHeader(child: Row(children: [
 Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.institutionRole, subtitle: context.l10n.institutionDashboardDescription)),
 const SizedBox(width: 8),
 DashboardHeaderActions(
@@ -48,12 +35,7 @@ DashboardHeaderActions(
                             ),
                           ],
                         ),
-]),
-                  ],
-                ),
-              ),
-            ),
-          ),
+])),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),

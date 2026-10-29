@@ -30,35 +30,94 @@ class BrandHeaderSurface extends StatelessWidget {
   );
 }
 
-/// A solid brand fallback keeps white controls visible beneath the gradient.
-class BrandAppBar extends AppBar {
-  /// Profile header reference height, excluding the system status inset.
-  static const standardToolbarHeight = 124.0;
+/// Shared dashboard surface, including legacy headers rendered in page bodies.
+class BrandDashboardHeader extends StatelessWidget {
+  const BrandDashboardHeader({super.key, required this.child, this.safeTop = true});
+  final Widget child;
+  final bool safeTop;
 
-  BrandAppBar({
-    super.key,
-    super.title,
-    super.actions,
-    super.leading,
-    super.leadingWidth,
-    super.centerTitle = false,
-    super.titleSpacing = 4,
-    double toolbarHeight = standardToolbarHeight,
-    super.elevation = 0,
+  @override
+  Widget build(BuildContext context) => BrandHeaderSurface(
+    child: SafeArea(top: safeTop, bottom: false,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: BrandAppBar.standardToolbarHeight),
+        child: Padding(padding: const EdgeInsets.fromLTRB(18, 0, 18, 20),
+          child: Align(alignment: Alignment.bottomCenter, child: child)),
+      ),
+    ),
+  );
+}
+
+/// Brand toolbar with its title and controls aligned to the profile's bottom row.
+class BrandAppBar extends StatelessWidget implements PreferredSizeWidget {
+  static const standardToolbarHeight = 124.0;
+  static const controlBottomInset = 20.0;
+
+  BrandAppBar({super.key, this.title, this.actions, this.leading,
+    this.leadingWidth, this.centerTitle = false, this.titleSpacing = 4,
+    double toolbarHeight = standardToolbarHeight, this.elevation = 0,
     ShapeBorder? shape,
-  }) : super(
-          // Older per-page sizes cannot shrink the shared profile-sized header.
-          // Keep larger accessibility layouts requested by existing pages.
-          toolbarHeight: toolbarHeight < standardToolbarHeight
-              ? standardToolbarHeight : toolbarHeight,
-          backgroundColor: AppColors.brandBlue,
-          foregroundColor: Colors.white,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          titleTextStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800,
-            color: Colors.white),
-          shape: shape ?? const RoundedRectangleBorder(borderRadius: BrandHeaderSurface.radius),
-          clipBehavior: Clip.antiAlias,
-          flexibleSpace: const BrandHeaderSurface(),
-        );
+  }) : toolbarHeight = toolbarHeight < standardToolbarHeight
+          ? standardToolbarHeight : toolbarHeight,
+       shape = shape ?? const RoundedRectangleBorder(borderRadius: BrandHeaderSurface.radius);
+
+  final Widget? title, leading;
+  final List<Widget>? actions;
+  final double? leadingWidth;
+  final bool centerTitle;
+  final double titleSpacing, toolbarHeight, elevation;
+  final ShapeBorder shape;
+  Color get backgroundColor => AppColors.brandBlue;
+  Color get foregroundColor => Colors.white;
+  double get scrolledUnderElevation => 0;
+  Clip get clipBehavior => Clip.antiAlias;
+  Widget get flexibleSpace => const BrandHeaderSurface();
+  @override
+  Size get preferredSize => Size.fromHeight(toolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    final scaffold = Scaffold.maybeOf(context);
+    final route = ModalRoute.of(context);
+    Widget? navigation = leading;
+    if (navigation == null) {
+      if (scaffold?.hasDrawer == true) {
+        navigation = const DrawerButton();
+      } else if (route?.impliesAppBarDismissal == true) {
+        navigation = route is PageRoute && route.fullscreenDialog
+            ? const CloseButton() : const BackButton();
+      }
+    }
+    final trailing = actions?.isNotEmpty == true ? actions
+        : scaffold?.hasEndDrawer == true ? <Widget>[const EndDrawerButton()] : null;
+    return AppBar(
+      automaticallyImplyLeading: false,
+      leading: navigation == null ? null : _BrandToolbarSlot(height: toolbarHeight, child: navigation),
+      leadingWidth: leadingWidth,
+      title: title == null ? null : _BrandToolbarSlot(height: toolbarHeight, child: title!),
+      actions: trailing?.map((action) => _BrandToolbarSlot(height: toolbarHeight, child: action)).toList(),
+      centerTitle: centerTitle, titleSpacing: titleSpacing,
+      toolbarHeight: toolbarHeight, elevation: elevation,
+      backgroundColor: backgroundColor, foregroundColor: foregroundColor,
+      surfaceTintColor: Colors.transparent, scrolledUnderElevation: scrolledUnderElevation,
+      titleTextStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+      shape: shape, clipBehavior: clipBehavior, flexibleSpace: flexibleSpace,
+    );
+  }
+}
+
+class _BrandToolbarSlot extends StatelessWidget {
+  const _BrandToolbarSlot({required this.height, required this.child});
+  final double height;
+  final Widget child;
+  @override
+  // AppBar's title box measures its child with an unbounded height. Give every
+  // slot the same explicit extent before applying bottom alignment.
+  Widget build(BuildContext context) => SizedBox(height: height, child: Align(
+    alignment: Alignment.bottomCenter, widthFactor: 1,
+    child: Padding(padding: const EdgeInsets.only(bottom: BrandAppBar.controlBottomInset),
+      child: IntrinsicHeight(
+        child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48),
+          child: Center(widthFactor: 1, heightFactor: 1, child: child)))),
+  ));
 }

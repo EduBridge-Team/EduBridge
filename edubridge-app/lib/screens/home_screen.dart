@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
-import '../widgets/accessibility/profile_avatar_button.dart';
+import '../widgets/dashboard_profile_identity.dart';
 import 'admin/admin_screen.dart';
 import 'login_screen.dart';
 

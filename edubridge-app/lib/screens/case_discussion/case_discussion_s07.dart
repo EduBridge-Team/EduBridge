@@ -3,51 +3,7 @@
 part of 'case_discussion_screen.dart';
 
 extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
-  Widget _s07Header() => Container(
-        height: 116,
-        decoration: const BoxDecoration(
-          gradient: AppColors.appBarGradient,
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              left: -65,
-              bottom: -90,
-              child: IgnorePointer(
-                child: Container(
-                  width: 180,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .19),
-                      width: 14,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: -33,
-              bottom: -95,
-              child: IgnorePointer(
-                child: Container(
-                  width: 125,
-                  height: 145,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .16),
-                      width: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+  Widget _s07Header() => BrandDashboardHeader(child: Row(
                 children: [
                   const ProfileAvatarButton(
                     size: 48,
@@ -114,11 +70,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                     ],
                   ),
                 ],
-              ),
-            ),
-          ],
-        ),
-      );
+              ));
 
   Widget _s07Navigation(JisrColors c) => DecoratedBox(
         decoration: const BoxDecoration(

@@ -6,25 +6,7 @@ class _MinistryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: AppColors.appBarGradient,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTopRow(context),
-            ],
-          ),
-        ),
-      ),
-    );
+    return BrandDashboardHeader(child: _buildTopRow(context));
   }
 
   Widget _buildTopRow(BuildContext context) {

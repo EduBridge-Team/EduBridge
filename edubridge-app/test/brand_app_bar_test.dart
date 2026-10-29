@@ -136,4 +136,67 @@ void main() {
     }
   }
 
+  for (final language in ['ar', 'en']) {
+    for (final width in [320.0, 720.0, 1280.0]) {
+      testWidgets('toolbar controls share the bottom profile row $language $width', (tester) async {
+        tester.view.physicalSize = Size(width, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await tester.pumpWidget(MaterialApp(locale: Locale(language),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2),
+              padding: const EdgeInsets.only(top: 24)), child: child!),
+          home: Scaffold(appBar: BrandAppBar(
+            leading: BackButton(onPressed: () {}),
+            title: Text(language == 'ar' ? 'درس' : 'Page', key: const ValueKey('bottom-title')),
+            actions: [IconButton(tooltip: 'refresh-bottom', onPressed: () {}, icon: const Icon(Icons.refresh))],
+          )),
+        ));
+        await tester.pumpAndSettle();
+        final bottom = tester.getBottomLeft(find.byType(BrandHeaderSurface)).dy;
+        for (final target in [find.byType(BackButton), find.byKey(const ValueKey('bottom-title')),
+            find.byTooltip('refresh-bottom')]) {
+          expect(tester.getCenter(target).dy, closeTo(bottom - 44, 1), reason: target.description);
+          expect(target.hitTestable(), findsOneWidget);
+        }
+        expect(tester.takeException(), isNull);
+      });
+      testWidgets('body dashboard header shares size and bottom inset $language $width', (tester) async {
+        tester.view.physicalSize = Size(width, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await tester.pumpWidget(MaterialApp(home: Directionality(
+          textDirection: language == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+          child: Scaffold(body: Column(children: [BrandDashboardHeader(child: Row(children: [
+            Expanded(child: Text(language == 'ar' ? 'الرئيسية' : 'Home')),
+            IconButton(key: const ValueKey('dashboard-bottom-action'), onPressed: () {}, icon: const Icon(Icons.menu)),
+          ]))])),
+        )));
+        await tester.pumpAndSettle();
+        final surface = find.byType(BrandHeaderSurface);
+        expect(tester.getSize(surface), Size(width, BrandAppBar.standardToolbarHeight));
+        expect(tester.getBottomLeft(surface).dy - tester.getBottomLeft(find.byKey(const ValueKey('dashboard-bottom-action'))).dy,
+            BrandAppBar.controlBottomInset);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+  testWidgets('implicit drawer and end drawer actions remain available', (tester) async {
+    await tester.pumpWidget(MaterialApp(home: Scaffold(
+      appBar: BrandAppBar(title: const Text('Home')),
+      drawer: const Drawer(child: Text('Main menu')),
+      endDrawer: const Drawer(child: Text('End menu')),
+    )));
+    await tester.tap(find.byType(DrawerButton)); await tester.pumpAndSettle();
+    expect(find.text('Main menu').hitTestable(), findsOneWidget);
+    Navigator.of(tester.element(find.text('Main menu'))).pop();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(EndDrawerButton)); await tester.pumpAndSettle();
+    expect(find.text('End menu').hitTestable(), findsOneWidget);
+  });
+
 }

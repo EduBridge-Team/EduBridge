@@ -10,142 +10,24 @@ extension _HomeScreenView on HomeScreen {
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: AppColors.appBarGradient,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(34),
+            child: BrandDashboardHeader(child: Row(children: [
+              Expanded(child: FutureBuilder<String?>(
+                future: ApiService.getRole(),
+                builder: (context, snapshot) => DashboardProfileIdentity(
+                  roleLabel: HomeScreen._roleNames(context)[snapshot.data] ?? context.l10n.parentRole,
+                  subtitle: context.l10n.homeDashboardDescription,
                 ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          DashboardMenu(
-                            iconSize: 26,
-                            iconColor: Colors.white,
-                            actions: [
-                              DashboardMenuAction(
-                                id: 'legal',
-                                label: context.l10n.privacyAndAccount,
-                                icon: AppIcons.privacy,
-                                onSelected: () =>
-                                    const LegalLinksButton().show(context),
-                              ),
-                              DashboardMenuAction(
-                                id: 'logout',
-                                label: context.l10n.logout,
-                                icon: AppIcons.logout,
-                                destructive: true,
-                                onSelected: () => _logout(context),
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          ColorFiltered(
-                            colorFilter: const ColorFilter.mode(
-                              Colors.white,
-                              BlendMode.srcIn,
-                            ),
-                            child: Image.asset(
-                              'assets/brand_logo.png',
-                              width: 136,
-                              height: 38,
-                              fit: BoxFit.contain,
-                              filterQuality: FilterQuality.high,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 22),
-                      FutureBuilder(
-                        future: Future.wait(
-                          [ApiService.getName(), ApiService.getRole()],
-                        ),
-                        builder: (context, snapshot) {
-                          final name = snapshot.data?[0];
-                          final role = HomeScreen._roleNames(context)[snapshot.data?[1]];
-                          return Row(
-                            children: [
-                              const ProfileAvatarButton(
-                                size: 54,
-                                backgroundColor: Colors.white,
-                                foregroundColor: AppColors.brandTealDeep,
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      name != null && name.isNotEmpty
-                                          ? context.l10n.dashboardGreeting(name)
-                                          : context.l10n.welcomeToEduBridge,
-                                      style: textTheme.headlineSmall?.copyWith(
-                                        height: 1.2,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      children: [
-                                        if (role != null)
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 11,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withValues(
-                                                alpha: .14,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(999),
-                                              border: Border.all(
-                                                color: Colors.white.withValues(
-                                                  alpha: .16,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              role,
-                                              style: textTheme.labelSmall
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white,
-                                                  ),
-                                            ),
-                                          ),
-                                        if (role != null)
-                                          const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            context.l10n.homeDashboardDescription,
-                                            style: textTheme.bodySmall?.copyWith(
-                                              height: 1.5,
-                                              color: Colors.white70,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+              )),
+              const SizedBox(width: 8),
+              DashboardMenu(iconSize: 26, iconColor: Colors.white, actions: [
+                DashboardMenuAction(id: 'legal', label: context.l10n.privacyAndAccount,
+                  icon: AppIcons.privacy,
+                  onSelected: () => const LegalLinksButton().show(context)),
+                DashboardMenuAction(id: 'logout', label: context.l10n.logout,
+                  icon: AppIcons.logout, destructive: true,
+                  onSelected: () => _logout(context)),
+              ]),
+            ])),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 22, 16, 30),
