@@ -91,6 +91,7 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::post('/student-enrollments/{enrollment}/transfer', [InstitutionStudentEnrollmentController::class, 'transfer'])->whereNumber('enrollment');
             Route::post('/student-enrollments/{enrollment}/promote', [\App\Http\Controllers\JabaliaAnnualPromotionController::class, 'promote'])->whereNumber('enrollment');
             Route::post('/student-enrollments/bulk-promotion-preview', [\App\Http\Controllers\JabaliaBulkPromotionController::class, 'preview']);
+            Route::post('/student-enrollments/bulk-promotion-approve', [\App\Http\Controllers\JabaliaBulkPromotionController::class, 'approve']);
         });
 
         Route::prefix('/schools/{school}/attendance')->whereNumber('school')->group(function () {
