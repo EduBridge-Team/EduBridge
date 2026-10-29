@@ -43,6 +43,19 @@ class JabaliaTeacherSchoolTransferController extends Controller
 
         return DB::transaction(function () use ($org, $school, $teacher, $destination, $data, $request) {
             DB::table('users')->where('id', $teacher)->lockForUpdate()->first();
+            if (DB::table('jabalia_teacher_school_transfers')
+                ->where('organization_id', $org->id)->where('teacher_id', $teacher)
+                ->where('from_school_id', $school)->where('to_school_id', $destination)
+                ->where('effective_on', $data['effective_on'])->exists()) {
+                return response()->json(['error' => 'تم تسجيل هذا النقل مسبقًا'], 409);
+            }
+            $futureActiveHistory = DB::table('jabalia_teacher_assignment_history')
+                ->where('organization_id', $org->id)->where('teacher_id', $teacher)
+                ->where('school_id', $school)->where('status', 'active')
+                ->whereNull('ends_on')->where('starts_on', '>', $data['effective_on'])->exists();
+            if ($futureActiveHistory) {
+                return response()->json(['error' => 'تاريخ النقل يسبق تاريخ بدء أحد التكليفات الحالية'], 422);
+            }
             $assignments = DB::table('teacher_assignments as ta')
                 ->join('sections as s', 's.id', '=', 'ta.section_id')
                 ->join('grades as g', 'g.id', '=', 's.grade_id')
