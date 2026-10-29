@@ -37,6 +37,7 @@ class JabaliaBulkPromotionController extends Controller
         $occupied = DB::table('student_enrollments')->where('section_id', $target->id)
             ->where('status', 'active')->count();
         $places = $target->capacity === null ? null : max(0, (int) $target->capacity - $occupied);
+        $total = DB::table('student_enrollments')->where('section_id', $source->id)->where('status', 'active')->count();
         $rows = DB::table('student_enrollments as e')
             ->join('children as c', 'c.id', '=', 'e.child_id')
             ->where('e.section_id', $source->id)->where('e.status', 'active')
@@ -66,8 +67,9 @@ class JabaliaBulkPromotionController extends Controller
             'target_section_id' => $target->id, 'promoted_on' => $data['promoted_on'],
             'occupied' => $occupied, 'capacity' => $target->capacity,
             'eligible_count' => $eligible, 'blocked_count' => count($results) - $eligible,
-            'rows' => $results, 'limit' => 500,
-            'notice' => 'المعاينة لا تحفظ أي تغييرات؛ يجب إعادة التحقق من الأهلية والسعة عند الاعتماد',
+            'rows' => $results, 'limit' => 500, 'total_active' => $total,
+            'truncated' => $total > 500,
+            'notice' => 'المعاينة لا تحفظ أي تغييرات؛ يجب إعادة التحقق من الأهلية والسعة عند الاعتماد. لا تستخدم النتائج الجزئية لاعتماد الدفعة كاملة.',
         ]);
     }
 }
