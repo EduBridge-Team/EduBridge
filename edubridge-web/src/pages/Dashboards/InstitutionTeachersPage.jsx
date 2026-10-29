@@ -119,6 +119,13 @@ export default function InstitutionTeachersPage() {
   }, [slug, schoolId])
 
   useEffect(() => {
+    setSelectedHistoryTeacher('')
+    setTeacherHistory(null)
+    setDocuments([])
+    setUploadFiles({})
+  }, [slug, schoolId])
+
+  useEffect(() => {
     let active = true
     setAcademic(null)
     setParticipants(null)
