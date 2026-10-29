@@ -123,32 +123,14 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     ];
 
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: AppColors.appBarGradient,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 10, 18, 22),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
+    return BrandDashboardHeader(child: Row(children: [
 Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.adminRole, subtitle: _adminSubtitle())),
 const SizedBox(width: 8),
 DashboardHeaderActions(
                     actions: menuActions,
                     menuIcon: Icons.menu_rounded,
                   ),
-]),
-            ],
-          ),
-        ),
-      ),
-    );
+]));
   }
 
   @override

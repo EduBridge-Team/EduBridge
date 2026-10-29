@@ -12,18 +12,7 @@ Widget _buildHeader({
   final textTheme = Theme.of(context).textTheme;
   final actions = menuActions;
 
-  return BrandHeaderSurface(
-    child: SafeArea(
-          top: true,
-          bottom: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              18,
-              tabIndex == 1 ? 16 : 16,
-              18,
-              tabIndex == 1 ? 28 : 24,
-            ),
-            child: Row(
+  return BrandDashboardHeader(child: Row(
               children: [
                 const ProfileAvatarButton(
                   size: 48,
@@ -48,7 +37,7 @@ Widget _buildHeader({
                     future: ApiService.getName(),
                     builder: (context, snapshot) {
                       final name = snapshot.data?.trim();
-                      return Column(
+                      return Column(mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -110,10 +99,7 @@ Widget _buildHeader({
                   iconColor: Colors.white,
                 ),
               ],
-            ),
-          ),
-        ),
-  );
+            ));
 }
 
 String _subtitleFor(BuildContext context, int tabIndex, String? specialty) {

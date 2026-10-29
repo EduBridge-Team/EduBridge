@@ -10,20 +10,7 @@ Widget _buildTeacherHeader({
   required Future<void> Function() onLoadData,
 }) {
 
-  return Container(
-    width: double.infinity,
-    decoration: const BoxDecoration(
-      gradient: AppColors.appBarGradient,
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
-    ),
-    child: SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
+  return BrandDashboardHeader(child: Row(children: [
 Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.teacherRole, subtitle: switch (tabIndex) { 0 => Localizations.localeOf(context).languageCode == 'en' ? 'Your assigned sections and their students' : 'شُعبك المكلّف بها وطلاب كل شعبة', 1 => context.l10n.teacherLessonsDescription, _ => context.l10n.teacherHomeworkDescription })),
 const SizedBox(width: 8),
 DashboardHeaderActions(
@@ -80,12 +67,7 @@ DashboardHeaderActions(
                     ),
                   ],
                 ),
-]),
-          ],
-        ),
-      ),
-    ),
-  );
+]));
 }
 
 Widget _buildTeacherError(Object error, Future<void> Function() reload) {
