@@ -2,12 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
-import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument } from '../../api/institutions'
+import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument } from '../../api/institutions'
 import '../../styles/institution-operations.css'
 
 export default function InstitutionTeachersPage() {
   const { slug, loading: contextLoading } = useInstitution()
   const [documents, setDocuments] = useState([])
+  const [uploadFiles, setUploadFiles] = useState({})
   const [documentDraft, setDocumentDraft] = useState({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
   const [documentSaving, setDocumentSaving] = useState(false)
   const [selectedHistoryTeacher, setSelectedHistoryTeacher] = useState('')
@@ -181,6 +182,7 @@ export default function InstitutionTeachersPage() {
     setSelectedHistoryTeacher(String(teacherId))
     setTeacherHistory(null)
     setDocuments([])
+    setUploadFiles({})
     setHistoryLoading(true)
     setError('')
     try {
@@ -217,6 +219,30 @@ export default function InstitutionTeachersPage() {
       setMessage('تم تسجيل بيانات الوثيقة.')
     } catch (err) { setError(err.message) }
     finally { setDocumentSaving(false) }
+  }
+
+  async function uploadTeacherFile(item) {
+    const file = uploadFiles[item.id]
+    if (!file || documentSaving) return
+    if (!['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      setError('الملف يجب أن يكون PDF أو صورة مدعومة بحجم لا يزيد على 5 ميجابايت.')
+      return
+    }
+    setDocumentSaving(true); setError(''); setMessage('')
+    try {
+      await uploadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, file)
+      const result = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher)
+      setDocuments(result.documents?.data || [])
+      setUploadFiles((current) => { const next = { ...current }; delete next[item.id]; return next })
+      setMessage('تم رفع ملف الوثيقة بنجاح.')
+    } catch (err) { setError(err.message) }
+    finally { setDocumentSaving(false) }
+  }
+
+  async function downloadTeacherFile(item) {
+    setError('')
+    try { await downloadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, item.original_filename || 'document') }
+    catch (err) { setError(err.message) }
   }
 
   async function removeTeacherDocument(id) {
@@ -393,7 +419,7 @@ export default function InstitutionTeachersPage() {
                     <button className="btn" type="submit" disabled={profileSaving}>{profileSaving ? 'جارِ الحفظ…' : 'حفظ الملف المهني'}</button>
                   </form>
                   <h4>العقود والشهادات المهنية</h4>
-                  <p>إدارة بيانات الوثائق فقط؛ ملفات PDF والصور غير مدعومة في هذه المرحلة.</p>
+                  <p>يمكن إرفاق ملف PDF أو صورة JPEG أو PNG أو WebP بحد أقصى 5 ميجابايت لكل وثيقة.</p>
                   <form className="institution-school-form" onSubmit={addTeacherDocument}>
                     <label>نوع الوثيقة<select value={documentDraft.type} onChange={(event) => setDocumentDraft((p) => ({ ...p, type: event.target.value }))}><option value="certificate">شهادة</option><option value="contract">عقد</option></select></label>
                     <label>العنوان<input required maxLength="200" value={documentDraft.title} onChange={(event) => setDocumentDraft((p) => ({ ...p, title: event.target.value }))} /></label>
@@ -404,7 +430,10 @@ export default function InstitutionTeachersPage() {
                     <button className="btn" type="submit" disabled={documentSaving}>{documentSaving ? 'جارِ الحفظ…' : 'إضافة وثيقة'}</button>
                   </form>
                   {documents.length === 0 ? <p>لا توجد عقود أو شهادات مسجلة لهذا المعلم.</p> : <ul>
-                    {documents.map((item) => <li key={item.id}>{item.type === 'contract' ? 'عقد' : 'شهادة'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} <button type="button" className="btn outline" disabled={documentSaving} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
+                    {documents.map((item) => <li key={item.id}>{item.type === 'contract' ? 'عقد' : 'شهادة'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} {item.storage_path && <button type="button" className="btn outline" onClick={() => downloadTeacherFile(item)}>تنزيل {item.original_filename || 'المرفق'}</button>}
+                      <input type="file" aria-label={`إرفاق ملف للوثيقة ${item.title}`} accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => setUploadFiles((current) => ({ ...current, [item.id]: event.target.files?.[0] || null }))} />
+                      <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id]} onClick={() => uploadTeacherFile(item)}>{item.storage_path ? 'استبدال الملف' : 'رفع الملف'}</button>
+                      <button type="button" className="btn outline" disabled={documentSaving} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
                   </ul>}
                   <h4>سجل التكليفات المسجلة</h4>
                   {!teacherHistory.history?.data?.length ? <p>لا توجد أحداث تكليف مؤرشفة لهذه المدرسة بعد.</p> : <ul>
