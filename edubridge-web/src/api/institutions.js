@@ -265,3 +265,15 @@ export function fetchJabaliaTeacherTransfers(slug, schoolId, teacherId) {
 export function transferJabaliaTeacher(slug, schoolId, teacherId, payload) {
   return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/transfers`), { method: 'POST', body: JSON.stringify(payload) })
 }
+
+export function previewJabaliaBulkPromotion(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/academic/student-enrollments/bulk-promotion-preview'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function approveJabaliaBulkPromotion(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/academic/student-enrollments/bulk-promotion-approve'), {
+    method: 'POST', body: JSON.stringify({ ...payload, confirm: true }),
+  })
+}
