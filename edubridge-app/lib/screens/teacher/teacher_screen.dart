@@ -4,6 +4,8 @@ import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../interactive_lesson/starter_lesson_library_entry.dart';
 import '../class_lessons/class_lessons_screen.dart';
+import '../teacher_sections/teacher_sections_tab.dart';
+import '../../services/teacher_sections_repository.dart';
 import '../../app_icons.dart';
 import '../../model/homework_model.dart';
 import '../../services/approval_service.dart';
@@ -37,10 +39,12 @@ part 'teacher_child_card_view.dart';
 
 class TeacherScreen extends StatefulWidget {
   final int initialTab;
+  final TeacherSectionsGateway? sectionsGateway;
 
   const TeacherScreen({
     super.key,
     this.initialTab = 0,
+    this.sectionsGateway,
   });
 
   @override
@@ -139,8 +143,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
   Widget _currentPrimaryTab(BuildContext context, JisrColors c) {
     if (_tabIndex == 0) {
-      return _buildChildrenTab(context, c, _children, _query,
-          (v) => setState(() => _query = v), _typeName, _loadData);
+      return TeacherSectionsTab(gateway: widget.sectionsGateway,
+        studentListBuilder: (students, reload) => _buildChildrenTab(context, c, students, '', (_) {}, _typeName, reload));
     }
     return _buildLessonsTab(context, c, _lessons, _types, _query,
         (v) => setState(() => _query = v),
@@ -160,13 +164,14 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 context: context,
                 c: c,
                 tabIndex: _tabIndex,
-                childrenCount: _children.length,
                 onLogout: _logout,
                 onVerify: _checkVerification,
                 onLoadData: _loadData,
               ),
               Expanded(
-                child: _tabIndex == 2
+                child: _tabIndex == 0
+                    ? _currentPrimaryTab(context, c)
+                    : _tabIndex == 2
                     ? _TeacherHomeworksTab(children: _children)
                     : RefreshIndicator(
                         onRefresh: _refreshData,
@@ -189,9 +194,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
         onDestinationSelected: (i) => setState(() => _tabIndex = i),
         destinations: [
           NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: context.l10n.children,
+            icon: Icon(Icons.groups_outlined),
+            selectedIcon: Icon(Icons.groups),
+            label: context.l10n.academicSections,
           ),
           NavigationDestination(
             icon: Icon(AppIcons.lesson),

@@ -54,6 +54,7 @@ Widget _buildChildrenTab(
     padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
     itemCount: children.length,
     itemBuilder: (context, i) => _TeacherChildCard(
+      key: ValueKey((children[i] as Map)['id']),
       child: Map<String, dynamic>.from(children[i] as Map),
       color: AppColors.kidPalette[i % AppColors.kidPalette.length],
       c: c,
@@ -69,6 +70,7 @@ class _TeacherChildCard extends StatefulWidget {
   final Future<void> Function() onReload;
 
   const _TeacherChildCard({
+    super.key,
     required this.child,
     required this.color,
     required this.c,
@@ -91,7 +93,7 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
   @override
   Widget build(BuildContext context) => buildView(context);
 
-  double get _progressPercent {
+  double? get _progressPercent {
     final candidates = [
       child['progress_percentage'],
       child['progress_percent'],
@@ -99,11 +101,11 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
       child['progress'],
     ];
     for (final value in candidates) {
-      if (value is num) return value.toDouble().clamp(0, 100).toDouble();
+      if (value is num && value.isFinite) return value.toDouble().clamp(0, 100).toDouble();
       final parsed = double.tryParse('${value ?? ''}');
-      if (parsed != null) return parsed.clamp(0, 100).toDouble();
+      if (parsed != null && parsed.isFinite) return parsed.clamp(0, 100).toDouble();
     }
-    return 0;
+    return null;
   }
 
   String get _followStatus {
@@ -111,7 +113,8 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
     return switch (status) {
       'completed' || 'done' => context.l10n.followUpCompleted,
       'pending' => context.l10n.followUpPending,
-      _ => context.l10n.followUpActive,
+      'active' || 'assigned' || 'evaluated' => context.l10n.followUpActive,
+      _ => '—',
     };
   }
 
@@ -140,50 +143,6 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
     await onReload();
   }
 
-  Widget _quickAction({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: c.card,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 72),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: c.line, width: 1.2),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 22, color: color),
-              const SizedBox(width: 9),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: c.heading,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _openApprovedPlan(BuildContext context, Map child) async {
     Map<String, dynamic>? plan;
     try {
@@ -210,7 +169,7 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
             children: [
               Icon(AppIcons.clock, color: AppColors.brandBlue, size: 32),
               SizedBox(width: 8),
-              Text(context.l10n.planUnderReview),
+              Expanded(child: Text(context.l10n.planUnderReview)),
             ],
           ),
           content: Text(
