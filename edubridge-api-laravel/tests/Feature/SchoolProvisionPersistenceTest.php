@@ -225,4 +225,38 @@ class SchoolProvisionPersistenceTest extends TestCase
         $this->assertNotEmpty($login->getData(true)['token']);
     }
 
+    public function test_affiliated_school_can_activate_email_then_login_in_own_school_context(): void
+    {
+        $email = 'activation-affiliated@example.test';
+        $created = $this->provision(true, $email);
+        $this->assertSame(201, $created->getStatusCode());
+        $schoolId = $created->getData(true)['school']['id'];
+
+        $token = 'affiliated-verification-fixture';
+        DB::table('email_verification_tokens')->where('email', $email)
+            ->update(['token' => hash('sha256', $token), 'created_at' => now()]);
+        $verification = Request::create('/api/auth/verify-email', 'GET', [
+            'email' => $email, 'token' => $token,
+        ]);
+        $response = app(AuthController::class)->verifyEmail($verification);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringContainsString('verified=1', $response->headers->get('Location'));
+        $this->assertNotNull(DB::table('users')->where('email', $email)->value('email_verified_at'));
+
+        $login = app(AuthController::class)->login(Request::create('/api/auth/login', 'POST', [
+            'email' => $email, 'password' => 'long-test-password-123',
+        ]));
+        $this->assertSame(200, $login->getStatusCode());
+        $this->assertSame('school', $login->getData(true)['user']['role']);
+
+        $contextRequest = Request::create('/api/school/context', 'GET');
+        $contextRequest->attributes->set('jwt_user', (object) [
+            'id' => $login->getData(true)['user']['id'], 'role' => 'school',
+        ]);
+        $context = app(SchoolContextController::class)->show($contextRequest);
+        $this->assertSame(200, $context->getStatusCode());
+        $this->assertSame($schoolId, $context->getData(true)['school']['id']);
+        $this->assertSame(1, $context->getData(true)['school']['organization_id']);
+    }
+
 }
