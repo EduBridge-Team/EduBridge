@@ -68,12 +68,32 @@ class JabaliaTeacherDocumentController extends Controller
         if (!$ext) return response()->json(['error' => 'نوع الملف غير مدعوم'], 422);
         $path = Storage::disk('local')->putFileAs('jabalia-teacher-documents', $file, Str::uuid().'.'.$ext);
         if (!$path) return response()->json(['error' => 'تعذر حفظ الملف'], 500);
-        DB::table('jabalia_teacher_documents')->where('id', $document)
-            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)
-            ->update(['storage_path' => $path,
-                'original_filename' => mb_substr(basename($file->getClientOriginalName()), 0, 255),
-                'mime_type' => $file->getMimeType(), 'file_size' => $file->getSize(), 'updated_at' => now()]);
-        if ($row->storage_path) Storage::disk('local')->delete($row->storage_path);
+        try {
+            $previousPath = DB::transaction(function () use ($org, $school, $teacher, $document, $path, $file) {
+                $current = DB::table('jabalia_teacher_documents')->where('id', $document)
+                    ->where('organization_id', $org->id)->where('school_id', $school)
+                    ->where('teacher_id', $teacher)->lockForUpdate()->first();
+                if (!$current) return false;
+                DB::table('jabalia_teacher_documents')->where('id', $document)
+                    ->where('organization_id', $org->id)->where('school_id', $school)
+                    ->where('teacher_id', $teacher)->update([
+                        'storage_path' => $path,
+                        'original_filename' => mb_substr(basename($file->getClientOriginalName()), 0, 255),
+                        'mime_type' => $file->getMimeType(),
+                        'file_size' => $file->getSize(),
+                        'updated_at' => now(),
+                    ]);
+                return $current->storage_path;
+            });
+        } catch (\Throwable $error) {
+            Storage::disk('local')->delete($path);
+            throw $error;
+        }
+        if ($previousPath === false) {
+            Storage::disk('local')->delete($path);
+            return response()->json(['error' => 'السجل غير موجود'], 404);
+        }
+        if ($previousPath && $previousPath !== $path) Storage::disk('local')->delete($previousPath);
         return response()->json(['uploaded' => true]);
     }
 
@@ -96,12 +116,18 @@ class JabaliaTeacherDocumentController extends Controller
     {
         $org = $this->tenant($request, $organizationSlug, $school, $teacher);
         if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
-        $row = DB::table('jabalia_teacher_documents')->where('id', $document)
-            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first();
-        $removed = DB::table('jabalia_teacher_documents')->where('id', $document)
-            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->delete();
-        if (!$removed) return response()->json(['error' => 'السجل غير موجود'], 404);
-        if ($row?->storage_path) Storage::disk('local')->delete($row->storage_path);
+        $previousPath = DB::transaction(function () use ($org, $school, $teacher, $document) {
+            $row = DB::table('jabalia_teacher_documents')->where('id', $document)
+                ->where('organization_id', $org->id)->where('school_id', $school)
+                ->where('teacher_id', $teacher)->lockForUpdate()->first();
+            if (!$row) return false;
+            DB::table('jabalia_teacher_documents')->where('id', $document)
+                ->where('organization_id', $org->id)->where('school_id', $school)
+                ->where('teacher_id', $teacher)->delete();
+            return $row->storage_path;
+        });
+        if ($previousPath === false) return response()->json(['error' => 'السجل غير موجود'], 404);
+        if ($previousPath) Storage::disk('local')->delete($previousPath);
         return response()->json(['removed' => true]);
     }
 }

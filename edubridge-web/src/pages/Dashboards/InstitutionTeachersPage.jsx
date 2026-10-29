@@ -254,7 +254,7 @@ export default function InstitutionTeachersPage() {
     setDocumentSaving(true); setError(''); setMessage('')
     try {
       await uploadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, file)
-      const result = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher)
+      const result = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher, documentPage.current_page)
       setDocuments(result.documents?.data || [])
       setDocumentPage(result.documents || { current_page: 1, last_page: 1, total: 0 })
       setUploadFiles((current) => { const next = { ...current }; delete next[item.id]; return next })
@@ -275,7 +275,13 @@ export default function InstitutionTeachersPage() {
     setDocumentSaving(true); setError(''); setMessage('')
     try {
       await deleteJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, id)
-      setDocuments((current) => current.filter((item) => item.id !== id))
+      const response = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher, documentPage.current_page)
+      const lastPage = response.documents?.last_page || 1
+      const updated = documentPage.current_page > lastPage
+        ? await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher, lastPage)
+        : response
+      setDocuments(updated.documents?.data || [])
+      setDocumentPage(updated.documents || { current_page: 1, last_page: 1, total: 0 })
       setMessage('تم حذف سجل الوثيقة.')
     } catch (err) { setError(err.message) }
     finally { setDocumentSaving(false) }
