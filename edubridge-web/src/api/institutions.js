@@ -200,8 +200,8 @@ export function fetchInstitutionManagementReport(slug, filters = {}) {
   return request(tenantPath(slug, '/management-report' + (params.toString() ? '?' + params : '')))
 }
 
-export function fetchJabaliaTeacherHistory(slug, schoolId, teacherId) {
-  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/history`))
+export function fetchJabaliaTeacherHistory(slug, schoolId, teacherId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/history?page=${encodeURIComponent(page)}`))
 }
 
 export function updateJabaliaTeacherProfile(slug, schoolId, teacherId, payload) {
