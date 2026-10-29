@@ -199,3 +199,14 @@ export function fetchInstitutionManagementReport(slug, filters = {}) {
   if (filters.to) params.set('to', filters.to)
   return request(tenantPath(slug, '/management-report' + (params.toString() ? '?' + params : '')))
 }
+
+export function fetchJabaliaTeacherHistory(slug, schoolId, teacherId) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/history`))
+}
+
+export function updateJabaliaTeacherProfile(slug, schoolId, teacherId, payload) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/profile`), {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
