@@ -8,6 +8,8 @@ import '../case_discussion/case_discussion_screen.dart';
 import '../chats_screen.dart';
 import '../learning_support_requests/learning_support_requests_screen.dart';
 import '../support_sheet.dart';
+import '../specialist_schools/specialist_schools_screen.dart';
+import '../specialist_schools/specialist_schools_labels.dart';
 
 /// Builds dashboard menu actions from callbacks and shared destinations.
 List<DashboardMenuAction> specialistDashboardMenuActions({
@@ -17,8 +19,15 @@ List<DashboardMenuAction> specialistDashboardMenuActions({
   required VoidCallback onSearch,
   required VoidCallback onAddCertificate,
   required VoidCallback onLogout,
+  VoidCallback? onSchools,
 }) {
   return [
+    DashboardMenuAction(
+      id: 'specialist_schools', label: SpecialistSchoolsLabels(context).schools,
+      icon: Icons.school_outlined,
+      onSelected: onSchools ?? () => Navigator.push(context, MaterialPageRoute<void>(
+        builder: (_) => const SpecialistSchoolsScreen())),
+    ),
     DashboardMenuAction(
       id: 'specialist_lessons',
       label: context.l10n.lessons,

@@ -4,8 +4,9 @@ Product decision (29 October 2026): the institution assigns a specialist to a
 whole school. The specialist then chooses students from that school to follow.
 Institution assignment must NOT automatically select every child or create
 individual care-team links. This batch prepares the institution stage only.
-The specialist's authorized school roster and self-selection stage still need
-a separate agreed service/Flutter flow; do not claim the complete journey works.
+The specialist's authorized school roster and self-selection Flutter stage is
+prepared in SPECIALIST_SCHOOL_STUDENTS_CONTRACT.md. Both services and downstream
+permission checks still need backend implementation; do not claim live acceptance.
 
 No backend changes. The reviewed institution routes do not implement this API.
 Existing child care-team endpoints authorize different roles and must not be

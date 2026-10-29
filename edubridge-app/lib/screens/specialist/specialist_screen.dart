@@ -39,6 +39,7 @@ import 'specialist_child_search_dialog.dart';
 import 'specialist_dashboard_body.dart';
 import 'specialist_dashboard_navigation.dart';
 import 'specialist_verification_dialog.dart';
+import '../specialist_schools/specialist_schools_screen.dart';
 
 part 'specialist_header.dart';
 part 'specialist_progress_tab.dart';
@@ -238,6 +239,12 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
+  Future<void> _openSchools() async {
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => const SpecialistSchoolsScreen()));
+    if (mounted) await _load();
+  }
+
   Future<void> _openAddCertificate() async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
@@ -283,6 +290,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
             onSearch: _openChildSearch,
             onAddCertificate: _openAddCertificate,
             onLogout: _logoutSpecialist,
+            onSchools: _openSchools,
           ),
         ),
       ),
