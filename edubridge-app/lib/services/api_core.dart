@@ -176,20 +176,18 @@ Future<String?> _apiCoreGoogleLogin(String idToken) async {
       final data = ApiService._decodeBody(res);
       if (res.statusCode == 200) {
         final token = data['token'];
-        if (token is String && token.isNotEmpty) {
-          await ApiService._saveToken(token);
-        }
-
         final user = ApiService._asStringMap(data['user']);
-        if (user != null) {
-          await ApiService.saveUserData(user);
+        if (token is! String || token.trim().isEmpty ||
+            user == null || user['id'] is! int ||
+            (user['id'] as int) <= 0 ||
+            user['role'] is! String ||
+            (user['role'] as String).trim().isEmpty) {
+          return 'استجابة تسجيل الدخول غير صالحة';
         }
-
-        if (token is String && token.isNotEmpty) {
-          WebSocketService().connect(token);
-          await NotificationListenerService.instance.initialize();
-        }
-
+        await ApiService._saveToken(token);
+        await ApiService.saveUserData(user);
+        WebSocketService().connect(token);
+        await NotificationListenerService.instance.initialize();
         return null;
       }
 
