@@ -1,4 +1,5 @@
 import '../utils/notification_presentation.dart';
+import '../features/notifications/presentation/notification_center_view.dart';
 import '../features/notifications/domain/notification_destination.dart';
 import '../features/notifications/presentation/notification_child_destination_screen.dart';
 import '../l10n/l10n.dart';
@@ -373,65 +374,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return ValueListenableBuilder<List<dynamic>>(
       valueListenable: NotificationListenerService.instance.notifications,
-      builder: (context, list, _) {
-        if (list.isEmpty) {
-          return ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              const SizedBox(height: 110),
-              Center(
-                child: Container(
-                  width: 84,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: c.tintTeal,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    AppIcons.notifications,
-                    size: 40,
-                    color: AppColors.brandBlue,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                context.l10n.noNotifications,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.w800,
-                  color: c.heading,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                context.l10n.notificationsEmptyDescription,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13.5, color: c.muted),
-              ),
-            ],
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: _load,
-          child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
-            itemCount: list.length + 1,
-            itemBuilder: (context, i) {
-              if (i < list.length) return _s24Tile(list[i] as Map, c);
-              return ValueListenableBuilder<bool>(
-                valueListenable: NotificationListenerService.instance.hasMore,
-                builder: (context, more, _) => more ? TextButton(
-                  onPressed: _loadingMore || _markingAll ? null : _loadMore,
-                  child: Text(_loadingMore ? context.l10n.loadingDots : context.l10n.loadOlderNotifications),
-                ) : const SizedBox.shrink(),
-              );
-            },
+      builder: (context, list, _) => ValueListenableBuilder<bool>(
+        valueListenable: NotificationListenerService.instance.hasMore,
+        builder: (context, more, _) => ValueListenableBuilder<int>(
+          valueListenable: NotificationListenerService.instance.unreadCount,
+          builder: (context, unread, _) => NotificationCenterView(
+            rows: list, hasMore: more, unreadCount: unread,
+            loadingMore: _loadingMore, markingAll: _markingAll,
+            onRefresh: _load, onLoadMore: _loadMore, onMarkAllRead: _markAllRead,
+            displayTitle: (row) => NotificationPresentation.title(row, context.l10n),
+            tileBuilder: (row) => _s24Tile(row, c),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

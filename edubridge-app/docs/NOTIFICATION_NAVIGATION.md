@@ -46,3 +46,18 @@ Never put credentials, raw private-file URLs or sensitive assessment text in the
 notification payload. Define the role/kind matrix and authoritative current-record
 lookup before enabling direct Flutter record navigation. Notification preferences
 and delivery channels remain separate backend work.
+
+## Loaded notification center
+
+The existing authenticated feed now supports local all/unread/read filtering and
+search over the translated system title, original title and authored body/message.
+Filters intersect, retain feed order and never change read state, cursors or request
+parameters. Counts explicitly refer to loaded rows, not the account's total history.
+When older pages remain, the UI explains that scope and keeps pagination available
+even with no matching results. New pages and read-state updates immediately reapply
+the selected query/filter. Mark-all remains the existing account-wide API action,
+independent of search; it is not presented as marking only matching rows. Its label
+is shown in the scrollable body so it remains readable at large text sizes.
+Search/filter state is local to the view and resets on a full reload. Notification
+details and authorized destination checks remain unchanged; no exact-record payload,
+notification preferences or new backend APIs are introduced.
