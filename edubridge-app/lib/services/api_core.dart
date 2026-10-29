@@ -142,18 +142,19 @@ Future<String?> _apiCoreLogin(String email, String password) async {
       final data = ApiService._decodeBody(res);
 
       if (res.statusCode == 200) {
-        await ApiService._saveToken(data['token']);
-        if (data['user'] != null) {
-          final user = ApiService._asStringMap(data['user']);
-          if (user != null) await ApiService.saveUserData(user);
-        }
-
         final token = data['token'];
-        if (token != null) {
-          WebSocketService().connect(token);
-          await NotificationListenerService.instance.initialize();
+        final user = ApiService._asStringMap(data['user']);
+        if (token is! String || token.trim().isEmpty ||
+            user == null || user['id'] is! int ||
+            (user['id'] as int) <= 0 ||
+            user['role'] is! String ||
+            (user['role'] as String).trim().isEmpty) {
+          return 'استجابة تسجيل الدخول غير صالحة';
         }
-
+        await ApiService._saveToken(token);
+        await ApiService.saveUserData(user);
+        WebSocketService().connect(token);
+        await NotificationListenerService.instance.initialize();
         return null;
       }
       return data['error'] ?? 'فشل تسجيل الدخول';
