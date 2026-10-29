@@ -10,6 +10,10 @@ import '../../theme.dart';
 import 'iep_evaluation_reference.dart';
 import 'iep_goal_card.dart';
 import 'iep_labels.dart';
+import '../../model/iep/iep_goal_evidence.dart';
+import '../../services/iep/iep_goal_evidence_repository.dart';
+import 'iep_evidence_labels.dart';
+import 'iep_goal_evidence_screen.dart';
 
 class IepVersionScreen extends StatelessWidget {
   const IepVersionScreen({
@@ -17,10 +21,12 @@ class IepVersionScreen extends StatelessWidget {
     required this.plan,
     required this.version,
     this.evaluationGateway,
+    this.evidenceGateway,
   });
   final IepPlan plan;
   final IepVersion version;
   final EvaluationHistoryGateway? evaluationGateway;
+  final IepGoalEvidenceGateway? evidenceGateway;
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -93,8 +99,20 @@ class IepVersionScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 if (version.goals.isEmpty) Text(l10n.iepNoGoals),
-                for (final goal in version.goals)
+                for (final goal in version.goals) ...[
                   IepGoalCard(key: ValueKey('iep-goal-${goal.id}'), goal: goal),
+                  OutlinedButton.icon(
+                    key: ValueKey('iep-goal-evidence-${goal.id}'),
+                    icon: const Icon(Icons.history),
+                    label: Text(IepEvidenceLabels(context).open),
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                      builder: (_) => IepGoalEvidenceScreen(
+                        source: IepEvidenceSource(childId: version.childId, planId: plan.id, goal: goal),
+                        gateway: evidenceGateway,
+                      ),
+                    )),
+                  ),
+                ],
                 if (version.accommodations.isNotEmpty) ...[
                   Text(
                     l10n.iepAccommodations,
