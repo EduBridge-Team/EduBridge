@@ -67,6 +67,8 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::get('/schools/{school}/participants', [InstitutionParticipantController::class, 'index'])->whereNumber('school');
         Route::get('/schools/{school}/teachers/{teacher}/history', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::patch('/schools/{school}/teachers/{teacher}/profile', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'updateProfile'])->whereNumber('school')->whereNumber('teacher');
+        Route::get('/schools/{school}/teachers/{teacher}/transfers', [\App\Http\Controllers\JabaliaTeacherSchoolTransferController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
+        Route::post('/schools/{school}/teachers/{teacher}/transfers', [\App\Http\Controllers\JabaliaTeacherSchoolTransferController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
         Route::get('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::post('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
         Route::delete('/schools/{school}/teachers/{teacher}/documents/{document}', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'destroy'])->whereNumber('school')->whereNumber('teacher')->whereNumber('document');
