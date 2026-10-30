@@ -69,7 +69,19 @@ class InstitutionEnrollmentHistoryRepository implements InstitutionEnrollmentTra
     if (response['transferred'] != true) {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }
-    final after = await load();
+    late final InstitutionEnrollmentHistory after;
+    try {
+      after = await load();
+    } on EnrollmentApiException catch (error) {
+      // The transfer can be committed even if its confirmation read fails.
+      // Never suggest repeating a potentially successful write.
+      if (error.failure == EnrollmentFailure.network ||
+          error.failure == EnrollmentFailure.server ||
+          error.failure == EnrollmentFailure.invalidResponse) {
+        throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+      }
+      rethrow;
+    }
     final old = after.records.where((r) => r.id == enrollmentId);
     final target = after.records.where((r) => r.childId == source.childId && r.sectionId == sectionId && r.status == InstitutionEnrollmentStatus.active);
     if (old.length != 1 || old.single.childId != source.childId ||
