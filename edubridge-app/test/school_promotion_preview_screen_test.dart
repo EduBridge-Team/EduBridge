@@ -36,6 +36,9 @@ void main() {
       expect(find.byType(BrandAppBar), findsOneWidget);
       expect(find.text('Sara'), findsOneWidget);
       final outcome = find.byKey(const ValueKey('promotion-outcome-101'));
+      await tester.scrollUntilVisible(outcome, 100,
+        scrollable: find.byType(Scrollable).first);
+      await tester.pumpAndSettle();
       await tester.tap(outcome);
       await tester.pumpAndSettle();
       await tester.tap(find.text(language == 'ar' ? 'ناجح' : 'Promoted').last);
@@ -53,13 +56,13 @@ void main() {
       await tester.scrollUntilVisible(preview, 160,
         scrollable: find.byType(Scrollable).first);
       expect(tester.widget<FilledButton>(preview).onPressed, isNotNull);
+      expect(tester.widget<FilledButton>(
+        find.byKey(const ValueKey('promotion-approve'))).onPressed, isNull);
       await tester.tap(preview);
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
       expect(find.textContaining(language == 'ar' ? 'لم يُنقل' : 'No students have'),
         findsOneWidget);
-      expect(tester.widget<FilledButton>(
-        find.byKey(const ValueKey('promotion-approve'))).onPressed, isNull);
       expect(gateway.reads, 1);
       expect(tester.takeException(), isNull);
     });
