@@ -325,4 +325,28 @@ void main() {
     );
     expect(calls, 1);
   });
+  for (final receipt in [
+    {...enrollmentRequestJson(status: 'approved', version: 2),
+      'school_name': 'Other school'},
+    {...enrollmentRequestJson(status: 'approved', version: 2),
+      'child_name': 'Other child'},
+  ]) {
+    test('approval cannot silently replace child or school identity',
+        () async {
+      final repo = SchoolEnrollmentRepository(
+        client: EnrollmentApiClient(
+          post: (_, __) async => json({
+            'request': receipt,
+            'enrollment': activeEnrollmentJson(),
+          }),
+        ),
+      );
+      await expectLater(
+        repo.decide(enrollmentRequest(),
+            const EnrollmentDecision(approve: true, sectionId: 20)),
+        fails(EnrollmentFailure.invalidResponse),
+      );
+    });
+  }
+
 }

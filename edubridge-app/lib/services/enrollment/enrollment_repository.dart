@@ -40,6 +40,8 @@ void _changed(
       result.schoolId != original.schoolId ||
       result.childId != original.childId ||
       result.version != original.version + 1 ||
+      result.schoolName != original.schoolName ||
+      result.childName != original.childName ||
       result.status != status) {
     throw const FormatException('Request response mismatch');
   }
