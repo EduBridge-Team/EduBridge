@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 class SchoolInternalIdentityDirectoryController extends Controller
@@ -37,17 +38,36 @@ class SchoolInternalIdentityDirectoryController extends Controller
             return response()->json(['error' => 'School internal domain is not confirmed'], 409);
         }
 
+        $validation = Validator::make($request->query(), [
+            'after_id' => ['sometimes', 'integer', 'min:0'],
+            'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'role' => ['sometimes', 'in:teacher,student'],
+        ]);
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 422);
+        }
+        $filters = $validation->validated();
+        $limit = (int) ($filters['limit'] ?? 100);
+
         $identities = DB::table('school_internal_identities as identity')
             ->join('users as user', 'user.id', '=', 'identity.user_id')
             ->where('identity.school_id', $school->id)
+            ->when(isset($filters['after_id']), function ($query) use ($filters) {
+                $query->where('identity.id', '>', (int) $filters['after_id']);
+            })
+            ->when(isset($filters['role']), function ($query) use ($filters) {
+                $query->where('user.role', $filters['role']);
+            })
             ->select('identity.id', 'identity.user_id', 'identity.username',
                 'user.name', 'user.role')
-            ->orderBy('identity.id')->limit(101)->get();
+            ->orderBy('identity.id')->limit($limit + 1)->get();
+        $page = $identities->take($limit)->values();
         return response()->json([
             'school_id' => (int) $school->id,
             'internal_domain' => $school->internal_domain,
-            'identities' => $identities->take(100)->values(),
-            'has_more' => $identities->count() > 100,
+            'identities' => $page,
+            'has_more' => $identities->count() > $limit,
+            'next_after_id' => $identities->count() > $limit ? (int) $page->last()->id : null,
         ]);
     }
 }
