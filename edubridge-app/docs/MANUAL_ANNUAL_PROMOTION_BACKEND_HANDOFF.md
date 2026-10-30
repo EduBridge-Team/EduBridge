@@ -93,3 +93,11 @@ Flutter: screens/models/controllers, local validation, proposed typed gateway, a
 The school roster review now accepts a provisional numeric destination-school ID for transferred students, uses the existing `PromotionDraft` validator to block missing/invalid decisions, and displays a **local, read-only** confirmation dialog containing the full student's decision list and outcome counts. The final approval control remains disabled. This is **not** a server preview receipt and must never be mistaken for one.
 
 Backend must expose a school directory endpoint scoped to the authenticated school account, with readable school names and authorization/transfer eligibility; replace provisional numeric entry once available. Backend must also implement signed server preview and idempotent approval/operation-status endpoints above before Flutter can finish integration. Status: LOCAL PREVIEW ONLY, NO SERVER APPROVAL.
+
+## Flutter operation and history contract implementation
+
+Flutter now has typed `SchoolPromotionOperationRepository` with `preview`, `approve`, `operation`, and `history` methods and a read-only `SchoolPromotionHistoryScreen`. The repository verifies the server's school identity, year IDs, preview revision, blocking errors, idempotency key and completed receipt counts. The school review screen links to history when a verified roster is present.
+
+**Rollout gate:** the server-side school-account endpoints above are still proposals; no production approval button is enabled. The backend team must supply a verified school-scoped authorization flow, idempotent write receipts and operation-status resolution before activating approval. A POST timeout is uncertain and must not be retried blindly. No institution-only Jabalia route is an authorized substitute. The history API must report `complete=true` and `school_id` matching the authenticated school's identity.
+
+Remaining backend contract fields for signoff: an authorized destination-school directory; exact grade progression ordering; signed/expiring server preview; approval operation idempotency and replay semantics; transfer consent; pagination completeness; per-student historical results and actor metadata. Flutter test fixtures are isolated and never shipped as data.
