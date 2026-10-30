@@ -6,6 +6,7 @@ import '../../services/schools/academic_repository.dart';
 import '../../theme.dart';
 import '../academics/academic_controller.dart';
 import '../enrollment/enrollment_labels.dart';
+import 'school_promotion_review_screen.dart';
 
 /// School-account entry to the manual annual promotion workflow.
 /// Deliberately read-only until a school-scoped, authorized roster and
@@ -119,6 +120,18 @@ class _SchoolAnnualPromotionScreenState extends State<SchoolAnnualPromotionScree
                 onChanged: _sourceYear == null ? null : (id) => setState(() => _targetYear = id),
               ),
               const SizedBox(height: 16),
+              OutlinedButton.icon(
+                key: const ValueKey('promotion-open-roster'),
+                onPressed: _state.loading || _sourceYear == null || _targetYear == null
+                    ? null
+                    : () => Navigator.of(context).push(MaterialPageRoute<void>(
+                        builder: (_) => SchoolPromotionReviewScreen(
+                          sourceYearId: _sourceYear!, targetYearId: _targetYear!,
+                        ),
+                      )),
+                icon: const Icon(Icons.groups_outlined),
+                label: Text(label('مراجعة الطلاب', 'Review students')),
+              ),
               Text(label('الخطوات التالية: مراجعة الطلاب، تحديد ناجح أو معيد أو منقول، معاينة النتائج، ثم الاعتماد.',
                 'Next: review students, select promoted/repeating/transferred, preview, then approve.')),
               const SizedBox(height: 8),
