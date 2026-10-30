@@ -72,6 +72,7 @@ class IepVersion {
     if (!end.isAfter(start) ||
         (status == IepVersionStatus.returned &&
             (reason == null || reason.trim().isEmpty)) ||
+        (status != IepVersionStatus.returned && reason != null) ||
         goals.map((v) => v.id).toSet().length != goals.length ||
         comments.map((v) => v.id).toSet().length != comments.length ||
         comments.any((v) => v.versionId != id) ||
