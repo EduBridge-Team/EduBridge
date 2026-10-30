@@ -35,6 +35,9 @@ void main() {
         expect(tester.widget<FilledButton>(find.byKey(const ValueKey('class-result-submit'))).onPressed, isNull);
         await fillResult(tester);
         await tapCurriculum(tester, 'class-result-submit');
+        expect(find.textContaining(language == 'ar' ? 'النتيجة: 0 / 10' : 'Score: 0 / 10'), findsOneWidget);
+        expect(find.textContaining(language == 'ar' ? 'قياس الهدف: 2' : 'Goal measurement: 2'), findsOneWidget);
+        expect(find.textContaining(language == 'ar' ? 'الحالة: مكتمل' : 'State: Completed'), findsOneWidget);
         await tester.tap(find.byKey(const ValueKey('class-result-confirm'))); await tester.pumpAndSettle();
         expect(f.posts, 1); expect(f.body!['score'], 0); expect(f.body!['goal_measurement']['value'], 2);
         expect(find.byKey(const ValueKey('class-result-done')), findsOneWidget); expect(tester.takeException(), isNull);
