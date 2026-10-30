@@ -44,6 +44,12 @@ class ClassResultController extends ChangeNotifier {
   }
   Future<void> submit(ClassResultOptions expected, int epoch, ClassResultDraft confirmed) async {
     if (!accepts(expected, epoch) || !canSubmit || !confirmed.fits(expected)) return;
+    final current = draft;
+    if (current == null || current.state != confirmed.state ||
+        lessonResultDay(current.observedOn) != lessonResultDay(confirmed.observedOn) ||
+        current.observation.trim() != confirmed.observation.trim() ||
+        current.score != confirmed.score || current.maximum != confirmed.maximum ||
+        current.goalValue != confirmed.goalValue) return;
     busy = true; error = null; _emit();
     try { resultId = await gateway.record(expected, confirmed, newClassAssignmentKey()); options = null; }
     on EnrollmentApiException catch (e) {
