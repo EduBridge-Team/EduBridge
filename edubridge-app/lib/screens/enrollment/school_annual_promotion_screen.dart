@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/l10n.dart';
 
 import '../../model/schools/academic_catalog.dart';
 import '../../services/schools/academic_repository.dart';
