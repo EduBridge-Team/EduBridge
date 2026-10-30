@@ -90,6 +90,19 @@ void main() {
     expect(state.draft().payloadStudents.first['adaptation'], '');
     expect(f.posts, 0); state.dispose();
   });
+  test('editing lesson or adaptation invalidates a previously confirmed assignment', () async {
+    final f = ClassAssignmentFixture();
+    final state = ClassAssignmentController(f.repository);
+    await state.reload();
+    final options = state.options!, epoch = state.generation;
+    state.chooseLesson(10, options, epoch);
+    final confirmed = state.draft();
+    state.adapt(100, 'تكييف جديد', options, epoch);
+    await state.submit(options, epoch, confirmed);
+    expect(f.posts, 0);
+    expect(state.canSubmit, isTrue);
+    state.dispose();
+  });
   for (final mode in ['uncertain', 'conflict']) {
     test('controller locks $mode across refresh and rejects stale selection', () async {
       final f = ClassAssignmentFixture();
