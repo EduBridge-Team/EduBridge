@@ -90,4 +90,41 @@ void main() {
       throwsA(isA<EnrollmentApiException>().having(
         (value) => value.failure, 'failure', EnrollmentFailure.invalidResponse)));
   });
+  for (final entry in [
+    {'school_id': 5, 'complete': true, 'operations': [
+      {...receiptJson(), 'source_year_id': 9, 'target_year_id': 10},
+    ]},
+    {'school_id': 5, 'complete': true, 'operations': [
+      receiptJson(), receiptJson(),
+    ]},
+    {'school_id': 7, 'complete': true, 'operations': [receiptJson()]},
+  ]) {
+    test('history rejects foreign year, duplicate or school scope: $entry', () async {
+      final repository = SchoolPromotionOperationRepository(client: EnrollmentApiClient(
+        get: (_) async => http.Response(jsonEncode(entry), 200),
+      ));
+      await expectLater(repository.history(yearId: 10, schoolId: 5),
+        throwsA(isA<EnrollmentApiException>().having(
+          (error) => error.failure, 'failure', EnrollmentFailure.invalidResponse)));
+    });
+  }
+
+  test('complete scoped history accepts unique current-source-year operations', () async {
+    final repository = SchoolPromotionOperationRepository(client: EnrollmentApiClient(
+      get: (path) async {
+        expect(path, '/school/annual-promotion/history?year_id=10');
+        return http.Response(jsonEncode({
+          'school_id': 5, 'complete': true, 'operations': [
+            receiptJson(),
+            {...receiptJson(), 'operation_id': 'op_2', 'status': 'pending'},
+          ],
+        }), 200);
+      },
+    ));
+    final history = await repository.history(yearId: 10, schoolId: 5);
+    expect(history.map((item) => item.operationId), ['op_1', 'op_2']);
+    expect(history.first.completed, isTrue);
+    expect(history.last.completed, isFalse);
+  });
+
 }

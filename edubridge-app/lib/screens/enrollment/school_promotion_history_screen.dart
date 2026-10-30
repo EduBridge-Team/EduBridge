@@ -14,7 +14,8 @@ class SchoolPromotionHistoryScreen extends StatefulWidget {
   State<SchoolPromotionHistoryScreen> createState() => _SchoolPromotionHistoryScreenState();
 }
 
-class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScreen> {
+class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScreen>
+    with WidgetsBindingObserver {
   List<SchoolPromotionReceipt>? _operations;
   EnrollmentFailure? _failure;
   int _request = 0;
@@ -22,6 +23,7 @@ class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScr
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
@@ -50,7 +52,13 @@ class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScr
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _load();
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     ++_request;
     super.dispose();
   }
@@ -70,18 +78,34 @@ class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScr
         child: ListView(padding: const EdgeInsets.all(16), children: [
           if (_operations == null && _failure == null)
             const LinearProgressIndicator(),
-          if (_failure != null) Text(_failure == EnrollmentFailure.unavailable
-            ? tr('خدمة سجل الترفيع غير متاحة من الخادم بعد.',
-                'Promotion history API is not available yet.')
-            : tr('تعذر التحقق من السجل. أعد المحاولة.',
-                'Unable to verify promotion history. Retry.')),
+          if (_failure != null) ...[
+            Text(switch (_failure!) {
+              EnrollmentFailure.unavailable => tr('خدمة سجل الترفيع غير متاحة من الخادم بعد.',
+                'Promotion history API is not available yet.'),
+              EnrollmentFailure.session => tr('انتهت جلسة المدرسة. سجل الدخول مجددًا.',
+                'School session expired. Please sign in again.'),
+              EnrollmentFailure.forbidden => tr('غير مصرح لك بالاطلاع على هذا السجل.',
+                'You do not have permission to view this history.'),
+              EnrollmentFailure.invalidResponse => tr('استجابة السجل ناقصة أو لا تخص السنة والمدرسة المحددتين.',
+                'History response is incomplete or does not match this school and year.'),
+              _ => tr('تعذر التحقق من السجل. أعد المحاولة.',
+                'Unable to verify promotion history. Retry.'),
+            }),
+            TextButton.icon(key: const ValueKey('promotion-history-retry'),
+              onPressed: _load, icon: const Icon(Icons.refresh),
+              label: Text(tr('إعادة المحاولة', 'Retry'))),
+          ],
           if (_operations?.isEmpty == true)
             Text(tr('لا يوجد سجل ترفيع لهذه السنة.', 'No promotion history for this year.')),
           for (final receipt in _operations ?? <SchoolPromotionReceipt>[])
             Card(child: ListTile(
               title: Text('${tr('عملية', 'Operation')}: ${receipt.operationId}'),
               subtitle: Text(
-                '${tr('الحالة', 'Status')}: ${receipt.status}\n'
+                '${tr('الحالة', 'Status')}: ${switch (receipt.status) {
+                  'completed' => tr('مكتملة', 'Completed'),
+                  'pending' => tr('قيد التنفيذ', 'Pending'),
+                  _ => tr('فشلت', 'Failed'),
+                }}\n'
                 '${tr('ناجح', 'Promoted')}: ${receipt.promoted} • '
                 '${tr('معيد', 'Repeating')}: ${receipt.repeating} • '
                 '${tr('منقول', 'Transferred')}: ${receipt.transferred}'),

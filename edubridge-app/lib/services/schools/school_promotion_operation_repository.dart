@@ -140,8 +140,15 @@ class SchoolPromotionOperationRepository implements SchoolPromotionOperationGate
       if (enrollmentId(result['school_id']) != schoolId || result['complete'] != true) {
         throw const FormatException('Incomplete promotion history');
       }
-      return List.unmodifiable(enrollmentList(result['operations']).map((value) =>
-        SchoolPromotionReceipt.fromJson(enrollmentMap(value), schoolId: schoolId)));
+      final operations = enrollmentList(result['operations']).map((value) =>
+        SchoolPromotionReceipt.fromJson(enrollmentMap(value), schoolId: schoolId)).toList();
+      // A complete history must only include the selected source year,
+      // with unique operation IDs. Never display records from another year.
+      if (operations.any((item) => item.sourceYearId != yearId) ||
+          operations.map((item) => item.operationId).toSet().length != operations.length) {
+        throw const FormatException('Foreign or duplicate promotion history');
+      }
+      return List<SchoolPromotionReceipt>.unmodifiable(operations);
     } on FormatException {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }
