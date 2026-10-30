@@ -54,6 +54,7 @@ void main() {
       if (mode == 'unit') f.data['goal_unit'] = '';
       if (mode == 'dates') f.data['latest_on'] = '2026-02-30';
       if (mode == 'states') f.data['allowed_states'] = ['completed', 'completed'];
+      if (mode == 'empty-enabled-states') f.data['allowed_states'] = [];
       await expectLater(f.repository.load(), throwsA(resultFailure(EnrollmentFailure.invalidResponse)));
       expect(f.posts, 0);
     });
