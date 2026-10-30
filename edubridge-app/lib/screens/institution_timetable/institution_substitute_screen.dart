@@ -74,7 +74,9 @@ class _InstitutionSubstituteScreenState extends State<InstitutionSubstituteScree
         ]), actions: [TextButton(key: const ValueKey('substitute-cancel'), onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
           FilledButton(key: const ValueKey('substitute-confirm'), onPressed: () => Navigator.pop(context, true), child: Text(l.enrollmentConfirm))]);
     });
-    if (confirmed == true && mounted && identical(controller, _state) && controller.canWrite && identical(expected, controller.snapshot)) {
+    if (confirmed == true && mounted && identical(controller, _state) && controller.canWrite &&
+        identical(expected, controller.snapshot) && teacher == _teacher &&
+        expected.teachers.containsKey(teacher) && _form.currentState?.validate() == true) {
       await controller.assign(teacher, _notes.text.isEmpty ? null : _notes.text);
       if (mounted && identical(controller, _state) && controller.saved && _scroll.hasClients) _scroll.jumpTo(0);
     }
