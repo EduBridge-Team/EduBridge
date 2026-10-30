@@ -52,7 +52,7 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::post('/school/internal-domain/confirm', [\App\Http\Controllers\SchoolInternalDomainController::class, 'confirm'])
         ->middleware('throttle:10,1');
     Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
-        ->middleware(['role:school', 'throttle:120,1']);
+        ->middleware('throttle:120,1');
     Route::get('/school/academic', [\App\Http\Controllers\SchoolAcademicController::class, 'index'])
         ->middleware(['role:school', 'throttle:120,1']);
     Route::post('/school/academic/years', [\App\Http\Controllers\SchoolAcademicController::class, 'storeYear'])
