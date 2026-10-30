@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../../model/class_lessons/class_lesson_assignment.dart';
 import '../../services/class_assignment_repository.dart';
@@ -55,7 +56,9 @@ class ClassAssignmentController extends ChangeNotifier {
     finally { loading = false; _emit(); }
   }
   Future<void> submit(ClassAssignmentOptions expected, int epoch, ClassAssignmentDraft confirmed) async {
-    if (!accepts(expected, epoch) || !canSubmit || !confirmed.fits(expected)) return;
+    if (!accepts(expected, epoch) || !canSubmit || !confirmed.fits(expected) ||
+        jsonEncode(confirmed.payloadStudents) != jsonEncode(draft().payloadStudents) ||
+        confirmed.lessonId != lessonId) return;
     busy = true; error = null; _emit();
     try {
       assignmentId = await gateway.assign(expected, confirmed, newClassAssignmentKey());
