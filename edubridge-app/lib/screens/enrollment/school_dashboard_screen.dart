@@ -11,6 +11,7 @@ import '../../widgets/dashboard_profile_identity.dart';
 import '../../widgets/legal_links_button.dart';
 import '../login_screen.dart';
 import '../academics/academic_screen.dart';
+import 'school_annual_promotion_screen.dart';
 import 'enrollment_controllers.dart';
 import 'enrollment_labels.dart';
 import 'enrollment_request_card.dart';
