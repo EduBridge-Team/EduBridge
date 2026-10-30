@@ -3,6 +3,7 @@ import '../../model/schools/promotion_roster.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/schools/school_promotion_roster_repository.dart';
 import '../../theme.dart';
+import 'school_promotion_history_screen.dart';
 
 /// Local draft only. The server preview/approval flow is a separate phase.
 class SchoolPromotionReviewScreen extends StatefulWidget {
@@ -176,6 +177,16 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
             _ => tr('تعذر تحميل قائمة الطلاب. أعد المحاولة.', 'Unable to load student roster. Retry.'),
           }),
           if (roster != null) ...[
+            OutlinedButton.icon(
+              key: const ValueKey('promotion-history'),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => SchoolPromotionHistoryScreen(
+                  schoolId: roster.schoolId, yearId: roster.sourceYearId,
+                ),
+              )),
+              icon: const Icon(Icons.history),
+              label: Text(tr('سجل الترفيع السابق', 'Previous promotion history')),
+            ),
             Text(tr('عدد الطلاب: ${roster.students.length}', 'Students: ${roster.students.length}'),
               style: Theme.of(context).textTheme.titleMedium),
             TextField(
