@@ -19,8 +19,8 @@ class IepDraftUpdateScreen extends StatefulWidget {
 }
 
 class _IepDraftUpdateScreenState extends State<IepDraftUpdateScreen> with WidgetsBindingObserver {
-  late final IepDraftUpdateGateway _gateway = widget.gateway ?? IepDraftUpdateRepository(source: widget.source);
-  final _requestKey = newIepDraftRequestKey();
+  late IepDraftUpdateGateway _gateway = widget.gateway ?? IepDraftUpdateRepository(source: widget.source);
+  String _requestKey = newIepDraftRequestKey();
   IepDraftEditOptions? _options;
   EnrollmentFailure? _error;
   bool _loading = false, _busy = false, _locked = false, _saved = false;
@@ -28,6 +28,25 @@ class _IepDraftUpdateScreenState extends State<IepDraftUpdateScreen> with Widget
   String label(String ar, String en) => Localizations.localeOf(context).languageCode == 'en' ? en : ar;
   @override
   void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); _reload(); }
+  @override
+  void didUpdateWidget(covariant IepDraftUpdateScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.source != widget.source ||
+        oldWidget.draft != widget.draft ||
+        oldWidget.gateway != widget.gateway) {
+      // Never carry a permission, revision or idempotency key across a child/plan edit.
+      _generation++;
+      _gateway = widget.gateway ?? IepDraftUpdateRepository(source: widget.source);
+      _requestKey = newIepDraftRequestKey();
+      _loading = false;
+      _busy = false;
+      _locked = false;
+      _saved = false;
+      _options = null;
+      _error = null;
+      _reload();
+    }
+  }
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _generation++; super.dispose(); }
   @override
@@ -51,7 +70,9 @@ class _IepDraftUpdateScreenState extends State<IepDraftUpdateScreen> with Widget
   }
   Future<void> _save() async {
     final options = _options, generation = _generation;
-    if (options == null || _busy || _loading || _locked || _saved || !options.evaluationIds.contains(widget.draft.evaluationId)) return;
+    if (options == null || _busy || _loading || _locked || _saved ||
+        widget.draft.childId != widget.source.draft.childId ||
+        !options.evaluationIds.contains(widget.draft.evaluationId)) return;
     final confirmed = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
       content: Text(label('حفظ التعديلات على نفس المسودة؟ لا يعني ذلك اعتماد الخطة.', 'Save changes to this draft? This does not approve the plan.')),
       actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
@@ -91,7 +112,9 @@ class _IepDraftUpdateScreenState extends State<IepDraftUpdateScreen> with Widget
         if (_locked) Text(label('راجعي سجل الخطة قبل أي محاولة أخرى؛ لن يُعاد إرسال التعديل من هذه الشاشة.', 'Review the plan history before another attempt; this screen will not resend the update.')),
         if (_saved) Text(label('تم تأكيد حفظ المسودة. لم يتم اعتماد الخطة.', 'Draft changes confirmed saved. The plan is not approved.')),
         if (!_saved) FilledButton(key: const ValueKey('iep-update-save'),
-          onPressed: _busy || _loading || _locked || _options == null || !_options!.evaluationIds.contains(widget.draft.evaluationId) ? null : _save,
+          onPressed: _busy || _loading || _locked || _options == null ||
+              widget.draft.childId != widget.source.draft.childId ||
+              !_options!.evaluationIds.contains(widget.draft.evaluationId) ? null : _save,
           child: Text(label('حفظ التعديلات', 'Save changes'))),
         if (_saved) TextButton(onPressed: () => Navigator.pop(context, true), child: Text(label('العودة للسجل', 'Return to history'))),
       ])),
