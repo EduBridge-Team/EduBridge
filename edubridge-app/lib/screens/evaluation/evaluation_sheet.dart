@@ -101,7 +101,23 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         return;
       }
 
-      // Reuse a successfully saved evaluation if ministry submission needs a retry.
+      // A write is confirmed only by a usable record for the requested child.
+      // Older responses may omit child_id, but must never contradict it.
+      final savedId = result['id'];
+      final childId = widget.child['id'];
+      if (savedId is! int ||
+          savedId <= 0 ||
+          childId is! int ||
+          childId <= 0 ||
+          (result.containsKey('child_id') && result['child_id'] != childId)) {
+        setState(() {
+          _error = SharedUiMessage.evaluationSaveFailed;
+          _loading = false;
+        });
+        return;
+      }
+
+      // Reuse only a verified save receipt if ministry submission needs a retry.
       _savedEvaluation = result;
       if (_sendToMinistry) {
         final submitted = await ApiService.submitForMinistryApproval(
