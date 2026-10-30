@@ -11,6 +11,7 @@ import '../../widgets/dashboard_profile_identity.dart';
 import '../../widgets/legal_links_button.dart';
 import '../login_screen.dart';
 import '../academics/academic_screen.dart';
+import 'school_annual_promotion_screen.dart';
 import 'enrollment_controllers.dart';
 import 'enrollment_labels.dart';
 import 'enrollment_request_card.dart';
@@ -152,6 +153,20 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
                   ),
                   icon: const Icon(Icons.school_outlined),
                   label: Text(l10n.academicTitle),
+                ),
+                OutlinedButton.icon(
+                  key: const ValueKey('open-school-annual-promotion'),
+                  onPressed: _controller.loading || _controller.busy || data == null
+                      ? null
+                      : () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const SchoolAnnualPromotionScreen(),
+                          ),
+                        ),
+                  icon: const Icon(Icons.school_outlined),
+                  label: Text(Localizations.localeOf(context).languageCode == 'en'
+                      ? 'Annual promotion'
+                      : 'الترفيع السنوي'),
                 ),
                 if (_controller.loading || _controller.busy)
                   const LinearProgressIndicator(),
