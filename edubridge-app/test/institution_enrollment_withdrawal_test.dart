@@ -57,6 +57,20 @@ void main() {
       expect(f.patches, hasLength(1));
     });
   }
+  for (final status in [500, 503]) {
+    test('committed withdrawal with HTTP $status verification remains uncertain', () async {
+      final f = InstitutionHistoryFixture()
+        ..afterWithdrawalReadStatus = status;
+      await expectLater(
+        f.repository.withdraw(2),
+        throwsA(isA<EnrollmentApiException>().having(
+          (error) => error.failure, 'failure', EnrollmentFailure.uncertain,
+        )),
+      );
+      expect(f.patches, hasLength(1));
+      expect(f.rows.first['status'], 'withdrawn');
+    });
+  }
   test('controller serializes withdrawal and transfer while awaiting PATCH', () async {
     final f = InstitutionHistoryFixture()..addTarget();
     final gate = Completer<void>();
