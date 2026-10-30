@@ -69,3 +69,11 @@ submission, school approval/rejection, guardian cancellation/conflict, and denie
 foreign-scope requests. Confirm deployed migrations and route availability
 separately. HTTP fixtures and successful Flutter CI do not establish those live
 results. This batch changes Flutter only and does not implement the server change.
+
+## Backend source parity verified 2026-10-30 (Flutter only)
+
+The actual `SchoolProvisionController` on `main` accepts exactly `name`, `email`, `password`, `password_confirmation`, and optional `phone`/`address`. Independent provisioning uses `POST /admin/school-accounts` with an admin session, and affiliated provisioning uses `POST /institutions/{slug}/school-accounts` after resolving the authenticated institution via `GET /institutions/my-organization`. The current Flutter shared `SchoolAccountForm` and `SchoolAccountRepository` already implement this contract and check the HTTP 201 school/account IDs, school role, email and institution association. No alternate school CRUD route should be introduced.
+
+**Correction of older proposed policy:** Backend currently dispatches an email verification link after committing the account and does not assert that the email is already verified. The Flutter receipt correctly instructs the new school-account owner to verify their address before trying to sign in. The previous suggestion to bypass email verification for school provisioning is a *product proposal*, **not current Backend behavior or an implemented feature**. Do not change Flutter to claim immediate login, and do not modify Backend. Email delivery is best-effort; a 201 receipt proves creation, not actual message delivery or a completed verification. If policy changes, agree and implement that contract server-side before changing the UI.
+
+Source files inspected: `edubridge-api-laravel/app/Http/Controllers/SchoolProvisionController.php`, `edubridge-app/lib/model/schools/school_account.dart`, `edubridge-app/lib/services/schools/school_account_repository.dart`, and the shared form/receipt screens. Existing tests cover independent/affiliated paths, server errors, 422 field errors, ambiguous writes and account identity validation. Full login and mail delivery still require nonproduction integration acceptance.
