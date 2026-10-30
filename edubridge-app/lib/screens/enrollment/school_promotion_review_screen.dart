@@ -87,6 +87,58 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
     });
   }
 
+  void _transferSchool(PromotionStudent student, String value) {
+    final previous = _choices[student.enrollmentId];
+    if (previous == null || previous.outcome != PromotionOutcome.transferred) return;
+    final school = int.tryParse(value.trim());
+    setState(() {
+      _choices[student.enrollmentId] = PromotionSelection(
+        student.enrollmentId, previous.outcome, null, targetSchoolId: school);
+    });
+  }
+
+  Future<void> _preview(PromotionDraft draft) async {
+    if (!draft.ready) return;
+    final snapshot = _roster;
+    final revision = _revision;
+    final payload = draft.previewJson();
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    final counts = <PromotionOutcome, int>{
+      for (final outcome in PromotionOutcome.values) outcome: 0,
+    };
+    for (final decision in draft.selections.values) {
+      counts[decision.outcome] = counts[decision.outcome]! + 1;
+    }
+    await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(en ? 'Review decisions — not submitted' : 'معاينة القرارات — لم تُرسل'),
+      content: SingleChildScrollView(child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, children: [
+          Text(en ? 'Promoted: ${counts[PromotionOutcome.promoted]}' :
+              'ناجح: ${counts[PromotionOutcome.promoted]}'),
+          Text(en ? 'Repeating: ${counts[PromotionOutcome.repeating]}' :
+              'معيد: ${counts[PromotionOutcome.repeating]}'),
+          Text(en ? 'Transferred: ${counts[PromotionOutcome.transferred]}' :
+              'منقول: ${counts[PromotionOutcome.transferred]}'),
+          const SizedBox(height: 8),
+          for (final student in snapshot!.students)
+            Text('${student.name}: ${draft.selections[student.enrollmentId]!.outcome.name}'),
+          const SizedBox(height: 12),
+          Text(en ? 'This is a local preview. No students have been moved or approved.' :
+              'هذه معاينة محلية فقط. لم يُنقل أي طالب ولم يُعتمد الترفيع.'),
+        ],
+      )),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext),
+          child: Text(en ? 'Edit decisions' : 'تعديل القرارات')),
+        FilledButton(onPressed: null, child: Text(en ? 'Final approval' : 'الاعتماد النهائي')),
+      ],
+    ));
+    // A dialog never retains permission to act on an obsolete loaded roster.
+    if (!mounted || revision != _revision || !identical(snapshot, _roster) ||
+        !identical(draft.roster, _roster) || payload['roster_revision'] != _roster?.revision) return;
+  }
+
   void _destination(PromotionStudent student, int? id) {
     final previous = _choices[student.enrollmentId];
     if (previous == null) return;
@@ -180,9 +232,17 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
                         ],
                         onChanged: (id) => _destination(student, id),
                       ),
-                    if (_choices[student.enrollmentId]?.outcome == PromotionOutcome.transferred)
-                      Text(tr('النقل إلى مدرسة أخرى يحتاج تحديد الوجهة واعتماد النقل من الخادم.',
-                        'School transfer requires a destination and server approval.')),
+                    if (_choices[student.enrollmentId]?.outcome == PromotionOutcome.transferred) ...[
+                      TextField(
+                        key: ValueKey('promotion-transfer-school-${student.enrollmentId}'),
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(labelText: tr(
+                            'رقم المدرسة المنقول إليها', 'Destination school ID')),
+                        onChanged: (value) => _transferSchool(student, value),
+                      ),
+                      Text(tr('رقم المدرسة مؤقت لحين توفير قائمة المدارس المصرّح بها من الخادم.',
+                        'School ID is provisional until an authorized school directory is available.')),
+                    ],
                   ])),
               ),
             const SizedBox(height: 12),
@@ -191,6 +251,12 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
             Text(draft!.ready
               ? tr('القرارات صالحة للمعاينة المحلية؛ الاعتماد غير متاح.', 'Local review is valid; server approval is unavailable.')
               : tr('القرارات غير مكتملة أو تتعارض مع الوجهة أو السعة.', 'Decisions are incomplete or violate destination/capacity constraints.')),
+            FilledButton.icon(
+              key: const ValueKey('promotion-local-preview'),
+              onPressed: draft.ready ? () => _preview(draft) : null,
+              icon: const Icon(Icons.preview_outlined),
+              label: Text(tr('معاينة القرارات', 'Preview decisions')),
+            ),
             FilledButton(
               key: const ValueKey('promotion-approve'),
               onPressed: null,
