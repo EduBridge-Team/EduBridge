@@ -11,7 +11,7 @@ class ClassAssignmentFixture {
   final section = ClassLessonSection.fromJson(classLessonSection(1, 'A'));
   Map<String, dynamic> data = assignmentJson({
     'contract_version': 1, 'section_id': 1, 'school_id': 1, 'academic_year_id': 1,
-    'revision': 'r1', 'can_assign': true, 'lessons': [{'lesson_id': 10, 'title': 'الدرس الأصلي'}],
+    'revision': 'r1', 'complete': true, 'can_assign': true, 'lessons': [{'lesson_id': 10, 'title': 'الدرس الأصلي'}],
     'students': [for (final id in [100, 200]) {
       'child_id': id, 'child_name': 'طالب $id',
       'goals': [{'child_id': id, 'plan_id': id + 1, 'version_id': id + 2,
