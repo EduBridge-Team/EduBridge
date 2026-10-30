@@ -189,6 +189,10 @@ void main() {
     result(organizationId: 4),
     {
       ...result(),
+      'school': {'id': 10, 'name': 'A different school', 'organization_id': null},
+    },
+    {
+      ...result(),
       'school': {'id': 10, 'name': 'School'},
     },
   ]) {
