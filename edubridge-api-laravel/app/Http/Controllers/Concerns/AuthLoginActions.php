@@ -28,6 +28,11 @@ trait AuthLoginActions
             }
 
             $user = DB::table('users')->where('email', $email)->first();
+            // School-local login identifiers resolve to an existing user only.
+            // Password, verification and JWT checks below remain unchanged.
+            if (!$user && is_string($email)) {
+                $user = $this->resolveSchoolInternalLogin($email);
+            }
             $storedHash = $user?->{$passwordColumn} ?? null;
 
             if (
@@ -124,4 +129,28 @@ trait AuthLoginActions
             ], 500);
         }
     }
+    private function resolveSchoolInternalLogin(string $identifier): ?object
+    {
+        $identifier = strtolower(trim($identifier));
+        if (!preg_match('/^([a-z0-9][a-z0-9._-]{1,63})@([a-z][a-z0-9-]{2,39}\\.edubridge)$/D', $identifier, $matches)) {
+            return null;
+        }
+        if (!Schema::hasTable('school_internal_identities')) {
+            return null;
+        }
+
+        return DB::table('school_internal_identities as identity')
+            ->join('schools as school', 'school.id', '=', 'identity.school_id')
+            ->join('users as user', 'user.id', '=', 'identity.user_id')
+            ->leftJoin('organizations as organization', 'organization.id', '=', 'school.organization_id')
+            ->where('identity.username', $matches[1])
+            ->where('school.internal_domain', $matches[2])
+            ->whereNotNull('school.internal_domain_confirmed_at')
+            ->where('school.is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('school.organization_id')->orWhere('organization.is_active', true);
+            })
+            ->select('user.*')->first();
+    }
+
 }
