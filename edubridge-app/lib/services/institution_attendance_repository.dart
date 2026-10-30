@@ -85,6 +85,11 @@ class InstitutionAttendanceRepository implements InstitutionAttendanceWriter, In
     if (active.map((r) => r.childId).toSet().length != active.length) {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }
+    // A malformed or duplicated session record must not be used to edit attendance.
+    if (view.records.map((r) => r.childId).toSet().length != view.records.length ||
+        view.records.any((r) => !history.records.any((e) => e.childId == r.childId))) {
+      throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+    }
     return AttendanceEditorData(view, active.map((child) {
       final records = view.records.where((r) => r.childId == child.childId);
       return AttendanceStudent(child.childId, child.childName, records.isEmpty ? null : records.single);

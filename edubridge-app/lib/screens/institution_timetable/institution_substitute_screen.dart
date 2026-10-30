@@ -63,7 +63,7 @@ class _InstitutionSubstituteScreenState extends State<InstitutionSubstituteScree
   }
   Future<void> _assign() async {
     final controller = _state, expected = _state.snapshot;
-    final teacher = _teacher;
+    final teacher = _teacher, date = _date, notes = _notes.text;
     if (!controller.canWrite || teacher == null || expected == null || !(_form.currentState?.validate() ?? false)) return;
     final confirmed = await showDialog<bool>(context: context, builder: (context) {
       final l = context.l10n;
@@ -74,8 +74,11 @@ class _InstitutionSubstituteScreenState extends State<InstitutionSubstituteScree
         ]), actions: [TextButton(key: const ValueKey('substitute-cancel'), onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
           FilledButton(key: const ValueKey('substitute-confirm'), onPressed: () => Navigator.pop(context, true), child: Text(l.enrollmentConfirm))]);
     });
-    if (confirmed == true && mounted && identical(controller, _state) && controller.canWrite && identical(expected, controller.snapshot)) {
-      await controller.assign(teacher, _notes.text.isEmpty ? null : _notes.text);
+    if (confirmed == true && mounted && identical(controller, _state) && controller.canWrite &&
+        identical(expected, controller.snapshot) && teacher == _teacher &&
+        expected.teachers.containsKey(teacher) && _date == date && _notes.text == notes &&
+        _form.currentState?.validate() == true) {
+      await controller.assign(teacher, notes.isEmpty ? null : notes);
       if (mounted && identical(controller, _state) && controller.saved && _scroll.hasClients) _scroll.jumpTo(0);
     }
   }

@@ -82,6 +82,22 @@ void main() {
       expect(f.puts, isEmpty);
     });
   }
+  test('editor rejects duplicate or unknown attendance student records', () async {
+    for (final mode in ['duplicate', 'unknown']) {
+      final f = InstitutionAttendanceFixture();
+      if (mode == 'duplicate') {
+        f.records.add({...f.records.first, 'id': 99});
+      } else {
+        f.records.add({...f.records.first, 'id': 99, 'child_id': 999});
+      }
+      await expectLater(
+        f.repository.loadEditor(sessionId: 60, date: DateTime(2026, 10, 26)),
+        throwsA(isA<EnrollmentApiException>().having(
+          (e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)),
+      );
+      expect(f.puts, isEmpty);
+    }
+  });
   test('editor excludes withdrawn students and retains session records for history', () async {
     final f = InstitutionAttendanceFixture();
     f.enrollments.first['status'] = 'withdrawn';

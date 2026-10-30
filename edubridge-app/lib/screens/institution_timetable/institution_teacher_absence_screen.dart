@@ -62,7 +62,11 @@ class _InstitutionTeacherAbsenceScreenState extends State<InstitutionTeacherAbse
         ]), actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
           FilledButton(key: const ValueKey('absence-confirm'), onPressed: () => Navigator.pop(context, true), child: Text(l.enrollmentConfirm))]);
     });
-    if (!mounted || !identical(controller, _state) || confirmed != true || !identical(data, controller.snapshot)) return;
+    if (!mounted || !identical(controller, _state) || confirmed != true ||
+        !controller.canWrite || !identical(data, controller.snapshot) ||
+        teacher != _teacher || !data.teachers.containsKey(teacher) ||
+        _date != date || _reason.text.trim() != (reason ?? '') ||
+        _form.currentState?.validate() != true) return;
     await controller.report(teacher, date, reason);
     if (mounted && identical(controller, _state) && _scroll.hasClients) _scroll.jumpTo(0);
   }
