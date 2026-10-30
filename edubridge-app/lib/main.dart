@@ -64,7 +64,7 @@ class _EduBridgeBootstrapState extends State<_EduBridgeBootstrap> {
 
     final token = await ApiService.getToken();
     final Widget destination;
-    if (token == null) {
+    if (token == null || !ApiService.isAuthenticated.value) {
       destination = await OnboardingService.hasSeen()
           ? const LoginScreen()
           : const WelcomeScreen();
@@ -79,7 +79,7 @@ class _EduBridgeBootstrapState extends State<_EduBridgeBootstrap> {
     setState(() => _initialHome = destination);
 
     // Network-backed services remain non-blocking after the first app frame.
-    if (token != null) {
+    if (token != null && ApiService.isAuthenticated.value) {
       unawaited(_startAuthenticatedServices(token));
     }
   }
@@ -205,7 +205,7 @@ class _HomeGate extends StatelessWidget {
 
 Future<Widget> _initialScreen() async {
   final token = await ApiService.getToken();
-  if (token == null) {
+  if (token == null || !ApiService.isAuthenticated.value) {
     return await OnboardingService.hasSeen()
         ? const LoginScreen()
         : const WelcomeScreen();

@@ -1,11 +1,15 @@
 part of 'api_service.dart';
 
 Future<void> _apiCoreInitializeAuthState() async {
-    ApiService.isAuthenticated.value = await ApiService.getToken() != null;
+    final token = await ApiService.getToken();
     final prefs = await SharedPreferences.getInstance();
-    ApiService.userRole.value = ApiService.isAuthenticated.value
-        ? prefs.getString('role')
-        : null;
+    final role = prefs.getString('role');
+    final userId = prefs.getInt('userId');
+    final hasLocalIdentity = token != null && token.trim().isNotEmpty &&
+        role != null && role.trim().isNotEmpty &&
+        userId != null && userId > 0;
+    ApiService.isAuthenticated.value = hasLocalIdentity;
+    ApiService.userRole.value = hasLocalIdentity ? role : null;
   }
 
 Never _apiCoreHandleError(Object error) {
@@ -142,18 +146,19 @@ Future<String?> _apiCoreLogin(String email, String password) async {
       final data = ApiService._decodeBody(res);
 
       if (res.statusCode == 200) {
-        await ApiService._saveToken(data['token']);
-        if (data['user'] != null) {
-          final user = ApiService._asStringMap(data['user']);
-          if (user != null) await ApiService.saveUserData(user);
-        }
-
         final token = data['token'];
-        if (token != null) {
-          WebSocketService().connect(token);
-          await NotificationListenerService.instance.initialize();
+        final user = ApiService._asStringMap(data['user']);
+        if (token is! String || token.trim().isEmpty ||
+            user == null || user['id'] is! int ||
+            (user['id'] as int) <= 0 ||
+            user['role'] is! String ||
+            (user['role'] as String).trim().isEmpty) {
+          return 'استجابة تسجيل الدخول غير صالحة';
         }
-
+        await ApiService._saveToken(token);
+        await ApiService.saveUserData(user);
+        WebSocketService().connect(token);
+        await NotificationListenerService.instance.initialize();
         return null;
       }
       return data['error'] ?? 'فشل تسجيل الدخول';
@@ -175,20 +180,18 @@ Future<String?> _apiCoreGoogleLogin(String idToken) async {
       final data = ApiService._decodeBody(res);
       if (res.statusCode == 200) {
         final token = data['token'];
-        if (token is String && token.isNotEmpty) {
-          await ApiService._saveToken(token);
-        }
-
         final user = ApiService._asStringMap(data['user']);
-        if (user != null) {
-          await ApiService.saveUserData(user);
+        if (token is! String || token.trim().isEmpty ||
+            user == null || user['id'] is! int ||
+            (user['id'] as int) <= 0 ||
+            user['role'] is! String ||
+            (user['role'] as String).trim().isEmpty) {
+          return 'استجابة تسجيل الدخول غير صالحة';
         }
-
-        if (token is String && token.isNotEmpty) {
-          WebSocketService().connect(token);
-          await NotificationListenerService.instance.initialize();
-        }
-
+        await ApiService._saveToken(token);
+        await ApiService.saveUserData(user);
+        WebSocketService().connect(token);
+        await NotificationListenerService.instance.initialize();
         return null;
       }
 
