@@ -51,6 +51,21 @@ void main() {
       await expectLater(x.repository.load(), throwsA(isA<EnrollmentApiException>().having((e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)));
     }
   });
+  test('report cannot include a conflicting institution identity', () async {
+    for (final mode in ['organization_id', 'organization_slug']) {
+      final f = InstitutionStatisticsFixture();
+      f.data[mode] = mode == 'organization_id' ? 999 : 'foreign-institution';
+      await expectLater(
+        f.repository.load(),
+        throwsA(isA<EnrollmentApiException>().having(
+          (e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)),
+      );
+    }
+    final f = InstitutionStatisticsFixture();
+    f.data['organization_id'] = 4;
+    f.data['organization_slug'] = 'demo-institution';
+    expect((await f.repository.load()).organizationId, 4);
+  });
   test('denial is distinct from an empty authorized institution', () async {
     final f = InstitutionStatisticsFixture()..status = 403;
     await expectLater(f.repository.load(), throwsA(isA<EnrollmentApiException>().having((e) => e.failure, 'failure', EnrollmentFailure.forbidden)));
