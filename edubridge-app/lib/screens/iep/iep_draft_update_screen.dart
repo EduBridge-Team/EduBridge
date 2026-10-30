@@ -80,18 +80,19 @@ class _IepDraftUpdateScreenState extends State<IepDraftUpdateScreen> with Widget
     ));
     if (!mounted || confirmed != true || generation != _generation || !identical(options, _options) || _busy || _loading || _locked || _saved) return;
     setState(() => _busy = true);
+    final gateway = _gateway, requestKey = _requestKey, draft = widget.draft;
     try {
-      await _gateway.update(widget.draft, options, _requestKey);
-      if (mounted) setState(() { _saved = true; _options = null; });
+      await gateway.update(draft, options, requestKey);
+      if (mounted && generation == _generation) setState(() { _saved = true; _options = null; });
     } on EnrollmentApiException catch (error) {
-      if (mounted) setState(() {
+      if (mounted && generation == _generation) setState(() {
         _error = error.failure; _options = null;
         _locked = error.failure == EnrollmentFailure.uncertain || error.failure == EnrollmentFailure.conflict;
       });
     } on Exception {
-      if (mounted) setState(() { _error = EnrollmentFailure.uncertain; _options = null; _locked = true; });
+      if (mounted && generation == _generation) setState(() { _error = EnrollmentFailure.uncertain; _options = null; _locked = true; });
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted && generation == _generation) setState(() => _busy = false);
     }
   }
   @override
