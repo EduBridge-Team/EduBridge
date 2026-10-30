@@ -36,3 +36,6 @@ The following names are a **proposal, not implemented endpoint claims**:
 
 ## Release gate
 Phase 07 is **not complete** based on a green Flutter build or this audit. Acceptance requires live, authorization-scoped API tests and individual/section lesson test scenarios. Specialist Home redesign is deferred until remaining stages are reviewed and implemented in the agreed order.
+
+## CI source-branch safeguard
+This PR must use a repository-approved `feature/*` branch. Earlier `feat/*` PR runs were created against the same commit as the replacement PR, so GitHub can display their failed checks on both. A fresh commit on this branch gives this PR a distinct head SHA; verify only checks from the new head before reviewing or merging.
