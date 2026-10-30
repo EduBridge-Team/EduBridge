@@ -13,7 +13,8 @@ void main() {
     expect(f.posts, isEmpty);
     await repo.follow(roster, roster.students.first);
     expect(f.posts.single.keys, unorderedEquals([
-      'expected_revision', 'expected_assignment_id', 'expected_enrollment_id', 'idempotency_key']));
+      'expected_revision', 'expected_assignment_id', 'expected_enrollment_id',
+      'expected_case_limit', 'expected_selected_cases', 'idempotency_key']));
     expect(f.posts.single['expected_assignment_id'], 10);
     expect(f.posts.single['expected_enrollment_id'], 200);
     expect(f.posts.single['idempotency_key'], matches(RegExp(r'^[0-9a-f]{32}$')));

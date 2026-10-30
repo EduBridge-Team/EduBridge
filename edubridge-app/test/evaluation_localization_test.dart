@@ -203,7 +203,7 @@ void main() {
       if (path.endsWith('/ministry/approvals')) {
         paths.add('/ministry/approvals');
         approval = Map<String, dynamic>.from(jsonDecode(request.body) as Map);
-        return _response({'approval': {'id': 88}}, 201);
+        return _response({'approval': {'id': 88, 'child_id': 8, 'evaluation_id': 77, 'status': 'pending'}}, 201);
       }
       paths.add('/evaluations/child/8');
       return _response({'evaluation': {'id': 77}}, 201);

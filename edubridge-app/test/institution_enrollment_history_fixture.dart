@@ -15,6 +15,8 @@ class InstitutionHistoryFixture {
       'academic_year_id': 10, 'status': 'withdrawn', 'enrolled_on': '2026-09-01', 'left_on': '2026-09-30'},
   ];
   int status = 200;
+  int? afterTransferReadStatus;
+  int? afterWithdrawalReadStatus;
   int patchStatus = 200;
   Map<String, dynamic> patchResponse = {'updated': true};
   bool applyWithdrawal = true;
@@ -35,7 +37,9 @@ class InstitutionHistoryFixture {
     client: EnrollmentApiClient(get: (path) async {
       paths.add(path);
       if (path == '/institutions/demo-institution/schools/5/academic/student-enrollments') {
-        return http.Response(jsonEncode({'enrollments': rows}), status,
+        return http.Response(jsonEncode({'enrollments': rows}),
+          writes.isNotEmpty ? (afterTransferReadStatus ?? status) :
+              patches.isNotEmpty ? (afterWithdrawalReadStatus ?? status) : status,
           headers: {'content-type': 'application/json; charset=utf-8'});
       }
       return academic.get(path);

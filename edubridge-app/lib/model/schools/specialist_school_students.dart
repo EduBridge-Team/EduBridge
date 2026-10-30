@@ -59,10 +59,15 @@ int enrollmentIdValue(dynamic value) => enrollmentId(value);
 
 class SpecialistSchoolRoster {
   SpecialistSchoolRoster._(this.specialistId, this.school, this.revision,
-      List<SpecialistSchoolStudent> students) : students = List.unmodifiable(students);
+      this.caseLimit, this.selectedCases, List<SpecialistSchoolStudent> students)
+      : students = List.unmodifiable(students);
   final int specialistId;
   final SpecialistSchool school;
   final String revision;
+  /// Server-authorized school case allocation; absent means no permission to add.
+  final int? caseLimit;
+  final int selectedCases;
+  bool get hasAvailableCases => caseLimit != null && selectedCases < caseLimit!;
   final List<SpecialistSchoolStudent> students;
   factory SpecialistSchoolRoster.fromJson(int expected, SpecialistSchool school, Map<String, dynamic> data) {
     if (data['contract_version'] != 1 || data['complete'] != true ||
@@ -80,7 +85,24 @@ class SpecialistSchoolRoster {
             students.where((s) => s.followupId != null).length) {
       throw const FormatException('Duplicate student enrollment or follow-up');
     }
-    return SpecialistSchoolRoster._(expected, school, enrollmentText(data['revision']), students);
+    final limit = data['case_limit'];
+    final used = data['selected_cases'];
+    if (limit != null && (limit is! int || limit < 0)) {
+      throw const FormatException('Invalid specialist case limit');
+    }
+    if (used != null && (used is! int || used < 0)) {
+      throw const FormatException('Invalid selected case count');
+    }
+    if (limit != null && (used == null || used > limit)) {
+      throw const FormatException('Invalid case allocation');
+    }
+    final confirmed = students.where((student) => student.following).length;
+    if (used != null && used < confirmed) {
+      throw const FormatException('Case count lower than followed roster');
+    }
+    return SpecialistSchoolRoster._(
+      expected, school, enrollmentText(data['revision']),
+      limit as int?, used as int? ?? confirmed, students);
   }
 }
 
