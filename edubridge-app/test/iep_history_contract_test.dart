@@ -85,6 +85,14 @@ void main() {
       'plans': [iepPlanJson()..remove('current_approved_version_id')],
     },
     'unknown state': withVersion({...iepVersionJson(), 'status': 'pending'}),
+    'approved version with stale return reason': withVersion({
+      ...iepVersionJson(status: 'approved'),
+      'return_reason': 'Old rejection',
+    }),
+    'submitted version with stale return reason': withVersion({
+      ...iepVersionJson(status: 'submitted'),
+      'return_reason': 'Old rejection',
+    }),
     'returned without reason': withVersion({
       ...iepVersionJson(status: 'returned'),
       'return_reason': ' ',
