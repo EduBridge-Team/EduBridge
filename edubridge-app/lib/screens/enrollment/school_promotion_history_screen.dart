@@ -14,7 +14,7 @@ class SchoolPromotionHistoryScreen extends StatefulWidget {
   State<SchoolPromotionHistoryScreen> createState() => _SchoolPromotionHistoryScreenState();
 }
 
-class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScreen> {
+class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScreen>\n    with WidgetsBindingObserver {
   List<SchoolPromotionReceipt>? _operations;
   EnrollmentFailure? _failure;
   int _request = 0;
@@ -22,6 +22,7 @@ class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScr
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
@@ -50,7 +51,13 @@ class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScr
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _load();
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     ++_request;
     super.dispose();
   }
