@@ -29,6 +29,13 @@ class SchoolContextTest extends TestCase
             $t->unsignedBigInteger('school_id');
             $t->unsignedBigInteger('user_id');
         });
+        Schema::create('school_management_assignments', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('user_id');
+            $t->string('role');
+            $t->timestamp('ends_at')->nullable();
+        });
         DB::table('organizations')->insert(['id' => 4, 'is_active' => true]);
         DB::table('schools')->insert([
             ['id' => 10, 'name' => 'Independent', 'organization_id' => null, 'is_active' => true],
@@ -42,6 +49,7 @@ class SchoolContextTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('school_management_assignments');
         Schema::dropIfExists('school_accounts');
         Schema::dropIfExists('schools');
         Schema::dropIfExists('organizations');
@@ -62,6 +70,28 @@ class SchoolContextTest extends TestCase
         $data = $this->context(20)->getData(true);
         $this->assertSame(10, $data['school']['id']);
         $this->assertNull($data['school']['organization_id']);
+    }
+
+    public function test_active_personal_director_can_resolve_assigned_school(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 10, 'user_id' => 30, 'role' => 'director', 'ends_at' => null,
+        ]);
+        $this->assertSame(10, $this->context(30, 'teacher')->getData(true)['school']['id']);
+        $this->assertSame(403, $this->context(31, 'teacher')->getStatusCode());
+    }
+
+    public function test_revoked_or_ambiguous_director_assignments_are_denied(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            ['school_id' => 10, 'user_id' => 30, 'role' => 'director', 'ends_at' => null],
+            ['school_id' => 11, 'user_id' => 30, 'role' => 'director', 'ends_at' => null],
+            ['school_id' => 10, 'user_id' => 32, 'role' => 'director', 'ends_at' => now()],
+            ['school_id' => 10, 'user_id' => 33, 'role' => 'deputy_director', 'ends_at' => null],
+        ]);
+        $this->assertSame(403, $this->context(30, 'teacher')->getStatusCode());
+        $this->assertSame(403, $this->context(32, 'teacher')->getStatusCode());
+        $this->assertSame(403, $this->context(33, 'teacher')->getStatusCode());
     }
 
     public function test_inactive_school_or_institution_is_denied(): void

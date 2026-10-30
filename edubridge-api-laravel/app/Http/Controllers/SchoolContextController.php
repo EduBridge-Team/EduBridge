@@ -11,18 +11,32 @@ class SchoolContextController extends Controller
     public function show(Request $request): JsonResponse
     {
         $actor = $request->attributes->get('jwt_user');
-        if (!$actor || ($actor->role ?? null) !== 'school') {
+        if (!$actor) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
         // Never accept the school identifier or tenant from the client.
-        $schools = DB::table('school_accounts as account')
-            ->join('schools as school', 'school.id', '=', 'account.school_id')
-            ->where('account.user_id', $actor->id)
-            ->where('school.is_active', true)
-            ->select('school.id', 'school.name', 'school.organization_id')
-            ->limit(2)
-            ->get();
+        // Personal directors receive access only through a live assignment.
+        // Legacy school accounts retain their existing access path.
+        if (($actor->role ?? null) === 'school') {
+            $schools = DB::table('school_accounts as account')
+                ->join('schools as school', 'school.id', '=', 'account.school_id')
+                ->where('account.user_id', $actor->id)
+                ->where('school.is_active', true)
+                ->select('school.id', 'school.name', 'school.organization_id')
+                ->limit(2)
+                ->get();
+        } else {
+            $schools = DB::table('school_management_assignments as assignment')
+                ->join('schools as school', 'school.id', '=', 'assignment.school_id')
+                ->where('assignment.user_id', $actor->id)
+                ->where('assignment.role', 'director')
+                ->whereNull('assignment.ends_at')
+                ->where('school.is_active', true)
+                ->select('school.id', 'school.name', 'school.organization_id')
+                ->limit(2)
+                ->get();
+        }
 
         if ($schools->count() !== 1) {
             return response()->json(['error' => 'School access is unavailable'], 403);
