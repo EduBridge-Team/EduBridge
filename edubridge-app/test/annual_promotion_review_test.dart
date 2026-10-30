@@ -12,7 +12,7 @@ void main() {
     (fixture.academic.data['grades'] as List).add({
       'id': 21, 'school_id': 5, 'name': 'الصف الثالث',
     });
-    (fixture.academic.data['sections'] as List).addAll([
+    (fixture.academic.data['sections'] as List).addAll(<Map<String, dynamic>>[
       {'id': 31, 'academic_year_id': 11, 'grade_id': 21,
        'name': 'الثالث أ', 'capacity': 2, 'homeroom_teacher_name': null},
       {'id': 32, 'academic_year_id': 11, 'grade_id': 20,
