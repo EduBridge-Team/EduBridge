@@ -20,3 +20,13 @@ Institution same-school section transfer: if the POST is accepted but the subseq
 Run Flutter widget/unit tests and CI, and record separate server-backed acceptance for each actor using synthetic nonproduction data. Record unimplemented routes as `BLOCKED: BACKEND`, not as passing Flutter features. Do not infer plan approval from a draft, infer student school transfer from same-school section transfer, or treat successful CI as production acceptance.
 
 The live integration acceptance matrix in `docs/PHASE_01_04_INTEGRATION_ACCEPTANCE_2026_10_29.md` was NOT RUN when written. This audit does not change that status.
+
+## Additional integrations in the same PR
+
+- Existing `POST /ministry/approvals` integration in `EvaluationSheet`: a response now confirms a **pending** approval request only when the returned positive approval ID, child ID and saved evaluation ID agree. This does not claim ministry has approved the plan. Regression tests reject missing/mismatched/approved receipts.
+- Institution enrollment withdrawal: after a successful PATCH, server/invalid confirmation-read failures are classified as uncertain, just like the equivalent section-transfer fix. The user must review history instead of retrying a potentially committed write; tests cover 500/503 reads.
+- Institution within-school section transfer and specialist screen were already linked to their respective gateways, so no duplicate implementation or invented API was added.
+
+## Explicitly unresolved
+
+Cross-school transfers, independent IEP plan persistence/review contracts and phase 01–06 live multirole acceptance cannot be called closed by Flutter tests alone. Backend API availability and server-owned policy must be verified before enabling unsupported actions. No backend modifications are authorized.
