@@ -58,8 +58,31 @@ class SchoolInternalDomainController extends Controller
     private function authorizedSchool(Request $request, bool $lock = false): ?object
     {
         $actor = $request->attributes->get('jwt_user');
-        if (!$actor || ($actor->role ?? null) !== 'school') {
+        if (!$actor) {
             return null;
+        }
+        // Personal director accounts are authorized by a live assignment,
+        // not by their global user role. Legacy school accounts remain supported.
+        if (($actor->role ?? null) !== 'school') {
+            $query = DB::table('school_management_assignments as assignment')
+                ->join('schools as school', 'school.id', '=', 'assignment.school_id')
+                ->where('assignment.user_id', $actor->id)
+                ->where('assignment.role', 'director')
+                ->whereNull('assignment.ends_at')
+                ->where('school.is_active', true)
+                ->select('school.id', 'school.organization_id', 'school.internal_domain',
+                    'school.internal_domain_confirmed_at')
+                ->limit(2);
+            $schools = $lock ? $query->lockForUpdate()->get() : $query->get();
+            if ($schools->count() !== 1) {
+                return null;
+            }
+            $school = $schools->first();
+            if ($school->organization_id !== null && !DB::table('organizations')
+                ->where('id', $school->organization_id)->where('is_active', true)->exists()) {
+                return null;
+            }
+            return $school;
         }
         $query = DB::table('school_accounts as account')
             ->join('schools as school', 'school.id', '=', 'account.school_id')

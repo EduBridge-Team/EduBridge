@@ -48,9 +48,9 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::get('/me/director-schools', [\App\Http\Controllers\MySchoolDirectorAssignmentsController::class, 'index'])
         ->middleware('throttle:60,1');
     Route::get('/school/internal-domain', [\App\Http\Controllers\SchoolInternalDomainController::class, 'show'])
-        ->middleware(['role:school', 'throttle:120,1']);
+        ->middleware('throttle:120,1');
     Route::post('/school/internal-domain/confirm', [\App\Http\Controllers\SchoolInternalDomainController::class, 'confirm'])
-        ->middleware(['role:school', 'throttle:10,1']);
+        ->middleware('throttle:10,1');
     Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
         ->middleware(['role:school', 'throttle:120,1']);
     Route::get('/school/academic', [\App\Http\Controllers\SchoolAcademicController::class, 'index'])
