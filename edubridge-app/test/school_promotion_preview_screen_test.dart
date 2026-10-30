@@ -42,7 +42,9 @@ void main() {
       await tester.pumpAndSettle();
       final destination = find.byKey(
         const ValueKey('promotion-destination-101-promoted'));
-      await tester.ensureVisible(destination);
+      await tester.scrollUntilVisible(destination, 120,
+        scrollable: find.byType(Scrollable).first);
+      await tester.pumpAndSettle();
       await tester.tap(destination);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Third A').last);
