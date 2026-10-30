@@ -63,7 +63,8 @@ class ClassResultDraft {
   final DateTime observedOn;
   final num? score, maximum, goalValue;
   bool fits(ClassResultOptions options) => options.canRecord && options.states.contains(state) &&
-    !observedOn.isBefore(options.earliest) && !observedOn.isAfter(options.latest) &&
+    !DateTime(observedOn.year, observedOn.month, observedOn.day).isBefore(options.earliest) &&
+    !DateTime(observedOn.year, observedOn.month, observedOn.day).isAfter(options.latest) &&
     observation.trim().isNotEmpty && observation.trim().length <= 2000 &&
     ((score == null && maximum == null) || (score != null && maximum != null &&
       score!.isFinite && maximum!.isFinite && maximum! > 0 && score! >= 0 && score! <= maximum!)) &&
