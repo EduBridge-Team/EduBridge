@@ -34,6 +34,10 @@ void main() {
         SchoolAnnualPromotionScreen(gateway: gateway), language));
       await tester.pumpAndSettle();
       expect(find.text('مدرسة الأمل'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('promotion-approve')), 200,
+        scrollable: find.byType(Scrollable).first,
+      );
       final approve = tester.widget<FilledButton>(
         find.byKey(const ValueKey('promotion-approve')));
       expect(approve.onPressed, isNull);
