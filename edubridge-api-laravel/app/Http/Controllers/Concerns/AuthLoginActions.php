@@ -140,7 +140,7 @@ trait AuthLoginActions
             return null;
         }
 
-        return DB::table('school_internal_identities as identity')
+        $matches = DB::table('school_internal_identities as identity')
             ->join('schools as school', 'school.id', '=', 'identity.school_id')
             ->join('users as user', 'user.id', '=', 'identity.user_id')
             ->leftJoin('organizations as organization', 'organization.id', '=', 'school.organization_id')
@@ -151,7 +151,10 @@ trait AuthLoginActions
             ->where(function ($query) {
                 $query->whereNull('school.organization_id')->orWhere('organization.is_active', true);
             })
-            ->select('user.*')->first();
+            ->select('user.*')->limit(2)->get();
+
+        // Ambiguous identity bindings must never authenticate arbitrarily.
+        return $matches->count() === 1 ? $matches->first() : null;
     }
 
 }
