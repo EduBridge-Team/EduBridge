@@ -42,7 +42,6 @@ void _changed(
       result.version != original.version + 1 ||
       result.schoolName != original.schoolName ||
       result.childName != original.childName ||
-      !result.createdAt.isAtSameMomentAs(original.createdAt) ||
       result.status != status) {
     throw const FormatException('Request response mismatch');
   }
