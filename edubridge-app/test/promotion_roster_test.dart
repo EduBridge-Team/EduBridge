@@ -52,7 +52,7 @@ void main() {
       100: const PromotionSelection(100, PromotionOutcome.promoted, 31),
     }).ready, isFalse);
     final duplicate = rosterJson();
-    (duplicate['students'] as List).add(Map<String, dynamic>.from(
+    (duplicate['students'] as List).add(Map<String, Object>.from(
       (duplicate['students'] as List).single as Map));
     expect(() => PromotionRoster.fromJson(duplicate, schoolId: 5,
       sourceYearId: 10, targetYearId: 11), throwsFormatException);
