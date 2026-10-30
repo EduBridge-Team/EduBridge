@@ -88,3 +88,8 @@ Approval accepts `preview_token`, `roster_revision`, exact decisions, and `idemp
 
 ## Integration/ownership
 Flutter: screens/models/controllers, local validation, proposed typed gateway, authorized API client, error and loading states, mocks/tests. Backend: school-scoped endpoints, director authorization, transfer policy, transaction/idempotency, audit/history. Web: no changes requested. **No production approval is enabled until the backend contract passes tests.**
+
+## Flutter batch: local preview and transfer destination
+The school roster review now accepts a provisional numeric destination-school ID for transferred students, uses the existing `PromotionDraft` validator to block missing/invalid decisions, and displays a **local, read-only** confirmation dialog containing the full student's decision list and outcome counts. The final approval control remains disabled. This is **not** a server preview receipt and must never be mistaken for one.
+
+Backend must expose a school directory endpoint scoped to the authenticated school account, with readable school names and authorization/transfer eligibility; replace provisional numeric entry once available. Backend must also implement signed server preview and idempotent approval/operation-status endpoints above before Flutter can finish integration. Status: LOCAL PREVIEW ONLY, NO SERVER APPROVAL.
