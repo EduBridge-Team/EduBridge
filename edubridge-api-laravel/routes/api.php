@@ -45,9 +45,9 @@ Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers
 
 // كل ما يلي يتطلب توكن صالح، تحقق هوية، وحماية موحدة من الإغراق.
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
-    Route::get('/school/internal-domain', [\\App\\Http\\Controllers\\SchoolInternalDomainController::class, 'show'])
+    Route::get('/school/internal-domain', [\App\Http\Controllers\SchoolInternalDomainController::class, 'show'])
         ->middleware(['role:school', 'throttle:120,1']);
-    Route::post('/school/internal-domain/confirm', [\\App\\Http\\Controllers\\SchoolInternalDomainController::class, 'confirm'])
+    Route::post('/school/internal-domain/confirm', [\App\Http\Controllers\SchoolInternalDomainController::class, 'confirm'])
         ->middleware(['role:school', 'throttle:10,1']);
     Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
         ->middleware(['role:school', 'throttle:120,1']);
