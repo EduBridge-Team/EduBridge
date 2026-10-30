@@ -27,6 +27,7 @@ class SpecialistSchoolStudentsFixture {
       rosters[id] = specialistCopy({
         'contract_version': 1, 'complete': true, 'specialist_id': 7, 'organization_id': 4,
         'school_id': id, 'assignment_id': id == 2 ? 10 : 11, 'revision': 'r1',
+        'case_limit': 3, 'selected_cases': 1,
         'students': [
           {'child_id': id * 10, 'enrollment_id': id * 100, 'name': 'طالب $id',
             'section_id': id, 'section_name': 'شعبة $id', 'academic_year_id': 5,
@@ -60,6 +61,7 @@ class SpecialistSchoolStudentsFixture {
       final row = (roster['students'] as List).singleWhere((s) => s['child_id'] == child);
       row['is_following'] = true; row['can_follow'] = false; row['followup_id'] = 999;
       roster['revision'] = 'r2';
+      roster['selected_cases'] = (roster['selected_cases'] as int) + 1;
     }
     return http.Response(jsonEncode({
       'specialist_id': 7, 'organization_id': 4, 'school_id': badReceipt ? 9999 : school,
