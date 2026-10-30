@@ -1,5 +1,6 @@
 import '../../utils/locale_form_validation.dart';
 import '../../model/evaluations/evaluation_save_receipt.dart';
+import '../../model/evaluations/ministry_submission_receipt.dart';
 import '../../l10n/l10n.dart';
 // lib/screens/evaluation/evaluation_sheet.dart
 import 'package:flutter/material.dart';
@@ -128,7 +129,10 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
           teacherId: _selectedTeacherId,
         );
         if (!mounted) return;
-        if (submitted == null) {
+        if (submitted == null ||
+            !ministrySubmissionReceiptMatches(submitted,
+              childId: widget.child['id'] as int,
+              evaluationId: result['id'] as int)) {
           setState(() {
             _error = SharedUiMessage.changesSaveFailed;
             _loading = false;
