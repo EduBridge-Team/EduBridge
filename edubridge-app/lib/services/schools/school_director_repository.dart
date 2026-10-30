@@ -107,6 +107,15 @@ class SchoolDirectorRepository implements SchoolDirectorGateway {
         throw const FormatException('Invalid directory scope or history');
       }
       assignments.sort((a, b) => b.startsOn.compareTo(a.startsOn));
+      // Historical periods may meet on a handover date, but must not overlap.
+      for (var i = 0; i + 1 < assignments.length; i++) {
+        final newer = assignments[i];
+        final older = assignments[i + 1];
+        if (older.endedOn == null ||
+            older.endedOn!.isAfter(newer.startsOn)) {
+          throw const FormatException('Overlapping director appointments');
+        }
+      }
       return DirectorDirectory(directors: directors, assignments: assignments);
     });
   }
