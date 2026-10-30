@@ -36,7 +36,17 @@ class _ClassResultBodyState extends State<_ClassResultBody> with WidgetsBindingO
     final expected = _state.options!, epoch = _state.generation, draft = _state.draft!;
     final yes = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
       title: Text(label('تأكيد تسجيل النتيجة', 'Confirm student result')), scrollable: true,
-      content: Text('${widget.source.student.name}\n${widget.source.lesson.title}\n${lessonResultDay(draft.observedOn)}\n${draft.observation.trim()}'),
+      content: Text([
+        widget.source.student.name,
+        widget.source.lesson.title,
+        '${label('الحالة', 'State')}: ${draft.state == 'completed' ? label('مكتمل', 'Completed') : label('قيد التقدم', 'In progress')}',
+        lessonResultDay(draft.observedOn),
+        draft.observation.trim(),
+        if (draft.score != null)
+          '${label('النتيجة', 'Score')}: ${draft.score} / ${draft.maximum}',
+        if (draft.goalValue != null)
+          '${label('قياس الهدف', 'Goal measurement')}: ${draft.goalValue} ${expected.goalUnit ?? ''}',
+      ].join('\\n')),
       actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
         TextButton(key: const ValueKey('class-result-confirm'), onPressed: () => Navigator.pop(context, true),
           child: Text(MaterialLocalizations.of(context).okButtonLabel))],
