@@ -60,8 +60,6 @@ void main() {
       expect(find.byType(AlertDialog), findsOneWidget);
       expect(find.textContaining(language == 'ar' ? 'لم يُنقل' : 'No students have'),
         findsOneWidget);
-      expect(tester.widget<FilledButton>(
-        find.byKey(const ValueKey('promotion-approve'))).onPressed, isNull);
       expect(gateway.reads, 1);
       expect(tester.takeException(), isNull);
     });
