@@ -27,12 +27,13 @@ trait AuthLoginActions
                 ], 500);
             }
 
-            $user = DB::table('users')->where('email', $email)->first();
-            // School-local login identifiers resolve to an existing user only.
-            // Password, verification and JWT checks below remain unchanged.
-            if (!$user && is_string($email)) {
-                $user = $this->resolveSchoolInternalLogin($email);
-            }
+            // Internal school identifiers must never fall back to global email lookup:
+            // that would bypass school activation and domain confirmation.
+            $isInternalIdentifier = is_string($email)
+                && str_ends_with(strtolower(trim($email)), '.edubridge');
+            $user = $isInternalIdentifier
+                ? $this->resolveSchoolInternalLogin($email)
+                : DB::table('users')->where('email', $email)->first();
             $storedHash = $user?->{$passwordColumn} ?? null;
 
             if (
