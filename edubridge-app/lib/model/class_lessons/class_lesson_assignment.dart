@@ -45,7 +45,7 @@ class ClassAssignmentOptions {
   final Map<int, String> lessons;
   final List<ClassAssignmentStudent> students;
   factory ClassAssignmentOptions.fromJson(Map<String, dynamic> data, ClassLessonSection section) {
-    if (data['contract_version'] != 1 || data['section_id'] != section.id ||
+    if (data['contract_version'] != 1 || data['complete'] != true || data['section_id'] != section.id ||
         data['school_id'] != section.schoolId || data['academic_year_id'] != section.yearId ||
         data['can_assign'] is! bool) throw const FormatException('Invalid assignment scope');
     final lessons = <int, String>{};

@@ -18,7 +18,7 @@ void main() {
     expect(() => options.students.clear(), throwsUnsupportedError);
     expect(() => options.lessons.clear(), throwsUnsupportedError);
   });
-  for (final mode in ['foreign', 'draft', 'old', 'duplicate-child', 'duplicate-lesson', 'wrong-scope', 'contract']) {
+  for (final mode in ['foreign', 'draft', 'old', 'duplicate-child', 'duplicate-lesson', 'wrong-scope', 'contract', 'incomplete']) {
     test('rejects invalid options $mode', () async {
       final f = ClassAssignmentFixture();
       final student = (f.data['students'] as List).first as Map, goal = ((f.data['students'] as List).first['goals'] as List).first as Map;
@@ -29,6 +29,7 @@ void main() {
       if (mode == 'duplicate-lesson') (f.data['lessons'] as List).add(assignmentJson((f.data['lessons'] as List).first));
       if (mode == 'wrong-scope') f.data['school_id'] = 2;
       if (mode == 'contract') f.data['contract_version'] = 2;
+      if (mode == 'incomplete') f.data['complete'] = false;
       await expectLater(f.repository.load(), throwsA(assignmentFailure(EnrollmentFailure.invalidResponse)));
       expect(f.posts, 0);
     });
