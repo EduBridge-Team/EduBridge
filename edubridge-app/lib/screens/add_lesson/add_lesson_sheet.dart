@@ -147,6 +147,8 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   }
 
   Future<void> _save() async {
+    // A second tap must not upload the same lesson or its media twice.
+    if (_saving) return;
     if (_titleCtrl.text.trim().isEmpty) {
       setState(() => _error = _LessonError.titleRequired);
       return;
