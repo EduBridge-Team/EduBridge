@@ -1,4 +1,5 @@
 import '../../utils/locale_form_validation.dart';
+import '../../model/evaluations/evaluation_save_receipt.dart';
 import '../../l10n/l10n.dart';
 // lib/screens/evaluation/evaluation_sheet.dart
 import 'package:flutter/material.dart';
@@ -103,13 +104,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
 
       // A write is confirmed only by a usable record for the requested child.
       // Older responses may omit child_id, but must never contradict it.
-      final savedId = result['id'];
-      final childId = widget.child['id'];
-      if (savedId is! int ||
-          savedId <= 0 ||
-          childId is! int ||
-          childId <= 0 ||
-          (result.containsKey('child_id') && result['child_id'] != childId)) {
+      if (!evaluationSaveReceiptMatchesChild(result, widget.child['id'])) {
         setState(() {
           _error = SharedUiMessage.evaluationSaveFailed;
           _loading = false;
