@@ -40,6 +40,8 @@ void main() {
           await tester.pumpAndSettle();
           final l = await AppLocalizations.delegate.load(Locale(language));
           expect(find.text(l.schoolAccountSuccess), findsOneWidget);
+          expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget,
+            reason: 'Backend sends an email verification link; creation is not verified login');
           expect(find.byKey(const ValueKey('school-account-created-email')), findsOneWidget);
           expect(find.text('school@example.org'), findsOneWidget);
           expect(password.text, isEmpty);
