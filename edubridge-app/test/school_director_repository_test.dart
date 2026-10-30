@@ -329,4 +329,38 @@ void main() {
     );
     expect(calls, 1);
   });
+  test('overlapping historical appointments are rejected', () async {
+    final repository = SchoolDirectorRepository(
+      client: DirectorApiClient(
+        get: (_) async => json({
+          ...directory(),
+          'assignments': [
+            {...assignment(endedOn: '2026-10-25'), 'id': 51,
+              'starts_on': '2026-10-15'},
+            {...assignment(endedOn: '2026-10-20'), 'id': 50},
+          ],
+        }),
+      ),
+    );
+    await expectLater(repository.directory(school),
+        failure(DirectorFailure.invalidResponse));
+  });
+
+  test('non-overlapping historical appointments remain readable', () async {
+    final repository = SchoolDirectorRepository(
+      client: DirectorApiClient(
+        get: (_) async => json({
+          ...directory(),
+          'assignments': [
+            {...assignment(endedOn: '2026-10-25'), 'id': 51,
+              'starts_on': '2026-10-20'},
+            {...assignment(endedOn: '2026-10-20'), 'id': 50},
+          ],
+        }),
+      ),
+    );
+    final result = await repository.directory(school);
+    expect(result.assignments.map((item) => item.id), [51, 50]);
+  });
+
 }
