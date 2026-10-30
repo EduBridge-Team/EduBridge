@@ -55,7 +55,10 @@ class ClassAssignmentOptions {
       lessons[id] = enrollmentText(lesson['title']);
     }
     final students = enrollmentList(data['students']).map((s) => ClassAssignmentStudent.fromJson(enrollmentMap(s))).toList();
-    if (students.map((s) => s.id).toSet().length != students.length) throw const FormatException('Duplicate student');
+    if (students.map((s) => s.id).toSet().length != students.length ||
+        (data['can_assign'] == true && (lessons.isEmpty || students.isEmpty))) {
+      throw const FormatException('Invalid assignment options');
+    }
     return ClassAssignmentOptions._(enrollmentText(data['revision']), data['can_assign'] as bool, lessons, students);
   }
   // Includes names/content as well as identity: changed options invalidate an open confirmation.
