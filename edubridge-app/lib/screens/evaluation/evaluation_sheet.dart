@@ -1,4 +1,5 @@
 import '../../utils/locale_form_validation.dart';
+import '../../model/evaluations/evaluation_save_receipt.dart';
 import '../../l10n/l10n.dart';
 // lib/screens/evaluation/evaluation_sheet.dart
 import 'package:flutter/material.dart';
@@ -101,7 +102,17 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         return;
       }
 
-      // Reuse a successfully saved evaluation if ministry submission needs a retry.
+      // A write is confirmed only by a usable record for the requested child.
+      // Older responses may omit child_id, but must never contradict it.
+      if (!evaluationSaveReceiptMatchesChild(result, widget.child['id'])) {
+        setState(() {
+          _error = SharedUiMessage.evaluationSaveFailed;
+          _loading = false;
+        });
+        return;
+      }
+
+      // Reuse only a verified save receipt if ministry submission needs a retry.
       _savedEvaluation = result;
       if (_sendToMinistry) {
         final submitted = await ApiService.submitForMinistryApproval(
