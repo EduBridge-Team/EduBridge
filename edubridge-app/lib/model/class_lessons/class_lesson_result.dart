@@ -38,7 +38,9 @@ class ClassResultOptions {
       throw const FormatException('Invalid result options scope');
     }
     final states = enrollmentList(data['allowed_states']).map(enrollmentText).toList();
-    if (states.toSet().length != states.length || states.any((s) => !['in_progress', 'completed'].contains(s))) {
+    if (states.toSet().length != states.length ||
+        (data['can_record'] == true && states.isEmpty) ||
+        states.any((s) => !['in_progress', 'completed'].contains(s))) {
       throw const FormatException('Invalid result states');
     }
     // Validate current approved child ownership before comparing the assignment link.

@@ -42,7 +42,7 @@ void main() {
     final f = ClassResultFixture()..changeReceipt = (r) { r['score'] = 0.0; (r['goal_measurement'] as Map)['value'] = 2.0; };
     expect(await f.repository.record(f.options, f.draft(), resultKey), 88);
   });
-  for (final mode in ['scope', 'assignment', 'child', 'foreign-goal', 'old-goal', 'draft-goal', 'unit', 'dates', 'states']) {
+  for (final mode in ['scope', 'assignment', 'child', 'foreign-goal', 'old-goal', 'draft-goal', 'unit', 'dates', 'states', 'empty-enabled-states']) {
     test('rejects invalid result options $mode', () async {
       final f = ClassResultFixture();
       if (mode == 'scope') f.data['school_id'] = 2;
@@ -54,6 +54,7 @@ void main() {
       if (mode == 'unit') f.data['goal_unit'] = '';
       if (mode == 'dates') f.data['latest_on'] = '2026-02-30';
       if (mode == 'states') f.data['allowed_states'] = ['completed', 'completed'];
+      if (mode == 'empty-enabled-states') f.data['allowed_states'] = [];
       await expectLater(f.repository.load(), throwsA(resultFailure(EnrollmentFailure.invalidResponse)));
       expect(f.posts, 0);
     });
