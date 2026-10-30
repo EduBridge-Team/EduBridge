@@ -36,6 +36,9 @@ void main() {
       expect(find.byType(BrandAppBar), findsOneWidget);
       expect(find.text('Sara'), findsOneWidget);
       final outcome = find.byKey(const ValueKey('promotion-outcome-101'));
+      await tester.scrollUntilVisible(outcome, 100,
+        scrollable: find.byType(Scrollable).first);
+      await tester.pumpAndSettle();
       await tester.tap(outcome);
       await tester.pumpAndSettle();
       await tester.tap(find.text(language == 'ar' ? 'ناجح' : 'Promoted').last);
