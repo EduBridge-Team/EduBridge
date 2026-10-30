@@ -14,7 +14,8 @@ class SchoolPromotionHistoryScreen extends StatefulWidget {
   State<SchoolPromotionHistoryScreen> createState() => _SchoolPromotionHistoryScreenState();
 }
 
-class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScreen>\n    with WidgetsBindingObserver {
+class _SchoolPromotionHistoryScreenState extends State<SchoolPromotionHistoryScreen>
+    with WidgetsBindingObserver {
   List<SchoolPromotionReceipt>? _operations;
   EnrollmentFailure? _failure;
   int _request = 0;
