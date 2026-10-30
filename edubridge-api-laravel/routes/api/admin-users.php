@@ -56,3 +56,7 @@ Route::delete('/certificates/{id}', [\App\Http\Controllers\CertificateController
 
 Route::get('/search/national-id', [\App\Http\Controllers\SearchController::class, 'byNationalId'])
     ->middleware('role:teacher,specialist,admin,ministry,institution');
+
+// Admin/institution appointment of an existing verified director identity.
+Route::post('/admin/schools/{school}/director', [\App\Http\Controllers\SchoolDirectorAppointmentController::class, 'appoint'])
+    ->whereNumber('school')->middleware(['role:admin,institution', 'throttle:10,1']);
