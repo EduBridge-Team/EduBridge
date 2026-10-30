@@ -42,7 +42,9 @@ class InstitutionEnrollmentHistoryRepository implements InstitutionEnrollmentTra
       after = await load();
     } on EnrollmentApiException catch (error) {
       // The PATCH may already be committed. Require refresh rather than replay.
-      if (error.failure == EnrollmentFailure.network) {
+      if (error.failure == EnrollmentFailure.network ||
+          error.failure == EnrollmentFailure.server ||
+          error.failure == EnrollmentFailure.invalidResponse) {
         throw const EnrollmentApiException(EnrollmentFailure.uncertain);
       }
       rethrow;
