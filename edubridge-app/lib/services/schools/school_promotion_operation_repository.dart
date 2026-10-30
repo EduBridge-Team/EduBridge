@@ -18,9 +18,14 @@ class SchoolPromotionReceipt {
     final status = enrollmentText(value['status']);
     final source = enrollmentId(value['source_year_id']);
     final target = enrollmentId(value['target_year_id']);
-    final promoted = enrollmentId(counts['promoted']);
-    final repeating = enrollmentId(counts['repeating']);
-    final transferred = enrollmentId(counts['transferred']);
+    int count(String key) {
+      final value = counts[key];
+      if (value is! int || value < 0) throw const FormatException('Invalid count');
+      return value;
+    }
+    final promoted = count('promoted');
+    final repeating = count('repeating');
+    final transferred = count('transferred');
     if (enrollmentId(value['school_id']) != schoolId ||
         operationId.isEmpty || source <= 0 || target <= source ||
         !['completed', 'pending', 'failed'].contains(status) ||
