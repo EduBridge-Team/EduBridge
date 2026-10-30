@@ -53,6 +53,8 @@ void main() {
       await tester.scrollUntilVisible(preview, 160,
         scrollable: find.byType(Scrollable).first);
       expect(tester.widget<FilledButton>(preview).onPressed, isNotNull);
+      expect(tester.widget<FilledButton>(
+        find.byKey(const ValueKey('promotion-approve'))).onPressed, isNull);
       await tester.tap(preview);
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
