@@ -86,7 +86,7 @@ class SchoolDeputyManagementTest extends TestCase
         $id = $response->getData(true)['assignment_id'];
         $this->assertCount(1, $controller->index($this->request(20))->getData(true)['deputies']);
         $this->assertTrue($controller->store($this->request(20, ['user_email' => 'deputy@example.org']))->getData(true)['unchanged']);
-        $this->assertSame(403, $controller->revoke($this->request(23), $id)->getStatusCode());
+        $this->assertSame(404, $controller->revoke($this->request(23), $id)->getStatusCode());
         $this->assertSame(200, $controller->revoke($this->request(20), $id)->getStatusCode());
         $this->assertSame(404, $controller->revoke($this->request(20), $id)->getStatusCode());
         $this->assertCount(0, $controller->index($this->request(20))->getData(true)['deputies']);
