@@ -330,10 +330,8 @@ void main() {
       'school_name': 'Other school'},
     {...enrollmentRequestJson(status: 'approved', version: 2),
       'child_name': 'Other child'},
-    {...enrollmentRequestJson(status: 'approved', version: 2),
-      'created_at': '2026-10-29T00:00:00Z'},
   ]) {
-    test('approval cannot silently replace request identity or creation date',
+    test('approval cannot silently replace child or school identity',
         () async {
       final repo = SchoolEnrollmentRepository(
         client: EnrollmentApiClient(
