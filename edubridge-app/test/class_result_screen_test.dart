@@ -80,6 +80,19 @@ void main() {
       else { expect(button, findsNothing); expect(child, isNull); }
     }
   });
+  test('editing a result after confirmation blocks stale IEP evidence submission', () async {
+    final f = ClassResultFixture();
+    final controller = ClassResultController(f.repository);
+    await controller.reload();
+    makeResultReady(controller);
+    final options = controller.options!, epoch = controller.generation;
+    final confirmed = controller.draft!;
+    controller.change(options, epoch, () => controller.observation = 'updated evidence');
+    await controller.submit(options, epoch, confirmed);
+    expect(f.posts, 0);
+    expect(controller.canSubmit, isTrue);
+    controller.dispose();
+  });
   test('serialize writes and block refresh while recording', () async {
     final wait = Completer<void>(), f = ClassResultFixture();
     f.beforePost = () => wait.future;
