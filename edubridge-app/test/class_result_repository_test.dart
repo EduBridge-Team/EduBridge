@@ -14,6 +14,22 @@ void main() {
     expect(f.body!['observation'], 'دليل الأداء الأصلي');
     expect(() => f.options.states.clear(), throwsUnsupportedError);
   });
+  test('observation window is inclusive of the whole calendar day', () {
+    final f = ClassResultFixture(), options = f.options;
+    final duringLastDay = ClassResultDraft(
+      state: 'completed',
+      observedOn: DateTime(2026, 10, 28, 23, 59),
+      observation: 'end-of-day evidence',
+    );
+    expect(duringLastDay.fits(options), isTrue);
+    expect(duringLastDay.payload(options)['observed_on'], '2026-10-28');
+    final outsideWindow = ClassResultDraft(
+      state: 'completed',
+      observedOn: DateTime(2026, 10, 29),
+      observation: 'outside window',
+    );
+    expect(outsideWindow.fits(options), isFalse);
+  });
   test('no score or measurement is valid qualitative evidence; no goal stays unlinked', () async {
     for (final hasGoal in [true, false]) {
       final f = ClassResultFixture(goal: hasGoal);
