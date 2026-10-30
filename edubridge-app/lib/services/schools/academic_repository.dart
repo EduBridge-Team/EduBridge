@@ -19,7 +19,8 @@ class AcademicRepository implements AcademicGateway {
     try {
       final identity = SchoolPortalIdentity.fromJson(enrollmentMap(context['school']));
       final catalog = AcademicCatalog.fromJson(data);
-      if (catalog.school.id != identity.school.id) {
+      if (catalog.school.id != identity.school.id ||
+          catalog.school.name != identity.school.name) {
         throw const FormatException('Foreign school');
       }
       return catalog;
