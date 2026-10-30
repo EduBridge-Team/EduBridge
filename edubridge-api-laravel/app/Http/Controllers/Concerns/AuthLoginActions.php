@@ -144,6 +144,7 @@ trait AuthLoginActions
             ->join('schools as school', 'school.id', '=', 'identity.school_id')
             ->join('users as user', 'user.id', '=', 'identity.user_id')
             ->leftJoin('organizations as organization', 'organization.id', '=', 'school.organization_id')
+            ->whereIn('user.role', ['teacher', 'student'])
             ->where('identity.username', $matches[1])
             ->where('school.internal_domain', $matches[2])
             ->whereNotNull('school.internal_domain_confirmed_at')
