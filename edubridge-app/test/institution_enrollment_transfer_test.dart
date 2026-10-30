@@ -13,6 +13,21 @@ void main() {
     expect(data.records.first.sectionId, 31);
     expect(data.transferTargets(3), isEmpty);
   });
+  for (final failureStatus in [500, 503]) {
+    test('transfer confirmation HTTP $failureStatus is uncertain and not retried', () async {
+      final fixture = InstitutionHistoryFixture()
+        ..addTarget()
+        ..afterTransferReadStatus = failureStatus;
+      await expectLater(
+        fixture.repository.transfer(2, 31),
+        throwsA(isA<EnrollmentApiException>().having(
+          (error) => error.failure, 'failure', EnrollmentFailure.uncertain,
+        )),
+      );
+      expect(fixture.writes, hasLength(1));
+      expect(fixture.rows.last['status'], 'active');
+    });
+  }
   for (final kind in ['same', 'missing', 'inactive', 'used', 'year', 'scope']) {
     test('rejects $kind before sending', () async {
       final f = InstitutionHistoryFixture()..addTarget();
