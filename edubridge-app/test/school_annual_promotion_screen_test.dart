@@ -19,6 +19,7 @@ class _ReadOnlyAcademicGateway implements AcademicGateway {
           'starts_on': '2027-09-01', 'ends_on': '2028-06-30', 'is_current': false},
       ],
       'grades': <Object>[], 'sections': <Object>[],
+      'academic_terms': <Object>[], 'subjects': <Object>[],
     });
   }
   @override
