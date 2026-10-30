@@ -49,18 +49,24 @@ class SpecialistSchoolStudentsRepository implements SpecialistSchoolStudentsGate
   }
   @override
   Future<void> follow(SpecialistSchoolRoster expected, SpecialistSchoolStudent student) async {
-    if (!student.canFollow || student.following || !expected.students.any((s) =>
+    if (!expected.hasAvailableCases || !student.canFollow || student.following || !expected.students.any((s) =>
         s.sameEnrollment(student) && s.canFollow && !s.following)) {
       throw const EnrollmentApiException(EnrollmentFailure.validation);
     }
     final current = await students(expected.specialistId, expected.school);
-    if (current.revision != expected.revision || !current.students.any((s) =>
+    if (current.revision != expected.revision ||
+        current.caseLimit != expected.caseLimit ||
+        current.selectedCases != expected.selectedCases ||
+        !current.hasAvailableCases || !current.students.any((s) =>
         s.sameEnrollment(student) && s.canFollow && !s.following)) {
       throw const EnrollmentApiException(EnrollmentFailure.conflict);
     }
     final receipt = await _client.post('${_base(expected.school)}/students/${student.id}/follow-ups', {
       'expected_revision': expected.revision, 'expected_assignment_id': expected.school.assignmentId,
-      'expected_enrollment_id': student.enrollmentId, 'idempotency_key': _key(),
+      'expected_enrollment_id': student.enrollmentId,
+      'expected_case_limit': expected.caseLimit,
+      'expected_selected_cases': expected.selectedCases,
+      'idempotency_key': _key(),
     });
     final followupId = _parse(() {
       if (enrollmentId(receipt['specialist_id']) != expected.specialistId ||
@@ -80,7 +86,9 @@ class SpecialistSchoolStudentsRepository implements SpecialistSchoolStudentsGate
           EnrollmentFailure.invalidResponse, EnrollmentFailure.unavailable}.contains(e.failure)) rethrow;
       throw const EnrollmentApiException(EnrollmentFailure.uncertain);
     }
-    if (!after.students.any((s) => s.sameEnrollment(student) && s.following && s.followupId == followupId)) {
+    if (after.caseLimit != expected.caseLimit ||
+        after.selectedCases != expected.selectedCases + 1 ||
+        !after.students.any((s) => s.sameEnrollment(student) && s.following && s.followupId == followupId)) {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }
   }
