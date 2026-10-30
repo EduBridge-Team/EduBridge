@@ -28,6 +28,21 @@ void main() {
     f.wrongPeriod = false; f.periodSummary!['teachers_joined'] = -1;
     await expectLater(f.repository.load(from: from, to: to), throwsA(isA<EnrollmentApiException>().having((e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)));
   });
+  test('period metadata is validated even without period counters', () async {
+    final from = DateTime(2026, 10, 1), to = DateTime(2026, 10, 26);
+    final f = InstitutionStatisticsFixture();
+    f.data['period'] = {'from': '2026-09-01', 'to': '2026-10-26'};
+    await expectLater(f.repository.load(from: from, to: to),
+      throwsA(isA<EnrollmentApiException>().having(
+        (e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)));
+    f.data['period'] = {'from': '2026-10-01', 'to': '2026-10-26'};
+    expect((await f.repository.load(from: from, to: to)).periodSummary, isEmpty);
+    f.data.remove('period');
+    f.data['period_summary'] = {'schools_created': 2};
+    await expectLater(f.repository.load(from: from, to: to),
+      throwsA(isA<EnrollmentApiException>().having(
+        (e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)));
+  });
   test('reversed range is rejected before transport', () async {
     final f = InstitutionStatisticsFixture();
     await expectLater(f.repository.load(from: DateTime(2026, 11), to: DateTime(2026, 10)), throwsA(isA<EnrollmentApiException>()));

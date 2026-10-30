@@ -60,12 +60,18 @@ class InstitutionStatistics {
         throw const FormatException('School totals mismatch');
       }
     }
-    final periodSummary = <String, int?>{};
-    if (data['period_summary'] != null) {
+    // A supplied period must match the requested window even when period counters
+    // are unavailable. Never attribute a report for another window to this one.
+    if (data['period'] != null) {
       final period = enrollmentMap(data['period']);
-      if (from == null || to == null || academicDate(period['from']) != from || academicDate(period['to']) != to) {
+      if (from == null || to == null || academicDate(period['from']) != from ||
+          academicDate(period['to']) != to) {
         throw const FormatException('Mismatched statistics period');
       }
+    }
+    final periodSummary = <String, int?>{};
+    if (data['period_summary'] != null) {
+      if (data['period'] == null) throw const FormatException('Missing statistics period');
       final values = enrollmentMap(data['period_summary']);
       for (final key in ['schools_created', 'teachers_joined', 'specialists_joined', 'student_files_created', 'enrollments_started']) {
         periodSummary[key] = _count(values[key]);
