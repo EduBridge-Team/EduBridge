@@ -103,7 +103,8 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
               .toList()
           : ['عام'];
 
-      final result = (_savedEvaluationChildId == childId ? _savedEvaluation : null) ?? await ApiService.evaluateChild(
+      final result = (evaluationRetryReceiptMatchesChild(_savedEvaluation, _savedEvaluationChildId, childId)
+          ? _savedEvaluation : null) ?? await ApiService.evaluateChild(
         childId: childId,
         evaluationType: _evaluationType,
         cognitiveAssessment: _cognitiveCtrl.text.trim(),
