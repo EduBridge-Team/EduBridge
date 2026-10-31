@@ -64,6 +64,8 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::get('/schools/{school}', [InstitutionSchoolController::class, 'show'])->whereNumber('school');
         Route::patch('/schools/{school}', [InstitutionSchoolController::class, 'update'])->whereNumber('school');
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
+        Route::get('/schools/{school}/timetable-settings', [\App\Http\Controllers\JabaliaTimetableSettingsController::class, 'show'])->whereNumber('school');
+        Route::put('/schools/{school}/timetable-settings', [\App\Http\Controllers\JabaliaTimetableSettingsController::class, 'update'])->whereNumber('school');
         Route::get('/schools/{school}/participants', [InstitutionParticipantController::class, 'index'])->whereNumber('school');
         Route::get('/schools/{school}/teachers/{teacher}/history', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::patch('/schools/{school}/teachers/{teacher}/profile', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'updateProfile'])->whereNumber('school')->whereNumber('teacher');
