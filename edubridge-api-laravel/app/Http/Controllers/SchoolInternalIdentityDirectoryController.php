@@ -41,7 +41,7 @@ class SchoolInternalIdentityDirectoryController extends Controller
         $validation = Validator::make($request->query(), [
             'after_id' => ['sometimes', 'integer', 'min:0'],
             'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'role' => ['sometimes', 'in:teacher,student'],
+            'role' => ['sometimes', 'in:teacher,student,staff'],
         ]);
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 422);
@@ -49,6 +49,7 @@ class SchoolInternalIdentityDirectoryController extends Controller
         $filters = $validation->validated();
         $limit = (int) ($filters['limit'] ?? 100);
 
+        $statusColumns = \Illuminate\Support\Facades\Schema::hasColumn('school_internal_identities', 'is_active') ? ['identity.is_active'] : [];
         $identities = DB::table('school_internal_identities as identity')
             ->join('users as user', 'user.id', '=', 'identity.user_id')
             ->where('identity.school_id', $school->id)
@@ -59,7 +60,7 @@ class SchoolInternalIdentityDirectoryController extends Controller
                 $query->where('user.role', $filters['role']);
             })
             ->select('identity.id', 'identity.user_id', 'identity.username',
-                'user.name', 'user.role')
+                'user.name', 'user.role', ...$statusColumns)
             ->orderBy('identity.id')->limit($limit + 1)->get();
         $page = $identities->take($limit)->values();
         return response()->json([

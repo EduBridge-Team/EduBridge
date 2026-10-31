@@ -54,6 +54,12 @@ class JwtAuth
                 return response()->json(['error' => 'انتهت جلسة الدخول. سجّل الدخول مجدداً.', 'code' => 'SESSION_INVALID'], 401);
             }
 
+            if (str_ends_with(strtolower((string) ($account->email ?? '')), '.edubridge')) {
+                if (!\App\Support\SchoolInternalSession::active((int) $account->id)) {
+                    return response()->json(['error' => 'School identity unavailable', 'code' => 'SESSION_INVALID'], 401);
+                }
+            }
+
             if ($account->role === 'school') {
                 // Check every request, not only login. A previously issued JWT must
                 // stop working as soon as its school or institution is disabled.

@@ -15,26 +15,9 @@ class SchoolEnrollmentInboxController extends Controller
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        $query = ($actor->role ?? null) === 'school'
-            ? DB::table('school_accounts as a')->join('schools as s', 's.id', '=', 'a.school_id')
-            : DB::table('school_management_assignments as a')
-                ->join('schools as s', 's.id', '=', 'a.school_id')
-                ->where('a.role', 'director')->whereNull('a.ends_at');
-        $schools = $query
-            ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
-            ->where('a.user_id', $actor->id)
-            ->where('s.is_active', true)
-            ->where(function ($query) {
-                $query->whereNull('s.organization_id')->orWhere('o.is_active', true);
-            })
-            ->select('s.id')
-            ->limit(2)->get();
-
-        if ($schools->count() !== 1) {
-            return response()->json(['error' => 'School unavailable'], 403);
-        }
-
-        $schoolId = (int) $schools->first()->id;
+        $school = \App\Support\SchoolScopedAccess::resolve($request, 'enrollment');
+        if (!$school) return response()->json(['error' => 'School unavailable'], 403);
+        $schoolId = (int) $school->id;
         $requests = DB::table('school_enrollment_requests as r')
             ->join('children as c', 'c.id', '=', 'r.child_id')
             ->join('schools as s', 's.id', '=', 'r.school_id')

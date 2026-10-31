@@ -20,7 +20,8 @@ class SchoolDeputyManagementController extends Controller
             ->where('assignment.school_id', $school->id)
             ->where('assignment.role', 'deputy_director')
             ->whereNull('assignment.ends_at')
-            ->select('assignment.id', 'user.id as user_id', 'user.name', 'user.email', 'assignment.starts_at')
+            ->when(\Illuminate\Support\Facades\Schema::hasColumn('school_management_assignments', 'permissions'), fn ($q) => $q->addSelect('assignment.permissions'))
+            ->addSelect('assignment.id', 'user.id as user_id', 'user.name', 'user.email', 'assignment.starts_at')
             ->orderBy('assignment.id')->get();
         return response()->json(['school_id' => (int) $school->id, 'deputies' => $deputies]);
     }
@@ -41,7 +42,10 @@ class SchoolDeputyManagementController extends Controller
             }
             $user = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->first();
             if (!$user || !filter_var($user->email, FILTER_VALIDATE_EMAIL)
-                || str_ends_with(strtolower($user->email), '.edubridge')
+                || (($user->role ?? null) === 'school')
+                || (property_exists($user, 'email_verified_at') && empty($user->email_verified_at))
+                || (str_ends_with(strtolower($user->email), '.edubridge') && !DB::table('school_internal_identities')
+                    ->where('school_id', $school->id)->where('user_id', $user->id)->where('is_active', true)->exists())
                 || (property_exists($user, 'verification_status')
                     && !in_array($user->verification_status, ['verified', 'approved'], true))) {
                 return response()->json(['error' => 'Deputy requires an existing verified personal account'], 422);

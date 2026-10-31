@@ -11,28 +11,7 @@ class SchoolAcademicController extends Controller
 {
     private function school(Request $request): ?object
     {
-        $actor = $request->attributes->get('jwt_user');
-        if (!$actor) return null;
-
-        if (($actor->role ?? null) === 'school') {
-            $query = DB::table('school_accounts as a')
-                ->join('schools as s', 's.id', '=', 'a.school_id')
-                ->where('a.user_id', $actor->id);
-        } else {
-            $query = DB::table('school_management_assignments as a')
-                ->join('schools as s', 's.id', '=', 'a.school_id')
-                ->where('a.user_id', $actor->id)
-                ->where('a.role', 'director')
-                ->whereNull('a.ends_at');
-        }
-        $schools = $query->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
-            ->where('s.is_active', true)
-            ->where(function ($q) {
-                $q->whereNull('s.organization_id')->orWhere('o.is_active', true);
-            })
-            ->select('s.id', 's.name')->limit(2)->get();
-
-        return $schools->count() === 1 ? $schools->first() : null;
+        return \App\Support\SchoolScopedAccess::resolve($request, 'academic');
     }
 
     public function index(Request $request): JsonResponse

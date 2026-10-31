@@ -15,29 +15,8 @@ class SchoolCurriculumCatalogController extends Controller
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        if (($actor->role ?? null) === 'school') {
-            $query = DB::table('school_accounts as account')
-                ->join('schools as school', 'school.id', '=', 'account.school_id')
-                ->where('account.user_id', $actor->id);
-        } else {
-            $query = DB::table('school_management_assignments as assignment')
-                ->join('schools as school', 'school.id', '=', 'assignment.school_id')
-                ->where('assignment.user_id', $actor->id)
-                ->where('assignment.role', 'director')
-                ->whereNull('assignment.ends_at');
-        }
-        $schools = $query->where('school.is_active', true)
-            ->select('school.id', 'school.name', 'school.organization_id')
-            ->limit(2)->get();
-        if ($schools->count() !== 1) {
-            return response()->json(['error' => 'School access is unavailable'], 403);
-        }
-        $school = $schools->first();
-        if ($school->organization_id !== null &&
-            !DB::table('organizations')->where('id', $school->organization_id)
-                ->where('is_active', true)->exists()) {
-            return response()->json(['error' => 'School access is unavailable'], 403);
-        }
+        $school = \App\Support\SchoolScopedAccess::resolve($request, 'academic');
+        if (!$school) return response()->json(['error' => 'School access unavailable'], 403);
         $schoolId = (int) $school->id;
         $years = DB::table('academic_years')->where('school_id', $schoolId)
             ->orderByDesc('starts_on')->get(['id', 'school_id', 'name', 'starts_on', 'ends_on', 'is_current'])
