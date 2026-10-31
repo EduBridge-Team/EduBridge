@@ -64,6 +64,18 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
+        // In Jabalia a scheduled teacher must hold the exact section/subject assignment.
+        // Teachers may still have different assignments across grades and sections.
+        $tenant = $request->attributes->get('organization');
+        if (($tenant->slug ?? null) === 'jabalia' && !empty($data['teacher_id'])) {
+            if (!DB::table('teacher_assignments')
+                ->where('section_id', $data['section_id'])
+                ->where('subject_id', $data['subject_id'])
+                ->where('teacher_id', $data['teacher_id'])->exists()) {
+                return response()->json(['error' => 'المعلم غير مكلّف بهذه المادة في الشعبة المحددة'], 422);
+            }
+        }
+
         // Jabalia's association-confirmed standard week, with a five-period day.
         // These rules are the initial defaults; configurable institution settings follow.
         $org = $request->attributes->get('organization');
