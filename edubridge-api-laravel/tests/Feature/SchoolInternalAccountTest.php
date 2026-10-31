@@ -51,6 +51,18 @@ class SchoolInternalAccountTest extends TestCase
             $t->timestamps();
             $t->unique(['school_id', 'username']);
         });
+        Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); });
+        Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); });
+        Schema::create('student_enrollments', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('section_id'); $t->string('status');
+        });
+        Schema::create('student_account_links', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('user_id')->unique(); $t->unsignedBigInteger('child_id')->unique();
+            $t->unsignedBigInteger('school_id'); $t->timestamps();
+        });
+        DB::table('grades')->insert(['id'=>1,'school_id'=>10]);
+        DB::table('sections')->insert(['id'=>1,'grade_id'=>1]);
+        DB::table('student_enrollments')->insert(['child_id'=>100,'section_id'=>1,'status'=>'active']);
         DB::table('organizations')->insert(['id' => 1, 'is_active' => true]);
         DB::table('schools')->insert([
             ['id' => 10, 'organization_id' => 1, 'is_active' => true,
@@ -65,6 +77,7 @@ class SchoolInternalAccountTest extends TestCase
 
     protected function tearDown(): void
     {
+        foreach (['student_account_links','student_enrollments','sections','grades'] as $table) Schema::dropIfExists($table);
         Schema::dropIfExists('school_internal_identities');
         Schema::dropIfExists('school_management_assignments');
         Schema::dropIfExists('users');
@@ -97,9 +110,12 @@ class SchoolInternalAccountTest extends TestCase
         $this->assertSame(10, DB::table('school_internal_identities')
             ->where('user_id', $user->id)->value('school_id'));
         $this->assertSame(201, $this->createAccount(20, [
-            'username' => 'student01', 'role' => 'student',
+            'username' => 'student01', 'role' => 'student', 'child_id' => 100,
         ])->getStatusCode());
         $this->assertSame(2, DB::table('school_internal_identities')->count());
+        $this->assertSame(100, (int) DB::table('student_account_links')->value('child_id'));
+        $this->assertSame(409, $this->createAccount(20, ['username'=>'student02','role'=>'student','child_id'=>100])->getStatusCode());
+        $this->assertSame(422, $this->createAccount(20, ['username'=>'student03','role'=>'student','child_id'=>101])->getStatusCode());
     }
 
     public function test_duplicate_username_and_invalid_input_are_rejected(): void
