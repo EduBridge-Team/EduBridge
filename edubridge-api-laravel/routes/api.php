@@ -72,6 +72,7 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::post('/school/annual-promotion/approve', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'approve'])->middleware('throttle:10,1');
     Route::get('/school/annual-promotion/history', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'history'])->middleware('throttle:60,1');
     Route::get('/school/annual-promotion/operations/{operation}', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'operation'])->middleware('throttle:60,1');
+    Route::get('/student/me', [\App\Http\Controllers\StudentSelfController::class, 'show']);
     Route::match(['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], '/school/operations/{action}', [\App\Http\Controllers\SchoolOperationsController::class, 'handle'])->middleware('throttle:60,1');
     Route::get('/school/delegation', [\App\Http\Controllers\SchoolDelegationController::class, 'show'])->middleware('throttle:60,1');
     Route::patch('/school/deputies/{assignment}/permissions', [\App\Http\Controllers\SchoolDelegationController::class, 'update'])
