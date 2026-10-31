@@ -12,3 +12,11 @@ bool evaluationSaveReceiptMatchesChild(
       (!receipt.containsKey('child_id') ||
           receipt['child_id'] == requestedChildId);
 }
+
+/// A verified receipt may only be reused for the same child on a ministry retry.
+bool evaluationRetryReceiptMatchesChild(
+  Map<String, dynamic>? saved,
+  int? savedChildId,
+  Object? requestedChildId,
+) => saved != null && savedChildId == requestedChildId &&
+    evaluationSaveReceiptMatchesChild(saved, requestedChildId);
