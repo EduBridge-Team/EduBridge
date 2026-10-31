@@ -48,6 +48,27 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
   bool _loading = false;
   Object? _error;
   Map<String, dynamic>? _savedEvaluation;
+  int? _savedEvaluationChildId;
+  int _childGeneration = 0;
+
+  @override
+  void didUpdateWidget(covariant EvaluationSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.child['id'] != widget.child['id']) {
+      _childGeneration++;
+      _savedEvaluation = null;
+      _savedEvaluationChildId = null;
+      _error = null;
+      _loading = false;
+      _sendToMinistry = false;
+      _selectedTeacherId = null;
+      _evaluationType = 'initial';
+      for (final controller in [
+        _cognitiveCtrl, _motorCtrl, _emotionalCtrl, _socialCtrl,
+        _recommendationsCtrl, _educationalPlanCtrl, _teachingMethodsCtrl,
+      ]) { controller.clear(); }
+    }
+  }
 
   bool _sendToMinistry = false;
 
@@ -64,7 +85,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
   }
 
   Future<void> _submit() async {
-    if (!validateLocalizedForm()) return;
+    if (_loading || !validateLocalizedForm()) return;
+    final childId = widget.child['id'];
+    final childGeneration = _childGeneration;
 
     setState(() {
       _loading = true;
@@ -80,8 +103,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
               .toList()
           : ['عام'];
 
-      final result = _savedEvaluation ?? await ApiService.evaluateChild(
-        childId: widget.child['id'],
+      final result = (evaluationRetryReceiptMatchesChild(_savedEvaluation, _savedEvaluationChildId, childId)
+          ? _savedEvaluation : null) ?? await ApiService.evaluateChild(
+        childId: childId,
         evaluationType: _evaluationType,
         cognitiveAssessment: _cognitiveCtrl.text.trim(),
         motorAssessment: _motorCtrl.text.trim(),
@@ -93,7 +117,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         teachingMethods: teachingMethods,
       );
 
-      if (!mounted) return;
+      if (!mounted || childGeneration != _childGeneration) return;
 
       if (result == null) {
         setState(() {
@@ -105,7 +129,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
 
       // A write is confirmed only by a usable record for the requested child.
       // Older responses may omit child_id, but must never contradict it.
-      if (!evaluationSaveReceiptMatchesChild(result, widget.child['id'])) {
+      if (!evaluationSaveReceiptMatchesChild(result, childId)) {
         setState(() {
           _error = SharedUiMessage.evaluationSaveFailed;
           _loading = false;
@@ -115,9 +139,10 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
 
       // Reuse only a verified save receipt if ministry submission needs a retry.
       _savedEvaluation = result;
+      _savedEvaluationChildId = childId as int;
       if (_sendToMinistry) {
         final submitted = await ApiService.submitForMinistryApproval(
-          childId: widget.child['id'],
+          childId: childId,
           evaluationId: result['id'],
           educationalPlan: _educationalPlanCtrl.text.trim(),
           cognitiveAssessment: _cognitiveCtrl.text.trim(),
@@ -128,10 +153,10 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
           teachingMethods: teachingMethods,
           teacherId: _selectedTeacherId,
         );
-        if (!mounted) return;
+        if (!mounted || childGeneration != _childGeneration) return;
         if (submitted == null ||
             !ministrySubmissionReceiptMatches(submitted,
-              childId: widget.child['id'] as int,
+              childId: childId as int,
               evaluationId: result['id'] as int)) {
           setState(() {
             _error = SharedUiMessage.changesSaveFailed;
@@ -166,7 +191,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         await _handleDirectToTeacherFlow(result);
       }
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || childGeneration != _childGeneration) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _loading = false;

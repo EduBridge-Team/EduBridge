@@ -2,6 +2,15 @@ import 'package:edubridge_app/model/evaluations/evaluation_save_receipt.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('ministry retry only reuses a verified receipt for the same child', () {
+    expect(evaluationRetryReceiptMatchesChild({'id': 21}, 6, 6), isTrue);
+    expect(evaluationRetryReceiptMatchesChild({'id': 21}, 6, 7), isFalse);
+    expect(evaluationRetryReceiptMatchesChild({'id': 21, 'child_id': 7}, 6, 6), isFalse);
+    expect(evaluationRetryReceiptMatchesChild(null, 6, 6), isFalse);
+    expect(evaluationRetryReceiptMatchesChild({'id': 0}, 6, 6), isFalse);
+    expect(evaluationRetryReceiptMatchesChild({'id': 21}, null, 6), isFalse);
+  });
+
   test('accepts existing legacy receipt without child ID', () {
     expect(evaluationSaveReceiptMatchesChild({'id': 21}, 6), isTrue);
   });
