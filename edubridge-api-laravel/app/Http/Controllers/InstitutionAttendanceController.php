@@ -247,7 +247,7 @@ class InstitutionAttendanceController extends Controller
                 );
 
                 if (in_array($record['status'], ['absent', 'late'], true) && $previous !== $record['status']) {
-                    if (($request->attributes->get('organization')->slug ?? null) !== 'jabalia') {
+                    if (($request->attributes->get('organization')->slug ?? null) !== 'jabalia' || $record['status'] === 'late') {
                         $this->notifyParents((int) $record['child_id'], $record['status'], $session);
                     } elseif ($record['status'] === 'absent') {
                         $this->notifyJabaliaConsecutiveAbsence((int) $record['child_id'], $session);
