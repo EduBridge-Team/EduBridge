@@ -14,6 +14,10 @@ class SchoolCurriculumCatalogTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Schema::create('school_management_assignments', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('user_id');
+            $t->string('role'); $t->timestamp('ends_at')->nullable();
+        });
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->boolean('is_active');
         });
@@ -60,6 +64,7 @@ class SchoolCurriculumCatalogTest extends TestCase
         foreach (['subjects', 'academic_terms', 'academic_years', 'school_accounts', 'schools', 'organizations'] as $table) {
             Schema::dropIfExists($table);
         }
+        Schema::dropIfExists('school_management_assignments');
         parent::tearDown();
     }
 
@@ -86,5 +91,14 @@ class SchoolCurriculumCatalogTest extends TestCase
     {
         $this->assertSame(403, $this->getCatalog(20)->getStatusCode());
         $this->assertSame(403, $this->getCatalog(10, 'teacher')->getStatusCode());
+    }
+    public function test_personal_director_access_is_revoked_with_assignment(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 1, 'user_id' => 30, 'role' => 'director', 'ends_at' => null,
+        ]);
+        $this->assertSame(200, $this->getCatalog(30, 'teacher')->getStatusCode());
+        DB::table('school_management_assignments')->where('user_id', 30)->update(['ends_at' => now()]);
+        $this->assertSame(403, $this->getCatalog(30, 'teacher')->getStatusCode());
     }
 }

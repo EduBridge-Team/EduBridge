@@ -11,12 +11,16 @@ class SchoolEnrollmentInboxController extends Controller
     public function index(Request $request): JsonResponse
     {
         $actor = $request->attributes->get('jwt_user');
-        if (!$actor || $actor->role !== 'school') {
+        if (!$actor) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        $schools = DB::table('school_accounts as a')
-            ->join('schools as s', 's.id', '=', 'a.school_id')
+        $query = ($actor->role ?? null) === 'school'
+            ? DB::table('school_accounts as a')->join('schools as s', 's.id', '=', 'a.school_id')
+            : DB::table('school_management_assignments as a')
+                ->join('schools as s', 's.id', '=', 'a.school_id')
+                ->where('a.role', 'director')->whereNull('a.ends_at');
+        $schools = $query
             ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
             ->where('a.user_id', $actor->id)
             ->where('s.is_active', true)

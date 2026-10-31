@@ -13,7 +13,11 @@ class SchoolEnrollmentDecisionController extends Controller
     public function decide(Request $request, int $enrollmentRequest): JsonResponse
     {
         $actor = $request->attributes->get('jwt_user');
-        if (!$actor || $actor->role !== 'school') {
+        if (!$actor) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+        if (($actor->role ?? null) !== 'school' && !DB::table('school_management_assignments')
+            ->where('user_id', $actor->id)->where('role', 'director')->whereNull('ends_at')->exists()) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
         $validation = Validator::make($request->all(), [
@@ -30,8 +34,12 @@ class SchoolEnrollmentDecisionController extends Controller
             return response()->json(['errors' => ['reason' => ['Reason required']]], 422);
         }
 
-        $schools = DB::table('school_accounts as a')
-            ->join('schools as s', 's.id', '=', 'a.school_id')
+        $query = ($actor->role ?? null) === 'school'
+            ? DB::table('school_accounts as a')->join('schools as s', 's.id', '=', 'a.school_id')
+            : DB::table('school_management_assignments as a')
+                ->join('schools as s', 's.id', '=', 'a.school_id')
+                ->where('a.role', 'director')->whereNull('a.ends_at');
+        $schools = $query
             ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
             ->where('a.user_id', $actor->id)->where('s.is_active', true)
             ->where(function ($q) {
