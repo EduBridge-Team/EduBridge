@@ -109,6 +109,20 @@ class StudentSelfTest extends TestCase
         $this->assertSame(403,app(StudentSelfController::class)->homeworks($request)->getStatusCode());
     }
 
+    public function test_parent_or_unlinked_student_cannot_submit_student_homework(): void
+    {
+        $request = Request::create('/api/student/homeworks/1/submit', 'POST', [
+            'child_id' => 100, 'text_answer' => 'Attempted answer',
+        ]);
+        $request->attributes->set('jwt_user', (object) ['id'=>10, 'role'=>'parent']);
+        $this->assertSame(403, app(\App\Http\Controllers\StudentHomeworkSubmitController::class)
+            ->store($request, 1)->getStatusCode());
+
+        $request->attributes->set('jwt_user', (object) ['id'=>20, 'role'=>'student']);
+        $this->assertSame(403, app(\App\Http\Controllers\StudentHomeworkSubmitController::class)
+            ->store($request, 1)->getStatusCode());
+    }
+
     public function test_revocation_and_cross_school_enrollment_block_profile(): void
     {
         DB::table('school_internal_identities')->where('user_id',10)->update(['is_active'=>false]);

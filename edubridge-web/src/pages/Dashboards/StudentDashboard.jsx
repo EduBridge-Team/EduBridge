@@ -2,6 +2,37 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { request } from '../../api'
 
+function StudentHomeworkForm({ homework }) {
+  const [answer, setAnswer] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState('')
+  const submit = async (event) => {
+    event.preventDefault()
+    if (!answer.trim()) return
+    setSaving(true)
+    setMessage('')
+    try {
+      await request(`/student/homeworks/${homework.id}/submit`, {
+        method: 'POST', body: JSON.stringify({ text_answer: answer.trim() }),
+      })
+      setMessage('تم تسليم الواجب')
+    } catch (error) {
+      setMessage(error.message || 'تعذر تسليم الواجب')
+    } finally {
+      setSaving(false)
+    }
+  }
+  return <li><strong>{homework.title}</strong>
+    {homework.due_date ? <span> · الموعد: {homework.due_date}</span> : null}
+    <form onSubmit={submit}>
+      <label htmlFor={`answer-${homework.id}`}>إجابتي</label>
+      <textarea id={`answer-${homework.id}`} value={answer} onChange={(event) => setAnswer(event.target.value)} maxLength={10000} rows={3} required />
+      <button type="submit" disabled={saving || !answer.trim()}>{saving ? 'جارِ التسليم...' : 'تسليم الواجب'}</button>
+      {message ? <p role="status">{message}</p> : null}
+    </form>
+  </li>
+}
+
 export default function StudentDashboard() {
   const [student, setStudent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -30,7 +61,7 @@ export default function StudentDashboard() {
           <h2>جدولي الدراسي</h2>
           {timetable.length ? <ul>{timetable.map((entry, index) => <li key={`${entry.weekday}-${entry.period_number}-${index}`}>اليوم {entry.weekday} · الحصة {entry.period_number} · {entry.subject_name}{entry.teacher_name ? ` · ${entry.teacher_name}` : ""}</li>)}</ul> : <p>لا توجد حصص مسجلة لشعبتك حاليًا.</p>}
           <h2>واجباتي</h2>
-          {homeworks.length ? <ul>{homeworks.map((item) => <li key={item.id}>{item.title}{item.due_date ? ` · الموعد: ${item.due_date}` : ""}</li>)}</ul> : <p>لا توجد واجبات معينة لك حاليًا.</p>}
+          {homeworks.length ? <ul>{homeworks.map((item) => <StudentHomeworkForm key={item.id} homework={item} />)}</ul> : <p>لا توجد واجبات معينة لك حاليًا.</p>}
           <nav aria-label="روابط الطالب"><Link to="/lessons">استكشف الدروس</Link></nav>
         </>
       ) : null}
