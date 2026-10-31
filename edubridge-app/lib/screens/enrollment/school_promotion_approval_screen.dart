@@ -45,7 +45,7 @@ class _SchoolPromotionApprovalScreenState extends State<SchoolPromotionApprovalS
   Future<void> _approve() async {
     if (_busy || !_confirmed || _preview == null || _uncertain) return;
     setState(() { _busy = true; _approving = true; _failure = null; });
-    try { final receipt = await _gateway.approve(widget.draft, _preview!, _key); if (mounted) setState(() => _receipt = receipt); }
+    try { final receipt = await _gateway.approve(widget.draft, _preview!, _key); _verifyReceipt(receipt); if (mounted) setState(() => _receipt = receipt); }
     on EnrollmentApiException catch (error) {
       if (mounted) setState(() { _failure = error.failure; _uncertain = error.failure == EnrollmentFailure.uncertain || error.failure == EnrollmentFailure.invalidResponse || error.failure == EnrollmentFailure.server; _preview = null; _confirmed = false; });
     } finally { if (mounted) setState(() { _busy = false; _approving = false; }); }
@@ -53,9 +53,17 @@ class _SchoolPromotionApprovalScreenState extends State<SchoolPromotionApprovalS
   Future<void> _recover() async {
     if (_busy) return;
     setState(() { _busy = true; _failure = null; });
-    try { final receipt = await _gateway.operation(_key, schoolId: widget.draft.roster.schoolId); if (mounted) setState(() { _receipt = receipt; _uncertain = false; }); }
+    try { final receipt = await _gateway.operation(_key, schoolId: widget.draft.roster.schoolId); _verifyReceipt(receipt); if (mounted) setState(() { _receipt = receipt; _uncertain = false; }); }
     on EnrollmentApiException catch (error) { if (mounted) setState(() => _failure = error.failure); }
     finally { if (mounted) setState(() => _busy = false); }
+  }
+  void _verifyReceipt(SchoolPromotionReceipt receipt) {
+    final roster = widget.draft.roster;
+    if (!receipt.completed || receipt.schoolId != roster.schoolId ||
+        receipt.sourceYearId != roster.sourceYearId || receipt.targetYearId != roster.targetYearId ||
+        receipt.promoted + receipt.repeating + receipt.transferred != roster.students.length) {
+      throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+    }
   }
   @override
   Widget build(BuildContext context) {

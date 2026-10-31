@@ -27,7 +27,7 @@ final class SchoolPromotionRoster
                     'occupied' => DB::table('student_enrollments')->where('section_id', $section->id)->where('status', 'active')->count()];
             })->all();
         return ['school_id' => $school, 'source_year_id' => $sourceYear, 'target_year_id' => $targetYear,
-            'complete' => count($students) <= 5000, 'students' => $students, 'target_sections' => $sections,
+            'complete' => count($students) <= 5000 && count(array_unique(array_column($students, 'child_id'))) === count($students), 'students' => $students, 'target_sections' => $sections,
             'target_starts_on' => $target->starts_on,
             'revision' => hash('sha256', json_encode([$school, $sourceYear, $targetYear, $target->starts_on, $students, $sections], JSON_UNESCAPED_UNICODE))];
     }
@@ -43,13 +43,13 @@ final class SchoolPromotionRoster
             $student = $students[$id] ?? null;
             if (!$student || isset($seen[$id])) { $errors[] = 'Foreign or duplicate enrollment'; continue; }
             $seen[$id] = true;
+            if ($student['enrolled_on'] > $roster['target_starts_on']) $errors[] = 'Progression date precedes enrollment';
             if ($decision['decision'] === 'transferred') {
                 $destination = (int) ($decision['target_school_id'] ?? 0);
                 if (isset($decision['target_section_id']) || $destination === $roster['school_id']
                     || !DB::table('schools as s')->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')->where('s.id', $destination)->where('s.is_active', true)->where(fn ($q) => $q->whereNull('s.organization_id')->orWhere('o.is_active', true))->exists()) $errors[] = 'Invalid transfer destination';
                 continue;
             }
-            if ($student['enrolled_on'] > $roster['target_starts_on']) $errors[] = 'Progression date precedes enrollment';
             $section = $destinations[$decision['target_section_id'] ?? 0] ?? null;
             $position = (int) $student['source_grade_position'] + ($decision['decision'] === 'promoted' ? 1 : 0);
             if (isset($decision['target_school_id']) || !$section || $section['grade_position'] !== $position
