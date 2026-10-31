@@ -110,6 +110,49 @@ class JabaliaSchoolTimetablePermissionsTest extends TestCase
         $this->assertSame(0,DB::table('jabalia_section_subject_quotas')->count());
     }
 
+    public function test_overlapping_periods_are_rejected_without_changing_settings(): void
+    {
+        $response = $this->operation(20, 'timetable-settings-update', 'PUT', [
+            'expected_school_id'=>1, 'weekdays'=>[7,1],
+            'periods'=>[
+                ['starts_at'=>'08:30','ends_at'=>'09:10'],
+                ['starts_at'=>'09:00','ends_at'=>'09:50'],
+            ],
+        ]);
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
+    }
+
+    public function test_updated_times_cannot_invalidate_existing_lessons(): void
+    {
+        DB::table('timetable_entries')->insert([
+            'school_id'=>1, 'weekday'=>7, 'period_number'=>1,
+            'starts_at'=>'08:30:00', 'ends_at'=>'09:10:00',
+        ]);
+        $response = $this->operation(20, 'timetable-settings-update', 'PUT', [
+            'expected_school_id'=>1, 'weekdays'=>[7],
+            'periods'=>[['starts_at'=>'09:00','ends_at'=>'09:40']],
+        ]);
+        $this->assertSame(409, $response->getStatusCode());
+        $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
+    }
+
+    public function test_authorized_deputy_can_update_own_school_quotas(): void
+    {
+        $response = $this->operation(40, 'subject-quotas-update', 'PUT', [
+            'expected_school_id'=>1, 'section_id'=>1, 'subject_id'=>1,
+            'weekly_periods'=>4,
+        ]);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(4, (int) DB::table('jabalia_section_subject_quotas')
+            ->where('school_id', 1)->value('weekly_periods'));
+        $this->assertSame(403, $this->operation(30, 'subject-quotas-update', 'PUT', [
+            'expected_school_id'=>1, 'section_id'=>1, 'subject_id'=>1,
+            'weekly_periods'=>2,
+        ])->getStatusCode());
+        $this->assertSame(4, (int) DB::table('jabalia_section_subject_quotas')->value('weekly_periods'));
+    }
+
     public function test_revoked_deputy_loses_access(): void
     {
         DB::table('school_management_assignments')->where('user_id',40)->update(['ends_at'=>now()]);
