@@ -72,8 +72,8 @@ class JabaliaTimetableSettingsController extends Controller
             foreach ($existing as $entry) {
                 $period = $data['periods'][(int) $entry->period_number - 1] ?? null;
                 if (!in_array((int) $entry->weekday, $data['weekdays'], true) || !$period
-                    || $entry->starts_at !== $period['starts_at']
-                    || $entry->ends_at !== $period['ends_at']) {
+                    || substr((string) $entry->starts_at, 0, 5) !== $period['starts_at']
+                    || substr((string) $entry->ends_at, 0, 5) !== $period['ends_at']) {
                     return response()->json(['error' => 'توجد حصص حالية تتعارض مع المواعيد الجديدة؛ عدّل الجدول أولًا'], 409);
                 }
             }
