@@ -24,6 +24,7 @@ class _SchoolInternalAccountsScreenState
   List<Map<String, dynamic>> _accounts = [];
   int? _nextCursor;
   bool _hasMore = false;
+  bool _authorized = false;
 
   @override
   void initState() {
@@ -55,12 +56,16 @@ class _SchoolInternalAccountsScreenState
           .toList();
       if (!mounted) return;
       setState(() {
+        _authorized = true;
         _accounts = more ? [..._accounts, ...items] : items;
         _nextCursor = data['next_after_id'] as int?;
         _hasMore = data['has_more'] == true;
       });
     } catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) setState(() {
+        _error = error.toString();
+        if (!more) _authorized = false;
+      });
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -84,6 +89,7 @@ class _SchoolInternalAccountsScreenState
       ));
       await _load();
     } catch (error) {
+      _password.clear();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تعذر إنشاء الحساب: $error')),
@@ -164,11 +170,11 @@ class _SchoolInternalAccountsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('حسابات المدرسة')),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: _authorized ? FloatingActionButton.extended(
         onPressed: _showCreate,
         icon: const Icon(Icons.person_add_alt_1),
         label: const Text('إضافة حساب'),
-      ),
+      ) : null,
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(
@@ -184,14 +190,14 @@ class _SchoolInternalAccountsScreenState
               ),
             if (!_loading && _error == null && _accounts.isEmpty)
               const ListTile(title: Text('لا توجد حسابات داخلية بعد')),
-            ..._accounts.map((account) => ListTile(
+            if (_authorized) ..._accounts.map((account) => ListTile(
               leading: Icon(account['role'] == 'teacher'
                   ? Icons.school_outlined : Icons.person_outline),
               title: Text('${account['name'] ?? ''}'),
               subtitle: Text('${account['username'] ?? ''}'),
               trailing: Text(account['role'] == 'teacher' ? 'معلم' : 'طالب'),
             )),
-            if (_hasMore)
+            if (_authorized && _hasMore)
               TextButton(
                 onPressed: _loading ? null : () => _load(more: true),
                 child: const Text('عرض المزيد'),
