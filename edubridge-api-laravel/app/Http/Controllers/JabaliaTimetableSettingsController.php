@@ -6,7 +6,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Validator;
 
 class JabaliaTimetableSettingsController extends Controller
 {
@@ -52,9 +51,10 @@ class JabaliaTimetableSettingsController extends Controller
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
 
         $data = $request->validate([
-            'weekdays' => ['required', 'array', 'min:1', 'max:7'],
+            'weekdays' => ['required', 'array', 'list', 'min:1', 'max:7'],
             'weekdays.*' => ['required', 'integer', 'between:1,7', 'distinct'],
-            'periods' => ['required', 'array', 'min:1', 'max:10'],
+            'periods' => ['required', 'array', 'list', 'min:1', 'max:10'],
+            'periods.*' => ['required', 'array:starts_at,ends_at'],
             'periods.*.starts_at' => ['required', 'date_format:H:i'],
             'periods.*.ends_at' => ['required', 'date_format:H:i'],
         ]);
