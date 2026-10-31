@@ -14,6 +14,10 @@ class SchoolEnrollmentOptionsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Schema::create('school_management_assignments', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('user_id'); $t->unsignedBigInteger('school_id');
+            $t->string('role'); $t->timestamp('ends_at')->nullable();
+        });
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->boolean('is_active');
         });
@@ -56,7 +60,7 @@ class SchoolEnrollmentOptionsTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['sections','grades','academic_years','school_accounts','schools','organizations'] as $table) {
+        foreach (['school_management_assignments', 'sections','grades','academic_years','school_accounts','schools','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -81,5 +85,25 @@ class SchoolEnrollmentOptionsTest extends TestCase
     {
         $this->assertSame(403, $this->schoolOptions(11)->getStatusCode());
         $this->assertSame(403, $this->schoolOptions(10, 'teacher')->getStatusCode());
+    }
+    public function test_director_options_are_scoped_and_revocation_removes_access(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 1, 'user_id' => 30, 'role' => 'director', 'ends_at' => null,
+        ]);
+        $data = $this->schoolOptions(30, 'teacher')->getData(true);
+        $this->assertSame(1, $data['school_id']);
+        $this->assertSame([1], array_column($data['sections'], 'id'));
+        DB::table('school_management_assignments')->where('user_id', 30)->update(['ends_at' => now()]);
+        $this->assertSame(403, $this->schoolOptions(30, 'teacher')->getStatusCode());
+    }
+
+    public function test_ambiguous_director_school_context_is_denied(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            ['school_id' => 1, 'user_id' => 30, 'role' => 'director', 'ends_at' => null],
+            ['school_id' => 2, 'user_id' => 30, 'role' => 'director', 'ends_at' => null],
+        ]);
+        $this->assertSame(403, $this->schoolOptions(30, 'teacher')->getStatusCode());
     }
 }

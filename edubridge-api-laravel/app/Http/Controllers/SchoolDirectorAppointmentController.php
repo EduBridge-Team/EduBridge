@@ -59,8 +59,9 @@ class SchoolDirectorAppointmentController extends Controller
             }
 
             // Only an existing, verified personal email identity may become director.
-            $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->first();
-            if (!$director || !filter_var($director->email, FILTER_VALIDATE_EMAIL)
+            $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->lockForUpdate()->first();
+            if (!$director || ($director->role ?? null) === 'school' || empty($director->email_verified_at)
+                || !filter_var($director->email, FILTER_VALIDATE_EMAIL)
                 || str_ends_with(strtolower($director->email), '.edubridge')) {
                 return response()->json(['error' => 'Director must have an existing real-email account'], 422);
             }
@@ -69,6 +70,10 @@ class SchoolDirectorAppointmentController extends Controller
                 return response()->json(['error' => 'Director email is not verified'], 422);
             }
 
+            if (DB::table('school_management_assignments')->where('user_id', $director->id)
+                ->where('role', 'director')->whereNull('ends_at')->where('school_id', '!=', $school)->exists()) {
+                return response()->json(['error' => 'Director already has an active school assignment'], 409);
+            }
             $active = DB::table('school_management_assignments')
                 ->where('school_id', $school)->where('role', 'director')
                 ->whereNull('ends_at')->first();
