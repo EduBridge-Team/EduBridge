@@ -58,4 +58,27 @@ class StudentSelfController extends Controller
         return response()->json(['timetable' => $entries]);
     }
 
+    public function homeworks(Request $request): JsonResponse
+    {
+        $profile = $this->show($request);
+        if ($profile->getStatusCode() !== 200) return $profile;
+        $childId = (int) $profile->getData(true)['student']['child_id'];
+        $rows = DB::table('homeworks')
+            ->select('id', 'title', 'description', 'due_date', 'assigned_child_ids')
+            ->orderBy('due_date')->limit(500)->get();
+
+        $assigned = $rows->filter(function ($row) use ($childId) {
+            $ids = is_string($row->assigned_child_ids)
+                ? json_decode($row->assigned_child_ids, true) : $row->assigned_child_ids;
+            return is_array($ids) && in_array($childId, array_map('intval', $ids), true);
+        })->map(fn ($row) => [
+            'id' => $row->id,
+            'title' => $row->title,
+            'description' => $row->description,
+            'due_date' => $row->due_date,
+        ])->values();
+
+        return response()->json(['homeworks' => $assigned]);
+    }
+
 }
