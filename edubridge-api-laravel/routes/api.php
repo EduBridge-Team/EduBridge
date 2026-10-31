@@ -75,6 +75,7 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::get('/student/me', [\App\Http\Controllers\StudentSelfController::class, 'show']);
     Route::get('/student/timetable', [\App\Http\Controllers\StudentSelfController::class, 'timetable']);
     Route::get('/student/homeworks', [\App\Http\Controllers\StudentSelfController::class, 'homeworks']);
+    Route::get('/student/homework-progress', [\App\Http\Controllers\StudentSelfController::class, 'homeworkProgress']);
     Route::match(['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], '/school/operations/{action}', [\App\Http\Controllers\SchoolOperationsController::class, 'handle'])->middleware('throttle:60,1');
     Route::get('/school/delegation', [\App\Http\Controllers\SchoolDelegationController::class, 'show'])->middleware('throttle:60,1');
     Route::patch('/school/deputies/{assignment}/permissions', [\App\Http\Controllers\SchoolDelegationController::class, 'update'])
