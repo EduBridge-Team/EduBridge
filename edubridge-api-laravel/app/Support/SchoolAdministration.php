@@ -18,7 +18,9 @@ final class SchoolAdministration
             ->where(fn ($q) => $q->whereNull('s.organization_id')->orWhereExists(fn ($o) => $o->selectRaw('1')->from('organizations')->whereColumn('organizations.id', 's.organization_id')->where('organizations.is_active', true)))
             ->select('s.*')->limit(2);
         $rows = $lock ? $query->lockForUpdate()->get() : $query->get();
-        return $rows->count() === 1 ? $rows->first() : null;
+        $school = $rows->count() === 1 ? $rows->first() : null;
+        if ($school && $request->has('expected_school_id') && (int) $request->input('expected_school_id') !== (int) $school->id) return null;
+        return $school;
     }
 
     public static function mayAppoint(?object $actor, object $school): bool

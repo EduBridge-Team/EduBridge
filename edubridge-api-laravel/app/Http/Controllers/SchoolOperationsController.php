@@ -51,6 +51,7 @@ class SchoolOperationsController extends Controller
         if ($request->method() !== $method) return response()->json(['error' => 'Method not allowed'], 405);
         $school = SchoolScopedAccess::resolve($request, $permission);
         if (!$school) return response()->json(['error' => 'Forbidden'], 403);
+        if ($method !== 'GET') $request->validate(['expected_school_id' => ['required', 'integer', 'in:'.$school->id]]);
         $organization = $school->organization_id === null ? (object) ['id' => null, 'slug' => null]
             : DB::table('organizations')->where('id', $school->organization_id)->first();
         $request->attributes->set('organization', $organization);
@@ -60,7 +61,11 @@ class SchoolOperationsController extends Controller
             $value = $request->validate([$definition[4] => ['required', 'integer', 'min:1']]);
             $arguments[] = (int) $value[$definition[4]];
         }
-        return app($controller)->{$handler}(...$arguments);
+        $response = app($controller)->{$handler}(...$arguments);
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $response->setData([...$response->getData(true), 'school_id' => (int) $school->id]);
+        }
+        return $response;
     }
 
     public function report(Request $request, string $slug, int $school): JsonResponse

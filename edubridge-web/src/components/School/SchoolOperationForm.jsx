@@ -21,7 +21,7 @@ export default function SchoolOperationForm({ category, references, onSaved }) {
     if (definition.destructive && !window.confirm(t('تأكيد هذا الإجراء؟ سيبقى السجل السابق محفوظًا حيث ينطبق.', 'Confirm this action? Previous records are preserved where applicable.'))) return
     pending.current = true; setBusy(true); setError(''); setSaved(false)
     try {
-      const payload = schoolOperationPayload(definition, values)
+      const payload = { ...schoolOperationPayload(definition, values), expected_school_id: references.school.id }
       await request('/school/operations/' + definition.action, { method: definition.method || 'POST', body: JSON.stringify(payload) })
       setValues({}); setSaved(true); onSaved()
     } catch (err) { setError(err.message) }

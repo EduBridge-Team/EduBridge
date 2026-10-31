@@ -4,7 +4,7 @@ import { useSchoolLanguage } from './useSchoolLanguage'
 
 const EMPTY = { name: '', username: '', role: 'teacher', password: '' }
 
-export default function SchoolInternalAccountsPanel({ revision = 0 }) {
+export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) {
   const { t } = useSchoolLanguage()
   const [items, setItems] = useState([])
   const [cursor, setCursor] = useState(null)
@@ -34,7 +34,7 @@ export default function SchoolInternalAccountsPanel({ revision = 0 }) {
     if (pending.current) return
     pending.current = true; setBusy(true); setError(''); setMessage('')
     try {
-      const data = await request(path, { method, body: JSON.stringify(payload) })
+      const data = await request(path, { method, body: JSON.stringify({ ...payload, expected_school_id: schoolId }) })
       setMessage(success + (data.login_identifier ? ': ' + data.login_identifier : ''))
       setForm(EMPTY); setSelected(null)
       await load()

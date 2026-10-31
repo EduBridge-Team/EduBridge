@@ -47,11 +47,12 @@ class AcademicGrade {
 
 class AcademicSection {
   const AcademicSection(this.id, this.schoolId, this.name, this.yearId, this.gradeId, this.capacity);
-  final int id, schoolId, yearId, gradeId, capacity;
+  final int id, schoolId, yearId, gradeId;
+  final int? capacity;
   final String name;
   factory AcademicSection.fromJson(Map<String, dynamic> data) {
-    final capacity = enrollmentId(data['capacity']);
-    if (capacity > 500) throw const FormatException('Invalid capacity');
+    final capacity = data['capacity'] == null ? null : enrollmentId(data['capacity']);
+    if (capacity != null && capacity > 500) throw const FormatException('Invalid capacity');
     return AcademicSection(enrollmentId(data['id']), enrollmentId(data['school_id']),
         _name(data['name'], 80), enrollmentId(data['academic_year_id']),
         enrollmentId(data['grade_id']), capacity);

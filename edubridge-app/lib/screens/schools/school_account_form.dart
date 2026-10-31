@@ -27,6 +27,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   final _address = TextEditingController();
   late SchoolAccountRepository _repository;
   bool _submitting = false;
+  bool _inviteDirector = false;
   SchoolAccount? _createdAccount;
   int _generation = 0;
   SchoolAccountException? _error;
@@ -45,6 +46,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _formKey = GlobalKey<FormState>();
       _repository = widget.repository ?? SchoolAccountRepository();
       _submitting = false;
+      _inviteDirector = false;
       _createdAccount = null;
       _error = null;
       for (final controller in [_name, _email, _phone, _address]) {
@@ -74,6 +76,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final request = SchoolAccountRequest(
       name: _name.text,
       email: _email.text,
+      inviteDirector: _inviteDirector,
       phone: _phone.text,
       address: _address.text,
     );
@@ -189,6 +192,11 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 ? null
                                 : l10n.schoolAccountEmailInvalid,
                           ),
+                          CheckboxListTile(value: _inviteDirector,
+                            onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
+                            title: Text(Localizations.localeOf(context).languageCode == 'en'
+                              ? 'Invite a new director; appointment requires email/identity verification and acceptance.'
+                              : 'دعوة مدير جديد؛ التكليف يتطلب تأكيد البريد والهوية وقبول الدعوة.')),
                           _field(
                             'phone',
                             l10n.schoolAccountPhone,

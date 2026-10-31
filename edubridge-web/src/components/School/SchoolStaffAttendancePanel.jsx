@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 
-export default function SchoolStaffAttendancePanel() {
+export default function SchoolStaffAttendancePanel({ schoolId }) {
   const { t } = useSchoolLanguage()
   const [date, setDate] = useState('')
   const [data, setData] = useState(null)
@@ -23,7 +23,7 @@ export default function SchoolStaffAttendancePanel() {
     const records = data.staff.map(person => ({ user_id: person.id, status: drafts[person.id] || data.records.find(row => row.user_id === person.id)?.status || '' })).filter(row => row.status)
     if (!records.length) return
     pending.current = true; setBusy(true); setError(''); setMessage('')
-    try { await request('/school/operations/staff-attendance-mark', { method: 'PUT', body: JSON.stringify({ date, records }) }); setMessage(t('تم حفظ حضور الموظفين.', 'Staff attendance saved.')) }
+    try { await request('/school/operations/staff-attendance-mark', { method: 'PUT', body: JSON.stringify({ expected_school_id: schoolId, date, records }) }); setMessage(t('تم حفظ حضور الموظفين.', 'Staff attendance saved.')) }
     catch (err) { setError(err.message) }
     finally { pending.current = false; setBusy(false) }
   }

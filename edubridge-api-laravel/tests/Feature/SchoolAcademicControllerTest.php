@@ -101,7 +101,7 @@ class SchoolAcademicControllerTest extends TestCase
     public function test_managed_operations_ignore_client_school_and_reject_revoked_assignment(): void
     {
         DB::table('school_management_assignments')->insert(['school_id'=>1,'user_id'=>30,'role'=>'director','ends_at'=>null]);
-        $request = Request::create('/api/school/operations/years', 'POST', ['school_id'=>2,'organization_id'=>999,
+        $request = Request::create('/api/school/operations/years', 'POST', ['expected_school_id'=>1,'school_id'=>2,'organization_id'=>999,
             'name'=>'2027/2028','starts_on'=>'2027-09-01','ends_on'=>'2028-06-30','is_current'=>true]);
         $request->attributes->set('jwt_user',(object)['id'=>30,'role'=>'teacher']);
         $controller=app(\App\Http\Controllers\SchoolOperationsController::class);

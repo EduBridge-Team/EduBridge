@@ -24,11 +24,11 @@ export default function SchoolWorkspacePage() {
     </section>
     {resource.data && <div key={resource.data.school.id + ':' + resource.data.role}>
       {resource.data.role === 'director' && <>
-        <SchoolDomainPanel onConfirmed={() => setRevision(value => value + 1)} />
-        <SchoolInternalAccountsPanel revision={revision} />
-        <SchoolDeputiesPanel />
+        <SchoolDomainPanel schoolId={resource.data.school.id} onConfirmed={() => setRevision(value => value + 1)} />
+        <SchoolInternalAccountsPanel schoolId={resource.data.school.id} revision={revision} />
+        <SchoolDeputiesPanel schoolId={resource.data.school.id} />
       </>}
-      <SchoolOperationsPanel key={JSON.stringify(resource.data.permissions)} permissions={resource.data.permissions} />
+      <SchoolOperationsPanel schoolId={resource.data.school.id} key={JSON.stringify(resource.data.permissions)} permissions={resource.data.permissions} />
     </div>}
   </main>
 }

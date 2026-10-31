@@ -3,7 +3,7 @@ import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 import { useSchoolResource } from './useSchoolResource'
 
-export default function SchoolDomainPanel({ onConfirmed }) {
+export default function SchoolDomainPanel({ onConfirmed, schoolId }) {
   const { t } = useSchoolLanguage()
   const resource = useSchoolResource('/school/internal-domain')
   const [domain, setDomain] = useState('')
@@ -16,7 +16,7 @@ export default function SchoolDomainPanel({ onConfirmed }) {
     if (pending.current || !ack) return
     pending.current = true; setBusy(true); setError('')
     try {
-      await request('/school/internal-domain/confirm', { method: 'POST', body: JSON.stringify({ internal_domain: domain }) })
+      await request('/school/internal-domain/confirm', { method: 'POST', body: JSON.stringify({ expected_school_id: schoolId, internal_domain: domain }) })
       resource.reload(); onConfirmed?.()
     } catch (err) { setError(err.message) }
     finally { pending.current = false; setBusy(false) }

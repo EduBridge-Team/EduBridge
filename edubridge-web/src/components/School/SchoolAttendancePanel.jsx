@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 
-export default function SchoolAttendancePanel({ sessions, onSaved }) {
+export default function SchoolAttendancePanel({ sessions, onSaved, schoolId }) {
   const { t } = useSchoolLanguage()
   const [session, setSession] = useState('')
   const [data, setData] = useState(null)
@@ -22,7 +22,7 @@ export default function SchoolAttendancePanel({ sessions, onSaved }) {
     if (close && !window.confirm(t('إغلاق سجل الحضور نهائيًا؟', 'Close this attendance session permanently?'))) return
     pending.current = true; setBusy(true); setError('')
     try {
-      await request('/school/operations/attendance-mark', { method: 'PUT', body: JSON.stringify({ session_id: Number(session), close_session: close, records: data.records.map(row => ({ child_id: row.child_id, status: drafts[row.child_id] || row.status })) }) })
+      await request('/school/operations/attendance-mark', { method: 'PUT', body: JSON.stringify({ expected_school_id: schoolId, session_id: Number(session), close_session: close, records: data.records.map(row => ({ child_id: row.child_id, status: drafts[row.child_id] || row.status })) }) })
       if (close) setData(old => ({ ...old, attendance_session: { ...old.attendance_session, status: 'closed' } }))
       onSaved()
     } catch (err) { setError(err.message) }

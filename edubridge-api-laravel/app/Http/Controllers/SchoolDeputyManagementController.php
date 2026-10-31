@@ -107,6 +107,7 @@ class SchoolDeputyManagementController extends Controller
             return null;
         }
         $school = $schools->first();
+        if ($request->has('expected_school_id') && (int) $request->input('expected_school_id') !== (int) $school->id) return null;
         if ($school->organization_id !== null && !DB::table('organizations')
             ->where('id', $school->organization_id)->where('is_active', true)->exists()) {
             return null;

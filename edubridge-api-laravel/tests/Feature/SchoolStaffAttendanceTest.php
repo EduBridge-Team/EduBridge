@@ -31,7 +31,7 @@ class SchoolStaffAttendanceTest extends TestCase
     }
     private function mark(int $user): \Illuminate\Http\JsonResponse
     {
-        $request=Request::create('/api/school/operations/staff-attendance-mark','PUT',['date'=>'2026-10-31','records'=>[['user_id'=>$user,'status'=>'present']]]);
+        $request=Request::create('/api/school/operations/staff-attendance-mark','PUT',['expected_school_id'=>1,'date'=>'2026-10-31','records'=>[['user_id'=>$user,'status'=>'present']]]);
         $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'teacher']);
         return app(SchoolOperationsController::class)->handle($request,'staff-attendance-mark');
     }

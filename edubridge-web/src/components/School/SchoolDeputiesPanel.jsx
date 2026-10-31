@@ -8,7 +8,7 @@ function permissionsOf(value) {
   try { return JSON.parse(value || '[]') } catch { return [] }
 }
 
-export default function SchoolDeputiesPanel() {
+export default function SchoolDeputiesPanel({ schoolId }) {
   const { t } = useSchoolLanguage()
   const resource = useSchoolResource('/school/deputies')
   const [email, setEmail] = useState('')
@@ -20,7 +20,7 @@ export default function SchoolDeputiesPanel() {
     if (pending.current) return
     pending.current = true; setBusy(true); setError('')
     try {
-      await request(path, { method, ...(body ? { body: JSON.stringify(body) } : {}) })
+      await request(path, { method, ...(body ? { body: JSON.stringify({ ...body, expected_school_id: schoolId }) } : {}) })
       setEmail(''); setDrafts({}); resource.reload()
     } catch (err) { setError(err.message) }
     finally { pending.current = false; setBusy(false) }

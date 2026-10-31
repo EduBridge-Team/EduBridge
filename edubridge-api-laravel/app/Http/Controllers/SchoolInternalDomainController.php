@@ -57,6 +57,7 @@ class SchoolInternalDomainController extends Controller
 
     private function authorizedSchool(Request $request, bool $lock = false): ?object
     {
+        $expected = $request->input('expected_school_id');
         $actor = $request->attributes->get('jwt_user');
         if (!$actor) {
             return null;
@@ -78,6 +79,7 @@ class SchoolInternalDomainController extends Controller
                 return null;
             }
             $school = $schools->first();
+            if ($expected !== null && (int) $expected !== (int) $school->id) return null;
             if ($school->organization_id !== null && !DB::table('organizations')
                 ->where('id', $school->organization_id)->where('is_active', true)->exists()) {
                 return null;
@@ -95,6 +97,7 @@ class SchoolInternalDomainController extends Controller
             return null;
         }
         $school = $schools->first();
+        if ($expected !== null && (int) $expected !== (int) $school->id) return null;
         if ($school->organization_id !== null && !DB::table('organizations')
             ->where('id', $school->organization_id)->where('is_active', true)->exists()) {
             return null;

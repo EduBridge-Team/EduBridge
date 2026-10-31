@@ -12,8 +12,9 @@ import 'school_promotion_review_screen.dart';
 /// Deliberately read-only until a school-scoped, authorized roster and
 /// preview/approve contract supports all three director decisions.
 class SchoolAnnualPromotionScreen extends StatefulWidget {
-  const SchoolAnnualPromotionScreen({super.key, this.gateway});
+  const SchoolAnnualPromotionScreen({super.key, this.gateway, this.enableApproval = false});
   final AcademicGateway? gateway;
+  final bool enableApproval;
 
   @override
   State<SchoolAnnualPromotionScreen> createState() => _SchoolAnnualPromotionScreenState();
@@ -125,7 +126,7 @@ class _SchoolAnnualPromotionScreenState extends State<SchoolAnnualPromotionScree
                 onPressed: _state.loading || _sourceYear == null || _targetYear == null
                     ? null
                     : () => Navigator.of(context).push(MaterialPageRoute<void>(
-                        builder: (_) => SchoolPromotionReviewScreen(
+                        builder: (_) => SchoolPromotionReviewScreen(enableApproval: widget.enableApproval,
                           sourceYearId: _sourceYear!, targetYearId: _targetYear!,
                         ),
                       )),
@@ -135,9 +136,9 @@ class _SchoolAnnualPromotionScreenState extends State<SchoolAnnualPromotionScree
               Text(label('الخطوات التالية: مراجعة الطلاب، تحديد ناجح أو معيد أو منقول، معاينة النتائج، ثم الاعتماد.',
                 'Next: review students, select promoted/repeating/transferred, preview, then approve.')),
               const SizedBox(height: 8),
-              Text(label('الاعتماد معطّل حتى يوفر الخادم قائمة طلاب المدرسة وصلاحية الاعتماد لجميع الحالات. لن يُنقل أي طالب من هذه الشاشة.',
+              if (!widget.enableApproval) Text(label('الاعتماد معطّل حتى يوفر الخادم قائمة طلاب المدرسة وصلاحية الاعتماد لجميع الحالات. لن يُنقل أي طالب من هذه الشاشة.',
                 'Approval is disabled until the server provides a school-scoped roster and authorization for all decisions. This screen does not move students.')),
-              FilledButton(
+              if (!widget.enableApproval) FilledButton(
                 key: const ValueKey('promotion-approve'),
                 onPressed: null,
                 child: Text(label('اعتماد الترفيع', 'Approve promotion')),

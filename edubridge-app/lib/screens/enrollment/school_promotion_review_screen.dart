@@ -1,3 +1,4 @@
+import 'school_promotion_approval_screen.dart';
 import 'package:flutter/material.dart';
 import '../../model/schools/promotion_roster.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
@@ -8,10 +9,11 @@ import 'school_promotion_history_screen.dart';
 /// Local draft only. The server preview/approval flow is a separate phase.
 class SchoolPromotionReviewScreen extends StatefulWidget {
   const SchoolPromotionReviewScreen({
-    super.key, required this.sourceYearId, required this.targetYearId, this.gateway,
+    super.key, required this.sourceYearId, required this.targetYearId, this.gateway, this.enableApproval = false,
   });
   final int sourceYearId, targetYearId;
   final SchoolPromotionRosterGateway? gateway;
+  final bool enableApproval;
 
   @override
   State<SchoolPromotionReviewScreen> createState() => _SchoolPromotionReviewScreenState();
@@ -20,6 +22,7 @@ class SchoolPromotionReviewScreen extends StatefulWidget {
 class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScreen>
     with WidgetsBindingObserver {
   PromotionRoster? _roster;
+  List<Map<String,dynamic>> _transferSchools = [];
   final _choices = <int, PromotionSelection>{};
   bool _loading = false;
   EnrollmentFailure? _failure;
@@ -57,10 +60,12 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
       _sectionFilter = null;
     });
     try {
-      final roster = await (widget.gateway ?? SchoolPromotionRosterRepository()).load(
+      final gateway = widget.gateway ?? SchoolPromotionRosterRepository();
+      final roster = await gateway.load(
         sourceYearId: widget.sourceYearId, targetYearId: widget.targetYearId);
+      final schools = widget.enableApproval && gateway is SchoolTransferDirectoryGateway ? await (gateway as SchoolTransferDirectoryGateway).destinations() : <Map<String,dynamic>>[];
       if (!mounted || revision != _revision) return;
-      setState(() { _roster = roster; _loading = false; });
+      setState(() { _transferSchools = schools; _roster = roster; _loading = false; });
     } on EnrollmentApiException catch (e) {
       if (!mounted || revision != _revision) return;
       setState(() { _loading = false; _failure = e.failure; });
@@ -100,6 +105,11 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
 
   Future<void> _preview(PromotionDraft draft) async {
     if (!draft.ready) return;
+    if (widget.enableApproval) {
+      final result = await Navigator.of(context).push(MaterialPageRoute<Object?>(builder: (_) => SchoolPromotionApprovalScreen(draft: draft)));
+      if (mounted && result != null) _load();
+      return;
+    }
     final snapshot = _roster;
     final revision = _revision;
     final payload = draft.previewJson();
@@ -244,15 +254,23 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
                         onChanged: (id) => _destination(student, id),
                       ),
                     if (_choices[student.enrollmentId]?.outcome == PromotionOutcome.transferred) ...[
-                      TextField(
+                      if (widget.enableApproval) DropdownButtonFormField<int>(
+                        key: ValueKey('promotion-transfer-school-${student.enrollmentId}'),
+                        isExpanded: true, initialValue: _choices[student.enrollmentId]?.targetSchoolId,
+                        decoration: InputDecoration(labelText: tr('المدرسة المقصودة', 'Intended destination school')),
+                        items: _transferSchools.map((school) => DropdownMenuItem(value:school['id'] as int,child:Text(school['name'] as String))).toList(),
+                        onChanged:(value)=>_transferSchool(student, '$value'),
+                      ) else TextField(
                         key: ValueKey('promotion-transfer-school-${student.enrollmentId}'),
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(labelText: tr(
                             'رقم المدرسة المنقول إليها', 'Destination school ID')),
                         onChanged: (value) => _transferSchool(student, value),
                       ),
-                      Text(tr('رقم المدرسة مؤقت لحين توفير قائمة المدارس المصرّح بها من الخادم.',
+                      if (!widget.enableApproval) Text(tr('رقم المدرسة مؤقت لحين توفير قائمة المدارس المصرّح بها من الخادم.',
                         'School ID is provisional until an authorized school directory is available.')),
+
+                      if (widget.enableApproval) Text(tr('يحفظ هذا قرار الخروج من المدرسة فقط؛ قبول الوجهة وتسجيلها منفصلان.', 'This records the source-school exit only; destination acceptance and enrollment are separate.')),
                     ],
                   ])),
               ),
@@ -260,7 +278,7 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
             Text(tr('قرارات مكتملة: ${_choices.length} / ${roster.students.length}',
               'Decisions selected: ${_choices.length} / ${roster.students.length}')),
             Text(draft!.ready
-              ? tr('القرارات صالحة للمعاينة المحلية؛ الاعتماد غير متاح.', 'Local review is valid; server approval is unavailable.')
+              ? (widget.enableApproval ? tr('القرارات جاهزة لمعاينة الخادم قبل الاعتماد.', 'Decisions are ready for server review before approval.') : tr('القرارات صالحة للمعاينة المحلية؛ الاعتماد غير متاح.', 'Local review is valid; server approval is unavailable.'))
               : tr('القرارات غير مكتملة أو تتعارض مع الوجهة أو السعة.', 'Decisions are incomplete or violate destination/capacity constraints.')),
             FilledButton.icon(
               key: const ValueKey('promotion-local-preview'),
@@ -268,7 +286,7 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
               icon: const Icon(Icons.preview_outlined),
               label: Text(tr('معاينة القرارات', 'Preview decisions')),
             ),
-            FilledButton(
+            if (!widget.enableApproval) FilledButton(
               key: const ValueKey('promotion-approve'),
               onPressed: null,
               child: Text(tr('اعتماد الترفيع', 'Approve promotion')),
