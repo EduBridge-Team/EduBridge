@@ -81,4 +81,18 @@ class StudentSelfController extends Controller
         return response()->json(['homeworks' => $assigned]);
     }
 
+    public function homeworkProgress(Request $request): JsonResponse
+    {
+        $profile = $this->show($request);
+        if ($profile->getStatusCode() !== 200) return $profile;
+        $childId = (int) $profile->getData(true)['student']['child_id'];
+        $submissions = DB::table('homework_submissions as submission')
+            ->join('homeworks as homework', 'homework.id', '=', 'submission.homework_id')
+            ->where('submission.child_id', $childId)
+            ->select('submission.homework_id', 'homework.title as homework_title',
+                'submission.submitted_at', 'submission.is_late')
+            ->orderByDesc('submission.submitted_at')->limit(100)->get();
+        return response()->json(['submissions' => $submissions]);
+    }
+
 }
