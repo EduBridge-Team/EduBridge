@@ -29,6 +29,15 @@ class StudentSelfTest extends TestCase
         Schema::create('student_enrollments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('section_id'); $t->string('status');
         });
+        Schema::create('subjects', function (Blueprint $t) { $t->id(); $t->string('name'); });
+        Schema::create('users', function (Blueprint $t) { $t->id(); $t->string('name'); });
+        Schema::create('timetable_entries', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('section_id');
+            $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id')->nullable();
+            $t->integer('weekday'); $t->integer('period_number');
+            $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable();
+        });
+        DB::table('subjects')->insert(['id'=>1,'name'=>'Math']);
         DB::table('schools')->insert([['id'=>1,'is_active'=>true],['id'=>2,'is_active'=>true]]);
         DB::table('school_internal_identities')->insert(['school_id'=>1,'user_id'=>10,'is_active'=>true]);
         DB::table('student_account_links')->insert(['school_id'=>1,'user_id'=>10,'child_id'=>100]);
@@ -43,7 +52,7 @@ class StudentSelfTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['student_enrollments','sections','grades','children','student_account_links',
+        foreach (['timetable_entries','subjects','users','student_enrollments','sections','grades','children','student_account_links',
             'school_internal_identities','schools'] as $table) Schema::dropIfExists($table);
         parent::tearDown();
     }
@@ -63,6 +72,21 @@ class StudentSelfTest extends TestCase
         $this->assertArrayNotHasKey('email', $response->getData(true)['student']);
         $this->assertSame(403, $this->requestAs(20, 'student')->getStatusCode());
         $this->assertSame(403, $this->requestAs(10, 'parent')->getStatusCode());
+    }
+
+    public function test_student_timetable_cannot_include_other_school_or_section(): void
+    {
+        DB::table('timetable_entries')->insert([
+            ['school_id'=>1,'section_id'=>1,'subject_id'=>1,'weekday'=>1,'period_number'=>1],
+            ['school_id'=>2,'section_id'=>2,'subject_id'=>1,'weekday'=>1,'period_number'=>2],
+        ]);
+        $request = Request::create('/api/student/timetable','GET');
+        $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'student']);
+        $response = app(StudentSelfController::class)->timetable($request);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertCount(1, $response->getData(true)['timetable']);
+        $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'parent']);
+        $this->assertSame(403, app(StudentSelfController::class)->timetable($request)->getStatusCode());
     }
 
     public function test_revocation_and_cross_school_enrollment_block_profile(): void
