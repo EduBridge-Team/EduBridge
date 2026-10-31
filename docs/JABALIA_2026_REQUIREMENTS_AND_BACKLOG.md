@@ -71,3 +71,67 @@ Scope: **Jabalia isolated deployment** (dedicated PostgreSQL, auth, media and AP
 - Tests pass, including overlapping times, teacher transfer history, duplicated attendance, race conditions, cross-role/organization access, and rejected enrollment transitions.
 - No migrations on production without reviewed backup, rollback plan and explicit operations approval.
 - Stakeholder signs off workflow and accessibility outcomes. Documentation or code existence alone is not completion.
+
+## Association responses — 29 October 2026 (stakeholder-confirmed)
+
+These responses supersede contradictory **proposals** above. Implementation status remains unverified until tests and pilot acceptance. The term "school administration" below means the school principal and deputy; role permissions must still be tested separately.
+
+### Timetable and assignments
+- Official school days: **Sunday through Thursday**.
+- Period 1: **08:30–09:10**; period 2: **09:10–09:50**; period 3: **09:50–10:30**; **10-minute break 10:30–10:40**; period 4: **10:40–11:20**; period 5: **11:20–12:00**.
+- Weekly subject periods stated: Arabic **4**, Mathematics **4**, Science **1**, Social Studies **1**, English **2**. **Total: 12 listed subject periods per week**; 25 available school periods (five days × five periods). **The remaining 13 slots were not specified** and must not be auto-assigned.
+- School administration may change timetable values.
+- **Only one teacher may teach a given subject for the same class**; each teacher is assigned specific sections. A teacher **may teach multiple grades**.
+- School governance: principal and deputy principal. Permission to approve timetables / replacements should be mapped to these roles, rather than inferred from their job titles.
+- **Correction to earlier proposed multi-teacher assignment:** do not enable co-teachers for the same subject/class unless the association revises this rule.
+
+### Teacher records and fixed-term project contracts
+- Required professional documents: teacher qualification/university certificate, CV, experience certificates, identity document, and a copy of the signed contract.
+- Contracts are **temporary project contracts**; a contract copy must be retained. Teacher achievements should also be recorded.
+- School administration is responsible for professional records; school administration and institution administration are relevant authorized administrative parties. Exact view/edit/export permissions need an explicit role matrix.
+- Do not infer a particular legal retention period, contract-expiry warning window or compulsory medical/identity sharing policy without approval.
+
+### Student application and acceptance
+- Admission requires an **audiology/hearing assessment report from a specialist hearing clinic** and a **birth certificate**.
+- The application workflow begins with an enrollment request. Attach birth certificate, student medical reports, student portrait photo, and father's identity document, then review and **approve** the application.
+- Admission decisions involve **school administration together with the school counselor**.
+- Proposed workflow states: submitted → documents under review → counselor/school review → approved/rejected → enrolled. These labels are **implementation proposals**, not additional confirmed stakeholder rules.
+- Sensitive medical and identity attachments must be private and role-scoped; never put them in public media URLs.
+
+### Attendance, absence and notification
+- Student attendance and employee/teacher attendance are **separate systems**.
+- Student attendance is recorded **daily** by the approved class homeroom teacher.
+- When a student has **more than three consecutive days of absence**, notify the guardian. Clarify whether weekends/holidays interrupt consecutive-day counting; do not equate three absences with more than three.
+- Correction/approval workflow and guardian delivery channels have not yet been confirmed.
+
+### Administrative reports, audit and oversight
+- Teacher reports: activity reports, attendance/absence compliance, functional-duty compliance.
+- Student reports: success stories, individualized therapeutic/intervention plans, attendance/absence.
+- Student audit events: application, admission, transfer, grade promotion, graduation; attendance, lateness, early departure and leave; grades, tests, term/year results and certificates; medical examinations.
+- Staff audit events: direct appointment, attendance/work start, leave and activities.
+- Oversight audit: supervisor visits, reports, notes, corrective actions and follow-up.
+- Planning records: annual plan and activity plans.
+- The association has **approved templates** for schedules, contracts and attendance. Obtain actual samples before claiming printed/exported views match them.
+- Exact archival/retention windows, audit redaction, authorized editors, and legal export requirements remain to be specified.
+
+### School levels, curriculum and media
+- School levels: **primary and preparatory**.
+- **Ministry textbooks are not available at the association**. Do not assume ministry textbook data, or automatically publish scanned/copyrighted books. Lesson creation should support independently supplied/approved resources and explicit source provenance.
+- Palestinian Sign Language references and Noor educational content remain dependent on approved resources and human verification.
+
+### Implementation priorities based on these answers
+1. Enforce school schedule constraints (Sunday–Thursday, five defined periods and break) with **administrator-configurable values**; distinguish subject weekly quotas from unscheduled periods.
+2. Enforce a unique teacher per subject/class for overlapping active assignments; allow teacher to serve multiple grades and designated sections.
+3. Implement role-gated teacher document categories, project-contract records and achievement reporting.
+4. Build student enrollment request, confidential attachments, counselor + school decision workflow.
+5. Separate daily student vs staff attendance; notify guardians only after the confirmed >3-consecutive-day threshold.
+6. Implement auditable reporting and supervisor corrective-action workflow; map association-approved templates.
+7. Pilot with institution-approved data and test cross-school and cross-tenant access before launch.
+
+### Remaining clarifications
+- Grade-specific subject quotas, whether the 12 listed weekly periods are global or per grade, and use of 13 other weekly periods.
+- Exact permission differences between principal, deputy principal, counselor, class teacher and institution administrator.
+- How consecutive absence days account for holidays, weekends and approved leave, and delivery method for guardian notices.
+- Whether a class means section versus grade for the single-teacher-per-subject restriction.
+- Contract renewal/expiry policy, retention periods and the authorized party for signed contracts.
+- Verified sample documents/templates, student graduation rules and grading/assessment standards.
