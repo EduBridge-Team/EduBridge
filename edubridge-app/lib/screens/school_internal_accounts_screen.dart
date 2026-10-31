@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../services/api_service.dart';
+import '../services/api_service.dart';
 
 /// Director-only account management. The API enforces school authorization.
 class SchoolInternalAccountsScreen extends StatefulWidget {
