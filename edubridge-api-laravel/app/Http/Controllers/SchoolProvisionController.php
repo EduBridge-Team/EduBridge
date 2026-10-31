@@ -6,7 +6,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -42,8 +41,7 @@ class SchoolProvisionController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:150'],
-            'email' => ['required', 'email', 'max:190'],
-            'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed'],
+            'director_email' => ['required', 'email', 'max:190'],
             'phone' => ['nullable', 'string', 'max:30'],
             'address' => ['nullable', 'string', 'max:255'],
         ]);
@@ -52,58 +50,46 @@ class SchoolProvisionController extends Controller
         }
         $data = $validation->validated();
         $name = trim($data['name']);
-        $email = mb_strtolower(trim($data['email']));
-        if ($name === '') {
-            return response()->json(['errors' => ['name' => ['Required']]], 422);
-        }
-        if (DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->exists()) {
-            return response()->json(['error' => 'Duplicate account'], 409);
+        $email = mb_strtolower(trim($data['director_email']));
+        if (str_ends_with($email, '.edubridge')) {
+            return response()->json(['error' => 'Director must use a personal email'], 422);
         }
 
         try {
-            [$schoolId, $userId] = DB::transaction(function () use ($data, $name, $email, $organizationId) {
-                $user = ['name' => $name, 'email' => $email, 'role' => 'school',
-                    'created_at' => now(), 'updated_at' => now()];
-                $hash = password_hash($data['password'], PASSWORD_BCRYPT);
-                foreach (['password_hash', 'password'] as $column) {
-                    if (Schema::hasColumn('users', $column)) {
-                        $user[$column] = $hash;
-                    }
+            return DB::transaction(function () use ($request, $data, $name, $email, $organizationId) {
+                $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->first();
+                if (!$director || ($director->role ?? null) === 'school'
+                    || (property_exists($director, 'verification_status')
+                        && !in_array($director->verification_status, ['verified', 'approved'], true))) {
+                    return response()->json(['error' => 'Existing verified director account required'], 422);
                 }
-                if (Schema::hasColumn('users', 'phone')) {
-                    $user['phone'] = $data['phone'] ?? null;
-                }
-                if (Schema::hasColumn('users', 'verification_status')) {
-                    $user['verification_status'] = 'pending';
-                }
-                $userId = DB::table('users')->insertGetId($user);
                 $schoolId = DB::table('schools')->insertGetId([
-                    'organization_id' => $organizationId, 'name' => $name,
+                    'organization_id' => $organizationId,
+                    'name' => $name,
                     'slug' => 'school-' . Str::lower(Str::random(24)),
                     'address' => $data['address'] ?? null,
                     'phone' => $data['phone'] ?? null,
-                    'email' => $email, 'settings' => '{}', 'is_active' => true,
-                    'created_at' => now(), 'updated_at' => now(),
+                    'email' => $email,
+                    'settings' => '{}',
+                    'is_active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
-                DB::table('school_accounts')->insert([
-                    'school_id' => $schoolId, 'user_id' => $userId,
-                    'created_at' => now(), 'updated_at' => now(),
+                DB::table('school_management_assignments')->insert([
+                    'school_id' => $schoolId,
+                    'user_id' => $director->id,
+                    'role' => 'director',
+                    'appointed_by' => $request->attributes->get('jwt_user')->id,
+                    'starts_at' => now(),
+                    'ends_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
-                return [$schoolId, $userId];
-            });
-            // Provisioning is not proof of mailbox ownership. Send the same
-            // verification link as ordinary registration, after commit.
-            try {
-                $account = DB::table('users')->find($userId);
-                app(\App\Support\EmailVerificationSender::class)->send($account);
-            } catch (\Throwable $mailError) {
-                report($mailError);
-                // The created account can request verification again.
-            }
-            return response()->json([
-                'school' => ['id' => $schoolId, 'name' => $name, 'organization_id' => $organizationId],
-                'account' => ['id' => $userId, 'email' => $email, 'role' => 'school'],
-            ], 201);
+                return response()->json([
+                    'school' => ['id' => $schoolId, 'name' => $name, 'organization_id' => $organizationId],
+                    'director' => ['id' => (int) $director->id, 'email' => $email],
+                ], 201);
+            }, 3);
         } catch (QueryException $e) {
             if (in_array((string) $e->getCode(), ['23505', '23000'], true)) {
                 return response()->json(['error' => 'Duplicate account'], 409);
