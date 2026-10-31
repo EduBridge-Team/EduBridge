@@ -86,57 +86,65 @@ class InstitutionTimetableController extends Controller
             $data['ends_at'] = $end;
         }
 
-        if (($org->slug ?? null) === 'jabalia' && \Illuminate\Support\Facades\Schema::hasTable('jabalia_section_subject_quotas')) {
-            $quota = DB::table('jabalia_section_subject_quotas')
-                ->where('section_id', $data['section_id'])->where('subject_id', $data['subject_id'])
-                ->value('weekly_periods');
-            if ($quota !== null && DB::table('timetable_entries')
-                ->where('section_id', $data['section_id'])
-                ->where('academic_year_id', $data['academic_year_id'])
-                ->where('subject_id', $data['subject_id'])->count() >= (int) $quota) {
-                return response()->json(['error' => 'بلغت المادة عدد الحصص الأسبوعية المحدد لهذه الشعبة'], 409);
+        return DB::transaction(function () use ($org, $school, $data) {
+            // Serialize requests to this school's schedule, including quota and conflict checks.
+            // This prevents simultaneous writers from accepting the same free slot.
+            if (($org->slug ?? null) === 'jabalia') {
+                DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             }
-        }
-
-        $conflict = DB::table('timetable_entries')
-            ->where('school_id', $school)
-            ->where('academic_year_id', $data['academic_year_id'])
-            ->where('weekday', $data['weekday'])
-            ->where('period_number', $data['period_number'])
-            ->where(function ($query) use ($data) {
-                $query->where('section_id', $data['section_id']);
-                if (!empty($data['teacher_id'])) {
-                    $query->orWhere('teacher_id', $data['teacher_id']);
+            if (($org->slug ?? null) === 'jabalia' && \Illuminate\Support\Facades\Schema::hasTable('jabalia_section_subject_quotas')) {
+                $quota = DB::table('jabalia_section_subject_quotas')
+                    ->where('section_id', $data['section_id'])->where('subject_id', $data['subject_id'])
+                    ->value('weekly_periods');
+                if ($quota !== null && DB::table('timetable_entries')
+                    ->where('section_id', $data['section_id'])
+                    ->where('academic_year_id', $data['academic_year_id'])
+                    ->where('subject_id', $data['subject_id'])->count() >= (int) $quota) {
+                    return response()->json(['error' => 'بلغت المادة عدد الحصص الأسبوعية المحدد لهذه الشعبة'], 409);
                 }
-                if (!empty($data['room'])) {
-                    $query->orWhere('room', $data['room']);
-                }
-            })
-            ->first();
+            }
 
-        if ($conflict) {
-            return response()->json([
-                'error' => 'يوجد تعارض في الجدول لهذه الحصة',
-                'conflict_entry_id' => $conflict->id,
-            ], 409);
-        }
+            $conflict = DB::table('timetable_entries')
+                ->where('school_id', $school)
+                ->where('academic_year_id', $data['academic_year_id'])
+                ->where('weekday', $data['weekday'])
+                ->where('period_number', $data['period_number'])
+                ->where(function ($query) use ($data) {
+                    $query->where('section_id', $data['section_id']);
+                    if (!empty($data['teacher_id'])) {
+                        $query->orWhere('teacher_id', $data['teacher_id']);
+                    }
+                    if (!empty($data['room'])) {
+                        $query->orWhere('room', $data['room']);
+                    }
+                })
+                ->first();
 
-        $id = DB::table('timetable_entries')->insertGetId([
-            'school_id' => $school,
-            'academic_year_id' => $data['academic_year_id'],
-            'section_id' => $data['section_id'],
-            'subject_id' => $data['subject_id'],
-            'teacher_id' => $data['teacher_id'] ?? null,
-            'weekday' => $data['weekday'],
-            'period_number' => $data['period_number'],
-            'starts_at' => $data['starts_at'] ?? null,
-            'ends_at' => $data['ends_at'] ?? null,
-            'room' => $data['room'] ?? null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            if ($conflict) {
+                return response()->json([
+                    'error' => 'يوجد تعارض في الجدول لهذه الحصة',
+                    'conflict_entry_id' => $conflict->id,
+                ], 409);
+            }
 
-        return response()->json(['timetable_entry' => DB::table('timetable_entries')->find($id)], 201);
+            $id = DB::table('timetable_entries')->insertGetId([
+                'school_id' => $school,
+                'academic_year_id' => $data['academic_year_id'],
+                'section_id' => $data['section_id'],
+                'subject_id' => $data['subject_id'],
+                'teacher_id' => $data['teacher_id'] ?? null,
+                'weekday' => $data['weekday'],
+                'period_number' => $data['period_number'],
+                'starts_at' => $data['starts_at'] ?? null,
+                'ends_at' => $data['ends_at'] ?? null,
+                'room' => $data['room'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['timetable_entry' => DB::table('timetable_entries')->find($id)], 201);
+
+        }, 3);
     }
 
     public function destroy(Request $request, string $organizationSlug, int $school, int $entry): JsonResponse
