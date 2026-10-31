@@ -51,17 +51,25 @@ class SchoolProvisionController extends Controller
         $data = $validation->validated();
         $name = trim($data['name']);
         $email = mb_strtolower(trim($data['director_email']));
+        if ($name === '') {
+            return response()->json(['errors' => ['name' => ['Required']]], 422);
+        }
         if (str_ends_with($email, '.edubridge')) {
             return response()->json(['error' => 'Director must use a personal email'], 422);
         }
 
         try {
             return DB::transaction(function () use ($request, $data, $name, $email, $organizationId) {
-                $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->first();
+                $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->lockForUpdate()->first();
                 if (!$director || ($director->role ?? null) === 'school'
+                    || empty($director->email_verified_at)
                     || (property_exists($director, 'verification_status')
                         && !in_array($director->verification_status, ['verified', 'approved'], true))) {
                     return response()->json(['error' => 'Existing verified director account required'], 422);
+                }
+                if (DB::table('school_management_assignments')->where('user_id', $director->id)
+                    ->where('role', 'director')->whereNull('ends_at')->exists()) {
+                    return response()->json(['error' => 'Director already has an active school assignment'], 409);
                 }
                 $schoolId = DB::table('schools')->insertGetId([
                     'organization_id' => $organizationId,

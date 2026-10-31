@@ -16,6 +16,10 @@ class SchoolEnrollmentDecisionController extends Controller
         if (!$actor) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
+        if (($actor->role ?? null) !== 'school' && !DB::table('school_management_assignments')
+            ->where('user_id', $actor->id)->where('role', 'director')->whereNull('ends_at')->exists()) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
         $validation = Validator::make($request->all(), [
             'expected_version' => ['required', 'integer', 'min:1'],
             'decision' => ['required', 'in:approved,rejected'],

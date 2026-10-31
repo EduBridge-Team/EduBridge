@@ -14,6 +14,10 @@ class SchoolEnrollmentInboxTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Schema::create('school_management_assignments', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('user_id');
+            $t->string('role'); $t->timestamp('ends_at')->nullable();
+        });
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->boolean('is_active');
         });
@@ -50,6 +54,7 @@ class SchoolEnrollmentInboxTest extends TestCase
         foreach (['school_enrollment_requests','children','school_accounts','schools','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
+        Schema::dropIfExists('school_management_assignments');
         parent::tearDown();
     }
 
@@ -73,5 +78,14 @@ class SchoolEnrollmentInboxTest extends TestCase
     {
         $this->assertSame(403, $this->inbox(7,'parent')->getStatusCode());
         $this->assertSame(403, $this->inbox(999)->getStatusCode());
+    }
+    public function test_personal_director_access_is_revoked_with_assignment(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 1, 'user_id' => 30, 'role' => 'director', 'ends_at' => null,
+        ]);
+        $this->assertSame(200, $this->inbox(30, 'teacher')->getStatusCode());
+        DB::table('school_management_assignments')->where('user_id', 30)->update(['ends_at' => now()]);
+        $this->assertSame(403, $this->inbox(30, 'teacher')->getStatusCode());
     }
 }
