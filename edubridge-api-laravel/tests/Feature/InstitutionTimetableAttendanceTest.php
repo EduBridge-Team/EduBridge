@@ -30,6 +30,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
         Schema::create('notifications', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title')->nullable(); $t->string('message'); $t->string('type')->nullable(); $t->boolean('is_read')->default(false); $t->timestamp('created_at')->nullable(); });
         Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id')->nullable(); $t->unsignedBigInteger('teacher_id')->nullable(); $t->date('attendance_date'); $t->unsignedTinyInteger('period_number')->nullable(); $t->string('status')->default('open'); $t->text('notes')->nullable(); $t->timestamps(); });
         Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); $t->text('note')->nullable(); $t->unsignedBigInteger('marked_by')->nullable(); $t->timestamp('marked_at')->nullable(); $t->timestamps(); });
+        Schema::create('teacher_assignments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id'); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('academic_year_id'); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedTinyInteger('weekday'); $t->unsignedTinyInteger('period_number'); $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable(); $t->string('room')->nullable(); $t->timestamps(); });
 
         DB::table('organizations')->insert(['id' => 1, 'slug' => 'jabalia', 'is_active' => true]);
@@ -40,6 +41,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
         DB::table('grades')->insert(['id' => 1, 'school_id' => 1, 'name' => 'Grade 4']);
         DB::table('sections')->insert([['id' => 1, 'grade_id' => 1, 'academic_year_id' => 1, 'name' => 'A'], ['id' => 2, 'grade_id' => 1, 'academic_year_id' => 1, 'name' => 'B']]);
         DB::table('subjects')->insert(['id' => 1, 'school_id' => 1, 'name' => 'Science']);
+        DB::table('teacher_assignments')->insert([['section_id'=>1, 'subject_id'=>1, 'teacher_id'=>10], ['section_id'=>2, 'subject_id'=>1, 'teacher_id'=>10]]);
         DB::table('children')->insert(['id' => 1, 'name' => 'Student', 'organization_id' => 1]);
         DB::table('student_enrollments')->insert(['child_id' => 1, 'section_id' => 1, 'status' => 'active']);
         DB::table('child_parent')->insert(['child_id' => 1, 'parent_id' => 20]);
@@ -47,7 +49,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
+        foreach (['teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
