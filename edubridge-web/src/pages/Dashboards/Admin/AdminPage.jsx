@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import SchoolAdminDirectory from '../../../components/School/SchoolAdminDirectory'
 import SchoolProvisionForm from '../../../components/Institution/SchoolProvisionForm'
 // لوحة التحكم الإدارية — أدمن فقط
 import { Navigate } from 'react-router-dom'
@@ -7,6 +9,7 @@ import AdminSectionTabs from '../../../components/AdminSectionTabs'
 import UsersTab from './UsersTab'
 
 export default function AdminPage() {
+  const [schoolsRevision, setSchoolsRevision] = useState(0)
   const me = getUser()
   if (!me || me.role !== 'admin') {
     return <Navigate to="/" replace />
@@ -29,7 +32,8 @@ export default function AdminPage() {
         </section>
 
         <AdminSectionTabs />
-        <SchoolProvisionForm />
+        <SchoolProvisionForm onCreated={() => setSchoolsRevision(value => value + 1)} />
+        <SchoolAdminDirectory revision={schoolsRevision} />
         <UsersTab />
       </main>
 

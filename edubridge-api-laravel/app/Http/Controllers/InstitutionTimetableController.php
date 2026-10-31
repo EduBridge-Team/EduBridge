@@ -166,6 +166,13 @@ class InstitutionTimetableController extends Controller
 
     private function teacherWithinOrganization(Request $request, int $teacher): bool
     {
+        if ($managed = $request->attributes->get('managed_school')) {
+            return DB::table('school_internal_identities as i')->join('users as u', 'u.id', '=', 'i.user_id')
+                ->where('i.school_id', $managed)->where('i.user_id', $teacher)->where('i.is_active', true)->where('u.role', 'teacher')->exists()
+                || DB::table('teacher_assignments as a')->join('sections as s', 's.id', '=', 'a.section_id')
+                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $managed)->where('a.teacher_id', $teacher)->exists();
+        }
+
         $organization = $request->attributes->get('organization');
         return DB::table('organization_user')
             ->where('organization_id', $organization->id)

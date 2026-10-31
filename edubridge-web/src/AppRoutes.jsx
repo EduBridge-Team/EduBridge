@@ -11,6 +11,8 @@ import { canOpenUnverifiedPath } from './verificationPolicy'
 
 import './styles/routes.css'
 
+const SchoolWorkspacePage = lazy(() => import('./pages/Dashboards/SchoolWorkspacePage'))
+const SchoolInvitationPage = lazy(() => import('./pages/Dashboards/SchoolInvitationPage'))
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
@@ -110,6 +112,8 @@ export default function AppRoutes() {
     <RouteLoadBoundary key={location.pathname}>
       <Suspense fallback={<main className="container route-load-state" role="status" aria-live="polite" dir="rtl">جارِ تحميل الصفحة…</main>}>
         <Routes>
+          <Route path="/school" element={<Protected><Page><SchoolWorkspacePage /></Page></Protected>} />
+          <Route path="/school/invitation" element={<Page><SchoolInvitationPage /></Page>} />
           <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
           <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
           <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />

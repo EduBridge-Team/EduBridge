@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 final class SchoolScopedAccess
 {
-    public const PERMISSIONS = ['academic', 'enrollment'];
+    public const PERMISSIONS = ['academic', 'enrollment', 'attendance', 'timetable', 'curriculum', 'reports'];
 
     public static function resolve(Request $request, string $permission): ?object
     {

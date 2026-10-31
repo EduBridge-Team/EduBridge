@@ -13,10 +13,9 @@ final class SchoolAdministration
         if (!$actor) return null;
         $query = DB::table('school_management_assignments as a')
             ->join('schools as s', 's.id', '=', 'a.school_id')
-            ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
             ->where('a.user_id', $actor->id)->where('a.role', 'director')->whereNull('a.ends_at')
             ->where('s.is_active', true)
-            ->where(fn ($q) => $q->whereNull('s.organization_id')->orWhere('o.is_active', true))
+            ->where(fn ($q) => $q->whereNull('s.organization_id')->orWhereExists(fn ($o) => $o->selectRaw('1')->from('organizations')->whereColumn('organizations.id', 's.organization_id')->where('organizations.is_active', true)))
             ->select('s.*')->limit(2);
         $rows = $lock ? $query->lockForUpdate()->get() : $query->get();
         return $rows->count() === 1 ? $rows->first() : null;
