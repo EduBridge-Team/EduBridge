@@ -186,6 +186,9 @@ void main() {
           final reads = fixture.reads;
           await resume(tester);
           expect(fixture.reads, reads + 1);
+          // The newly inserted transfer panel makes this sliver lazy on narrow
+          // viewports. Rebuild at the top before asserting the enrollment label.
+          await tester.pumpAndSettle();
           expect(
             find.text('${strings.enrollmentActive}: School A'),
             findsOneWidget,
