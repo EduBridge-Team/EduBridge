@@ -277,3 +277,13 @@ export function approveJabaliaBulkPromotion(slug, schoolId, payload) {
     method: 'POST', body: JSON.stringify({ ...payload, confirm: true }),
   })
 }
+
+export function fetchJabaliaTimetableSettings(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/timetable-settings'))
+}
+
+export function updateJabaliaTimetableSettings(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/timetable-settings'), {
+    method: 'PUT', body: JSON.stringify(payload),
+  })
+}
