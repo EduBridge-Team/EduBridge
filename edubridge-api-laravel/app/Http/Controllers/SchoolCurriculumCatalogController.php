@@ -11,14 +11,22 @@ class SchoolCurriculumCatalogController extends Controller
     public function index(Request $request): JsonResponse
     {
         $actor = $request->attributes->get('jwt_user');
-        if (!$actor || ($actor->role ?? null) !== 'school') {
+        if (!$actor) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        $schools = DB::table('school_accounts as account')
-            ->join('schools as school', 'school.id', '=', 'account.school_id')
-            ->where('account.user_id', $actor->id)
-            ->where('school.is_active', true)
+        if (($actor->role ?? null) === 'school') {
+            $query = DB::table('school_accounts as account')
+                ->join('schools as school', 'school.id', '=', 'account.school_id')
+                ->where('account.user_id', $actor->id);
+        } else {
+            $query = DB::table('school_management_assignments as assignment')
+                ->join('schools as school', 'school.id', '=', 'assignment.school_id')
+                ->where('assignment.user_id', $actor->id)
+                ->where('assignment.role', 'director')
+                ->whereNull('assignment.ends_at');
+        }
+        $schools = $query->where('school.is_active', true)
             ->select('school.id', 'school.name', 'school.organization_id')
             ->limit(2)->get();
         if ($schools->count() !== 1) {
