@@ -115,11 +115,11 @@ class StudentSelfTest extends TestCase
             'child_id' => 100, 'text_answer' => 'Attempted answer',
         ]);
         $request->attributes->set('jwt_user', (object) ['id'=>10, 'role'=>'parent']);
-        $this->assertSame(403, app(\App\Http\Controllers\\StudentHomeworkSubmitController::class)
+        $this->assertSame(403, app(\App\Http\Controllers\StudentHomeworkSubmitController::class)
             ->store($request, 1)->getStatusCode());
 
         $request->attributes->set('jwt_user', (object) ['id'=>20, 'role'=>'student']);
-        $this->assertSame(403, app(\App\Http\Controllers\\StudentHomeworkSubmitController::class)
+        $this->assertSame(403, app(\App\Http\Controllers\StudentHomeworkSubmitController::class)
             ->store($request, 1)->getStatusCode());
     }
 
