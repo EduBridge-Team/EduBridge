@@ -6,7 +6,7 @@ export const DASHBOARD_BY_ROLE = {
   ministry: '/ministry',
   institution: '/institution',
   school: '/school',
-  student: '/lessons',
+  student: '/student',
   staff: '/profile',
 }
 
