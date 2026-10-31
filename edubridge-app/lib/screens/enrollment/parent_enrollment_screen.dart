@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../../theme.dart';
 import 'school_history_screen.dart';
+import 'guardian_transfer_panel.dart';
 import '../../model/enrollment/enrollment_models.dart';
 import '../../services/enrollment/enrollment_repository.dart';
 import 'enrollment_controllers.dart';
@@ -226,6 +227,8 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                                 ),
                               ),
                             ),
+                          const SizedBox(height: 16),
+                          GuardianTransferPanel(key: ValueKey('guardian-transfer-${widget.childId}'), childId: widget.childId),
                           const SizedBox(height: 16),
                           Text(
                             l10n.enrollmentHistory,
