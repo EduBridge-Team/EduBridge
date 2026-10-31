@@ -4,6 +4,7 @@ import {
   fetchInstitutionSchools, fetchInstitutionAcademicOverview, fetchInstitutionParticipants,
   fetchInstitutionTimetable, createInstitutionTimetableEntry, deleteInstitutionTimetableEntry,
   fetchJabaliaTimetableSettings, updateJabaliaTimetableSettings,
+  fetchJabaliaSubjectQuotas, updateJabaliaSubjectQuota,
 } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
@@ -24,6 +25,8 @@ export default function InstitutionTimetablePage() {
   const [participants, setParticipants] = useState(null)
   const [entries, setEntries] = useState([])
   const [timetableSettings, setTimetableSettings] = useState(null)
+  const [subjectQuotas, setSubjectQuotas] = useState([])
+  const [quotaForm, setQuotaForm] = useState({ section_id: '', subject_id: '', weekly_periods: '' })
   const [form, setForm] = useState(EMPTY)
   const [filterYear, setFilterYear] = useState('')
   const [filterSection, setFilterSection] = useState('')
@@ -48,15 +51,16 @@ export default function InstitutionTimetablePage() {
     if (!slug || !schoolId) return
     let active = true
     setLoading(true)
-    setAcademic(null); setParticipants(null); setEntries([]); setTimetableSettings(null)
+    setAcademic(null); setParticipants(null); setEntries([]); setTimetableSettings(null); setSubjectQuotas([])
     Promise.all([
       fetchInstitutionAcademicOverview(slug, schoolId),
       fetchInstitutionParticipants(slug, schoolId),
       fetchInstitutionTimetable(slug, schoolId),
       slug === 'jabalia' ? fetchJabaliaTimetableSettings(slug, schoolId) : Promise.resolve(null),
-    ]).then(([a, p, t, settings]) => {
+      slug === 'jabalia' ? fetchJabaliaSubjectQuotas(slug, schoolId) : Promise.resolve(null),
+     ]).then(([a, p, t, settings, quotas]) => {
       if (!active) return
-      setAcademic(a); setParticipants(p); setEntries(t.timetable || []); setTimetableSettings(settings)
+      setAcademic(a); setParticipants(p); setEntries(t.timetable || []); setTimetableSettings(settings); setSubjectQuotas(quotas?.quotas || [])
       const year = (a.academic_years || []).find((y) => y.is_current) || a.academic_years?.[0]
       setForm({ ...EMPTY, academic_year_id: String(year?.id || '') })
       setFilterTeacher(requestedTeacher && (p.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
@@ -125,6 +129,23 @@ export default function InstitutionTimetablePage() {
     try {
       await updateJabaliaTimetableSettings(slug, schoolId, timetableSettings)
       setMessage('تم تحديث إعدادات الجدول المدرسي.')
+    } catch (err) { setError(err.message) }
+    finally { setBusy(false) }
+  }
+
+  async function saveSubjectQuota(event) {
+    event.preventDefault()
+    if (busy) return
+    setBusy(true); setError(''); setMessage('')
+    try {
+      await updateJabaliaSubjectQuota(slug, schoolId, {
+        section_id: Number(quotaForm.section_id),
+        subject_id: Number(quotaForm.subject_id),
+        weekly_periods: Number(quotaForm.weekly_periods),
+      })
+      const result = await fetchJabaliaSubjectQuotas(slug, schoolId)
+      setSubjectQuotas(result.quotas || [])
+      setMessage('تم تحديث الحصص الأسبوعية للمادة والشعبة.')
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
   }
@@ -208,6 +229,31 @@ export default function InstitutionTimetablePage() {
               onClick={() => setTimetableSettings((p) => ({...p, periods: p.periods.slice(0, -1)}))}>حذف آخر حصة</button>
             <button className="btn" type="submit" disabled={busy || !timetableSettings.weekdays.length}>حفظ أوقات الدوام</button>
           </form>
+        </section>}
+        {slug === 'jabalia' && <section className="institution-panel">
+          <h2>عدد الحصص الأسبوعية للمواد</h2>
+          <p>تحدد الإدارة العدد لكل مادة وشعبة. الأوقات غير المحددة لا توزع تلقائيًا.</p>
+          <form className="institution-school-form" onSubmit={saveSubjectQuota}>
+            <label>الشعبة
+              <select required value={quotaForm.section_id} onChange={(e) => setQuotaForm((old) => ({...old, section_id:e.target.value}))}>
+                <option value="">اختر الشعبة</option>
+                {(academic?.sections || []).map((item) => <option key={item.id} value={item.id}>{item.grade_name} — {item.name}</option>)}
+              </select>
+            </label>
+            <label>المادة
+              <select required value={quotaForm.subject_id} onChange={(e) => setQuotaForm((old) => ({...old, subject_id:e.target.value}))}>
+                <option value="">اختر المادة</option>
+                {subjects.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+              </select>
+            </label>
+            <label>الحصص أسبوعيًا<input required min="0" max="35" type="number" value={quotaForm.weekly_periods} onChange={(e) => setQuotaForm((old) => ({...old, weekly_periods:e.target.value}))} /></label>
+            <button className="btn" disabled={busy}>حفظ عدد الحصص</button>
+          </form>
+          <div className="institution-actions">{subjectQuotas.map((item) => {
+            const section = (academic?.sections || []).find((x) => String(x.id) === String(item.section_id))
+            const subject = subjects.find((x) => String(x.id) === String(item.subject_id))
+            return <p key={item.id}>{section?.grade_name} — {section?.name} / {subject?.name}: {item.weekly_periods} حصص</p>
+          })}</div>
         </section>}
         <section className="institution-panel">
           <h2>إضافة حصة للجدول</h2>
