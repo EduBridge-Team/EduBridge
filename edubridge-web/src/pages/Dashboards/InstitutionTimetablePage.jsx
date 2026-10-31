@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import {
   fetchInstitutionSchools, fetchInstitutionAcademicOverview, fetchInstitutionParticipants,
   fetchInstitutionTimetable, createInstitutionTimetableEntry, deleteInstitutionTimetableEntry,
+  fetchJabaliaTimetableSettings, updateJabaliaTimetableSettings,
 } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
@@ -22,6 +23,7 @@ export default function InstitutionTimetablePage() {
   const [academic, setAcademic] = useState(null)
   const [participants, setParticipants] = useState(null)
   const [entries, setEntries] = useState([])
+  const [timetableSettings, setTimetableSettings] = useState(null)
   const [form, setForm] = useState(EMPTY)
   const [filterYear, setFilterYear] = useState('')
   const [filterSection, setFilterSection] = useState('')
@@ -46,14 +48,15 @@ export default function InstitutionTimetablePage() {
     if (!slug || !schoolId) return
     let active = true
     setLoading(true)
-    setAcademic(null); setParticipants(null); setEntries([])
+    setAcademic(null); setParticipants(null); setEntries([]); setTimetableSettings(null)
     Promise.all([
       fetchInstitutionAcademicOverview(slug, schoolId),
       fetchInstitutionParticipants(slug, schoolId),
       fetchInstitutionTimetable(slug, schoolId),
-    ]).then(([a, p, t]) => {
+      slug === 'jabalia' ? fetchJabaliaTimetableSettings(slug, schoolId) : Promise.resolve(null),
+    ]).then(([a, p, t, settings]) => {
       if (!active) return
-      setAcademic(a); setParticipants(p); setEntries(t.timetable || [])
+      setAcademic(a); setParticipants(p); setEntries(t.timetable || []); setTimetableSettings(settings)
       const year = (a.academic_years || []).find((y) => y.is_current) || a.academic_years?.[0]
       setForm({ ...EMPTY, academic_year_id: String(year?.id || '') })
       setFilterTeacher(requestedTeacher && (p.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
@@ -114,6 +117,18 @@ export default function InstitutionTimetablePage() {
     finally { setBusy(false) }
   }
 
+  async function saveTimetableSettings(event) {
+    event.preventDefault()
+    if (busy || !timetableSettings) return
+    if (!window.confirm('حفظ مواعيد الدوام الجديدة؟ قد يتم رفض التعديل إذا تعارض مع حصص مسجلة.')) return
+    setBusy(true); setError(''); setMessage('')
+    try {
+      await updateJabaliaTimetableSettings(slug, schoolId, timetableSettings)
+      setMessage('تم تحديث إعدادات الجدول المدرسي.')
+    } catch (err) { setError(err.message) }
+    finally { setBusy(false) }
+  }
+
   if (contextLoading) return <main className="container">جارِ تحميل المؤسسة…</main>
   if (!slug) return <main className="container state error">هذه الصفحة متاحة من نطاق المؤسسة فقط.</main>
   const years = academic?.academic_years || []
@@ -160,6 +175,40 @@ export default function InstitutionTimetablePage() {
         {loading && <div className="state">جارِ تحميل الجدول…</div>}
       </section>
       {!!schoolId && academic && <>
+        {slug === 'jabalia' && timetableSettings && <section className="institution-panel">
+          <h2>إعدادات أوقات الدوام</h2>
+          <p>حدد أيام الدوام وبداية ونهاية كل حصة. لا تُغيّر الإعدادات حصصًا محفوظة مسبقًا.</p>
+          <form className="institution-school-form" onSubmit={saveTimetableSettings}>
+            <fieldset><legend>أيام الدوام (الأحد = 7)</legend>
+              {DAYS.map((day, index) => {
+                const iso = index === 0 ? 7 : index
+                return <label key={day}>
+                  <input type="checkbox" checked={timetableSettings.weekdays.includes(iso)}
+                    onChange={(event) => setTimetableSettings((prev) => ({
+                      ...prev, weekdays: event.target.checked
+                        ? [...prev.weekdays, iso] : prev.weekdays.filter((value) => value !== iso),
+                    }))} /> {day}
+                </label>
+              })}
+            </fieldset>
+            {timetableSettings.periods.map((period, index) => <div key={index}>
+              <strong>الحصة {index + 1}</strong>
+              <label>البداية <input type="time" required value={period.starts_at}
+                onChange={(event) => setTimetableSettings((prev) => ({
+                  ...prev, periods: prev.periods.map((p, i) => i === index ? {...p, starts_at: event.target.value} : p),
+                }))} /></label>
+              <label>النهاية <input type="time" required value={period.ends_at}
+                onChange={(event) => setTimetableSettings((prev) => ({
+                  ...prev, periods: prev.periods.map((p, i) => i === index ? {...p, ends_at: event.target.value} : p),
+                }))} /></label>
+            </div>)}
+            <button className="btn outline" type="button" disabled={busy || timetableSettings.periods.length >= 10}
+              onClick={() => setTimetableSettings((p) => ({...p, periods: [...p.periods, {starts_at:'12:00', ends_at:'12:40'}]}))}>إضافة حصة</button>
+            <button className="btn outline" type="button" disabled={busy || timetableSettings.periods.length <= 1}
+              onClick={() => setTimetableSettings((p) => ({...p, periods: p.periods.slice(0, -1)}))}>حذف آخر حصة</button>
+            <button className="btn" type="submit" disabled={busy || !timetableSettings.weekdays.length}>حفظ أوقات الدوام</button>
+          </form>
+        </section>}
         <section className="institution-panel">
           <h2>إضافة حصة للجدول</h2>
           {!years.length || !sections.length || !subjects.length
