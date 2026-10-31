@@ -16,7 +16,7 @@ class SchoolInternalAccountController extends Controller
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:190'],
             'username' => ['required', 'string', 'regex:/^[a-z0-9][a-z0-9._-]{1,63}$/D'],
-            'role' => ['required', 'in:teacher,student'],
+            'role' => ['required', 'in:teacher,student,staff'],
             'password' => ['required', 'string', 'min:12', 'max:128'],
         ]);
         if ($validation->fails()) {
@@ -24,6 +24,7 @@ class SchoolInternalAccountController extends Controller
         }
 
         $input = $validation->validated();
+        if (trim($input['name']) === '') return response()->json(['error' => 'Name required'], 422);
         $actor = $request->attributes->get('jwt_user');
         if (!$actor) {
             return response()->json(['error' => 'School access is unavailable'], 403);

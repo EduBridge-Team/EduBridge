@@ -15,24 +15,8 @@ class SchoolEnrollmentOptionsController extends Controller
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        $query = ($actor->role ?? null) === 'school'
-            ? DB::table('school_accounts as account')->join('schools as school', 'school.id', '=', 'account.school_id')
-            : DB::table('school_management_assignments as account')
-                ->join('schools as school', 'school.id', '=', 'account.school_id')
-                ->where('account.role', 'director')->whereNull('account.ends_at');
-        $schools = $query
-            ->leftJoin('organizations as organization', 'organization.id', '=', 'school.organization_id')
-            ->where('account.user_id', $actor->id)->where('school.is_active', true)
-            ->where(function ($query) {
-                $query->whereNull('school.organization_id')->orWhere('organization.is_active', true);
-            })->select('school.id')->limit(2)->get();
-        if ($schools->count() !== 1) {
-            return response()->json(['error' => 'School access unavailable'], 403);
-        }
-        $school = $schools->first();
-
-        // A school account only sees current sections owned by its own school.
-        // The decision endpoint must independently validate eligibility and capacity.
+        $school = \App\Support\SchoolScopedAccess::resolve($request, 'enrollment');
+        if (!$school) return response()->json(['error' => 'School access unavailable'], 403);
         $sections = DB::table('sections as section')
             ->join('grades as grade', 'grade.id', '=', 'section.grade_id')
             ->join('academic_years as year', 'year.id', '=', 'section.academic_year_id')

@@ -43,10 +43,24 @@ Route::get('/auth/verify-email', [AuthController::class, 'verifyEmail'])
 Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers\LessonFileController::class, 'show'])
     ->name('lesson.file')->middleware(['signed:relative', 'throttle:300,1']);
 
+Route::post('/school/director-invitations/accept', [\App\Http\Controllers\SchoolDirectorInvitationController::class, 'accept'])
+    ->middleware(['auth.jwt', 'api.abuse', 'throttle:10,1']);
+
 // كل ما يلي يتطلب توكن صالح، تحقق هوية، وحماية موحدة من الإغراق.
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
     Route::get('/me/director-schools', [\App\Http\Controllers\MySchoolDirectorAssignmentsController::class, 'index'])
         ->middleware('throttle:60,1');
+    Route::patch('/school/internal-identities/{identity}', [\App\Http\Controllers\SchoolInternalLifecycleController::class, 'update'])
+        ->whereNumber('identity')->middleware('throttle:10,1');
+    Route::get('/admin/schools/{school}/director-invitations', [\App\Http\Controllers\SchoolDirectorInvitationController::class, 'index'])
+        ->whereNumber('school')->middleware('throttle:60,1');
+    Route::post('/admin/schools/{school}/director-invitations', [\App\Http\Controllers\SchoolDirectorInvitationController::class, 'store'])
+        ->whereNumber('school')->middleware('throttle:10,1');
+    Route::delete('/admin/schools/{school}/director-invitations/{invitation}', [\App\Http\Controllers\SchoolDirectorInvitationController::class, 'revoke'])
+        ->whereNumber('school')->whereNumber('invitation')->middleware('throttle:10,1');
+    Route::get('/school/delegation', [\App\Http\Controllers\SchoolDelegationController::class, 'show'])->middleware('throttle:60,1');
+    Route::patch('/school/deputies/{assignment}/permissions', [\App\Http\Controllers\SchoolDelegationController::class, 'update'])
+        ->whereNumber('assignment')->middleware('throttle:10,1');
     Route::get('/school/internal-domain', [\App\Http\Controllers\SchoolInternalDomainController::class, 'show'])
         ->middleware('throttle:120,1');
     Route::post('/school/internal-domain/confirm', [\App\Http\Controllers\SchoolInternalDomainController::class, 'confirm'])

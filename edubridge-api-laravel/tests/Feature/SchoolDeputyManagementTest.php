@@ -39,6 +39,7 @@ class SchoolDeputyManagementTest extends TestCase
             $t->timestamp('ends_at')->nullable();
             $t->timestamps();
         });
+        Schema::table('school_management_assignments', fn (Blueprint $t) => $t->json('permissions')->nullable());
         DB::table('schools')->insert([
             ['id' => 10, 'organization_id' => null, 'is_active' => true],
             ['id' => 11, 'organization_id' => null, 'is_active' => true],
@@ -108,5 +109,22 @@ class SchoolDeputyManagementTest extends TestCase
         DB::table('school_management_assignments')->where('school_id', 11)->where('user_id', 20)->update(['ends_at' => now()]);
         DB::table('school_management_assignments')->where('school_id', 10)->where('user_id', 20)->update(['ends_at' => now()]);
         $this->assertSame(403, $controller->store($this->request(20, ['user_email' => 'deputy@example.org']))->getStatusCode());
+    }
+
+    public function test_deputy_permissions_are_explicit_and_can_be_withdrawn(): void
+    {
+        $controller = app(SchoolDeputyManagementController::class);
+        $created = $controller->store($this->request(20, ['user_email' => 'deputy@example.org']));
+        $id = $created->getData(true)['assignment_id'];
+        $actor = $this->request(21);
+        $this->assertNull(\App\Support\SchoolScopedAccess::resolve($actor, 'academic'));
+        $request = $this->request(20, ['permissions' => ['academic']]);
+        $this->assertSame(200, app(\App\Http\Controllers\SchoolDelegationController::class)->update($request, $id)->getStatusCode());
+        $this->assertNotNull(\App\Support\SchoolScopedAccess::resolve($actor, 'academic'));
+        $this->assertNull(\App\Support\SchoolScopedAccess::resolve($actor, 'enrollment'));
+        $request = $this->request(20, ['permissions' => []]);
+        $this->assertSame(200, app(\App\Http\Controllers\SchoolDelegationController::class)->update($request, $id)->getStatusCode());
+        $this->assertNull(\App\Support\SchoolScopedAccess::resolve($actor, 'academic'));
+        $this->assertNull(\App\Support\SchoolAdministration::directorSchool($actor));
     }
 }
