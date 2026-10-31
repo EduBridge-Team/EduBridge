@@ -68,23 +68,19 @@ class InstitutionTimetableController extends Controller
         // These rules are the initial defaults; configurable institution settings follow.
         $org = $request->attributes->get('organization');
         if (($org->slug ?? null) === 'jabalia') {
-            $slots = [
-                1 => ['08:30', '09:10'],
-                2 => ['09:10', '09:50'],
-                3 => ['09:50', '10:30'],
-                4 => ['10:40', '11:20'],
-                5 => ['11:20', '12:00'],
-            ];
+            $settings = JabaliaTimetableSettingsController::forSchool($school);
             // ISO weekdays: Sunday=7, Monday=1, ..., Thursday=4.
             $weekday = (int) $data['weekday'];
             $period = (int) $data['period_number'];
-            if (!in_array($weekday, [7, 1, 2, 3, 4], true) || !isset($slots[$period])) {
-                return response()->json(['error' => 'الدوام من الأحد إلى الخميس، وخمس حصص يوميًا'], 422);
+            $slot = $settings['periods'][$period - 1] ?? null;
+            if (!in_array($weekday, $settings['weekdays'], true) || !$slot) {
+                return response()->json(['error' => 'اليوم أو رقم الحصة خارج إعدادات المدرسة'], 422);
             }
-            [$start, $end] = $slots[$period];
+            $start = $slot['starts_at'];
+            $end = $slot['ends_at'];
             if ((!empty($data['starts_at']) && $data['starts_at'] !== $start)
                 || (!empty($data['ends_at']) && $data['ends_at'] !== $end)) {
-                return response()->json(['error' => 'وقت الحصة لا يوافق الجدول المعتمد'], 422);
+                return response()->json(['error' => 'وقت الحصة لا يوافق إعدادات المدرسة'], 422);
             }
             $data['starts_at'] = $start;
             $data['ends_at'] = $end;
