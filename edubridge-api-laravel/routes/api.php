@@ -61,9 +61,9 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::get('/admin/schools', [\App\Http\Controllers\SchoolAdministrationDirectoryController::class, 'index'])->middleware('throttle:60,1');
     Route::get('/admin/schools/{school}/management-history', [\App\Http\Controllers\SchoolAdministrationDirectoryController::class, 'history'])
         ->whereNumber('school')->middleware('throttle:60,1');
-    Route::post('/school/transfers', [\\App\\Http\\Controllers\\SchoolTransferConsentController::class, 'create'])->middleware('throttle:10,1');
-    Route::get('/parent/children/{child}/transfers', [\\App\\Http\\Controllers\\SchoolTransferConsentController::class, 'guardianIndex'])->whereNumber('child')->middleware(['role:parent', 'throttle:60,1']);
-    Route::post('/parent/children/{child}/transfers/{transfer}/decision', [\\App\\Http\\Controllers\\SchoolTransferConsentController::class, 'guardianDecision'])->whereNumber('child')->whereNumber('transfer')->middleware(['role:parent', 'throttle:10,1']);
+    Route::post('/school/transfers', [\App\Http\Controllers\SchoolTransferConsentController::class, 'create'])->middleware('throttle:10,1');
+    Route::get('/parent/children/{child}/transfers', [\App\Http\Controllers\SchoolTransferConsentController::class, 'guardianIndex'])->whereNumber('child')->middleware(['role:parent', 'throttle:60,1']);
+    Route::post('/parent/children/{child}/transfers/{transfer}/decision', [\App\Http\Controllers\SchoolTransferConsentController::class, 'guardianDecision'])->whereNumber('child')->whereNumber('transfer')->middleware(['role:parent', 'throttle:10,1']);
     Route::get('/school/annual-promotion/roster', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'roster'])->middleware('throttle:60,1');
     Route::get('/school/annual-promotion/transfer-schools', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'destinations'])->middleware('throttle:60,1');
     Route::post('/school/annual-promotion/preview', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'preview'])->middleware('throttle:20,1');
