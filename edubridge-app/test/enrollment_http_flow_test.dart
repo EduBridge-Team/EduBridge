@@ -186,6 +186,12 @@ void main() {
           final reads = fixture.reads;
           await resume(tester);
           expect(fixture.reads, reads + 1);
+          // The active enrollment label can be outside the lazily built
+          // sliver after resume, particularly at 320px with large text.
+          await reveal(
+            tester,
+            find.text('${strings.enrollmentActive}: School A'),
+          );
           expect(
             find.text('${strings.enrollmentActive}: School A'),
             findsOneWidget,
