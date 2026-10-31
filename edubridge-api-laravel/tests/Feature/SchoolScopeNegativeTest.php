@@ -42,7 +42,7 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
     public function test_ambiguous_active_directorship_is_denied(): void
     {
         $this->assertNotNull(SchoolScopedAccess::resolve($this->requestFor(20), 'academic'));
-        $this->assign(11, 20, 'director');
+        DB::table('school_management_assignments')->insert([\n            'school_id' => 11, 'user_id' => 20, 'role' => 'director',\n            'appointed_by' => null, 'starts_at' => now(), 'ends_at' => null,\n            'created_at' => now(), 'updated_at' => now(),\n        ]);
         $this->assertNull(SchoolScopedAccess::resolve($this->requestFor(20), 'academic'));
     }
 
