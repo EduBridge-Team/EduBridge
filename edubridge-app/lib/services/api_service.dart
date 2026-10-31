@@ -16,6 +16,7 @@ import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
 part 'api_core.dart';
+part 'api_school_internal_accounts.dart';
 part 'api_children_learning.dart';
 part 'api_communication_users.dart';
 part 'api_ministry.dart';
@@ -484,5 +485,22 @@ class ApiService {
     String? reason,
   }) => _apiRejectSuggestion(suggestionId, reason: reason);
 
-    static Future<void> deleteAccount() => _apiDeleteAccount();
+    static Future<Map<String, dynamic>> getSchoolInternalAccounts({
+    int? afterId,
+    int limit = 50,
+    String? role,
+  }) => _apiSchoolInternalAccountsList(
+    afterId: afterId, limit: limit, role: role,
+  );
+
+  static Future<Map<String, dynamic>> createSchoolInternalAccount({
+    required String name,
+    required String username,
+    required String role,
+    required String password,
+  }) => _apiSchoolInternalAccountCreate(
+    name: name, username: username, role: role, password: password,
+  );
+
+  static Future<void> deleteAccount() => _apiDeleteAccount();
 }
