@@ -16,6 +16,7 @@ import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
 part 'api_core.dart';
+part 'api_school_internal_accounts.dart';
 part 'api_children_learning.dart';
 part 'api_communication_users.dart';
 part 'api_ministry.dart';
