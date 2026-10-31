@@ -3,8 +3,8 @@ class SchoolAccountRequest {
   const SchoolAccountRequest({
     required this.name,
     required this.email,
-    required this.password,
-    required this.passwordConfirmation,
+    this.password = '',
+    this.passwordConfirmation = '',
     this.phone = '',
     this.address = '',
   });
@@ -18,9 +18,7 @@ class SchoolAccountRequest {
 
   Map<String, dynamic> toJson() => {
     'name': name.trim(),
-    'email': email.trim(),
-    'password': password,
-    'password_confirmation': passwordConfirmation,
+    'director_email': email.trim().toLowerCase(),
     if (phone.trim().isNotEmpty) 'phone': phone.trim(),
     if (address.trim().isNotEmpty) 'address': address.trim(),
   };
@@ -44,7 +42,7 @@ class SchoolAccount {
 
   factory SchoolAccount.fromJson(Map<String, dynamic> json) {
     final school = json['school'];
-    final account = json['account'];
+    final account = json['director'];
     if (school is! Map<String, dynamic> ||
         account is! Map<String, dynamic> ||
         school['id'] is! int ||
@@ -54,7 +52,6 @@ class SchoolAccount {
         school['name'] is! String ||
         (school['name'] as String).trim().isEmpty ||
         account['email'] is! String ||
-        account['role'] != 'school' ||
         !school.containsKey('organization_id') ||
         (school['organization_id'] != null &&
             (school['organization_id'] is! int ||

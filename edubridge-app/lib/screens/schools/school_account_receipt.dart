@@ -21,8 +21,8 @@ class SchoolAccountReceipt extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             arabic
-                ? 'يجب على صاحب الحساب تأكيد بريده الإلكتروني قبل تسجيل الدخول. تحقق من البريد الوارد والرسائل غير المرغوب فيها، ويمكن إعادة إرسال رابط التأكيد من شاشة تسجيل الدخول.'
-                : 'The account owner must verify their email before signing in. Check the inbox and spam folder; the verification link can be resent from the sign-in screen.',
+                ? 'تم تكليف المدير بحسابه الشخصي الموثّق. يدخل المدير ببريده وكلمة مرور حسابه الحاليين.'
+                : 'The director is assigned through their verified personal account. Sign in with the existing personal email and password.',
             key: const ValueKey('school-account-verification-guidance'),
           ),
           const SizedBox(height: 16),

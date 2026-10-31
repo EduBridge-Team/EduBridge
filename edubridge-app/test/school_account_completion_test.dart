@@ -35,16 +35,14 @@ void main() {
             repository: repository), language, scale: 2));
           await tester.pumpAndSettle();
           await fill(tester);
-          final password = tester.widget<TextFormField>(field('password')).controller!;
           await tester.tap(submit);
           await tester.pumpAndSettle();
           final l = await AppLocalizations.delegate.load(Locale(language));
           expect(find.text(l.schoolAccountSuccess), findsOneWidget);
           expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget,
-            reason: 'Backend sends an email verification link; creation is not verified login');
+            reason: 'The receipt explains how the existing director signs in');
           expect(find.byKey(const ValueKey('school-account-created-email')), findsOneWidget);
           expect(find.text('school@example.org'), findsOneWidget);
-          expect(password.text, isEmpty);
           expect(find.text('password123'), findsNothing);
           expect(find.byType(TextFormField), findsNothing);
           expect(posts, 1);
@@ -71,8 +69,8 @@ void main() {
       await tester.pump();
       await tester.pumpWidget(host(SchoolAccountForm(scope: SchoolAccountScope.affiliated, repository: second), 'en'));
       await tester.pumpAndSettle();
-      expect(tester.widget<TextFormField>(field('password')).controller!.text, isEmpty);
-      expect(tester.widget<TextFormField>(field('email')).controller!.text, isEmpty);
+      expect(field('password'), findsNothing);
+      expect(tester.widget<TextFormField>(field('director_email')).controller!.text, isEmpty);
       await fill(tester);
       await tester.tap(submit);
       await tester.pump();
