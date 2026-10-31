@@ -12,6 +12,25 @@ trait HomeworkAccessHelpers
             return false;
         }
 
+        if ($user->role === 'student') {
+            return DB::table('student_account_links as link')
+                ->join('school_internal_identities as identity', function ($join) {
+                    $join->on('identity.user_id', '=', 'link.user_id')
+                        ->on('identity.school_id', '=', 'link.school_id');
+                })
+                ->join('schools as school', 'school.id', '=', 'link.school_id')
+                ->join('student_enrollments as enrollment', 'enrollment.child_id', '=', 'link.child_id')
+                ->join('sections as section', 'section.id', '=', 'enrollment.section_id')
+                ->join('grades as grade', 'grade.id', '=', 'section.grade_id')
+                ->where('link.user_id', $user->id)
+                ->where('link.child_id', $childId)
+                ->whereColumn('grade.school_id', 'link.school_id')
+                ->where('enrollment.status', 'active')
+                ->where('school.is_active', true)
+                ->where('identity.is_active', true)
+                ->exists();
+        }
+
         if ($user->role === 'admin') {
             return true;
         }
