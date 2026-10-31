@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:edubridge_app/model/iep/iep_draft.dart';
@@ -16,7 +17,48 @@ class MissingUpdateService implements IepDraftUpdateGateway {
   @override
   Future<void> update(IepPlanDraft draft, IepDraftEditOptions options, String key) async { writes++; }
 }
+
+class ControlledUpdateService implements IepDraftUpdateGateway {
+  ControlledUpdateService(this.evaluationId, {this.pending});
+  final int evaluationId;
+  final Completer<void>? pending;
+  int writes = 0;
+  @override
+  Future<IepDraftEditOptions> load() async => IepDraftEditOptions('revision-1', {evaluationId});
+  @override
+  Future<void> update(IepPlanDraft draft, IepDraftEditOptions options, String key) async {
+    writes++;
+    await pending?.future;
+  }
+}
+
 void main() {
+
+  testWidgets('old IEP update cannot confirm after gateway replacement', (tester) async {
+    final plan = IepPlan.fromJson(newSavedPlan());
+    final source = IepEditSource.capture(plan, plan.versions.single);
+    final pending = Completer<void>();
+    final first = ControlledUpdateService(source.draft.evaluationId, pending: pending);
+    final next = ControlledUpdateService(source.draft.evaluationId);
+    // Use the evaluation actually carried by this saved plan.
+    final options = IepDraftEditOptions('revision-1', {source.draft.evaluationId});
+    expect(options.evaluationIds.contains(source.draft.evaluationId), isTrue);
+    await tester.pumpWidget(curriculumHost(IepDraftUpdateScreen(
+      source: source, draft: source.draft, gateway: first), 'en'));
+    await tester.pumpAndSettle();
+    // A capability gateway must list the source evaluation before editing.
+    expect(find.byKey(const ValueKey('iep-update-save')), findsOneWidget);
+    await tester.pumpWidget(curriculumHost(IepDraftUpdateScreen(
+      source: source, draft: source.draft, gateway: next), 'en'));
+    await tester.pumpAndSettle();
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(first.writes, 0);
+    expect(next.writes, 0);
+    expect(find.textContaining('Draft changes confirmed saved'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final language in ['ar', 'en']) {
     for (final width in [320.0, 720.0, 1280.0]) {
       testWidgets('missing capability disables update $language $width', (tester) async {
