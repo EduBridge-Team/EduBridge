@@ -63,7 +63,7 @@ const LessonEditorPage = lazy(() => import('./pages/Learning/LessonEditorPage'))
 function Protected({ children }) {
   const location = useLocation()
   const { verified: identityVerified } = useVerification()
-  const verified = identityVerified || getUser()?.role === 'parent'
+  const verified = identityVerified || ['parent', 'student'].includes(getUser()?.role)
   if (!getToken()) return <Navigate to="/login" replace />
   if (!verified && !canOpenUnverifiedPath(location.pathname)) return <VerificationRequired />
   return children
@@ -93,7 +93,7 @@ function GuestOnly({ children }) {
 
 function Page({ children }) {
   const { verified: identityVerified } = useVerification()
-  const verified = identityVerified || getUser()?.role === 'parent'
+  const verified = identityVerified || ['parent', 'student'].includes(getUser()?.role)
   const user = getUser()
   const location = useLocation()
   const useRoleShell = verified && Boolean(user?.role)
@@ -123,6 +123,7 @@ export default function AppRoutes() {
           <Route path="/about" element={<Page><AboutPage /></Page>} />
           <Route path="/" element={<HomeRedirect />} />
 
+          <Route path="/student" element={<RolePage roles={['student']}><StudentDashboard /></RolePage>} />
           <Route path="/parent" element={<RolePage roles={['parent']}><ParentDashboard /></RolePage>} />
           <Route path="/teacher/invitation" element={<RolePage roles={['teacher']}><TeacherInvitationPage /></RolePage>} />
           <Route path="/teacher" element={<RolePage roles={['teacher']}><TeacherDashboard /></RolePage>} />
