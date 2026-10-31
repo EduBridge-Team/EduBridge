@@ -38,6 +38,10 @@ class StudentSelfTest extends TestCase
             $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable();
         });
         DB::table('subjects')->insert(['id'=>1,'name'=>'Math']);
+        Schema::create('homework_submissions', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('homework_id');
+            $t->timestamp('submitted_at')->nullable(); $t->boolean('is_late')->default(false);
+        });
         Schema::create('homeworks', function (Blueprint $t) {
             $t->id(); $t->string('title'); $t->text('description')->nullable();
             $t->date('due_date'); $t->text('assigned_child_ids');
@@ -60,7 +64,7 @@ class StudentSelfTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['homeworks','timetable_entries','subjects','users','student_enrollments','sections','grades','children','student_account_links',
+        foreach (['homework_submissions','homeworks','timetable_entries','subjects','users','student_enrollments','sections','grades','children','student_account_links',
             'school_internal_identities','schools'] as $table) Schema::dropIfExists($table);
         parent::tearDown();
     }
@@ -107,6 +111,22 @@ class StudentSelfTest extends TestCase
         $this->assertSame('Mine',$response->getData(true)['homeworks'][0]['title']);
         $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'parent']);
         $this->assertSame(403,app(StudentSelfController::class)->homeworks($request)->getStatusCode());
+    }
+
+    public function test_student_homework_progress_excludes_other_children(): void
+    {
+        DB::table('homework_submissions')->insert([
+            ['homework_id'=>1,'child_id'=>100,'submitted_at'=>'2026-11-01 09:00:00','is_late'=>false],
+            ['homework_id'=>2,'child_id'=>101,'submitted_at'=>'2026-11-01 10:00:00','is_late'=>true],
+        ]);
+        $request = Request::create('/api/student/homework-progress','GET');
+        $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'student']);
+        $response = app(StudentSelfController::class)->homeworkProgress($request);
+        $this->assertSame(200,$response->getStatusCode());
+        $this->assertCount(1,$response->getData(true)['submissions']);
+        $this->assertSame('Mine',$response->getData(true)['submissions'][0]['homework_title']);
+        $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'parent']);
+        $this->assertSame(403,app(StudentSelfController::class)->homeworkProgress($request)->getStatusCode());
     }
 
     public function test_revocation_and_cross_school_enrollment_block_profile(): void
