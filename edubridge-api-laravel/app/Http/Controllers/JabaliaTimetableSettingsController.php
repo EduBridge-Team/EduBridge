@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
 class JabaliaTimetableSettingsController extends Controller
@@ -22,6 +23,8 @@ class JabaliaTimetableSettingsController extends Controller
 
     public static function forSchool(int $school): array
     {
+        // Legacy isolated fixtures may not migrate the Jabalia-specific settings table.
+        if (!Schema::hasTable('jabalia_school_timetable_settings')) return self::defaults();
         $record = DB::table('jabalia_school_timetable_settings')->where('school_id', $school)->first();
         return $record ? [
             'weekdays' => json_decode($record->weekdays, true),
