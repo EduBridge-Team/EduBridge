@@ -11,6 +11,7 @@ import { canOpenUnverifiedPath } from './verificationPolicy'
 
 import './styles/routes.css'
 
+const StudentDashboard = lazy(() => import('./pages/Dashboards/StudentDashboard'))
 const SchoolWorkspacePage = lazy(() => import('./pages/Dashboards/SchoolWorkspacePage'))
 const SchoolInvitationPage = lazy(() => import('./pages/Dashboards/SchoolInvitationPage'))
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage'))
