@@ -167,6 +167,20 @@ class JabaliaSchoolTimetablePermissionsTest extends TestCase
         $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
     }
 
+    public function test_weekly_quotas_cannot_exceed_school_capacity(): void
+    {
+        DB::table('subjects')->insert(['id'=>3,'school_id'=>1]);
+        $this->assertSame(200, $this->operation(20, 'subject-quotas-update', 'PUT', [
+            'expected_school_id'=>1, 'section_id'=>1,'subject_id'=>1,'weekly_periods'=>24,
+        ])->getStatusCode());
+        $response = $this->operation(20, 'subject-quotas-update', 'PUT', [
+            'expected_school_id'=>1, 'section_id'=>1,'subject_id'=>3,'weekly_periods'=>2,
+        ]);
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame(25, $response->getData(true)['capacity']);
+        $this->assertSame(1, DB::table('jabalia_section_subject_quotas')->count());
+    }
+
     public function test_revoked_deputy_loses_access(): void
     {
         DB::table('school_management_assignments')->where('user_id',40)->update(['ends_at'=>now()]);

@@ -41,7 +41,23 @@ class JabaliaSubjectQuotaController extends Controller
             return response()->json(['error' => 'الشعبة أو المادة خارج نطاق المدرسة'], 422);
 
         return DB::transaction(function () use ($school, $section, $data) {
+            // Keep the same school-level lock order as timetable lesson creation.
+            // Otherwise a concurrent lesson insert can race a quota reduction.
+            DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             DB::table('sections')->where('id', $section->id)->lockForUpdate()->first();
+            $settings = JabaliaTimetableSettingsController::forSchool($school);
+            $weeklyCapacity = count($settings['weekdays']) * count($settings['periods']);
+            $otherQuotas = (int) DB::table('jabalia_section_subject_quotas')
+                ->where('section_id', $section->id)
+                ->where('subject_id', '!=', $data['subject_id'])
+                ->sum('weekly_periods');
+            if ($otherQuotas + (int) $data['weekly_periods'] > $weeklyCapacity) {
+                return response()->json([
+                    'error' => 'مجموع الحصص الأسبوعية للشعبة يتجاوز سعة أيام الدوام',
+                    'capacity' => $weeklyCapacity,
+                    'other_quotas' => $otherQuotas,
+                ], 422);
+            }
             $current = DB::table('timetable_entries')
                 ->where('section_id', $section->id)->where('subject_id', $data['subject_id'])
                 ->where('academic_year_id', $section->academic_year_id)->count();
