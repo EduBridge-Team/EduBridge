@@ -153,6 +153,20 @@ class JabaliaSchoolTimetablePermissionsTest extends TestCase
         $this->assertSame(4, (int) DB::table('jabalia_section_subject_quotas')->value('weekly_periods'));
     }
 
+    public function test_nonsequential_period_keys_are_rejected(): void
+    {
+        try {
+            $this->operation(20, 'timetable-settings-update', 'PUT', [
+                'expected_school_id'=>1, 'weekdays'=>[7],
+                'periods'=>[2 => ['starts_at'=>'08:30','ends_at'=>'09:10']],
+            ]);
+            $this->fail('Expected list validation to reject nonsequential periods');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            $this->assertArrayHasKey('periods', $exception->errors());
+        }
+        $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
+    }
+
     public function test_revoked_deputy_loses_access(): void
     {
         DB::table('school_management_assignments')->where('user_id',40)->update(['ends_at'=>now()]);
