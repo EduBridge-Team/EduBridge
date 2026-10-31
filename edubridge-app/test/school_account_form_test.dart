@@ -155,7 +155,8 @@ void main() {
     await tester.tap(submit);
     await tester.pumpAndSettle();
     expect(posts, 0);
-    expect(find.byType(TextFormField).evaluate().any((element) => (element.widget as TextFormField).obscureText), isFalse);
+    expect(field('password'), findsNothing);
+    expect(field('password_confirmation'), findsNothing);
   });
 
   testWidgets(
