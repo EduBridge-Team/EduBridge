@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   BookOpen,
   Building2,
@@ -12,18 +12,18 @@ import {
   School,
 } from 'lucide-react'
 import {
-  createInstitutionSchool,
   fetchInstitutionAcademicOverview,
   fetchInstitutionAttendance,
   fetchInstitutionCurriculum,
   fetchInstitutionSchools,
   fetchInstitutionTimetable,
 } from '../../api'
+import SchoolProvisionForm from '../../components/Institution/SchoolProvisionForm'
+import SchoolDirectorPanel from '../../components/Institution/SchoolDirectorPanel'
 import InstitutionAcademicSetup from '../../components/Institution/InstitutionAcademicSetup'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
-const EMPTY_FORM = { name: '', slug: '', address: '', phone: '', email: '' }
 
 function count(value) {
   return Array.isArray(value) ? value.length : 0
@@ -48,8 +48,9 @@ export default function InstitutionSchoolsPage() {
   const [detailsError, setDetailsError] = useState('')
   const [details, setDetails] = useState(null)
   const [showCreate, setShowCreate] = useState(false)
-  const [form, setForm] = useState(EMPTY_FORM)
-  const [saving, setSaving] = useState(false)
+  const [search, setSearch] = useState('')
+  const schoolsVersion = useRef(0)
+  const detailsVersion = useRef(0)
 
   const selectedSchool = useMemo(
     () => schools.find((school) => Number(school.id) === Number(selectedId)) || null,
@@ -57,22 +58,26 @@ export default function InstitutionSchoolsPage() {
   )
 
   async function loadSchools() {
+    const version = ++schoolsVersion.current
     if (!slug) return
     setLoading(true)
     setError('')
     try {
       const data = await fetchInstitutionSchools(slug)
+      if (version !== schoolsVersion.current) return
       const nextSchools = data.schools || []
       setSchools(nextSchools)
-      setSelectedId((current) => current || nextSchools[0]?.id || null)
+      setSelectedId(current => nextSchools.some(school => Number(school.id) === Number(current)) ? current : nextSchools[0]?.id || null)
     } catch (err) {
-      setError(err.message)
+      if (version === schoolsVersion.current) setError(err.message)
     } finally {
-      setLoading(false)
+      if (version === schoolsVersion.current) setLoading(false)
     }
   }
 
   async function loadDetails({ quiet = false } = {}) {
+    const version = ++detailsVersion.current
+    if (!quiet) setDetails(null)
     if (!slug || !selectedId) {
       setDetails(null)
       return
@@ -87,38 +92,24 @@ export default function InstitutionSchoolsPage() {
         fetchInstitutionTimetable(slug, selectedId),
         fetchInstitutionCurriculum(slug, selectedId),
       ])
+      if (version !== detailsVersion.current) return
       setDetails({ academic, attendance, timetable, curriculum })
     } catch (err) {
-      setDetailsError(err.message)
+      if (version === detailsVersion.current) setDetailsError(err.message)
     } finally {
-      if (!quiet) setDetailsLoading(false)
+      if (version === detailsVersion.current) setDetailsLoading(false)
     }
   }
 
-  useEffect(() => { loadSchools() }, [slug])
-  useEffect(() => { loadDetails() }, [slug, selectedId])
-
-  async function submitSchool(event) {
-    event.preventDefault()
-    if (!slug) return
-    setSaving(true)
-    setError('')
-    try {
-      const payload = Object.fromEntries(
-        Object.entries(form).filter(([, value]) => String(value).trim() !== ''),
-      )
-      const data = await createInstitutionSchool(slug, payload)
-      const created = data.school
-      setSchools((current) => [...current, created].sort((a, b) => a.name.localeCompare(b.name, 'ar')))
-      setSelectedId(created.id)
-      setForm(EMPTY_FORM)
-      setShowCreate(false)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
-    }
-  }
+  useEffect(() => {
+    setSchools([]); setSelectedId(null); setDetails(null); setShowCreate(false); setSearch('')
+    loadSchools()
+    return () => { schoolsVersion.current++; detailsVersion.current++ }
+  }, [slug])
+  useEffect(() => {
+    loadDetails()
+    return () => { detailsVersion.current++ }
+  }, [slug, selectedId])
 
   if (institutionLoading) {
     return <div className="state"><LoaderCircle className="spin" size={20} /> جارِ تحميل المؤسسة…</div>
@@ -139,7 +130,7 @@ export default function InstitutionSchoolsPage() {
           <div className="role-hero-copy">
             <span className="role-eyebrow"><School size={17} /> إدارة مدارس المؤسسة</span>
             <h1>{institution.settings?.display_name || institution.name}</h1>
-            <p>ابدأ بإدخال بيانات المدرسة الرسمية فقط، ثم راقب جاهزية الهيكل الأكاديمي والحضور والجدول والمناهج قبل بدء التجربة الميدانية.</p>
+            <p>أنشئ المدرسة بحساب مدير شخصي موثّق، ثم راقب جاهزية الهيكل الأكاديمي والحضور والجدول والمناهج قبل بدء التجربة الميدانية.</p>
             <div className="role-hero-actions">
               <button className="btn" onClick={() => setShowCreate((value) => !value)}><Plus size={17} /> إضافة مدرسة</button>
               <button className="btn outline" onClick={() => { loadSchools(); loadDetails() }} disabled={loading || detailsLoading}><RefreshCw size={17} /> تحديث</button>
@@ -150,40 +141,27 @@ export default function InstitutionSchoolsPage() {
 
         {error && <div className="state error">{error}</div>}
 
-        {showCreate && (
-          <section className="institution-panel">
-            <div className="section-heading compact">
-              <div>
-                <h2>بيانات المدرسة الرسمية</h2>
-                <p>استخدم بيانات المدرسة المعتمدة لمؤسستك. في بيئة الاختبار يمكن استخدام بيانات وهمية واضحة.</p>
-              </div>
-            </div>
-            <form className="institution-school-form" onSubmit={submitSchool}>
-              <label>اسم المدرسة<input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
-              <label>المعرّف الإنجليزي<input required dir="ltr" pattern="[a-z0-9][a-z0-9-]*" placeholder="school-slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })} /></label>
-              <label>العنوان<input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></label>
-              <label>الهاتف<input dir="ltr" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></label>
-              <label>البريد الإلكتروني<input dir="ltr" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
-              <div className="role-hero-actions institution-school-form-actions">
-                <button className="btn" disabled={saving}>{saving ? 'جارِ الحفظ…' : 'حفظ المدرسة'}</button>
-                <button type="button" className="btn outline" onClick={() => setShowCreate(false)}>إلغاء</button>
-              </div>
-            </form>
-          </section>
-        )}
+        {showCreate && <SchoolProvisionForm key={slug} institutionSlug={slug} onCancel={() => setShowCreate(false)} onCreated={({ school }) => {
+          setSchools(current => [...current, school].sort((a, b) => a.name.localeCompare(b.name, 'ar')))
+          setSelectedId(school.id)
+          setSearch('')
+          setShowCreate(false)
+        }} />}
 
         <section className="institution-panel">
           <div className="section-heading compact">
             <div><h2>المدارس</h2><p>اختر مدرسة لمراجعة جاهزيتها للتشغيل.</p></div>
           </div>
 
+          <label>البحث عن مدرسة<input type="search" value={search} onChange={event => setSearch(event.target.value)} /></label>
+          {!loading && schools.length > 0 && !schools.some(school => school.name.toLowerCase().includes(search.trim().toLowerCase())) && <p className="state">لا توجد مدارس مطابقة للبحث.</p>}
           {loading ? (
             <div className="state"><LoaderCircle className="spin" size={20} /> جارِ تحميل المدارس…</div>
           ) : schools.length === 0 ? (
             <div className="state">لا توجد مدرسة مرتبطة بالمؤسسة بعد. يمكنك إضافة مدرسة من زر «إضافة مدرسة» أعلاه.</div>
           ) : (
             <div className="institution-actions">
-              {schools.map((school) => (
+              {schools.filter(school => school.name.toLowerCase().includes(search.trim().toLowerCase())).map((school) => (
                 <button key={school.id} onClick={() => setSelectedId(school.id)} aria-pressed={Number(selectedId) === Number(school.id)}>
                   <span><School /></span>
                   <span><b>{school.name}</b><small>{school.address || school.email || 'بيانات المدرسة محفوظة'}</small></span>
@@ -196,6 +174,7 @@ export default function InstitutionSchoolsPage() {
 
         {selectedSchool && (
           <>
+            <SchoolDirectorPanel key={`${slug}:${selectedId}`} schoolId={selectedId} schoolName={selectedSchool.name} />
             <section className="institution-panel activity-panel">
               <div className="section-heading compact">
                 <div><h2>جاهزية {selectedSchool.name}</h2><p>ملخص حي من البيانات الفعلية الموجودة في قاعدة البيانات.</p></div>

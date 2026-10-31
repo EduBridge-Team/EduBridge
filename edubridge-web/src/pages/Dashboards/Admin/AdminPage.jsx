@@ -1,3 +1,4 @@
+import SchoolProvisionForm from '../../../components/Institution/SchoolProvisionForm'
 // لوحة التحكم الإدارية — أدمن فقط
 import { Navigate } from 'react-router-dom'
 import { Settings, ShieldCheck, UsersRound, Headphones } from 'lucide-react'
@@ -28,6 +29,7 @@ export default function AdminPage() {
         </section>
 
         <AdminSectionTabs />
+        <SchoolProvisionForm />
         <UsersTab />
       </main>
 

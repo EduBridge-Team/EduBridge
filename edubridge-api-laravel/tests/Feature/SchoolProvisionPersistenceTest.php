@@ -186,6 +186,32 @@ class SchoolProvisionPersistenceTest extends TestCase
         $this->assertSame(0, DB::table('schools')->count());
     }
 
+    public function test_director_replacement_preserves_school_and_revokes_previous_director(): void
+    {
+        $old = $this->personal('old@example.test');
+        $new = $this->personal('new@example.test');
+        $school = $this->provision(false, 'old@example.test')->getData(true)['school']['id'];
+        $request = Request::create('/api/admin/schools/'.$school.'/director', 'POST', ['director_email' => 'new@example.test']);
+        $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'admin']);
+        $this->assertSame(200, app(\App\Http\Controllers\SchoolDirectorAppointmentController::class)->appoint($request, $school)->getStatusCode());
+        $this->assertSame(403, $this->context($old)->getStatusCode());
+        $this->assertSame($school, $this->context($new)->getData(true)['school']['id']);
+        $this->assertSame(1, DB::table('schools')->count());
+        $this->assertSame(2, DB::table('school_management_assignments')->count());
+    }
+
+    public function test_replacement_cannot_grant_school_access_to_unverified_mailbox(): void
+    {
+        $old = $this->personal('old@example.test');
+        $this->personal('unverified@example.test', false);
+        $school = $this->provision(false, 'old@example.test')->getData(true)['school']['id'];
+        $request = Request::create('/api/admin/schools/'.$school.'/director', 'POST', ['director_email' => 'unverified@example.test']);
+        $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'admin']);
+        $this->assertSame(422, app(\App\Http\Controllers\SchoolDirectorAppointmentController::class)->appoint($request, $school)->getStatusCode());
+        $this->assertSame(200, $this->context($old)->getStatusCode());
+        $this->assertSame(1, DB::table('school_management_assignments')->count());
+    }
+
     // Existing school accounts keep their original email verification lifecycle.
     private function legacySchool(bool $affiliated, string $email): \Illuminate\Http\JsonResponse
     {
