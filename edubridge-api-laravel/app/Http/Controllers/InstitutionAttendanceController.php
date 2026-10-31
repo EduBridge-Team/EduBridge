@@ -286,12 +286,20 @@ class InstitutionAttendanceController extends Controller
             elseif ($item->status !== 'absent') $perDay[$day] = $item->status;
         }
         if (($perDay[substr((string) $session->attendance_date, 0, 10)] ?? null) !== 'absent') return;
+        $school = DB::table('sections as s')
+            ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->where('s.id', $session->section_id)->value('g.school_id');
+        $weekdays = JabaliaTimetableSettingsController::forSchool((int) $school)['weekdays'];
+        $day = \Carbon\CarbonImmutable::parse($session->attendance_date);
         $count = 0;
-        foreach ($perDay as $status) {
-            if ($status !== 'absent') break;
-            $count++;
+        // Only registered school days count; a missing daily roll breaks the streak.
+        while ($count < 4) {
+            if (in_array($day->dayOfWeekIso, $weekdays, true)) {
+                if (($perDay[$day->toDateString()] ?? null) !== 'absent') return;
+                $count++;
+            }
+            $day = $day->subDay();
         }
-        if ($count < 4) return;
         $childName = DB::table('children')->where('id', $childId)->value('name') ?? 'الطالب';
         $message = "تجاوز {$childName} ثلاثة أيام غياب دراسي متتالية حتى {$session->attendance_date}";
         foreach (DB::table('child_parent')->where('child_id', $childId)->pluck('parent_id') as $parentId) {
