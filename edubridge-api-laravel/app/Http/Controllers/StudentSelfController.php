@@ -90,7 +90,8 @@ class StudentSelfController extends Controller
             ->join('homeworks as homework', 'homework.id', '=', 'submission.homework_id')
             ->where('submission.child_id', $childId)
             ->select('submission.homework_id', 'homework.title as homework_title',
-                'submission.submitted_at', 'submission.is_late')
+                'submission.submitted_at', 'submission.is_late',
+                'submission.grade', 'submission.feedback', 'submission.graded_at')
             ->orderByDesc('submission.submitted_at')->limit(100)->get();
         return response()->json(['submissions' => $submissions]);
     }

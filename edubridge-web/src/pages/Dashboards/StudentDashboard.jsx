@@ -64,7 +64,7 @@ export default function StudentDashboard() {
           <h2>واجباتي</h2>
           {homeworks.length ? <ul>{homeworks.map((item) => <StudentHomeworkForm key={item.id} homework={item} />)}</ul> : <p>لا توجد واجبات معينة لك حاليًا.</p>}
           <h2>تقدم تسليم الواجبات</h2>
-          {submissions.length ? <ul>{submissions.map((item) => <li key={item.homework_id}>{item.homework_title} · تم التسليم {item.submitted_at}{item.is_late ? " · متأخر" : ""}</li>)}</ul> : <p>لم تسلم أي واجبات بعد.</p>}
+          {submissions.length ? <ul>{submissions.map((item) => <li key={item.homework_id}>{item.homework_title} · تم التسليم {item.submitted_at}{item.is_late ? " · متأخر" : ""}{item.grade !== null && item.grade !== undefined ? ` · العلامة: ${item.grade}/100` : " · بانتظار التصحيح"}{item.feedback ? ` · ملاحظات المعلم: ${item.feedback}` : ""}</li>)}</ul> : <p>لم تسلم أي واجبات بعد.</p>}
           <nav aria-label="روابط الطالب"><Link to="/lessons">استكشف الدروس</Link></nav>
         </>
       ) : null}

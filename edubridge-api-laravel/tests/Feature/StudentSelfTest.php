@@ -38,7 +38,7 @@ class StudentSelfTest extends TestCase
             $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable();
         });
         DB::table('subjects')->insert(['id'=>1,'name'=>'Math']);
-        Schema::create('homework_submissions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('homework_id'); $t->timestamp('submitted_at')->nullable(); $t->boolean('is_late')->default(false); });
+        Schema::create('homework_submissions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('homework_id'); $t->timestamp('submitted_at')->nullable(); $t->boolean('is_late')->default(false); $t->integer('grade')->nullable(); $t->text('feedback')->nullable(); $t->timestamp('graded_at')->nullable(); });
         Schema::create('homeworks', function (Blueprint $t) {
             $t->id(); $t->string('title'); $t->text('description')->nullable();
             $t->date('due_date'); $t->text('assigned_child_ids');
@@ -127,8 +127,8 @@ class StudentSelfTest extends TestCase
     public function test_student_homework_progress_excludes_other_children(): void
     {
         DB::table('homework_submissions')->insert([
-            ['homework_id'=>1,'child_id'=>100,'submitted_at'=>'2026-11-01 09:00:00','is_late'=>false],
-            ['homework_id'=>2,'child_id'=>101,'submitted_at'=>'2026-11-01 10:00:00','is_late'=>true],
+            ['homework_id'=>1,'child_id'=>100,'submitted_at'=>'2026-11-01 09:00:00','is_late'=>false,'grade'=>85,'feedback'=>'Good work','graded_at'=>'2026-11-01 12:00:00'],
+            ['homework_id'=>2,'child_id'=>101,'submitted_at'=>'2026-11-01 10:00:00','is_late'=>true,'grade'=>32,'feedback'=>'Private','graded_at'=>'2026-11-01 12:00:00'],
         ]);
         $request = Request::create('/api/student/homework-progress','GET');
         $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'student']);
@@ -136,6 +136,8 @@ class StudentSelfTest extends TestCase
         $this->assertSame(200,$response->getStatusCode());
         $this->assertCount(1,$response->getData(true)['submissions']);
         $this->assertSame('Mine',$response->getData(true)['submissions'][0]['homework_title']);
+        $this->assertSame(85,$response->getData(true)['submissions'][0]['grade']);
+        $this->assertSame('Good work',$response->getData(true)['submissions'][0]['feedback']);
         $request->attributes->set('jwt_user',(object)['id'=>10,'role'=>'parent']);
         $this->assertSame(403,app(StudentSelfController::class)->homeworkProgress($request)->getStatusCode());
     }
