@@ -12,26 +12,22 @@ class _GuardianTransferPanelState extends State<GuardianTransferPanel> {
   final _client = EnrollmentApiClient();
   List<Map<String, dynamic>> _items = [];
   bool _busy = false;
+  bool _opened = false;
   String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
 
   @override
   void didUpdateWidget(covariant GuardianTransferPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.childId != widget.childId) {
       _items = [];
-      _load();
+      _opened = false;
+      _error = null;
     }
   }
 
   Future<void> _load() async {
     if (_busy) return;
-    setState(() { _busy = true; _error = null; });
+    setState(() { _opened = true; _busy = true; _error = null; });
     try {
       final data = await _client.get('/parent/children/${widget.childId}/transfers');
       final raw = data['requests'];
@@ -87,11 +83,11 @@ class _GuardianTransferPanelState extends State<GuardianTransferPanel> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       const Text('طلبات نقل المدرسة / School transfer requests'),
-      OutlinedButton.icon(onPressed: _busy ? null : _load, icon: const Icon(Icons.refresh),
-        label: const Text('تحديث / Refresh')),
-      if (_busy) const LinearProgressIndicator(),
+      OutlinedButton.icon(onPressed: _busy ? null : _load, icon: Icon(_opened ? Icons.refresh : Icons.swap_horiz),
+        label: Text(_opened ? 'تحديث / Refresh' : 'عرض طلبات النقل / View transfers')),
+      if (_opened && _busy) const LinearProgressIndicator(),
       if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-      if (!_busy && _items.isEmpty) const Text('لا توجد طلبات نقل / No transfer requests'),
+      if (_opened && !_busy && _error == null && _items.isEmpty) const Text('لا توجد طلبات نقل / No transfer requests'),
       for (final item in _items) Card(child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
