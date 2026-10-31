@@ -91,7 +91,12 @@ class JabaliaSchoolTimetablePermissionsTest extends TestCase
     {
         $payload = ['expected_school_id'=>2,'weekdays'=>[7],
             'periods'=>[['starts_at'=>'08:30','ends_at'=>'09:10']]];
-        $this->assertSame(422, $this->operation(20,'timetable-settings-update','PUT',$payload)->getStatusCode());
+        try {
+            $this->operation(20,'timetable-settings-update','PUT',$payload);
+            $this->fail('Expected validation exception for foreign school id');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            $this->assertArrayHasKey('expected_school_id', $exception->errors());
+        }
         $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
         $payload['expected_school_id']=1;
         $this->assertSame(200, $this->operation(20,'timetable-settings-update','PUT',$payload)->getStatusCode());
