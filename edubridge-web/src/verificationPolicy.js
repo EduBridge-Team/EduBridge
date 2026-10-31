@@ -1,6 +1,6 @@
 export const VERIFICATION_PATHS = new Set(['/verify', '/profile', '/support'])
 
-export const IDENTITY_VERIFICATION_EXEMPT_ROLES = new Set(['admin', 'parent', 'ministry', 'institution'])
+export const IDENTITY_VERIFICATION_EXEMPT_ROLES = new Set(['admin', 'parent', 'student', 'ministry', 'institution'])
 
 export function isIdentityVerificationExempt(user) {
   return IDENTITY_VERIFICATION_EXEMPT_ROLES.has(user?.role)
