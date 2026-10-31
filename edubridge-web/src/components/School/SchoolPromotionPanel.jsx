@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 
-export default function SchoolPromotionPanel({ sections, onSaved }) {
+export default function SchoolPromotionPanel({ sections, onSaved, schoolId }) {
   const { t } = useSchoolLanguage()
   const [form, setForm] = useState({ source_section_id: '', target_section_id: '', promoted_on: '', outcome: 'promoted' })
   const [preview, setPreview] = useState(null)
@@ -16,7 +16,7 @@ export default function SchoolPromotionPanel({ sections, onSaved }) {
   async function run(approve) {
     if (pending.current || approve && (!confirmed || !preview || !selected.length)) return
     pending.current = true; setBusy(true); setError(''); setMessage('')
-    const payload = { ...form, source_section_id: Number(form.source_section_id), target_section_id: Number(form.target_section_id) }
+    const payload = { expected_school_id: schoolId, ...form, source_section_id: Number(form.source_section_id), target_section_id: Number(form.target_section_id) }
     try {
       if (approve) {
         const data = await request('/school/operations/promotion-approve', { method: 'POST', body: JSON.stringify({ ...payload, enrollment_ids: selected, confirm: true }) })

@@ -24,7 +24,7 @@ export default function SchoolOperationsPanel({ permissions, schoolId }) {
     weekdays: [t('الاثنين', 'Monday'), t('الثلاثاء', 'Tuesday'), t('الأربعاء', 'Wednesday'), t('الخميس', 'Thursday'), t('الجمعة', 'Friday'), t('السبت', 'Saturday'), t('الأحد', 'Sunday')].map((label, index) => ({ id: index + 1, label })),
     closure_statuses: [{ id: 'withdrawn', label: t('منسحب', 'Withdrawn') }, { id: 'transferred', label: t('منقول', 'Transferred') }],
   }
-  if (reference.data && Number(reference.data.school?.id) !== Number(schoolId) || resource.data && Number(resource.data.school_id) !== Number(schoolId)) return <p role="alert">{t('تغير تكليف المدرسة. حدّث الصلاحيات قبل المتابعة.', 'School assignment changed. Refresh permissions before continuing.')}</p>
+  if (reference.data && Number(reference.data.school?.id) !== Number(schoolId) || resource.data && Number(resource.data.school_id) !== Number(schoolId) || teachers.data && Number(teachers.data.school_id) !== Number(schoolId) || participants.data && Number(participants.data.school_id) !== Number(schoolId)) return <p role="alert">{t('تغير تكليف المدرسة. حدّث الصلاحيات قبل المتابعة.', 'School assignment changed. Refresh permissions before continuing.')}</p>
   const lists = Object.entries(resource.data || {}).filter(([, rows]) => Array.isArray(rows))
   return <section className="institution-panel">
     <h2>{t('العمليات المدرسية', 'School operations')}</h2>
@@ -33,7 +33,7 @@ export default function SchoolOperationsPanel({ permissions, schoolId }) {
     {(resource.error || reference.error || teachers.error) && <p role="alert">{resource.error || reference.error || teachers.error}</p>}
     {resource.loading ? <p role="status">{t('جارِ التحميل…', 'Loading…')}</p> : resource.data && <>
       {category !== 'reports' && !reference.loading && !reference.error && <SchoolOperationForm key={category} category={category} references={references} onSaved={reload} />}
-      {category === 'enrollment' && <><SchoolEnrollmentPanel onSaved={reload} /><SchoolPromotionPanel sections={references.sections || []} onSaved={reload} /></>}
+      {category === 'enrollment' && <><SchoolEnrollmentPanel onSaved={reload} /><SchoolPromotionPanel schoolId={schoolId} sections={references.sections || []} onSaved={reload} /></>}
       {category === 'attendance' && <><SchoolAttendancePanel sessions={resource.data.attendance_sessions || []} onSaved={resource.reload} schoolId={schoolId} /><SchoolStaffAttendancePanel schoolId={schoolId} /></>}
       {resource.data.statistics && <div className="role-stats-grid">{Object.entries(resource.data.statistics).map(([key, value]) => <p key={key}>{({ students: t('الطلاب', 'Students'), teachers: t('المعلمون', 'Teachers'), grades: t('الصفوف', 'Grades'), lessons: t('حصص الجدول', 'Timetable lessons'), books: t('الكتب', 'Books') })[key]}: <b>{value}</b></p>)}</div>}
       {lists.map(([key, rows]) => <section key={key}>

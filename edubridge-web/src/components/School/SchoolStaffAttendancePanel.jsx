@@ -14,9 +14,9 @@ export default function SchoolStaffAttendancePanel({ schoolId }) {
   useEffect(() => {
     let current = true
     setData(null); setDrafts({}); setError(''); setMessage('')
-    if (date) request('/school/operations/staff-attendance?date=' + encodeURIComponent(date)).then(value => { if (current) setData(value) }).catch(err => { if (current) setError(err.message) })
+    if (date) request('/school/operations/staff-attendance?date=' + encodeURIComponent(date)).then(value => { if (current) { if (Number(value.school_id) !== Number(schoolId)) throw new Error(t('تغير تكليف المدرسة. حدّث الصفحة.', 'School assignment changed. Refresh the page.')); setData(value) } }).catch(err => { if (current) setError(err.message) })
     return () => { current = false }
-  }, [date])
+  }, [date, schoolId])
   async function save(event) {
     event.preventDefault()
     if (pending.current || !data) return

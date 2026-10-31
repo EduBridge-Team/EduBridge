@@ -14,9 +14,9 @@ export default function SchoolAttendancePanel({ sessions, onSaved, schoolId }) {
     let current = true
     setData(null); setDrafts({}); setError('')
     if (session) request('/school/operations/attendance-session?session_id=' + session)
-      .then(data => { if (current) setData(data) }).catch(err => { if (current) setError(err.message) })
+      .then(data => { if (current) { if (Number(data.school_id) !== Number(schoolId)) throw new Error(t('تغير تكليف المدرسة. حدّث الصفحة.', 'School assignment changed. Refresh the page.')); setData(data) } }).catch(err => { if (current) setError(err.message) })
     return () => { current = false }
-  }, [session])
+  }, [session, schoolId])
   async function save(close = false) {
     if (pending.current || !data?.records?.length) return
     if (close && !window.confirm(t('إغلاق سجل الحضور نهائيًا؟', 'Close this attendance session permanently?'))) return
