@@ -287,3 +287,13 @@ export function updateJabaliaTimetableSettings(slug, schoolId, payload) {
     method: 'PUT', body: JSON.stringify(payload),
   })
 }
+
+export function fetchJabaliaSubjectQuotas(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/subject-quotas'))
+}
+
+export function updateJabaliaSubjectQuota(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/subject-quotas'), {
+    method: 'PUT', body: JSON.stringify(payload),
+  })
+}
