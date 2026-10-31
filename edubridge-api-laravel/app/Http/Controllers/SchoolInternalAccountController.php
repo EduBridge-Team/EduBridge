@@ -17,6 +17,7 @@ class SchoolInternalAccountController extends Controller
             'name' => ['required', 'string', 'max:190'],
             'username' => ['required', 'string', 'regex:/^[a-z0-9][a-z0-9._-]{1,63}$/D'],
             'role' => ['required', 'in:teacher,student,staff'],
+            'child_id' => ['required_if:role,student', 'nullable', 'integer', 'min:1'],
             'password' => ['required', 'string', 'min:12', 'max:128'],
         ]);
         if ($validation->fails()) {
@@ -65,6 +66,25 @@ class SchoolInternalAccountController extends Controller
                     return response()->json(['error' => 'Internal domain must be confirmed'], 409);
                 }
 
+                if ($input['role'] === 'student') {
+                    if (!Schema::hasTable('student_account_links')) {
+                        return response()->json(['error' => 'Student account linking is unavailable'], 503);
+                    }
+                    // A student login must belong to an existing enrolled child in this school.
+                    $enrolled = DB::table('student_enrollments as e')
+                        ->join('sections as s', 's.id', '=', 'e.section_id')
+                        ->join('grades as g', 'g.id', '=', 's.grade_id')
+                        ->where('e.child_id', $input['child_id'])
+                        ->where('g.school_id', $school->id)
+                        ->where('e.status', 'active')->exists();
+                    if (!$enrolled) {
+                        return response()->json(['error' => 'Student is not actively enrolled at this school'], 422);
+                    }
+                    if (DB::table('student_account_links')->where('child_id', $input['child_id'])->exists()) {
+                        return response()->json(['error' => 'This student already has a login account'], 409);
+                    }
+                }
+
                 $email = $input['username'].'@'.$school->internal_domain;
                 if (DB::table('users')->where('email', $email)->exists()
                     || DB::table('school_internal_identities')
@@ -97,6 +117,14 @@ class SchoolInternalAccountController extends Controller
                     'school_id' => $school->id, 'user_id' => $userId,
                     'username' => $input['username'], 'created_at' => now(), 'updated_at' => now(),
                 ]);
+                if ($input['role'] === 'student') {
+                    DB::table('student_account_links')->insert([
+                        'user_id' => $userId,
+                        'child_id' => $input['child_id'],
+                        'school_id' => $school->id,
+                        'created_at' => now(), 'updated_at' => now(),
+                    ]);
+                }
                 return response()->json([
                     'school_id' => (int) $school->id,
                     'user_id' => (int) $userId,
