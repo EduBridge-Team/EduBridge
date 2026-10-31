@@ -26,9 +26,7 @@ final submit = find.byKey(const ValueKey('school-account-submit'));
 Future<void> fill(WidgetTester tester) async {
   for (final entry in {
     'name': 'School',
-    'email': 'school@example.org',
-    'password': 'password123',
-    'password_confirmation': 'password123',
+    'director_email': 'school@example.org',
   }.entries) {
     await tester.ensureVisible(field(entry.key));
     await tester.enterText(field(entry.key), entry.value);
@@ -42,7 +40,7 @@ Future<void> fill(WidgetTester tester) async {
 http.Response created({int? organizationId}) => http.Response(
   jsonEncode({
     'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-    'account': {'id': 50, 'email': 'school@example.org', 'role': 'school'},
+    'director': {'id': 50, 'email': 'school@example.org'},
   }),
   201,
 );
@@ -146,25 +144,19 @@ void main() {
     );
   }
 
-  testWidgets('mismatched confirmation blocks submission', (tester) async {
+  testWidgets('internal identifier cannot be appointed as a personal director', (tester) async {
     var posts = 0;
-    final repository = SchoolAccountRepository(
-      post: (path, body) async {
-        posts++;
-        return created();
-      },
-    );
-    await tester.pumpWidget(
-      host(AdminSchoolCreatePage(repository: repository), 'en'),
-    );
+    final repository = SchoolAccountRepository(post: (_, body) async { posts++; return created(); });
+    await tester.pumpWidget(host(AdminSchoolCreatePage(repository: repository), 'en'));
     await tester.pumpAndSettle();
     await fill(tester);
-    await tester.enterText(field('password_confirmation'), 'different');
+    await tester.enterText(field('director_email'), 'user@school.edubridge');
     await tester.ensureVisible(submit);
     await tester.tap(submit);
     await tester.pumpAndSettle();
     expect(posts, 0);
-    expect(find.text('Passwords do not match.'), findsOneWidget);
+    expect(field('password'), findsNothing);
+    expect(field('password_confirmation'), findsNothing);
   });
 
   testWidgets(
@@ -186,12 +178,12 @@ void main() {
       await tester.tap(submit);
       await tester.pump();
       expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-      expect(tester.widget<TextFormField>(field('email')).enabled, isFalse);
+      expect(tester.widget<TextFormField>(field('director_email')).enabled, isFalse);
       await tester.tap(submit);
       expect(posts, 1);
       pending.complete(created());
       await tester.pumpAndSettle();
-      expect(find.text('School account created successfully.'), findsOneWidget);
+      expect(find.text('School created and director assigned successfully.'), findsOneWidget);
       expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget);
       expect(submit, findsNothing);
     },

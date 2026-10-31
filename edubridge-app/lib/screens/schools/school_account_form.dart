@@ -25,8 +25,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
-  final _password = TextEditingController();
-  final _confirmation = TextEditingController();
   late SchoolAccountRepository _repository;
   bool _submitting = false;
   SchoolAccount? _createdAccount;
@@ -49,7 +47,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _submitting = false;
       _createdAccount = null;
       _error = null;
-      for (final controller in [_name, _email, _phone, _address, _password, _confirmation]) {
+      for (final controller in [_name, _email, _phone, _address]) {
         controller.clear();
       }
     }
@@ -62,8 +60,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _email,
       _phone,
       _address,
-      _password,
-      _confirmation,
     ]) {
       controller.dispose();
     }
@@ -80,8 +76,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       email: _email.text,
       phone: _phone.text,
       address: _address.text,
-      password: _password.text,
-      passwordConfirmation: _confirmation.text,
     );
     final generation = _generation;
     final repository = _repository;
@@ -92,8 +86,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
           ? await repository.createIndependent(request)
           : await repository.createAffiliated(request);
       if (!mounted || generation != _generation) return;
-      _password.clear();
-      _confirmation.clear();
       setState(() => _createdAccount = account);
     } on SchoolAccountException catch (error) {
       if (mounted && generation == _generation) setState(() => _error = error);
@@ -185,14 +177,15 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 : null,
                           ),
                           _field(
-                            'email',
+                            'director_email',
                             l10n.schoolAccountEmail,
                             _email,
                             maxLength: 190,
                             keyboard: TextInputType.emailAddress,
                             validator: (v) =>
                                 RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                                    .hasMatch((v ?? '').trim())
+                                    .hasMatch((v ?? '').trim()) &&
+                                    !(v ?? '').trim().toLowerCase().endsWith('.edubridge')
                                 ? null
                                 : l10n.schoolAccountEmailInvalid,
                           ),
@@ -208,25 +201,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                             l10n.schoolAccountAddress,
                             _address,
                             maxLength: 255,
-                          ),
-                          _field(
-                            'password',
-                            l10n.schoolAccountPassword,
-                            _password,
-                            secret: true,
-                            validator: (v) =>
-                                (v ?? '').length < 8 || (v ?? '').length > 128
-                                ? l10n.schoolAccountPasswordInvalid
-                                : null,
-                          ),
-                          _field(
-                            'password_confirmation',
-                            l10n.schoolAccountConfirmation,
-                            _confirmation,
-                            secret: true,
-                            validator: (v) => v == _password.text
-                                ? null
-                                : l10n.schoolAccountPasswordMismatch,
                           ),
                           if (_error != null) ...[
                             Semantics(

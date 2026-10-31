@@ -15,7 +15,7 @@ const request = SchoolAccountRequest(
 
 Map<String, dynamic> result({int? organizationId}) => {
   'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-  'account': {'id': 50, 'email': 'school@example.org', 'role': 'school'},
+  'director': {'id': 50, 'email': 'school@example.org'},
 };
 
 http.Response response(Object body, [int status = 201]) =>
@@ -34,9 +34,7 @@ void main() {
           expect(path, '/admin/school-accounts');
           expect(body, {
             'name': 'School',
-            'email': 'school@example.org',
-            'password': '  pass1234 ',
-            'password_confirmation': '  pass1234 ',
+            'director_email': 'school@example.org',
           });
           return response(result());
         },
@@ -180,11 +178,11 @@ void main() {
     [],
     {
       ...result(),
-      'account': {'id': 50, 'email': 'other@example.org', 'role': 'school'},
+      'director': {'id': 50, 'email': 'other@example.org'},
     },
     {
       ...result(),
-      'account': {'id': 50, 'email': 'school@example.org', 'role': 'teacher'},
+      'director': {'id': 0, 'email': 'school@example.org'},
     },
     result(organizationId: 4),
     {
