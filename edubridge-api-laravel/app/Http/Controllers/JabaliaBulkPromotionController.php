@@ -16,7 +16,7 @@ class JabaliaBulkPromotionController extends Controller
     public function approve(Request $request, string $organizationSlug, int $school): JsonResponse
     {
         $org = $request->attributes->get('organization');
-        if (!$org || $organizationSlug !== 'jabalia' || ($org->slug ?? null) !== 'jabalia'
+        if (!$org || (($organizationSlug !== 'jabalia' || ($org->slug ?? null) !== 'jabalia') && (int) $request->attributes->get('managed_school') !== $school)
             || !DB::table('schools')->where('id', $school)->where('organization_id', $org->id)->exists()) {
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
         }
@@ -24,6 +24,7 @@ class JabaliaBulkPromotionController extends Controller
             'source_section_id' => ['required', 'integer'],
             'target_section_id' => ['required', 'integer', 'different:source_section_id'],
             'promoted_on' => ['required', 'date_format:Y-m-d'],
+            'outcome' => ['sometimes', 'in:promoted,repeated'],
             'enrollment_ids' => ['required', 'array', 'min:1', 'max:500'],
             'enrollment_ids.*' => ['required', 'integer', 'distinct'],
             'confirm' => ['required', 'accepted'],
@@ -48,7 +49,7 @@ class JabaliaBulkPromotionController extends Controller
             $source = $sections->get($data['source_section_id']);
             $target = $sections->get($data['target_section_id']);
             if (!$source || !$target || $target->year_starts_on <= $source->year_starts_on
-                || (int) $target->grade_position !== (int) $source->grade_position + 1
+                || (int) $target->grade_position !== (int) $source->grade_position + (($data['outcome'] ?? 'promoted') === 'repeated' ? 0 : 1)
                 || $data['promoted_on'] < $target->year_starts_on) {
                 return response()->json(['error' => 'الصف أو السنة أو تاريخ الترفيع غير صالح'], 422);
             }
@@ -102,7 +103,7 @@ class JabaliaBulkPromotionController extends Controller
     public function preview(Request $request, string $organizationSlug, int $school): JsonResponse
     {
         $org = $request->attributes->get('organization');
-        if (!$org || $organizationSlug !== 'jabalia' || ($org->slug ?? null) !== 'jabalia'
+        if (!$org || (($organizationSlug !== 'jabalia' || ($org->slug ?? null) !== 'jabalia') && (int) $request->attributes->get('managed_school') !== $school)
             || !DB::table('schools')->where('id', $school)->where('organization_id', $org->id)->exists()) {
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
         }
@@ -110,6 +111,7 @@ class JabaliaBulkPromotionController extends Controller
             'source_section_id' => ['required', 'integer'],
             'target_section_id' => ['required', 'integer', 'different:source_section_id'],
             'promoted_on' => ['required', 'date_format:Y-m-d'],
+            'outcome' => ['sometimes', 'in:promoted,repeated'],
         ]);
         $sections = DB::table('sections as s')
             ->join('grades as g', 'g.id', '=', 's.grade_id')
@@ -121,7 +123,7 @@ class JabaliaBulkPromotionController extends Controller
         $source = $sections->get($data['source_section_id']);
         $target = $sections->get($data['target_section_id']);
         if (!$source || !$target || $target->year_starts_on <= $source->year_starts_on
-            || (int) $target->grade_position !== (int) $source->grade_position + 1
+            || (int) $target->grade_position !== (int) $source->grade_position + (($data['outcome'] ?? 'promoted') === 'repeated' ? 0 : 1)
             || $data['promoted_on'] < $target->year_starts_on) {
             return response()->json(['error' => 'اختر شعبة من الصف التالي وسنة لاحقة مع تاريخ ترفيع صحيح'], 422);
         }

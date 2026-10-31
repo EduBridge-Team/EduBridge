@@ -5,6 +5,9 @@ export const DASHBOARD_BY_ROLE = {
   admin: '/admin',
   ministry: '/ministry',
   institution: '/institution',
+  school: '/school',
+  student: '/lessons',
+  staff: '/profile',
 }
 
 export function dashboardFor(userOrRole) {

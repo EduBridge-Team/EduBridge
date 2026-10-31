@@ -1,3 +1,6 @@
+import 'dart:async';
+import '../services/schools/school_management_repository.dart';
+import '../screens/school_management/school_management_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/admin/admin_screen.dart';
 import '../screens/ministry/ministry_screen.dart';
@@ -20,6 +23,16 @@ Future<Widget> homeScreenForRole() async {
   // ✅ التعديل هنا: لا نوجه المعلم والمختص لشاشة التوثيق إجبارياً
   // بل نتركهم يدخلون لواجهتهم، والشاشة نفسها (كما في الصورة) تعرض بطاقة "وثّق هويتك" لتفعيل الصلاحيات
 
+  if (role != 'school' && await ApiService.getToken() != null) {
+    try {
+      await SchoolManagementRepository().context().timeout(const Duration(seconds: 3));
+      return SchoolManagementScreen(personalHome: () => personalHomeForRole(role));
+    } on Exception { /* An assignment never replaces the global personal role. */ }
+  }
+  return personalHomeForRole(role);
+}
+
+Widget personalHomeForRole(String? role) {
   switch (role) {
     case 'teacher':
       return const TeacherScreen();

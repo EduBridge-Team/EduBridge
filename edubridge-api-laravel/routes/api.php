@@ -58,6 +58,16 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
         ->whereNumber('school')->middleware('throttle:10,1');
     Route::delete('/admin/schools/{school}/director-invitations/{invitation}', [\App\Http\Controllers\SchoolDirectorInvitationController::class, 'revoke'])
         ->whereNumber('school')->whereNumber('invitation')->middleware('throttle:10,1');
+    Route::get('/admin/schools', [\App\Http\Controllers\SchoolAdministrationDirectoryController::class, 'index'])->middleware('throttle:60,1');
+    Route::get('/admin/schools/{school}/management-history', [\App\Http\Controllers\SchoolAdministrationDirectoryController::class, 'history'])
+        ->whereNumber('school')->middleware('throttle:60,1');
+    Route::get('/school/annual-promotion/roster', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'roster'])->middleware('throttle:60,1');
+    Route::get('/school/annual-promotion/transfer-schools', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'destinations'])->middleware('throttle:60,1');
+    Route::post('/school/annual-promotion/preview', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'preview'])->middleware('throttle:20,1');
+    Route::post('/school/annual-promotion/approve', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'approve'])->middleware('throttle:10,1');
+    Route::get('/school/annual-promotion/history', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'history'])->middleware('throttle:60,1');
+    Route::get('/school/annual-promotion/operations/{operation}', [\App\Http\Controllers\SchoolAnnualPromotionController::class, 'operation'])->middleware('throttle:60,1');
+    Route::match(['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], '/school/operations/{action}', [\App\Http\Controllers\SchoolOperationsController::class, 'handle'])->middleware('throttle:60,1');
     Route::get('/school/delegation', [\App\Http\Controllers\SchoolDelegationController::class, 'show'])->middleware('throttle:60,1');
     Route::patch('/school/deputies/{assignment}/permissions', [\App\Http\Controllers\SchoolDelegationController::class, 'update'])
         ->whereNumber('assignment')->middleware('throttle:10,1');

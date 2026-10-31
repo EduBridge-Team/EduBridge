@@ -49,7 +49,7 @@ class SchoolDirectorInvitationController extends Controller
 
     public function accept(Request $request): JsonResponse
     {
-        $data = $request->validate(['token' => ['required', 'string', 'size:64']]);
+        $data = $request->validate(['token' => ['required', 'string', 'size:64'], 'preview' => ['sometimes', 'boolean']]);
         return DB::transaction(function () use ($request, $data) {
             $candidate = DB::table('school_director_invitations')->where('token_hash', hash('sha256', $data['token']))->first();
             if (!$candidate) return response()->json(['error' => 'Invitation unavailable'], 404);
@@ -78,6 +78,9 @@ class SchoolDirectorInvitationController extends Controller
             if (DB::table('school_management_assignments')->where('user_id', $user->id)->where('role', 'director')
                 ->whereNull('ends_at')->where('school_id', '!=', $school->id)->exists()) {
                 return response()->json(['error' => 'Director already assigned'], 409);
+            }
+            if ($data['preview'] ?? false) {
+                return response()->json(['school' => ['id' => (int) $school->id, 'name' => $school->name], 'email' => $invite->email, 'expires_at' => $invite->expires_at]);
             }
             if ($active) DB::table('school_management_assignments')->where('id', $active->id)->update(['ends_at' => now(), 'updated_at' => now()]);
             DB::table('school_management_assignments')->insert([

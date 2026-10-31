@@ -69,7 +69,7 @@ abstract interface class SchoolPromotionOperationGateway {
   Future<List<SchoolPromotionReceipt>> history({required int yearId, required int schoolId});
 }
 
-/// Proposed endpoints only: the server must implement these before production approval.
+/// Uses server previews, atomic approval and idempotent operation recovery.
 class SchoolPromotionOperationRepository implements SchoolPromotionOperationGateway {
   SchoolPromotionOperationRepository({EnrollmentApiClient? client})
       : _client = client ?? EnrollmentApiClient();

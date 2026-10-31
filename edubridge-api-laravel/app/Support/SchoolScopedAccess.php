@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 final class SchoolScopedAccess
 {
-    public const PERMISSIONS = ['academic', 'enrollment'];
+    public const PERMISSIONS = ['academic', 'enrollment', 'attendance', 'timetable', 'curriculum', 'reports'];
 
     public static function resolve(Request $request, string $permission): ?object
     {
@@ -29,9 +29,12 @@ final class SchoolScopedAccess
             ->where(fn ($q) => $q->whereNull('s.organization_id')->orWhere('o.is_active', true))
             ->limit(101)->get();
         if ($schools->count() > 100 || $schools->groupBy('id')->count() !== 1) return null;
+        if (($actor->role ?? null) === 'school' && $schools->count() !== 1) return null;
+        if (($actor->role ?? null) !== 'school' && $schools->groupBy('management_role')->contains(fn ($rows) => $rows->count() > 1)) return null;
         $school = $schools->firstWhere('management_role', 'director') ?? $schools->first();
         if (($school->management_role ?? null) === 'deputy_director') {
             $permissions = json_decode($school->delegated_permissions ?? '[]', true);
+            if (!is_array($permissions) || !array_intersect(self::PERMISSIONS, $permissions)) return null;
             if ($permission !== 'context' && (!is_array($permissions) || !in_array($permission, $permissions, true))) return null;
         }
         return $school;

@@ -1,3 +1,4 @@
+import '../school_management/school_admin_directory_screen.dart';
 import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/admin/admin_screen.dart
@@ -90,6 +91,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   Widget _buildAdminHeader() {
     final menuActions = <DashboardMenuAction>[
+      DashboardMenuAction(id: 'school-directory', label: Localizations.localeOf(context).languageCode == 'en' ? 'School administration' : 'إدارة المدارس', icon: Icons.school_outlined, onSelected: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SchoolAdminDirectoryScreen()))),
       DashboardMenuAction(
         id: 'search_identity',
         label: context.l10n.searchByIdentity,

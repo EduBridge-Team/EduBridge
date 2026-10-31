@@ -97,4 +97,19 @@ class SchoolAcademicControllerTest extends TestCase
         DB::table('school_management_assignments')->where('user_id', 30)->update(['ends_at' => now()]);
         $this->assertSame(403, $this->callAction('index', [], 30, 'teacher')->getStatusCode());
     }
+
+    public function test_managed_operations_ignore_client_school_and_reject_revoked_assignment(): void
+    {
+        DB::table('school_management_assignments')->insert(['school_id'=>1,'user_id'=>30,'role'=>'director','ends_at'=>null]);
+        $request = Request::create('/api/school/operations/years', 'POST', ['expected_school_id'=>1,'school_id'=>2,'organization_id'=>999,
+            'name'=>'2027/2028','starts_on'=>'2027-09-01','ends_on'=>'2028-06-30','is_current'=>true]);
+        $request->attributes->set('jwt_user',(object)['id'=>30,'role'=>'teacher']);
+        $controller=app(\App\Http\Controllers\SchoolOperationsController::class);
+        $this->assertSame(201,$controller->handle($request,'years')->getStatusCode());
+        $this->assertSame(1,(int)DB::table('academic_years')->value('school_id'));
+        DB::table('school_management_assignments')->where('user_id',30)->update(['ends_at'=>now()]);
+        $this->assertSame(403,$controller->handle($request,'years')->getStatusCode());
+        $this->assertSame(404,$controller->handle($request,'arbitrary-method')->getStatusCode());
+        $this->assertSame(405,$controller->handle($request,'academic')->getStatusCode());
+    }
 }

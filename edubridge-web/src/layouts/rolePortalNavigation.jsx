@@ -70,6 +70,7 @@ export function createRoleNavItems({
   if (role === 'parent') {
     return [
       home,
+      item('school-workspace', 'إدارة المدرسة', <School size={21} />, '/school'),
       item('children', 'أطفالي', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
@@ -92,6 +93,7 @@ export function createRoleNavItems({
   if (role === 'teacher') {
     return [
       home,
+      item('school-workspace', 'إدارة المدرسة', <School size={21} />, '/school'),
       item('children', 'الطلاب', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
@@ -107,6 +109,7 @@ export function createRoleNavItems({
   if (role === 'specialist') {
     return [
       home,
+      item('school-workspace', 'إدارة المدرسة', <School size={21} />, '/school'),
       item('children', 'الأطفال', <Users size={21} />, '/children'),
       item('specialist-workflow', 'اقتراحات المتابعة', <Users size={21} />, '/specialist-workflow'),
       item('learning-support', 'اجتماعات الدعم', <BookOpen size={21} />, '/learning-support'),
@@ -124,6 +127,7 @@ export function createRoleNavItems({
   if (role === 'institution') {
     return [
       home,
+      item('school-workspace', 'إدارة المدرسة', <School size={21} />, '/school'),
       item('schools', 'إدارة المدارس', <School size={21} />, '/institution/schools'),
       item('teachers', 'إدارة المعلمين', <Users size={21} />, '/institution/teachers'),
       item('students', 'إدارة الطلاب', <GraduationCap size={21} />, '/institution/students'),
@@ -141,6 +145,7 @@ export function createRoleNavItems({
   if (role === 'ministry') {
     return [
       home,
+      item('school-workspace', 'إدارة المدرسة', <School size={21} />, '/school'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث', <Search size={21} />, '/search'),
@@ -152,6 +157,7 @@ export function createRoleNavItems({
   if (role === 'admin') {
     return [
       home,
+      item('school-workspace', 'إدارة المدرسة', <School size={21} />, '/school'),
       item('verifications', 'مراجعة التوثيق', <ShieldCheck size={21} />, '/admin/verifications'),
       item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
       item('search', 'البحث', <Search size={21} />, '/search'),

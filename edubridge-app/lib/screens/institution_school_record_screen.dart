@@ -1,3 +1,4 @@
+import 'school_management/school_director_management_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../services/institution_school_repository.dart';
@@ -64,6 +65,7 @@ class _InstitutionSchoolRecordScreenState
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            OutlinedButton.icon(onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SchoolDirectorManagementScreen(schoolId: widget.schoolId, schoolName: widget.title))), icon: const Icon(Icons.manage_accounts_outlined), label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Director and invitations' : 'المدير والدعوات')),
             OutlinedButton.icon(
               key: const ValueKey('institution-open-academic'),
               onPressed: () => Navigator.of(context).push(

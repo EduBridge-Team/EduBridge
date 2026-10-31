@@ -42,7 +42,7 @@ class SchoolInternalAccountController extends Controller
         }
 
         try {
-            return DB::transaction(function () use ($actor, $input, $passwordColumn) {
+            return DB::transaction(function () use ($request, $actor, $input, $passwordColumn) {
                 $schools = DB::table('school_management_assignments as assignment')
                     ->join('schools as school', 'school.id', '=', 'assignment.school_id')
                     ->where('assignment.user_id', $actor->id)
@@ -56,6 +56,7 @@ class SchoolInternalAccountController extends Controller
                     return response()->json(['error' => 'School access is unavailable'], 403);
                 }
                 $school = $schools->first();
+                if ($request->has('expected_school_id') && (int) $request->input('expected_school_id') !== (int) $school->id) return response()->json(['error' => 'School context changed'], 409);
                 if ($school->organization_id !== null && !DB::table('organizations')
                     ->where('id', $school->organization_id)->where('is_active', true)->exists()) {
                     return response()->json(['error' => 'School access is unavailable'], 403);

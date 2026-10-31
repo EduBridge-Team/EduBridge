@@ -7,7 +7,11 @@ abstract interface class SchoolPromotionRosterGateway {
 }
 
 /// Proposed school-account API. Never use the institution-only Jabalia endpoints.
-class SchoolPromotionRosterRepository implements SchoolPromotionRosterGateway {
+abstract interface class SchoolTransferDirectoryGateway {
+  Future<List<Map<String,dynamic>>> destinations();
+}
+
+class SchoolPromotionRosterRepository implements SchoolPromotionRosterGateway, SchoolTransferDirectoryGateway {
   SchoolPromotionRosterRepository({EnrollmentApiClient? client})
       : _client = client ?? EnrollmentApiClient();
   final EnrollmentApiClient _client;
@@ -28,5 +32,16 @@ class SchoolPromotionRosterRepository implements SchoolPromotionRosterGateway {
     } on FormatException {
       throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
     }
+  }
+
+  @override
+  Future<List<Map<String,dynamic>>> destinations() async {
+    final data = await _client.get('/school/annual-promotion/transfer-schools');
+    try {
+      return enrollmentList(data['schools']).map((row) {
+        final item = enrollmentMap(row);
+        return <String,dynamic>{'id':enrollmentId(item['id']),'name':enrollmentText(item['name'])};
+      }).toList();
+    } on FormatException { throw const EnrollmentApiException(EnrollmentFailure.invalidResponse); }
   }
 }

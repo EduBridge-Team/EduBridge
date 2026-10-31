@@ -26,6 +26,14 @@ class InstitutionCurriculumController extends Controller
             ->orderBy('s.name')
             ->get();
 
+        if ($request->attributes->get('managed_school')) {
+            $units = DB::table('curriculum_units as u')->join('curriculum_books as b', 'b.id', '=', 'u.curriculum_book_id')
+                ->where('b.school_id', $school)->select('u.*', 'b.title as book_title')->get();
+            $lessons = DB::table('curriculum_lessons as l')->join('curriculum_units as u', 'u.id', '=', 'l.curriculum_unit_id')
+                ->join('curriculum_books as b', 'b.id', '=', 'u.curriculum_book_id')->where('b.school_id', $school)
+                ->select('l.*', 'u.title as unit_title')->get();
+            return response()->json(['books' => $books, 'units' => $units, 'lessons' => $lessons]);
+        }
         return response()->json(['books' => $books]);
     }
 

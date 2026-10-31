@@ -15,6 +15,7 @@ const COMMON_PORTAL_PATHS = new Set([
 
 export function isPortalPathForRole(pathname, role) {
   if (!DASHBOARD_BY_ROLE[role]) return false
+  if (pathname === '/school' || pathname === '/school/invitation') return true
 
   const dashboard = DASHBOARD_BY_ROLE[role]
   if (dashboard && pathname === dashboard) return true
