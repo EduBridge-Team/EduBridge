@@ -86,6 +86,18 @@ class InstitutionTimetableController extends Controller
             $data['ends_at'] = $end;
         }
 
+        if (($org->slug ?? null) === 'jabalia' && \Illuminate\\Support\\Facades\\Schema::hasTable('jabalia_section_subject_quotas')) {
+            $quota = DB::table('jabalia_section_subject_quotas')
+                ->where('section_id', $data['section_id'])->where('subject_id', $data['subject_id'])
+                ->value('weekly_periods');
+            if ($quota !== null && DB::table('timetable_entries')
+                ->where('section_id', $data['section_id'])
+                ->where('academic_year_id', $data['academic_year_id'])
+                ->where('subject_id', $data['subject_id'])->count() >= (int) $quota) {
+                return response()->json(['error' => 'بلغت المادة عدد الحصص الأسبوعية المحدد لهذه الشعبة'], 409);
+            }
+        }
+
         $conflict = DB::table('timetable_entries')
             ->where('school_id', $school)
             ->where('academic_year_id', $data['academic_year_id'])
