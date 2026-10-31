@@ -75,18 +75,48 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(0, DB::table('timetable_entries')->count());
     }
 
-    public function test_absence_creates_parent_notification_once(): void
+    public function test_jabalia_notifies_only_on_fourth_consecutive_school_day(): void
     {
-        $sessionId = DB::table('attendance_sessions')->insertGetId(['section_id'=>1,'subject_id'=>1,'teacher_id'=>10,'attendance_date'=>'2026-10-08','period_number'=>1,'status'=>'open','created_at'=>now(),'updated_at'=>now()]);
-        DB::table('attendance_records')->insert(['attendance_session_id'=>$sessionId,'child_id'=>1,'status'=>'present','created_at'=>now(),'updated_at'=>now()]);
-
         $controller = app(InstitutionAttendanceController::class);
-        $request = $this->tenantRequest(['records'=>[['child_id'=>1,'status'=>'absent']]]);
-        $this->assertSame(200, $controller->mark($request, 'jabalia', 1, $sessionId)->getStatusCode());
-        $this->assertSame(1, DB::table('notifications')->where('user_id', 20)->where('type', 'school_attendance')->count());
+        foreach (['2026-10-04','2026-10-05','2026-10-06','2026-10-07'] as $index => $date) {
+            $sessionId = DB::table('attendance_sessions')->insertGetId([
+                'section_id'=>1,'attendance_date'=>$date,'period_number'=>null,'status'=>'open',
+                'created_at'=>now(),'updated_at'=>now(),
+            ]);
+            DB::table('attendance_records')->insert([
+                'attendance_session_id'=>$sessionId,'child_id'=>1,'status'=>'present',
+                'created_at'=>now(),'updated_at'=>now(),
+            ]);
+            $request = $this->tenantRequest(['records'=>[['child_id'=>1,'status'=>'absent']]]);
+            $this->assertSame(200, $controller->mark($request,'jabalia',1,$sessionId)->getStatusCode());
+            $this->assertSame($index === 3 ? 1 : 0, DB::table('notifications')
+                ->where('type','school_attendance_consecutive')->count());
+            $this->assertSame(0, DB::table('notifications')->where('type','school_attendance')->count());
+        }
+        $lastSession = DB::table('attendance_sessions')->where('attendance_date','2026-10-07')->value('id');
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records'=>[['child_id'=>1,'status'=>'absent']],
+        ]),'jabalia',1,$lastSession)->getStatusCode());
+        $this->assertSame(1, DB::table('notifications')->where('type','school_attendance_consecutive')->count());
+    }
 
-        $this->assertSame(200, $controller->mark($this->tenantRequest(['records'=>[['child_id'=>1,'status'=>'absent']]]), 'jabalia', 1, $sessionId)->getStatusCode());
-        $this->assertSame(1, DB::table('notifications')->where('user_id', 20)->where('type', 'school_attendance')->count());
+    public function test_missing_daily_roll_breaks_absence_streak(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        foreach (['2026-10-04','2026-10-05','2026-10-07','2026-10-08'] as $date) {
+            $sessionId = DB::table('attendance_sessions')->insertGetId([
+                'section_id'=>1,'attendance_date'=>$date,'period_number'=>null,'status'=>'open',
+                'created_at'=>now(),'updated_at'=>now(),
+            ]);
+            DB::table('attendance_records')->insert([
+                'attendance_session_id'=>$sessionId,'child_id'=>1,'status'=>'present',
+                'created_at'=>now(),'updated_at'=>now(),
+            ]);
+            $this->assertSame(200, $controller->mark($this->tenantRequest([
+                'records'=>[['child_id'=>1,'status'=>'absent']],
+            ]),'jabalia',1,$sessionId)->getStatusCode());
+        }
+        $this->assertSame(0, DB::table('notifications')->where('type','school_attendance_consecutive')->count());
     }
 
     private function tenantRequest(array $payload): Request

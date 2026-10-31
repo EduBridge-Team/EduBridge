@@ -227,7 +227,7 @@ class InstitutionAttendanceController extends Controller
             }
         }
 
-        DB::transaction(function () use ($data, $attendanceSession, $actor, $session) {
+        DB::transaction(function () use ($data, $attendanceSession, $actor, $session, $request) {
             foreach ($data['records'] as $record) {
                 $previous = DB::table('attendance_records')
                     ->where('attendance_session_id', $attendanceSession)
@@ -247,7 +247,11 @@ class InstitutionAttendanceController extends Controller
                 );
 
                 if (in_array($record['status'], ['absent', 'late'], true) && $previous !== $record['status']) {
-                    $this->notifyParents((int) $record['child_id'], $record['status'], $session);
+                    if (($request->attributes->get('organization')->slug ?? null) !== 'jabalia' || $record['status'] === 'late') {
+                        $this->notifyParents((int) $record['child_id'], $record['status'], $session);
+                    } elseif ($record['status'] === 'absent') {
+                        $this->notifyJabaliaConsecutiveAbsence((int) $record['child_id'], $session);
+                    }
                 }
             }
 
@@ -257,6 +261,57 @@ class InstitutionAttendanceController extends Controller
         });
 
         return response()->json(['message' => 'تم حفظ الحضور بنجاح']);
+    }
+
+    /**
+     * Count consecutive recorded school days, not calendar days. The alert is
+     * issued on the fourth consecutive absent day, once for that day.
+     * A missing daily roll is not assumed to mean either present or absent.
+     */
+    private function notifyJabaliaConsecutiveAbsence(int $childId, object $session): void
+    {
+        $dates = DB::table('attendance_records as r')
+            ->join('attendance_sessions as a', 'a.id', '=', 'r.attendance_session_id')
+            ->where('r.child_id', $childId)
+            ->where('a.section_id', $session->section_id)
+            ->whereNull('a.period_number')
+            ->whereDate('a.attendance_date', '<=', $session->attendance_date)
+            ->select('a.attendance_date', 'r.status')
+            ->orderByDesc('a.attendance_date')
+            ->limit(200)->get();
+        $perDay = [];
+        foreach ($dates as $item) {
+            $day = substr((string) $item->attendance_date, 0, 10);
+            if (!isset($perDay[$day])) $perDay[$day] = $item->status;
+            elseif ($item->status !== 'absent') $perDay[$day] = $item->status;
+        }
+        if (($perDay[substr((string) $session->attendance_date, 0, 10)] ?? null) !== 'absent') return;
+        $school = DB::table('sections as s')
+            ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->where('s.id', $session->section_id)->value('g.school_id');
+        $weekdays = JabaliaTimetableSettingsController::forSchool((int) $school)['weekdays'];
+        $day = \Carbon\CarbonImmutable::parse($session->attendance_date);
+        $count = 0;
+        // Only registered school days count; a missing daily roll breaks the streak.
+        while ($count < 4) {
+            if (in_array($day->dayOfWeekIso, $weekdays, true)) {
+                if (($perDay[$day->toDateString()] ?? null) !== 'absent') return;
+                $count++;
+            }
+            $day = $day->subDay();
+        }
+        $childName = DB::table('children')->where('id', $childId)->value('name') ?? 'الطالب';
+        $message = "تجاوز {$childName} ثلاثة أيام غياب دراسي متتالية حتى {$session->attendance_date}";
+        foreach (DB::table('child_parent')->where('child_id', $childId)->pluck('parent_id') as $parentId) {
+            if (!DB::table('notifications')->where('user_id', $parentId)
+                ->where('type', 'school_attendance_consecutive')->where('message', $message)->exists()) {
+                DB::table('notifications')->insert([
+                    'user_id' => $parentId, 'title' => 'تنبيه غياب متتالٍ',
+                    'message' => $message, 'type' => 'school_attendance_consecutive',
+                    'is_read' => false, 'created_at' => now(),
+                ]);
+            }
+        }
     }
 
     private function notifyParents(int $childId, string $status, object $session): void
