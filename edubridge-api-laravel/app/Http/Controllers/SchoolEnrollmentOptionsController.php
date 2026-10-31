@@ -11,25 +11,25 @@ class SchoolEnrollmentOptionsController extends Controller
     public function index(Request $request): JsonResponse
     {
         $actor = $request->attributes->get('jwt_user');
-        if (!$actor || ($actor->role ?? null) !== 'school') {
+        if (!$actor) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        $school = DB::table('school_accounts as account')
-            ->join('schools as school', 'school.id', '=', 'account.school_id')
+        $query = ($actor->role ?? null) === 'school'
+            ? DB::table('school_accounts as account')->join('schools as school', 'school.id', '=', 'account.school_id')
+            : DB::table('school_management_assignments as account')
+                ->join('schools as school', 'school.id', '=', 'account.school_id')
+                ->where('account.role', 'director')->whereNull('account.ends_at');
+        $schools = $query
             ->leftJoin('organizations as organization', 'organization.id', '=', 'school.organization_id')
-            ->where('account.user_id', $actor->id)
-            ->where('school.is_active', true)
+            ->where('account.user_id', $actor->id)->where('school.is_active', true)
             ->where(function ($query) {
-                $query->whereNull('school.organization_id')
-                    ->orWhere('organization.is_active', true);
-            })
-            ->select('school.id')
-            ->first();
-
-        if (!$school) {
+                $query->whereNull('school.organization_id')->orWhere('organization.is_active', true);
+            })->select('school.id')->limit(2)->get();
+        if ($schools->count() !== 1) {
             return response()->json(['error' => 'School access unavailable'], 403);
         }
+        $school = $schools->first();
 
         // A school account only sees current sections owned by its own school.
         // The decision endpoint must independently validate eligibility and capacity.
