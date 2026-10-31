@@ -7,6 +7,7 @@ import SchoolAttendancePanel from './SchoolAttendancePanel'
 import SchoolPromotionPanel from './SchoolPromotionPanel'
 import SchoolEnrollmentPanel from './SchoolEnrollmentPanel'
 import SchoolTransferInboxPanel from './SchoolTransferInboxPanel'
+import SchoolTransferSourcePanel from './SchoolTransferSourcePanel'
 
 const CATEGORIES = { academic: ['الهيكل والمعلمون', 'Structure and teachers'], enrollment: ['الطلاب والترفيع', 'Students and progression'], attendance: ['الحضور', 'Attendance'], timetable: ['الجدول', 'Timetable'], curriculum: ['المنهاج', 'Curriculum'], reports: ['التقارير', 'Reports'] }
 const READ_ACTION = { academic: 'academic', enrollment: 'students', attendance: 'attendance', timetable: 'timetable', curriculum: 'curriculum', reports: 'reports' }
@@ -34,7 +35,7 @@ export default function SchoolOperationsPanel({ permissions, schoolId }) {
     {(resource.error || reference.error || teachers.error) && <p role="alert">{resource.error || reference.error || teachers.error}</p>}
     {resource.loading ? <p role="status">{t('جارِ التحميل…', 'Loading…')}</p> : resource.data && <>
       {category !== 'reports' && !reference.loading && !reference.error && <SchoolOperationForm key={category} category={category} references={references} onSaved={reload} />}
-      {category === 'enrollment' && <><SchoolEnrollmentPanel onSaved={reload} /><SchoolTransferInboxPanel onSaved={reload} /><SchoolPromotionPanel schoolId={schoolId} sections={references.sections || []} onSaved={reload} /></>}
+      {category === 'enrollment' && <><SchoolEnrollmentPanel onSaved={reload} /><SchoolTransferInboxPanel onSaved={reload} /><SchoolTransferSourcePanel enrollments={resource.data.enrollments || []} onSaved={reload} /><SchoolPromotionPanel schoolId={schoolId} sections={references.sections || []} onSaved={reload} /></>}
       {category === 'attendance' && <><SchoolAttendancePanel sessions={resource.data.attendance_sessions || []} onSaved={resource.reload} schoolId={schoolId} /><SchoolStaffAttendancePanel schoolId={schoolId} /></>}
       {resource.data.statistics && <div className="role-stats-grid">{Object.entries(resource.data.statistics).map(([key, value]) => <p key={key}>{({ students: t('الطلاب', 'Students'), teachers: t('المعلمون', 'Teachers'), grades: t('الصفوف', 'Grades'), lessons: t('حصص الجدول', 'Timetable lessons'), books: t('الكتب', 'Books') })[key]}: <b>{value}</b></p>)}</div>}
       {lists.map(([key, rows]) => <section key={key}>
