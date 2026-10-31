@@ -40,4 +40,22 @@ class StudentSelfController extends Controller
         }
         return response()->json(['student' => $student->first()]);
     }
+    public function timetable(Request $request): JsonResponse
+    {
+        $profile = $this->show($request);
+        if ($profile->getStatusCode() !== 200) return $profile;
+        $student = $profile->getData(true)['student'];
+
+        $entries = DB::table('timetable_entries as entry')
+            ->join('subjects as subject', 'subject.id', '=', 'entry.subject_id')
+            ->leftJoin('users as teacher', 'teacher.id', '=', 'entry.teacher_id')
+            ->where('entry.school_id', $student['school_id'])
+            ->where('entry.section_id', $student['section_id'])
+            ->select('entry.weekday', 'entry.period_number', 'entry.starts_at', 'entry.ends_at',
+                'subject.name as subject_name', 'teacher.name as teacher_name')
+            ->orderBy('entry.weekday')->orderBy('entry.period_number')->get();
+
+        return response()->json(['timetable' => $entries]);
+    }
+
 }

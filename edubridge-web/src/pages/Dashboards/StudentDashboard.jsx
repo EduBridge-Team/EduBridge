@@ -5,12 +5,13 @@ import { request } from '../../api'
 export default function StudentDashboard() {
   const [student, setStudent] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [timetable, setTimetable] = useState([])
   const [error, setError] = useState('')
 
   useEffect(() => {
     let active = true
-    request('/student/me')
-      .then((data) => { if (active) setStudent(data.student || null) })
+    Promise.all([request('/student/me'), request('/student/timetable')])
+      .then(([data, schedule]) => { if (active) { setStudent(data.student || null); setTimetable(schedule.timetable || []) } })
       .catch((err) => { if (active) setError(err.message || 'تعذر تحميل بيانات الطالب') })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
@@ -25,6 +26,8 @@ export default function StudentDashboard() {
         <>
           <p>مرحبًا {student.child_name}</p>
           <p>المدرسة: {student.school_id} · الصف: {student.grade_id} · الشعبة: {student.section_id}</p>
+          <h2>جدولي الدراسي</h2>
+          {timetable.length ? <ul>{timetable.map((entry, index) => <li key={`${entry.weekday}-${entry.period_number}-${index}`}>اليوم {entry.weekday} · الحصة {entry.period_number} · {entry.subject_name}{entry.teacher_name ? ` · ${entry.teacher_name}` : ""}</li>)}</ul> : <p>لا توجد حصص مسجلة لشعبتك حاليًا.</p>}
           <nav aria-label="روابط الطالب"><Link to="/lessons">استكشف الدروس</Link></nav>
         </>
       ) : null}
