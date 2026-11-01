@@ -19,11 +19,14 @@ void main() {
       'id': 10,
       'name': 'School One',
       'organization_id': organizationId,
-    },
-    'director': {
-      'id': 20,
       'email': 'school@example.com',
     },
+    'account': {
+      'id': 20,
+      'email': 'school@example.com',
+      'role': 'school',
+    },
+    'verification_email_sent': true,
   });
 
   test('independent provision uses dedicated account API, not school CRUD', () async {
@@ -39,9 +42,10 @@ void main() {
     );
     final account = await repo.createIndependent(request);
     expect(postedPath, '/admin/school-accounts');
-    expect(postedBody!['director_email'], 'school@example.com');
-    expect(postedBody!.containsKey('password_confirmation'), isFalse);
-    expect(postedBody!.containsKey('password'), isFalse);
+    expect(postedBody!['email'], 'school@example.com');
+    expect(postedBody!['password'], 'securePassword123');
+    expect(postedBody!['password_confirmation'], 'securePassword123');
+    expect(postedBody!.containsKey('director_email'), isFalse);
     expect(account.organizationId, isNull);
   });
 
