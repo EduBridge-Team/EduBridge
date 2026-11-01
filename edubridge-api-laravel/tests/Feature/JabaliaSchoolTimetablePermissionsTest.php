@@ -186,4 +186,45 @@ class JabaliaSchoolTimetablePermissionsTest extends TestCase
         DB::table('school_management_assignments')->where('user_id',40)->update(['ends_at'=>now()]);
         $this->assertSame(403, $this->operation(40, 'timetable-settings')->getStatusCode());
     }
+    public function test_duplicate_weekdays_are_rejected_without_persisting_settings(): void
+    {
+        try {
+            $this->operation(20, 'timetable-settings-update', 'PUT', [
+                'expected_school_id' => 1,
+                'weekdays' => [7, 7],
+                'periods' => [['starts_at' => '08:30', 'ends_at' => '09:10']],
+            ]);
+            $this->fail('Expected duplicate weekdays validation to fail');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            $this->assertArrayHasKey('weekdays.1', $exception->errors());
+        }
+        $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
+    }
+
+    public function test_reversed_period_is_rejected_without_persisting_settings(): void
+    {
+        $response = $this->operation(20, 'timetable-settings-update', 'PUT', [
+            'expected_school_id' => 1,
+            'weekdays' => [7],
+            'periods' => [['starts_at' => '09:10', 'ends_at' => '08:30']],
+        ]);
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
+    }
+
+    public function test_removing_day_with_existing_lesson_is_rejected(): void
+    {
+        DB::table('timetable_entries')->insert([
+            'school_id' => 1, 'weekday' => 7, 'period_number' => 1,
+            'starts_at' => '08:30:00', 'ends_at' => '09:10:00',
+        ]);
+        $response = $this->operation(20, 'timetable-settings-update', 'PUT', [
+            'expected_school_id' => 1,
+            'weekdays' => [1],
+            'periods' => [['starts_at' => '08:30', 'ends_at' => '09:10']],
+        ]);
+        $this->assertSame(409, $response->getStatusCode());
+        $this->assertSame(0, DB::table('jabalia_school_timetable_settings')->count());
+    }
+
 }
