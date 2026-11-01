@@ -158,4 +158,24 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
         $this->assertSame(403, $response->getStatusCode());
     }
 
+    public function test_academic_only_deputy_cannot_read_other_school_domains(): void
+    {
+        $created = app(\App\Http\Controllers\SchoolDeputyManagementController::class)->store(
+            $this->requestFor(20, ['user_email' => 'deputy@example.org'])
+        );
+        $this->assertSame(201, $created->getStatusCode());
+        $id = $created->getData(true)['assignment_id'];
+        $this->assertSame(200, app(\App\Http\Controllers\SchoolDelegationController::class)->update(
+            $this->requestFor(20, ['permissions' => ['academic']]), $id
+        )->getStatusCode());
+
+        $operations = app(\App\Http\Controllers\SchoolOperationsController::class);
+        foreach (['students', 'attendance', 'timetable', 'curriculum', 'reports'] as $action) {
+            $request = Request::create('/api/school/operations', 'GET');
+            $request->attributes->set('jwt_user', (object) ['id' => 21, 'role' => 'teacher']);
+            $response = $operations->handle($request, $action);
+            $this->assertSame(403, $response->getStatusCode(), $action);
+        }
+    }
+
 }
