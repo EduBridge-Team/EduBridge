@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../model/class_lessons/class_lesson_assignment.dart';
 import '../../model/class_lessons/class_lesson_result.dart';
+import '../../model/iep/iep_draft.dart';
 import '../../services/class_result_repository.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 
@@ -18,7 +19,7 @@ class ClassResultController extends ChangeNotifier {
   bool get editable => !_disposed && !loading && !busy && !locked && resultId == null && options?.canRecord == true;
   ClassResultDraft? get draft {
     if (options == null || state == null || observedOn == null) return null;
-    num? parse(String text) => text.trim().isEmpty ? null : num.tryParse(text.trim());
+    num? parse(String text) => text.trim().isEmpty ? null : parseIepMeasurement(text);
     if ([score, maximum, measurement].any((s) => s.trim().isNotEmpty && parse(s) == null)) return null;
     final result = ClassResultDraft(state: state!, observedOn: observedOn!, observation: observation,
       score: parse(score), maximum: parse(maximum), goalValue: parse(measurement));

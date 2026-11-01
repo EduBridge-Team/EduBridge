@@ -19,8 +19,7 @@ DateTime iepDate(dynamic value) {
 
 DateTime iepTimestamp(dynamic value) {
   if (value is! String ||
-      value.length < 19 ||
-      !RegExp(r'^\d{4}-\d{2}-\d{2}[T ]').hasMatch(value)) {
+      !RegExp(r'^\d{4}-\d{2}-\d{2}[T ](?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)?$').hasMatch(value)) {
     throw const FormatException('Invalid IEP timestamp');
   }
   iepDate(value.substring(0, 10));

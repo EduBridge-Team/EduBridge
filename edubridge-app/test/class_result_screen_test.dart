@@ -7,13 +7,13 @@ import 'package:edubridge_app/screens/class_lessons/class_lesson_results.dart';
 import 'class_result_fixture.dart';
 import 'curriculum_ui_support.dart';
 
-Future<void> fillResult(WidgetTester tester, {bool measurement = true}) async {
+Future<void> fillResult(WidgetTester tester, {bool measurement = true, bool arabic = false}) async {
   final state = find.descendant(of: find.byKey(const ValueKey('class-result-state')), matching: find.byType(OutlinedButton));
   await revealCurriculum(tester, state); await tester.tap(state); await tester.pumpAndSettle();
   final completed = find.descendant(of: find.byType(SimpleDialog), matching: find.byWidgetPredicate((w) => w is Text && ['مكتمل', 'Completed'].contains(w.data)));
   await tester.ensureVisible(completed); await tester.tap(completed); await tester.pumpAndSettle();
   await curriculumDate(tester, 'class-result-date', DateTime(2026, 10, 28));
-  for (final field in {'score': '0', 'maximum': '10', if (measurement) 'measurement': '2', 'observation': 'دليل الأداء الأصلي'}.entries) {
+  for (final field in {'score': arabic ? '٠' : '0', 'maximum': arabic ? '١٠' : '10', if (measurement) 'measurement': arabic ? '٢' : '2', 'observation': 'دليل الأداء الأصلي'}.entries) {
     final input = find.byKey(ValueKey('class-result-${field.key}'));
     await revealCurriculum(tester, input); await tester.enterText(input, field.value); await tester.pump();
   }
@@ -33,7 +33,7 @@ void main() {
         await tester.pumpWidget(curriculumHost(ClassResultScreen(source: f.source, gateway: f.repository), language));
         await tester.pumpAndSettle();
         expect(tester.widget<FilledButton>(find.byKey(const ValueKey('class-result-submit'))).onPressed, isNull);
-        await fillResult(tester);
+        await fillResult(tester, arabic: language == 'ar');
         await tapCurriculum(tester, 'class-result-submit');
         expect(find.textContaining(language == 'ar' ? 'النتيجة: 0 / 10' : 'Score: 0 / 10'), findsOneWidget);
         expect(find.textContaining(language == 'ar' ? 'قياس الهدف: 2' : 'Goal measurement: 2'), findsOneWidget);

@@ -6,15 +6,32 @@ Map<String, dynamic> rosterJson() => {
   'complete': true, 'revision': 'r-10',
   'students': [
     {'enrollment_id': 100, 'child_id': 200, 'child_name': 'Student',
-     'source_grade_id': 20, 'source_section_id': 30},
+     'source_grade_id': 20, 'source_grade_position': 2, 'source_section_id': 30},
   ],
   'target_sections': [
-    {'id': 31, 'grade_id': 21, 'name': 'Third A', 'capacity': 2, 'occupied': 0},
-    {'id': 32, 'grade_id': 20, 'name': 'Second A', 'capacity': 1, 'occupied': 0},
+    {'id': 31, 'grade_id': 21, 'grade_position': 3, 'name': 'Third A', 'capacity': 2, 'occupied': 0},
+    {'id': 32, 'grade_id': 20, 'grade_position': 2, 'name': 'Second A', 'capacity': 1, 'occupied': 0},
   ],
 };
 
 void main() {
+  test('promotion requires exactly the next grade position, not ordered IDs', () {
+    for (final position in [1, 2, 3, 4]) {
+      final data = rosterJson();
+      (data['target_sections'] as List)[0]['grade_position'] = position;
+      final roster = PromotionRoster.fromJson(data, schoolId: 5,
+        sourceYearId: 10, targetYearId: 11);
+      expect(PromotionDraft(roster, {
+        100: const PromotionSelection(100, PromotionOutcome.promoted, 31),
+      }).ready, position == 3);
+    }
+  });
+  test('missing grade order cannot silently allow an arbitrary promotion', () {
+    final data = rosterJson();
+    (data['students'] as List).single.remove('source_grade_position');
+    expect(() => PromotionRoster.fromJson(data, schoolId: 5,
+      sourceYearId: 10, targetYearId: 11), throwsFormatException);
+  });
   test('roster rejects a foreign school and incomplete pagination', () {
     expect(() => PromotionRoster.fromJson(rosterJson(), schoolId: 9,
       sourceYearId: 10, targetYearId: 11), throwsFormatException);

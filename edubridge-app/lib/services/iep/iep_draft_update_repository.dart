@@ -1,9 +1,9 @@
-import 'dart:convert';
 
 import '../../model/iep/iep_draft.dart';
 import '../../model/iep/iep_draft_save.dart';
 import '../../model/iep/iep_edit_source.dart';
 import '../../model/iep/iep_plan_history.dart';
+import '../../model/iep/iep_snapshot.dart';
 import '../enrollment/enrollment_api_client.dart';
 
 class IepDraftEditOptions {
@@ -85,8 +85,9 @@ class IepDraftUpdateRepository implements IepDraftUpdateGateway {
       final plan = IepPlan.fromJson(Map<String, dynamic>.from(receipt['plan'] as Map));
       final version = plan.versions.singleWhere((v) => v.id == source.versionId);
       final result = IepEditSource.capture(plan, version);
-      if (result.planId != source.planId || result.versionId != source.versionId ||
-          jsonEncode(iepDraftPayload(result.draft)) != jsonEncode(iepDraftPayload(draft))) {
+      if (!source.preservesHistory(plan, version) ||
+          result.planId != source.planId || result.versionId != source.versionId ||
+          iepSnapshotFingerprint(iepDraftPayload(result.draft)) != iepSnapshotFingerprint(iepDraftPayload(draft))) {
         throw const FormatException('Mismatched saved content');
       }
       final confirmed = await _read();

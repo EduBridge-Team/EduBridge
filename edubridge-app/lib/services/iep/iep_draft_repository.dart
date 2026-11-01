@@ -2,6 +2,7 @@ import '../../model/enrollment/enrollment_models.dart';
 import '../../model/iep/iep_draft.dart';
 import '../../model/iep/iep_draft_save.dart';
 import '../../model/iep/iep_plan_history.dart';
+import '../../model/iep/iep_snapshot.dart';
 import '../enrollment/enrollment_api_client.dart';
 import 'iep_history_repository.dart';
 
@@ -56,10 +57,17 @@ class IepDraftRepository implements IepDraftGateway {
         throw const FormatException('Draft identity or content mismatch');
       }
       final after = await history.load();
+      final remaining = {for (final plan in after.plans.where((p) => p.id != receipt.plan.id))
+        plan.id: iepSnapshotFingerprint(iepPlanSnapshot(plan))};
+      if (remaining.length != before.plans.length || before.plans.any((plan) =>
+          remaining[plan.id] != iepSnapshotFingerprint(iepPlanSnapshot(plan)))) {
+        throw const FormatException('Existing IEP history changed during creation');
+      }
       final matches = after.plans.where((p) => p.id == receipt.plan.id).toList();
       if (matches.length != 1) throw const FormatException('Missing saved draft');
       final saved = IepSavedDraft(matches.single);
-      if (!saved.matches(draft) || saved.version.id != receipt.version.id) {
+      if (!saved.matches(draft) || saved.version.id != receipt.version.id ||
+          iepSnapshotFingerprint(iepPlanSnapshot(saved.plan)) != iepSnapshotFingerprint(iepPlanSnapshot(receipt.plan))) {
         throw const FormatException('Unconfirmed saved draft');
       }
       return saved;
