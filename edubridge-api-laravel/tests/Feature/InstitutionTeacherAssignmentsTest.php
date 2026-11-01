@@ -26,6 +26,10 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         Schema::create('sections', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('grade_id');
         });
+        Schema::create('timetable_entries', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('section_id');
+            $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
+        });
         Schema::create('teacher_assignments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
         });
@@ -69,7 +73,7 @@ class InstitutionTeacherAssignmentsTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['jabalia_teacher_assignment_history', 'teacher_assignments', 'sections', 'subjects', 'grades', 'schools'] as $table) {
+        foreach (['timetable_entries', 'jabalia_teacher_assignment_history', 'teacher_assignments', 'sections', 'subjects', 'grades', 'schools'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -104,4 +108,16 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         $this->assertDatabaseHas('jabalia_teacher_assignment_history', ['school_id' => 1, 'teacher_id' => 1, 'section_id' => 1, 'subject_id' => 1, 'status' => 'ended']);
         $this->assertDatabaseHas('teacher_assignments', ['id' => 2]);
     }
+    public function test_jabalia_assignment_with_scheduled_lessons_cannot_be_removed(): void
+    {
+        DB::table('timetable_entries')->insert([
+            'school_id' => 1, 'section_id' => 1, 'subject_id' => 1, 'teacher_id' => 1,
+        ]);
+        $response = app(InstitutionAcademicController::class)
+            ->removeTeacherAssignment($this->request(), 'jabalia', 1, 1);
+        $this->assertSame(409, $response->getStatusCode());
+        $this->assertDatabaseHas('teacher_assignments', ['id' => 1]);
+        $this->assertSame(0, DB::table('jabalia_teacher_assignment_history')->count());
+    }
+
 }
