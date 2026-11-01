@@ -59,7 +59,7 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
     public function test_unassigned_actor_cannot_use_school_operations_dispatcher(): void
     {
         $request = $this->requestFor(999, ['expected_school_id' => 10]);
-        $response = app(\\App\\Http\\Controllers\\SchoolOperationsController::class)->handle($request, 'years');
+        $response = app(\App\Http\Controllers\SchoolOperationsController::class)->handle($request, 'years');
         $this->assertSame(403, $response->getStatusCode());
     }
 
