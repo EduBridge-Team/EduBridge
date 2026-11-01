@@ -154,4 +154,20 @@ class SchoolAnnualPromotionContractTest extends TestCase
         $this->assertSame(0,DB::table('student_enrollments')->where('child_id',1)->where('status','active')->count());
         $this->assertSame(1,DB::table('student_enrollments')->where('child_id',1)->count());
     }
+    public function test_unassigned_actor_cannot_read_or_prepare_promotion(): void
+    {
+        $controller = app(SchoolAnnualPromotionController::class);
+        $query = ['source_year_id' => 1, 'target_year_id' => 2];
+        $this->assertSame(403, $controller->roster($this->request('GET', $query, 99))->getStatusCode());
+        $this->assertSame(403, $controller->destinations($this->request('GET', [], 99))->getStatusCode());
+        $this->assertSame(403, $controller->history($this->request('GET', ['year_id' => 1], 99))->getStatusCode());
+        $this->assertSame(403, $controller->operation($this->request('GET', [], 99), 'unknown')->getStatusCode());
+        $this->assertSame(403, $controller->preview($this->request('POST', [
+            ...$query, 'roster_revision' => str_repeat('a', 64),
+            'decisions' => [['enrollment_id' => 1, 'decision' => 'promoted', 'target_section_id' => 2]],
+        ], 99))->getStatusCode());
+        $this->assertSame(0, DB::table('school_promotion_previews')->count());
+        $this->assertSame(2, DB::table('student_enrollments')->count());
+    }
+
 }
