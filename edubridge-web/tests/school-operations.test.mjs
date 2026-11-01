@@ -16,7 +16,7 @@ test('school forms preserve explicit false and require a real destination select
   assert.throws(() => schoolOperationPayload(transfer, { enrollment_id: 12, section_id: '' }))
 })
 
-test('school provisioning and operation forms render in both languages without school-login passwords', async () => {
+test('school provisioning and operation forms render in both languages with school-owned credentials', async () => {
   const { createServer } = await import('vite')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
@@ -29,9 +29,10 @@ test('school provisioning and operation forms render in both languages without s
       globalThis.localStorage = { getItem: () => language }
       const html = renderToStaticMarkup(createElement(Form, {}))
       assert.match(html, new RegExp('dir="' + (language === 'ar' ? 'rtl' : 'ltr') + '"'))
-      assert.doesNotMatch(html, /type="password"/)
-      assert.match(html, /type="checkbox"/)
-      assert.match(html, language === 'ar' ? /البريد الشخصي للمدير/ : /Director personal email/)
+      assert.equal((html.match(/type="password"/g) || []).length, 2)
+      assert.doesNotMatch(html, /type="checkbox"/)
+      assert.doesNotMatch(html, /director_email|invite_director/)
+      assert.match(html, language === 'ar' ? /البريد الإلكتروني للمدرسة/ : /School email/)
       const operation = renderToStaticMarkup(createElement(Operation, { category: 'academic', references: {}, onSaved() {} }))
       assert.match(operation, language === 'ar' ? /تاريخ البداية/ : /Start date/)
     }
