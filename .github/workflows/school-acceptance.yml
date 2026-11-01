@@ -1,0 +1,110 @@
+name: School acceptance targeted tests
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - '.github/workflows/school-acceptance.yml'
+      - 'edubridge-api-laravel/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  school-access-sqlite:
+    name: School access and isolation (SQLite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: edubridge-api-laravel
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_sqlite, sqlite3
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - name: Prepare isolated testing environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Run named school acceptance regression tests
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          DB_URL: ''
+          JWT_SECRET: ci-school-acceptance-jwt-secret
+        run: |
+          set -euo pipefail
+          php artisan test --filter='SchoolScopeNegativeTest|SchoolProvisionTenantIsolationTest|SchoolLoginScopeTest|JabaliaSchoolTimetablePermissionsTest|SchoolAnnualPromotionContractTest|JabaliaTeacherDocumentIsolationTest' --log-junit=school-acceptance-junit.xml
+          test -s school-acceptance-junit.xml
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('school-acceptance-junit.xml').getroot()
+          cases = root.findall('.//testcase')
+          if not cases:
+              raise SystemExit('No tests executed')
+          classes = {c.get('class', '') + ' ' + c.get('name', '') for c in cases}
+          expected = ['SchoolScopeNegativeTest', 'SchoolProvisionTenantIsolationTest', 'SchoolLoginScopeTest', 'JabaliaSchoolTimetablePermissionsTest', 'SchoolAnnualPromotionContractTest', 'JabaliaTeacherDocumentIsolationTest']
+          missing = [name for name in expected if not any(name in c for c in classes)]
+          if missing:
+              raise SystemExit('Missing test classes: ' + ', '.join(missing))
+          skipped = [c for c in cases if c.find('skipped') is not None]
+          failures = [c for c in cases if c.find('failure') is not None or c.find('error') is not None]
+          print(f'Executed {len(cases)} tests; skipped {len(skipped)}; failures {len(failures)}')
+          if skipped or failures:
+              raise SystemExit('Targeted suite incomplete')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: school-acceptance-junit
+          path: edubridge-api-laravel/school-acceptance-junit.xml
+          if-no-files-found: warn
+
+  school-postgres-locks:
+    name: School PostgreSQL lock regressions
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: edubridge_acceptance
+          POSTGRES_USER: edubridge
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U edubridge -d edubridge_acceptance"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: edubridge-api-laravel
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pgsql
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Run Jabalia PostgreSQL contention tests
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: '5432'
+          DB_DATABASE: edubridge_acceptance
+          DB_USERNAME: edubridge
+          DB_PASSWORD: ci-only-password
+          DB_URL: ''
+          JWT_SECRET: ci-school-acceptance-jwt-secret
+        run: php artisan test --filter=JabaliaPostgresOrganizationLockTest
