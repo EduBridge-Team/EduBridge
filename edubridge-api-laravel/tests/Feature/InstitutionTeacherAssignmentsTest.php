@@ -95,6 +95,26 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         $this->assertSame(404, $controller->enrollStudent($request, 'jabalia', 2)->getStatusCode());
     }
 
+    public function test_jabalia_scheduled_assignment_requires_schedule_cleanup_before_removal(): void
+    {
+        Schema::create('timetable_entries', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('section_id');
+            $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
+        });
+        DB::table('timetable_entries')->insert([
+            'school_id'=>1, 'section_id'=>1, 'subject_id'=>1, 'teacher_id'=>1,
+        ]);
+        $controller = app(InstitutionAcademicController::class);
+        $blocked = $controller->removeTeacherAssignment($this->request(), 'jabalia', 1, 1);
+        $this->assertSame(409, $blocked->getStatusCode());
+        $this->assertDatabaseHas('teacher_assignments', ['id'=>1]);
+        $this->assertSame(0, DB::table('jabalia_teacher_assignment_history')->count());
+        DB::table('timetable_entries')->delete();
+        $allowed = $controller->removeTeacherAssignment($this->request(), 'jabalia', 1, 1);
+        $this->assertSame(200, $allowed->getStatusCode());
+        Schema::dropIfExists('timetable_entries');
+    }
+
     public function test_assignment_can_only_be_removed_from_its_school(): void
     {
         $controller = app(InstitutionAcademicController::class);
