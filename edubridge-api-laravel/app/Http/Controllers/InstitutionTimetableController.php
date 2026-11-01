@@ -184,10 +184,20 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
         }
 
-        $deleted = DB::table('timetable_entries')->where('id', $entry)->where('school_id', $school)->delete();
-        return $deleted
-            ? response()->json(['message' => 'تم حذف الحصة من الجدول'])
-            : response()->json(['error' => 'الحصة غير موجودة'], 404);
+        return DB::transaction(function () use ($request, $school, $entry) {
+            $organization = $request->attributes->get('organization');
+            if (($organization->slug ?? null) === 'jabalia') {
+                // Keep deletes ordered with inserts, transfers and settings updates.
+                DB::table('organizations')->where('id', $organization->id)->lockForUpdate()->first();
+                DB::table('schools')->where('id', $school)->lockForUpdate()->first();
+            }
+
+            $deleted = DB::table('timetable_entries')
+                ->where('id', $entry)->where('school_id', $school)->delete();
+            return $deleted
+                ? response()->json(['message' => 'تم حذف الحصة من الجدول'])
+                : response()->json(['error' => 'الحصة غير موجودة'], 404);
+        }, 3);
     }
 
     private function schoolWithinTenant(Request $request, int $school): ?object

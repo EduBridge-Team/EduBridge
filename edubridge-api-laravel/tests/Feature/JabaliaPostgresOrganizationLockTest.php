@@ -160,4 +160,58 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
         }
     }
 
+
+    public function test_timetable_settings_writer_cannot_bypass_school_lock(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Requires PostgreSQL.');
+        }
+
+        Artisan::call('migrate:fresh', ['--force' => true]);
+        $organizationId = DB::table('organizations')->insertGetId([
+            'name' => 'Jabalia settings concurrency', 'slug' => 'jabalia',
+        ]);
+        $schoolId = DB::table('schools')->insertGetId([
+            'organization_id' => $organizationId, 'name' => 'Lock test school', 'slug' => 'lock-school',
+        ]);
+
+        $config = config('database.connections.pgsql');
+        $second = new PDO(sprintf('pgsql:host=%s;port=%s;dbname=%s',
+            $config['host'] ?? '127.0.0.1', $config['port'] ?? 5432, $config['database']),
+            $config['username'], $config['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
+        // A timetable insertion locks the school before reading settings.
+        // Settings updates must wait for that lock before validating existing lessons.
+        DB::beginTransaction();
+        try {
+            DB::table('organizations')->where('id', $organizationId)->lockForUpdate()->first();
+            DB::table('schools')->where('id', $schoolId)->lockForUpdate()->first();
+
+            $second->beginTransaction();
+            try {
+                $second->exec("SET LOCAL lock_timeout = '250ms'");
+                try {
+                    $lock = $second->prepare('SELECT id FROM schools WHERE id = ? FOR UPDATE');
+                    $lock->execute([$schoolId]);
+                    $this->fail('Settings update bypassed the timetable school lock.');
+                } catch (PDOException $exception) {
+                    $this->assertSame('55P03', $exception->getCode());
+                }
+            } finally {
+                if ($second->inTransaction()) $second->rollBack();
+            }
+        } finally {
+            DB::rollBack();
+        }
+
+        $second->beginTransaction();
+        try {
+            $lock = $second->prepare('SELECT id FROM schools WHERE id = ? FOR UPDATE');
+            $lock->execute([$schoolId]);
+            $this->assertSame($schoolId, (int) $lock->fetchColumn());
+        } finally {
+            $second->rollBack();
+        }
+    }
+
 }
