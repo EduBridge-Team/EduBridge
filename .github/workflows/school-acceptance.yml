@@ -39,7 +39,7 @@ jobs:
           JWT_SECRET: ci-school-acceptance-jwt-secret
         run: |
           set -euo pipefail
-          php artisan test --filter='SchoolScopeNegativeTest|SchoolProvisionTenantIsolationTest|SchoolLoginScopeTest|JabaliaSchoolTimetablePermissionsTest|SchoolAnnualPromotionContractTest|JabaliaTeacherDocumentIsolationTest' --log-junit=school-acceptance-junit.xml
+          php artisan test --filter='SchoolScopeNegativeTest|SchoolProvisionTenantIsolationTest|SchoolLoginScopeTest|JabaliaSchoolTimetablePermissionsTest|SchoolAnnualPromotionContractTest|JabaliaTeacherDocumentIsolationTest|SchoolDirectorInvitationTest|SchoolProvisionAccessTest|SchoolProvisionPersistenceTest|SchoolInternalAccountTest|SchoolInternalLifecycleTest|SchoolEnrollmentDecisionAccessTest|SchoolEnrollmentDecisionIntegrityTest|SchoolTransferAuthorizationTest|GuardianEnrollmentAccessTest|GuardianSchoolRequestAccessTest|InstitutionManagementReportIsolationTest' --log-junit=school-acceptance-junit.xml
           test -s school-acceptance-junit.xml
           python3 - <<'PY'
           import xml.etree.ElementTree as ET
@@ -48,7 +48,7 @@ jobs:
           if not cases:
               raise SystemExit('No tests executed')
           classes = {c.get('class', '') + ' ' + c.get('name', '') for c in cases}
-          expected = ['SchoolScopeNegativeTest', 'SchoolProvisionTenantIsolationTest', 'SchoolLoginScopeTest', 'JabaliaSchoolTimetablePermissionsTest', 'SchoolAnnualPromotionContractTest', 'JabaliaTeacherDocumentIsolationTest']
+          expected = ['SchoolScopeNegativeTest', 'SchoolProvisionTenantIsolationTest', 'SchoolLoginScopeTest', 'JabaliaSchoolTimetablePermissionsTest', 'SchoolAnnualPromotionContractTest', 'JabaliaTeacherDocumentIsolationTest', 'SchoolDirectorInvitationTest', 'SchoolProvisionAccessTest', 'SchoolProvisionPersistenceTest', 'SchoolInternalAccountTest', 'SchoolInternalLifecycleTest', 'SchoolEnrollmentDecisionAccessTest', 'SchoolEnrollmentDecisionIntegrityTest', 'SchoolTransferAuthorizationTest', 'GuardianEnrollmentAccessTest', 'GuardianSchoolRequestAccessTest', 'InstitutionManagementReportIsolationTest']
           missing = [name for name in expected if not any(name in c for c in classes)]
           if missing:
               raise SystemExit('Missing test classes: ' + ', '.join(missing))
