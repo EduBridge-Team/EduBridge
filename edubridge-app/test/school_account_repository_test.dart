@@ -9,13 +9,14 @@ import 'package:http/http.dart' as http;
 const request = SchoolAccountRequest(
   name: ' School ',
   email: ' school@example.org ',
-  password: '  pass1234 ',
-  passwordConfirmation: '  pass1234 ',
+  password: '  school-password-12345  ',
+  passwordConfirmation: '  school-password-12345  ',
 );
 
 Map<String, dynamic> result({int? organizationId}) => {
-  'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-  'director': {'id': 50, 'email': 'school@example.org'},
+  'school': {'id': 10, 'name': 'School', 'email': 'school@example.org', 'organization_id': organizationId},
+  'account': {'id': 50, 'email': 'school@example.org', 'role': 'school'},
+  'verification_email_sent': true,
 };
 
 http.Response response(Object body, [int status = 201]) =>
@@ -34,7 +35,9 @@ void main() {
           expect(path, '/admin/school-accounts');
           expect(body, {
             'name': 'School',
-            'director_email': 'school@example.org',
+            'email': 'school@example.org',
+            'password': '  school-password-12345  ',
+            'password_confirmation': '  school-password-12345  ',
           });
           return response(result());
         },
@@ -178,20 +181,24 @@ void main() {
     [],
     {
       ...result(),
-      'director': {'id': 50, 'email': 'other@example.org'},
+      'account': {'id': 50, 'email': 'other@example.org', 'role': 'school'},
     },
     {
       ...result(),
-      'director': {'id': 0, 'email': 'school@example.org'},
+      'account': {'id': 0, 'email': 'school@example.org', 'role': 'school'},
     },
     result(organizationId: 4),
+    {
+      ...result(),
+      'verification_email_sent': 'yes',
+    },
     {
       ...result(),
       'school': {'id': 10, 'name': 'A different school', 'organization_id': null},
     },
     {
       ...result(),
-      'school': {'id': 10, 'name': 'School'},
+      'school': {'id': 10, 'name': 'School', 'email': 'school@example.org'},
     },
   ]) {
     test(
