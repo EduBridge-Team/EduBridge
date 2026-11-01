@@ -79,7 +79,7 @@ class SchoolAccountRepository {
     _requireSuccess(response, 201);
     try {
       final account = SchoolAccount.fromJson(_decode(response.body));
-      if (account.invitationPending != request.inviteDirector || account.organizationId != organizationId ||
+      if (account.organizationId != organizationId ||
           account.name.trim() != request.name.trim() ||
           account.email.toLowerCase() != request.email.trim().toLowerCase()) {
         throw const FormatException('Account scope mismatch');
