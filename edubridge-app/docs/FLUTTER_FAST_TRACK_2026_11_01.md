@@ -28,7 +28,8 @@ its injected profile gateway remain available for existing integrations/tests.
 The default production entry uses personal accounts. Legacy director profile,
 qualification, evidence and termination endpoints remain unsupported and are
 not presented as working features. Current appointment replacement is supported;
-standalone termination and full personal-account history UI remain future work.
+the existing SchoolDirectorManagementScreen separately exposes personal-account
+invitations and history. Legacy profile termination remains unsupported.
 
 Additional evaluation fixes in this batch:
 - The existing educational plan sheet selects the first (newest) evaluation,
@@ -77,11 +78,13 @@ were added. This batch supplies Flutter implementation and a Backend handoff,
 not a claim of deployed persistence or live cross-role acceptance. See
 `PHASES_05_08_BACKEND_HANDOFF_2026_10_31.md` and the IEP/class contract documents.
 
-## Batch 3 remains open
+## Batch 3: operations, statistics and notifications
 
-Operations, statistics, notifications and final integration: address client
-   errors without presenting failed loads as empty data; complete relevant
-   regression checks and device/live acceptance. Do not declare all phases done
-   from one green PR.
+Client integrity fixes are implemented: strict school responses and requested
+school identity, explicit statistics rejection, and notification operation
+exclusion during reload/pagination/mark-all. See
+`FLUTTER_OPERATIONS_INTEGRITY_2026_11_01.md` for regression scope and limitations.
+Device/live acceptance remains open; unavailable Backend APIs still block
+end-to-end completion of the full development plan.
 
 Each batch requires analyzer, regression tests and release build CI before merge.

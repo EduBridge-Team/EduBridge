@@ -2,19 +2,77 @@ import 'dart:async';
 import 'package:edubridge_app/features/notifications/presentation/notification_operations_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-NotificationOperationsController controller({Future<void> Function()? reload,
-  Future<void> Function()? more, Future<void> Function()? mark,
-  Future<void> Function()? refresh}) => NotificationOperationsController(
-    reload: reload ?? () async {}, loadMore: more ?? () async {},
-    markAllRead: mark ?? () async {}, refresh: refresh ?? () async {});
+NotificationOperationsController controller(
+        {Future<void> Function()? reload,
+        Future<void> Function()? more,
+        Future<void> Function()? mark,
+        Future<void> Function()? refresh}) =>
+    NotificationOperationsController(
+        reload: reload ?? () async {},
+        loadMore: more ?? () async {},
+        markAllRead: mark ?? () async {},
+        refresh: refresh ?? () async {});
 
 void main() {
+  test('initial reload excludes pagination and mark-all requests', () async {
+    final pending = Completer<void>();
+    var writes = 0;
+    var pages = 0;
+    final state = controller(
+        reload: () => pending.future,
+        mark: () async {
+          writes++;
+        },
+        more: () async {
+          pages++;
+        });
+    addTearDown(state.dispose);
+    final loading = state.reload();
+    expect(await state.loadMore(), false);
+    expect(await state.markAllRead(), false);
+    expect(writes, 0);
+    expect(pages, 0);
+    pending.complete();
+    await loading;
+    expect(await state.loadMore(), true);
+    expect(await state.markAllRead(), true);
+  });
+  for (final mark in [false, true]) {
+    test(
+        'pull refresh cannot interrupt pending ${mark ? 'mark-all' : 'pagination'}',
+        () async {
+      final pending = Completer<void>();
+      var reloads = 0;
+      final state = controller(
+          reload: () async {
+            reloads++;
+          },
+          more: () => pending.future,
+          mark: () => pending.future);
+      addTearDown(state.dispose);
+      await state.reload();
+      final operation = mark ? state.markAllRead() : state.loadMore();
+      await state.reload();
+      expect(reloads, 1);
+      expect(state.loading, false);
+      pending.complete();
+      expect(await operation, true);
+      await state.reload();
+      expect(reloads, 2);
+    });
+  }
   test('older-page load excludes mark-all and repeated pagination', () async {
     final pending = Completer<void>();
     var calls = 0;
     var marks = 0;
-    final state = controller(more: () { calls++; return pending.future; }, mark: () async { marks++; });
+    final state = controller(more: () {
+      calls++;
+      return pending.future;
+    }, mark: () async {
+      marks++;
+    });
     addTearDown(state.dispose);
+    await state.reload();
     final request = state.loadMore();
     expect(state.loadingMore, true);
     expect(await state.loadMore(), false);
@@ -25,12 +83,18 @@ void main() {
     expect(marks, 0);
     expect(state.loadingMore, false);
   });
-  test('mark-all excludes pagination and refreshes only after marking', () async {
+  test('mark-all excludes pagination and refreshes only after marking',
+      () async {
     final pending = Completer<void>();
     final events = <String>[];
-    final state = controller(mark: () { events.add('mark'); return pending.future; },
-      refresh: () async { events.add('refresh'); });
+    final state = controller(mark: () {
+      events.add('mark');
+      return pending.future;
+    }, refresh: () async {
+      events.add('refresh');
+    });
     addTearDown(state.dispose);
+    await state.reload();
     final request = state.markAllRead();
     expect(await state.loadMore(), false);
     expect(await state.markAllRead(), false);
@@ -41,18 +105,27 @@ void main() {
   });
   test('failed pagination resets busy state and permits retry', () async {
     var fail = true;
-    final state = controller(more: () async { if (fail) throw Exception('offline'); });
+    final state = controller(more: () async {
+      if (fail) throw Exception('offline');
+    });
     addTearDown(state.dispose);
+    await state.reload();
     await expectLater(state.loadMore(), throwsException);
     expect(state.loadingMore, false);
     fail = false;
     expect(await state.loadMore(), true);
   });
-  test('disposed mark operation does not trigger refresh or notifications', () async {
+  test('disposed mark operation does not trigger refresh or notifications',
+      () async {
     final pending = Completer<void>();
     var refreshes = 0;
     var updates = 0;
-    final state = controller(mark: () => pending.future, refresh: () async { refreshes++; });
+    final state = controller(
+        mark: () => pending.future,
+        refresh: () async {
+          refreshes++;
+        });
+    await state.reload();
     state.addListener(() => updates++);
     final request = state.markAllRead();
     state.dispose();
@@ -61,10 +134,12 @@ void main() {
     expect(refreshes, 0);
     expect(updates, 1);
   });
-  test('obsolete reload failure cannot replace newer successful state', () async {
+  test('obsolete reload failure cannot replace newer successful state',
+      () async {
     final pending = Completer<void>();
     var calls = 0;
-    final state = controller(reload: () => ++calls == 1 ? pending.future : Future.value());
+    final state = controller(
+        reload: () => ++calls == 1 ? pending.future : Future.value());
     addTearDown(state.dispose);
     final first = state.reload();
     await state.reload();
