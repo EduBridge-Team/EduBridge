@@ -84,4 +84,26 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
         $this->assertSame(404, $response->getStatusCode());
     }
 
+    public function test_deputy_write_is_denied_after_permission_withdrawal(): void
+    {
+        $controller = app(\App\Http\Controllers\SchoolDeputyManagementController::class);
+        $created = $controller->store($this->requestFor(20, ['user_email' => 'deputy@example.org']));
+        $this->assertSame(201, $created->getStatusCode());
+        $id = $created->getData(true)['assignment_id'];
+
+        $delegation = app(\App\Http\Controllers\SchoolDelegationController::class);
+        $this->assertSame(200, $delegation->update(
+            $this->requestFor(20, ['permissions' => ['academic']]), $id
+        )->getStatusCode());
+        $this->assertNotNull(SchoolScopedAccess::resolve($this->requestFor(21), 'academic'));
+
+        $this->assertSame(200, $delegation->update(
+            $this->requestFor(20, ['permissions' => []]), $id
+        )->getStatusCode());
+        $response = app(\App\Http\Controllers\SchoolOperationsController::class)->handle(
+            $this->requestFor(21, ['expected_school_id' => 10]), 'years'
+        );
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
 }
