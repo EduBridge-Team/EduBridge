@@ -125,8 +125,8 @@ void main() {
         refresh: () async {
           refreshes++;
         });
-    state.addListener(() => updates++);
     await state.reload();
+    state.addListener(() => updates++);
     final request = state.markAllRead();
     state.dispose();
     pending.complete();
