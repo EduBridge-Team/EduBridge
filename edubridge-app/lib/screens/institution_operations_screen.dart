@@ -26,10 +26,15 @@ class _InstitutionOperationsScreenState
   Map<String, dynamic>? _report;
   List<Map<String, dynamic>> _schools = const [];
 
+  bool _connected = false;
+
   @override
-  void initState() {
-    super.initState();
-    _connect();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_connected) {
+      _connected = true;
+      _connect();
+    }
   }
 
   @override
@@ -71,7 +76,10 @@ class _InstitutionOperationsScreenState
       if (!mounted) return;
       setState(() {
         _organization = null;
-        _error = 'لم يُسمح بالوصول لهذه المؤسسة أو تعذّر الاتصال: $error';
+        _error = englishLabel(
+          'لم يُسمح بالوصول لهذه المؤسسة أو تعذّر الاتصال: $error',
+          'Access was denied or the institution could not be loaded: $error',
+        );
       });
     } finally {
       if (mounted) {
@@ -150,7 +158,8 @@ class _InstitutionOperationsScreenState
         title: Text(english ? 'School Management' : 'إدارة المدارس'),
         actions: [
           IconButton(
-            tooltip: english ? 'Refresh institution data' : 'تحديث بيانات المؤسسة',
+            tooltip:
+                english ? 'Refresh institution data' : 'تحديث بيانات المؤسسة',
             onPressed: _loading ? null : _connect,
             icon: const Icon(Icons.refresh),
           ),
@@ -175,9 +184,8 @@ class _InstitutionOperationsScreenState
                   setState(() => _schoolSearch = value.trim().toLowerCase()),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
-                hintText: english
-                    ? 'Search schools by name'
-                    : 'ابحث عن مدرسة بالاسم',
+                hintText:
+                    english ? 'Search schools by name' : 'ابحث عن مدرسة بالاسم',
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -198,8 +206,8 @@ class _InstitutionOperationsScreenState
               )
             else if (!_schools.any(
               (school) => '${school['name'] ?? ''}'.toLowerCase().contains(
-                _schoolSearch,
-              ),
+                    _schoolSearch,
+                  ),
             ))
               Text(
                 english
@@ -209,8 +217,8 @@ class _InstitutionOperationsScreenState
             else
               for (final school in _schools.where(
                 (school) => '${school['name'] ?? ''}'.toLowerCase().contains(
-                  _schoolSearch,
-                ),
+                      _schoolSearch,
+                    ),
               ))
                 Card(
                   child: ListTile(

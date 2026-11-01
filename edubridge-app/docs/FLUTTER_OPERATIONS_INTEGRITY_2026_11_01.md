@@ -4,6 +4,10 @@ Scope: Flutter only, based on main after #1303. No Laravel or React changes.
 
 ## Implemented
 
+- Institution management initializes after localization dependencies are ready;
+  opening the screen no longer raises an inherited-widget lifecycle error before
+  requesting the institution. Connection errors follow the current UI language.
+
 - Institution school lists reject missing/non-list collections, malformed rows,
   duplicate IDs and missing/invalid school names. An authorized empty list is
   still valid. Invalid rows are no longer silently removed.
