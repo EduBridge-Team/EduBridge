@@ -58,3 +58,33 @@ git ls-files 'edubridge-api-laravel/routes/api/institutions.php'
 ```
 
 Consult [Jabalia deployment](../deploy/institutions-jabalia.md), [release and pilot checklist](RELEASE_CHECKLIST.md), [architecture](ARCHITECTURE.md), and [roles](ROLES_AND_PERMISSIONS.md). Treat deployed functionality, automated test outcomes and official institutional acceptance as **separate completion criteria**.
+
+
+## Supplemental repository verification — 2026-11-01
+
+This update inspects source and test coverage on \`main\`; it does **not** constitute a staging run, production probe, or association acceptance. The earlier 2026-10-13 table remains historical and should not be interpreted as a current completion verdict.
+
+### Verified source and tests
+- \`JabaliaSchoolTimetablePermissionsTest\`: school/director schedule access, deputy delegation checks, cross-school update rejection, foreign section/subject quota rejection and overlapping-period validation.
+- \`SchoolStaffAttendanceTest\`: separate staff attendance record scope, idempotent repeat marking, foreign-school roster denial and revoked-director write denial.
+- \`JabaliaTeacherDocumentIsolationTest\` and \`JabaliaTeacherDocumentHttpAuthenticationTest\`: institution/teacher document authorization regression coverage.
+- \`JabaliaAnnualPromotionTest\` and \`JabaliaBulkPromotionApprovalTest\`: automated promotion-related regression coverage; not an end-to-end school pilot.
+- Controllers currently present: \`JabaliaTimetableSettingsController\`, \`JabaliaSubjectQuotaController\`, \`JabaliaTeacherDocumentController\`, \`JabaliaTeacherHistoryController\`, \`JabaliaTeacherSchoolTransferController\`, \`SchoolStaffAttendanceController\`, and \`JabaliaAnnualPromotionController\`.
+- Web source currently includes \`InstitutionTimetablePage\`, \`InstitutionAttendancePage\`, \`InstitutionReportsPage\`, and \`InstitutionTeachersPage\`.
+
+### Still not demonstrated by these source checks
+1. The complete association-approved Sunday–Thursday timetable and weekly subject quota workflow across API, Web and Flutter, including real-time teacher/room/section conflict checks.
+2. Full project-contract lifecycle, achievement reporting, private document role matrix, export and association templates.
+3. Confidential student enrollment documents, school-plus-counselor decision and final enrollment confirmation.
+4. Student daily attendance distinct from staff attendance, with **more than three consecutive days** notification and an approved holiday-counting rule.
+5. Association-specific supervisor visits, corrective actions, reports and signed print/export templates.
+6. Noor/Palestinian Sign Language content approval, accessibility acceptance and parent communication end to end.
+7. Isolated staging acceptance, full backup-to-scratch restore, deployed SHA/image-digest reconciliation and written institutional sign-off.
+
+### Recommended implementation order
+1. Map each confirmed requirement in \`JABALIA_2026_REQUIREMENTS_AND_BACKLOG.md\` to its actual route, controller, React page, Flutter screen and test; mark missing links explicitly.
+2. Implement missing P0 school scheduling and staff-record controls in a single reviewed functional batch, with negative authorization and overlap/concurrency tests.
+3. Implement P1 confidential admissions, attendance threshold, and reports only after unresolved policy decisions are approved.
+4. Run disposable isolated Jabalia end-to-end pilot and recovery drill; archive evidence and request institution sign-off.
+
+**Completion status: NOT ACCEPTED / PILOT PENDING.** Passing unit/feature tests is not equivalent to institutional deployment acceptance.
