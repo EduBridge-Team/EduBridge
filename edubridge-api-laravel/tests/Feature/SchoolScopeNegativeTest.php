@@ -56,4 +56,11 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
         $request->attributes->set('jwt_user', (object) ['id' => $user, 'role' => 'teacher']);
         return $request;
     }
+    public function test_unassigned_actor_cannot_use_school_operations_dispatcher(): void
+    {
+        $request = $this->requestFor(999, ['expected_school_id' => 10]);
+        $response = app(\\App\\Http\\Controllers\\SchoolOperationsController::class)->handle($request, 'years');
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
 }
