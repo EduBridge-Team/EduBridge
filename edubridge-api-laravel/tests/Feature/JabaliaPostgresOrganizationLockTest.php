@@ -126,6 +126,25 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
             throw $exception;
         }
 
+        // Exercise the actual Laravel timetable controller against migrated PostgreSQL
+        // after the transfer commits, not just a raw SQL existence check.
+        DB::table('organization_user')->insert([
+            'organization_id' => $organizationId, 'user_id' => $teacherId,
+            'role' => 'teacher', 'is_active' => true,
+        ]);
+        $request = \Illuminate\Http\Request::create('/api/timetable', 'POST', [
+            'academic_year_id' => $yearId, 'section_id' => $sectionId,
+            'subject_id' => $subjectId, 'teacher_id' => $teacherId,
+            'weekday' => 1, 'period_number' => 2,
+        ]);
+        $request->attributes->set('organization', (object) [
+            'id' => $organizationId, 'slug' => 'jabalia',
+        ]);
+        $response = app(\App\Http\Controllers\InstitutionTimetableController::class)
+            ->store($request, 'jabalia', $schoolId);
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame(0, DB::table('timetable_entries')->where('school_id', $schoolId)->count());
+
         // Once transfer commits, the waiting writer can lock but sees no assignment.
         $second->beginTransaction();
         try {
