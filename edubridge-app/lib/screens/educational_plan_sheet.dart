@@ -38,7 +38,8 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
       if (!mounted) return;
       if (evaluations.isNotEmpty) {
         setState(() {
-          _evaluation = evaluations.last;
+          // The existing API returns newest evaluations first.
+          _evaluation = evaluations.first;
           _loading = false;
         });
       } else {

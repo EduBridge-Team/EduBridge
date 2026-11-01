@@ -18,14 +18,14 @@ class PersonalSchoolDirector {
 abstract interface class SchoolDirectorAppointmentGateway {
   Future<List<DirectorSchool>> schools();
   Future<PersonalSchoolDirector?> current(DirectorSchool school);
-  Future<void> appoint(DirectorSchool school, String email);
+  Future<int> appoint(DirectorSchool school, String email);
 }
 
 /// Appointments attach an existing verified personal account to a school.
 class SchoolDirectorAppointmentRepository
     implements SchoolDirectorAppointmentGateway {
   SchoolDirectorAppointmentRepository({DirectorApiClient? client})
-    : _client = client ?? DirectorApiClient();
+      : _client = client ?? DirectorApiClient();
   final DirectorApiClient _client;
 
   @override
@@ -58,15 +58,18 @@ class SchoolDirectorAppointmentRepository
   }
 
   @override
-  Future<void> appoint(DirectorSchool school, String email) async {
-    final value = await _client.post('/admin/schools/${school.id}/director', {
-      'director_email': email.trim().toLowerCase(),
-    }, expectedStatus: 200);
-    _parse(() {
+  Future<int> appoint(DirectorSchool school, String email) async {
+    final value = await _client.post(
+        '/admin/schools/${school.id}/director',
+        {
+          'director_email': email.trim().toLowerCase(),
+        },
+        expectedStatus: 200);
+    return _parse(() {
       if (parseDirectorId(value['school_id']) != school.id) {
         throw const FormatException('Wrong school');
       }
-      parseDirectorId(value['director_user_id']);
+      return parseDirectorId(value['director_user_id']);
     });
   }
 }

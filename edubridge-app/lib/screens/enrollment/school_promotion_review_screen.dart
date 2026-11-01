@@ -247,11 +247,7 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
                         decoration: InputDecoration(labelText: tr('الشعبة الجديدة', 'Target section')),
                         items: [
                           for (final section in roster.sections.where((section) =>
-                            _choices[student.enrollmentId]!.outcome == PromotionOutcome.repeating
-                              ? section.gradeId == student.gradeId
-                              : section.gradeId != student.gradeId &&
-                                student.gradePosition != null &&
-                                section.gradePosition == student.gradePosition! + 1))
+                            section.accepts(student, _choices[student.enrollmentId]!.outcome)))
                             DropdownMenuItem(value: section.id, child: Text(section.name)),
                         ],
                         onChanged: (id) => _destination(student, id),

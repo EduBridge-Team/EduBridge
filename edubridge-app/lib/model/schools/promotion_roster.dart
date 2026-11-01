@@ -29,6 +29,18 @@ class PromotionDestination {
   final int? gradePosition;
   final int? capacity;
   final String name;
+
+  bool accepts(PromotionStudent student, PromotionOutcome outcome) {
+    if (gradePosition == null || student.gradePosition == null) return false;
+    return switch (outcome) {
+      PromotionOutcome.promoted =>
+        gradeId != student.gradeId &&
+            gradePosition == student.gradePosition! + 1,
+      PromotionOutcome.repeating =>
+        gradeId == student.gradeId && gradePosition == student.gradePosition,
+      PromotionOutcome.transferred => false,
+    };
+  }
 }
 
 /// Strict server-provided roster, never constructed from fake production data.
@@ -152,15 +164,7 @@ class PromotionDraft {
       );
       if (destinations.length != 1) return false;
       final destination = destinations.single;
-      if (selection.outcome == PromotionOutcome.repeating &&
-          destination.gradeId != student.gradeId)
-        return false;
-      if (selection.outcome == PromotionOutcome.promoted &&
-          (destination.gradeId == student.gradeId ||
-              student.gradePosition == null ||
-              destination.gradePosition == null ||
-              destination.gradePosition != student.gradePosition! + 1))
-        return false;
+      if (!destination.accepts(student, selection.outcome)) return false;
       planned.update(destination.id, (count) => count + 1, ifAbsent: () => 1);
     }
     for (final destination in roster.sections) {

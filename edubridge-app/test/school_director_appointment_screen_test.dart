@@ -11,24 +11,27 @@ import 'curriculum_ui_support.dart';
 class _Gateway implements SchoolDirectorAppointmentGateway {
   int writes = 0;
   bool uncertain = false;
+  bool missingReadback = false;
   PersonalSchoolDirector? director;
   @override
   Future<List<DirectorSchool>> schools() async => const [
-    DirectorSchool(
-      id: 5,
-      name: 'School A',
-      organizationId: 2,
-      organizationSlug: 'org',
-    ),
-  ];
+        DirectorSchool(
+          id: 5,
+          name: 'School A',
+          organizationId: 2,
+          organizationSlug: 'org',
+        ),
+      ];
   @override
   Future<PersonalSchoolDirector?> current(DirectorSchool school) async =>
       director;
   @override
-  Future<void> appoint(DirectorSchool school, String email) async {
+  Future<int> appoint(DirectorSchool school, String email) async {
     writes++;
     if (uncertain) throw const DirectorApiException(DirectorFailure.uncertain);
-    director = PersonalSchoolDirector(8, 'Personal Director', email);
+    if (!missingReadback)
+      director = PersonalSchoolDirector(8, 'Personal Director', email);
+    return 8;
   }
 }
 
@@ -75,33 +78,39 @@ void main() {
       });
     }
   }
-  testWidgets('uncertain appointment requires reload before another write', (
-    tester,
-  ) async {
-    final gateway = _Gateway()..uncertain = true;
-    await tester.pumpWidget(
-      curriculumHost(SchoolDirectorAppointmentScreen(gateway: gateway), 'en'),
-    );
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byType(TextFormField));
-    await tester.enterText(find.byType(TextFormField), 'person@example.org');
-    FocusManager.instance.primaryFocus?.unfocus();
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byType(FilledButton));
-    await tester.tap(find.byType(FilledButton));
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.descendant(
-        of: find.byType(AlertDialog),
-        matching: find.byType(FilledButton),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(gateway.writes, 1);
-    expect(
-      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
-      isNull,
-    );
-    expect(tester.takeException(), isNull);
-  });
+  for (final missingReadback in [false, true]) {
+    testWidgets(
+        'uncertain appointment requires reload before another write $missingReadback',
+        (
+      tester,
+    ) async {
+      final gateway = _Gateway()
+        ..uncertain = !missingReadback
+        ..missingReadback = missingReadback;
+      await tester.pumpWidget(
+        curriculumHost(SchoolDirectorAppointmentScreen(gateway: gateway), 'en'),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byType(TextFormField));
+      await tester.enterText(find.byType(TextFormField), 'person@example.org');
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byType(FilledButton));
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(gateway.writes, 1);
+      expect(
+        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+        isNull,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
 }
