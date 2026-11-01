@@ -161,4 +161,18 @@ class SchoolDirectorInvitationTest extends \Tests\TestCase
         $this->assertSame(0, DB::table('school_management_assignments')->count());
     }
 
+    public function test_invitation_preview_does_not_consume_token_or_assign_director(): void
+    {
+        $this->fixture();
+        $request = Request::create('/api/school/director-invitations/accept', 'POST', [
+            'token' => str_repeat('a', 64), 'preview' => true,
+        ]);
+        $request->attributes->set('jwt_user', (object) ['id' => 55, 'role' => 'teacher']);
+        $response = app(SchoolDirectorInvitationController::class)->accept($request);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(0, DB::table('school_management_assignments')->count());
+        $this->assertNull(DB::table('school_director_invitations')->value('accepted_at'));
+        $this->assertSame(200, $this->acceptInvitation()->getStatusCode());
+    }
+
 }
