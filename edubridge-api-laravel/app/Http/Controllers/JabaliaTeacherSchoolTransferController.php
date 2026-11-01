@@ -63,6 +63,19 @@ class JabaliaTeacherSchoolTransferController extends Controller
                 ->where('g.school_id', $school)->where('sub.school_id', $school)
                 ->where('ta.teacher_id', $teacher)
                 ->select('ta.id', 'ta.section_id', 'ta.subject_id')->get();
+            // Do not leave lessons referencing assignments that this transfer
+            // will remove. Administrators must first reschedule or remove them.
+            foreach ($assignments as $assignment) {
+                if (DB::table('timetable_entries')
+                    ->where('school_id', $school)
+                    ->where('teacher_id', $teacher)
+                    ->where('section_id', $assignment->section_id)
+                    ->where('subject_id', $assignment->subject_id)->exists()) {
+                    return response()->json([
+                        'error' => 'لا يمكن نقل المعلم قبل معالجة حصصه المجدولة في المدرسة الحالية',
+                    ], 409);
+                }
+            }
             // A transfer does not create assignments in the destination school.
             // The school administrator can subsequently assign subjects and sections.
             foreach ($assignments as $assignment) {
