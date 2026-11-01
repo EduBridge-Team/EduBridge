@@ -119,6 +119,31 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(0, DB::table('notifications')->where('type','school_attendance_consecutive')->count());
     }
 
+
+    public function test_teacher_cannot_be_booked_in_two_jabalia_schools_same_period(): void
+    {
+        DB::table('schools')->insert(['id'=>2,'organization_id'=>1,'name'=>'Second school']);
+        DB::table('academic_years')->insert(['id'=>2,'school_id'=>2,'name'=>'2026/2027']);
+        DB::table('grades')->insert(['id'=>2,'school_id'=>2,'name'=>'Grade 5']);
+        DB::table('sections')->insert(['id'=>3,'grade_id'=>2,'academic_year_id'=>2,'name'=>'C']);
+        DB::table('subjects')->insert(['id'=>2,'school_id'=>2,'name'=>'Science']);
+        DB::table('teacher_assignments')->insert(['section_id'=>3,'subject_id'=>2,'teacher_id'=>10]);
+
+        $controller = app(InstitutionTimetableController::class);
+        $first = $controller->store($this->tenantRequest([
+            'academic_year_id'=>1,'section_id'=>1,'subject_id'=>1,
+            'teacher_id'=>10,'weekday'=>1,'period_number'=>2,
+        ]), 'jabalia', 1);
+        $this->assertSame(201, $first->getStatusCode());
+
+        $second = $controller->store($this->tenantRequest([
+            'academic_year_id'=>2,'section_id'=>3,'subject_id'=>2,
+            'teacher_id'=>10,'weekday'=>1,'period_number'=>2,
+        ]), 'jabalia', 2);
+        $this->assertSame(409, $second->getStatusCode());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
     private function tenantRequest(array $payload): Request
     {
         $request = Request::create('/', 'POST', $payload);
