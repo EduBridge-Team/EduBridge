@@ -64,18 +64,6 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
-        // In Jabalia a scheduled teacher must hold the exact section/subject assignment.
-        // Teachers may still have different assignments across grades and sections.
-        $tenant = $request->attributes->get('organization');
-        if (($tenant->slug ?? null) === 'jabalia' && !empty($data['teacher_id'])) {
-            if (!DB::table('teacher_assignments')
-                ->where('section_id', $data['section_id'])
-                ->where('subject_id', $data['subject_id'])
-                ->where('teacher_id', $data['teacher_id'])->exists()) {
-                return response()->json(['error' => 'المعلم غير مكلّف بهذه المادة في الشعبة المحددة'], 422);
-            }
-        }
-
         // Jabalia's association-confirmed standard week, with a five-period day.
         // These rules are the initial defaults; configurable institution settings follow.
         $org = $request->attributes->get('organization');
@@ -105,6 +93,17 @@ class InstitutionTimetableController extends Controller
             if (($org->slug ?? null) === 'jabalia') {
                 DB::table('organizations')->where('id', $org->id)->lockForUpdate()->first();
                 DB::table('schools')->where('id', $school)->lockForUpdate()->first();
+            }
+            // Check the assignment only after acquiring the organization lock.
+            // Teacher transfers take the same lock before removing assignments;
+            // checking earlier could admit a stale teacher into the timetable.
+            if (($org->slug ?? null) === 'jabalia' && !empty($data['teacher_id'])) {
+                if (!DB::table('teacher_assignments')
+                    ->where('section_id', $data['section_id'])
+                    ->where('subject_id', $data['subject_id'])
+                    ->where('teacher_id', $data['teacher_id'])->exists()) {
+                    return response()->json(['error' => 'المعلم غير مكلّف بهذه المادة في الشعبة المحددة'], 422);
+                }
             }
             if (($org->slug ?? null) === 'jabalia' && \Illuminate\Support\Facades\Schema::hasTable('jabalia_section_subject_quotas')) {
                 $quota = DB::table('jabalia_section_subject_quotas')
