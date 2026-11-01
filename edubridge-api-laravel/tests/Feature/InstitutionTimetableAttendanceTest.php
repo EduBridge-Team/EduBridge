@@ -161,6 +161,44 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(1, DB::table('timetable_entries')->count());
     }
 
+    public function test_deleting_timetable_entry_allows_rebooking_the_same_slot(): void
+    {
+        $controller = app(InstitutionTimetableController::class);
+        $payload = ['academic_year_id'=>1,'section_id'=>1,'subject_id'=>1,
+            'teacher_id'=>10,'weekday'=>1,'period_number'=>2];
+        $this->assertSame(201, $controller->store($this->tenantRequest($payload), 'jabalia', 1)->getStatusCode());
+
+        $entryId = DB::table('timetable_entries')->value('id');
+        $this->assertSame(200, $controller->destroy($this->tenantRequest([]), 'jabalia', 1, $entryId)->getStatusCode());
+        $this->assertSame(0, DB::table('timetable_entries')->count());
+        $this->assertSame(201, $controller->store($this->tenantRequest($payload), 'jabalia', 1)->getStatusCode());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_timetable_delete_is_scoped_to_its_school_and_is_idempotently_not_found(): void
+    {
+        $controller = app(InstitutionTimetableController::class);
+        $this->assertSame(201, $controller->store($this->tenantRequest([
+            'academic_year_id'=>1,'section_id'=>1,'subject_id'=>1,
+            'teacher_id'=>10,'weekday'=>1,'period_number'=>2,
+        ]), 'jabalia', 1)->getStatusCode());
+
+        $entryId = DB::table('timetable_entries')->value('id');
+        DB::table('schools')->insert(['id'=>2,'organization_id'=>1,'name'=>'Other school']);
+        $this->assertSame(404, $controller->destroy($this->tenantRequest([]), 'jabalia', 2, $entryId)->getStatusCode());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+        $this->assertSame(200, $controller->destroy($this->tenantRequest([]), 'jabalia', 1, $entryId)->getStatusCode());
+        $this->assertSame(404, $controller->destroy($this->tenantRequest([]), 'jabalia', 1, $entryId)->getStatusCode());
+    }
+
+    public function test_timetable_delete_rejects_school_outside_organization(): void
+    {
+        $controller = app(InstitutionTimetableController::class);
+        DB::table('organizations')->insert(['id'=>2,'slug'=>'other','is_active'=>true]);
+        DB::table('schools')->insert(['id'=>3,'organization_id'=>2,'name'=>'Foreign school']);
+        $this->assertSame(404, $controller->destroy($this->tenantRequest([]), 'jabalia', 3, 999)->getStatusCode());
+    }
+
     private function tenantRequest(array $payload): Request
     {
         $request = Request::create('/', 'POST', $payload);
