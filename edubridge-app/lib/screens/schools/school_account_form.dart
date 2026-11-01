@@ -23,11 +23,12 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   var _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
+  final _password = TextEditingController();
+  final _passwordConfirmation = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
   late SchoolAccountRepository _repository;
   bool _submitting = false;
-  bool _inviteDirector = false;
   SchoolAccount? _createdAccount;
   int _generation = 0;
   SchoolAccountException? _error;
@@ -46,10 +47,9 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _formKey = GlobalKey<FormState>();
       _repository = widget.repository ?? SchoolAccountRepository();
       _submitting = false;
-      _inviteDirector = false;
       _createdAccount = null;
       _error = null;
-      for (final controller in [_name, _email, _phone, _address]) {
+      for (final controller in [_name, _email, _password, _passwordConfirmation, _phone, _address]) {
         controller.clear();
       }
     }
@@ -60,6 +60,8 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     for (final controller in [
       _name,
       _email,
+      _password,
+      _passwordConfirmation,
       _phone,
       _address,
     ]) {
@@ -76,7 +78,8 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final request = SchoolAccountRequest(
       name: _name.text,
       email: _email.text,
-      inviteDirector: _inviteDirector,
+      password: _password.text,
+      passwordConfirmation: _passwordConfirmation.text,
       phone: _phone.text,
       address: _address.text,
     );
@@ -180,7 +183,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 : null,
                           ),
                           _field(
-                            'director_email',
+                            'email',
                             l10n.schoolAccountEmail,
                             _email,
                             maxLength: 190,
@@ -192,11 +195,27 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 ? null
                                 : l10n.schoolAccountEmailInvalid,
                           ),
-                          CheckboxListTile(value: _inviteDirector,
-                            onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
-                            title: Text(Localizations.localeOf(context).languageCode == 'en'
-                              ? 'Invite a new director; appointment requires email/identity verification and acceptance.'
-                              : 'دعوة مدير جديد؛ التكليف يتطلب تأكيد البريد والهوية وقبول الدعوة.')),
+                          _field(
+                            'password',
+                            l10n.schoolAccountPassword,
+                            _password,
+                            maxLength: 128,
+                            secret: true,
+                            validator: (v) => (v ?? '').length >= 12 && (v ?? '').length <= 128
+                                ? null
+                                : l10n.schoolAccountPasswordInvalid,
+                          ),
+                          _field(
+                            'password_confirmation',
+                            Localizations.localeOf(context).languageCode == 'en'
+                              ? 'Confirm password' : 'تأكيد كلمة المرور',
+                            _passwordConfirmation,
+                            maxLength: 128,
+                            secret: true,
+                            validator: (v) => v == _password.text
+                                ? null
+                                : l10n.schoolAccountPasswordMismatch,
+                          ),
                           _field(
                             'phone',
                             l10n.schoolAccountPhone,
