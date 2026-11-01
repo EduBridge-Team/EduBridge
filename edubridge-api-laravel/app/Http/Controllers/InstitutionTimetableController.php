@@ -139,7 +139,6 @@ class InstitutionTimetableController extends Controller
                     ->join('schools as other_school', 'other_school.id', '=', 'other.school_id')
                     ->where('other_school.organization_id', $org->id)
                     ->where('other.school_id', '!=', $school)
-                    ->where('other.academic_year_id', $data['academic_year_id'])
                     ->where('other.weekday', $data['weekday'])
                     ->where('other.period_number', $data['period_number'])
                     ->where('other.teacher_id', $data['teacher_id'])
