@@ -42,6 +42,9 @@ class JabaliaTeacherSchoolTransferController extends Controller
         }
 
         return DB::transaction(function () use ($org, $school, $teacher, $destination, $data, $request) {
+            // Use the same institution lock as Jabalia timetable writes so a
+            // concurrent lesson cannot be inserted after transfer validation.
+            DB::table('organizations')->where('id', $org->id)->lockForUpdate()->first();
             DB::table('users')->where('id', $teacher)->lockForUpdate()->first();
             if (DB::table('jabalia_teacher_school_transfers')
                 ->where('organization_id', $org->id)->where('teacher_id', $teacher)
