@@ -65,6 +65,23 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(409, $second->getStatusCode());
     }
 
+    public function test_teacher_assignment_is_checked_after_organization_lock(): void
+    {
+        // Emulate the state after a completed transfer removed the assignment.
+        // The timetable writer must reject it rather than create a stale lesson.
+        DB::table('teacher_assignments')->where('teacher_id', 10)->delete();
+
+        $response = app(InstitutionTimetableController::class)->store(
+            $this->tenantRequest([
+                'academic_year_id'=>1, 'section_id'=>1, 'subject_id'=>1,
+                'teacher_id'=>10, 'weekday'=>1, 'period_number'=>2,
+            ]), 'jabalia', 1
+        );
+
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame(0, DB::table('timetable_entries')->count());
+    }
+
     public function test_teacher_without_matching_assignment_cannot_be_scheduled(): void
     {
         DB::table('teacher_assignments')->where('section_id', 2)->delete();
