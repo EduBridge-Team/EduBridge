@@ -157,12 +157,10 @@ Future<List<dynamic>> _apiGetChildEvaluations(int childId) async {
   final res = await ApiService.authGet('/evaluations/child/$childId');
   if (res.statusCode != 200) throw Exception('Failed to load evaluations');
   final data = ApiService._decodeBody(res);
-  final evaluations = data['evaluations'];
-  if (evaluations is! List || evaluations.any((value) =>
-      value is! Map<String, dynamic> || value['child_id'] != childId)) {
-    throw const FormatException('Invalid evaluation history');
-  }
-  return evaluations;
+  final history = EvaluationHistory.fromJson(childId, data);
+  final byId = {for (final value in data['evaluations'] as List)
+    (value as Map<String, dynamic>)['id']: value};
+  return [for (final record in history.records) byId[record.id]!];
 }
 
 Future<Map<String, dynamic>?> _apiAssignTeacherToChild(

@@ -35,8 +35,18 @@ void main() {
           () => MockClient((_) async => http.Response(
               jsonEncode({
                 'evaluations': [
-                  {'id': 2, 'child_id': 7, 'educational_plan': 'NEWEST PLAN'},
-                  {'id': 1, 'child_id': 7, 'educational_plan': 'OUTDATED PLAN'},
+                  {
+                    'id': 2,
+                    'child_id': 7,
+                    'created_at': '2026-02-01T00:00:00Z',
+                    'educational_plan': 'NEWEST PLAN'
+                  },
+                  {
+                    'id': 1,
+                    'child_id': 7,
+                    'created_at': '2026-01-01T00:00:00Z',
+                    'educational_plan': 'OUTDATED PLAN'
+                  },
                 ]
               }),
               200)));
