@@ -170,4 +170,18 @@ class SchoolAnnualPromotionContractTest extends TestCase
         $this->assertSame(2, DB::table('student_enrollments')->count());
     }
 
+    public function test_promotion_cannot_access_second_school_when_directorship_is_ambiguous(): void
+    {
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 2, 'user_id' => 10, 'role' => 'director', 'ends_at' => null,
+        ]);
+        $controller = app(SchoolAnnualPromotionController::class);
+        $this->assertSame(403, $controller->roster($this->request('GET', [
+            'source_year_id' => 1, 'target_year_id' => 2,
+        ]))->getStatusCode());
+        $this->assertSame(403, $controller->destinations($this->request('GET', []))->getStatusCode());
+        $this->assertSame(0, DB::table('school_promotion_previews')->count());
+        $this->assertSame(2, DB::table('student_enrollments')->count());
+    }
+
 }
