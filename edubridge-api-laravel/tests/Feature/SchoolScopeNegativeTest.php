@@ -119,7 +119,7 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
         $response = app(\App\Http\Controllers\SchoolOperationsController::class)->handle(
             $this->requestFor(21, ['expected_school_id' => 10]), 'student-transfer'
         );
-        $this->assertSame(405, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
 }
