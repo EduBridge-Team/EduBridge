@@ -27,3 +27,10 @@ for the server's atomic check.
 Acceptance still needs a live authorized update, two-client conflict, permission
 revocation, source deletion/submission, and loss of the mutation response. CI
 fixtures do not demonstrate deployment or production persistence.
+
+Flutter confirmation also preserves the original draft version number, author,
+creation timestamp and review comments, the approved-version pointer, and the
+full content/audit history of every other version. Preflight compares those full
+versions even when the revision token is unchanged. After PATCH, altered history
+is uncertain even when receipt and readback agree. Authored draft fields and
+replacement goal IDs may change; client checks do not replace server transactions.
