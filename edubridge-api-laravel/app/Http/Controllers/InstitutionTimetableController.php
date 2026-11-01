@@ -64,28 +64,6 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
-        // Jabalia's association-confirmed standard week, with a five-period day.
-        // These rules are the initial defaults; configurable institution settings follow.
-        $org = $request->attributes->get('organization');
-        if (($org->slug ?? null) === 'jabalia') {
-            $settings = JabaliaTimetableSettingsController::forSchool($school);
-            // ISO weekdays: Sunday=7, Monday=1, ..., Thursday=4.
-            $weekday = (int) $data['weekday'];
-            $period = (int) $data['period_number'];
-            $slot = $settings['periods'][$period - 1] ?? null;
-            if (!in_array($weekday, $settings['weekdays'], true) || !$slot) {
-                return response()->json(['error' => 'اليوم أو رقم الحصة خارج إعدادات المدرسة'], 422);
-            }
-            $start = $slot['starts_at'];
-            $end = $slot['ends_at'];
-            if ((!empty($data['starts_at']) && $data['starts_at'] !== $start)
-                || (!empty($data['ends_at']) && $data['ends_at'] !== $end)) {
-                return response()->json(['error' => 'وقت الحصة لا يوافق إعدادات المدرسة'], 422);
-            }
-            $data['starts_at'] = $start;
-            $data['ends_at'] = $end;
-        }
-
         return DB::transaction(function () use ($org, $school, $data) {
             // Serialize Jabalia timetable writers at the organization level.
             // A school-only lock cannot prevent two schools from concurrently
@@ -94,6 +72,31 @@ class InstitutionTimetableController extends Controller
                 DB::table('organizations')->where('id', $org->id)->lockForUpdate()->first();
                 DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             }
+            // Timetable settings updates lock the school row. Read settings only
+            // after taking that lock, so a concurrent update cannot invalidate
+            // the slot between validation and timetable insertion.
+    // Jabalia's association-confirmed standard week, with a five-period day.
+    // These rules are the initial defaults; configurable institution settings follow.
+    $org = $request->attributes->get('organization');
+    if (($org->slug ?? null) === 'jabalia') {
+        $settings = JabaliaTimetableSettingsController::forSchool($school);
+        // ISO weekdays: Sunday=7, Monday=1, ..., Thursday=4.
+        $weekday = (int) $data['weekday'];
+        $period = (int) $data['period_number'];
+        $slot = $settings['periods'][$period - 1] ?? null;
+        if (!in_array($weekday, $settings['weekdays'], true) || !$slot) {
+            return response()->json(['error' => 'اليوم أو رقم الحصة خارج إعدادات المدرسة'], 422);
+        }
+        $start = $slot['starts_at'];
+        $end = $slot['ends_at'];
+        if ((!empty($data['starts_at']) && $data['starts_at'] !== $start)
+            || (!empty($data['ends_at']) && $data['ends_at'] !== $end)) {
+            return response()->json(['error' => 'وقت الحصة لا يوافق إعدادات المدرسة'], 422);
+        }
+        $data['starts_at'] = $start;
+        $data['ends_at'] = $end;
+    }
+
             // Check the assignment only after acquiring the organization lock.
             // Teacher transfers take the same lock before removing assignments;
             // checking earlier could admit a stale teacher into the timetable.
