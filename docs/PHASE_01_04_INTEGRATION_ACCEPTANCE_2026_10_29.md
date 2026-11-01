@@ -6,7 +6,7 @@ Status: NOT VERIFIED. This checklist is not a claim that CI or staging tests pas
 - Laravel Feature tests: 374 passed on isolated SQLite and the four PostgreSQL-only tests passed on disposable PostgreSQL 17; 378 distinct tests, 1,777 combined assertions. See [verification evidence](VERIFICATION_EVIDENCE_2026_11_01.md).
 - Postdeploy read-only smoke: all 11 checks passed (0 failures).
 - **A01–A19 remain NOT RUN.** Unit/Feature test success and health checks do not establish end-to-end acceptance.
-- React test entry point is `edubridge-web/package.json`: `npm test`; also `npm run lint` and `npm run build`. No React test result is recorded yet.
+- React local tests: **75/75 PASS**; Vite build successful; oxlint **0 errors, 50 warnings**. See [verification evidence](VERIFICATION_EVIDENCE_2026_11_01.md). These do not constitute A01–A19 acceptance.
 
 ## Prerequisites
 - Record exact SHA, staging environment, operator, CI links, Flutter logs and Laravel feature test logs.
