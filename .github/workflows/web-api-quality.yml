@@ -364,6 +364,18 @@ jobs:
           SESSION_DRIVER: file
           JWT_SECRET: ci-test-jwt-secret
         run: php artisan test --filter=FreshPostgresMigrationTest
+      - name: Verify Jabalia organization lock contention on two PostgreSQL connections
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: edubridge_test
+          DB_USERNAME: edubridge
+          DB_PASSWORD: edubridge-ci-password
+          SESSION_DRIVER: file
+          JWT_SECRET: ci-test-jwt-secret
+        run: php artisan test --filter=JabaliaPostgresOrganizationLockTest
 
   api-runtime-smoke:
     name: Production API container
