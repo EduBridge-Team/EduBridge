@@ -99,9 +99,11 @@ class InstitutionTimetableController extends Controller
         }
 
         return DB::transaction(function () use ($org, $school, $data) {
-            // Serialize requests to this school's schedule, including quota and conflict checks.
-            // This prevents simultaneous writers from accepting the same free slot.
+            // Serialize Jabalia timetable writers at the organization level.
+            // A school-only lock cannot prevent two schools from concurrently
+            // booking the same teacher into the same weekday and period.
             if (($org->slug ?? null) === 'jabalia') {
+                DB::table('organizations')->where('id', $org->id)->lockForUpdate()->first();
                 DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             }
             if (($org->slug ?? null) === 'jabalia' && \Illuminate\Support\Facades\Schema::hasTable('jabalia_section_subject_quotas')) {
