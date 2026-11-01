@@ -132,6 +132,20 @@ class InstitutionTimetableController extends Controller
                 })
                 ->first();
 
+            // A teacher may serve multiple Jabalia schools, but cannot teach
+            // simultaneous periods in two schools of the same institution.
+            if (!$conflict && ($org->slug ?? null) === 'jabalia' && !empty($data['teacher_id'])) {
+                $conflict = DB::table('timetable_entries as other')
+                    ->join('schools as other_school', 'other_school.id', '=', 'other.school_id')
+                    ->where('other_school.organization_id', $org->id)
+                    ->where('other.school_id', '!=', $school)
+                    ->where('other.weekday', $data['weekday'])
+                    ->where('other.period_number', $data['period_number'])
+                    ->where('other.teacher_id', $data['teacher_id'])
+                    ->select('other.id')
+                    ->first();
+            }
+
             if ($conflict) {
                 return response()->json([
                     'error' => 'يوجد تعارض في الجدول لهذه الحصة',
