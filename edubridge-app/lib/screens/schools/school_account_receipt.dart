@@ -18,12 +18,16 @@ class SchoolAccountReceipt extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(account.invitationPending ? (arabic ? 'تم إنشاء المدرسة ودعوة المدير؛ التكليف بانتظار القبول.' : 'School created and director invited; appointment awaits acceptance.') : l.schoolAccountSuccess, key: const ValueKey('school-account-success')),
+          Text(l.schoolAccountSuccess, key: const ValueKey('school-account-success')),
           const SizedBox(height: 12),
           Text(
-            account.invitationPending ? (arabic ? 'على المدعو التسجيل بنفس البريد وتأكيد البريد والهوية ثم فتح رابط الدعوة.' : 'The invitee must register with the same email, verify email and identity, then open the invitation link.') : arabic
-                ? 'تم تكليف المدير بحسابه الشخصي الموثّق. يدخل المدير ببريده وكلمة مرور حسابه الحاليين.'
-                : 'The director is assigned through their verified personal account. Sign in with the existing personal email and password.',
+            account.verificationEmailSent
+              ? (arabic
+                  ? 'أرسلنا رسالة التحقق إلى بريد المدرسة. بعد تأكيد البريد، يمكن تسجيل الدخول ببريد المدرسة وكلمة المرور التي تم تحديدها. يمكن تعيين المدير لاحقًا.'
+                  : 'A verification link was sent to the school mailbox. Verify the email, then sign in with the school email and chosen password. A director can be appointed later.')
+              : (arabic
+                  ? 'تم إنشاء الحساب، لكن لم نتمكن من إرسال رسالة التحقق. أعد إرسال التأكيد من صفحة تسجيل الدخول.'
+                  : 'Account created, but we could not send the verification email. Resend verification from the login page.'),
             key: const ValueKey('school-account-verification-guidance'),
           ),
           const SizedBox(height: 16),
