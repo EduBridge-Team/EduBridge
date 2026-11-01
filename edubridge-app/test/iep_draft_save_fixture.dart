@@ -31,6 +31,8 @@ class IepDraftSaveFixture {
   List<int> evaluationIds = [11];
   Map<String, dynamic> plan = newSavedPlan();
   Map<String, dynamic>? optionsOverride;
+  final existingPlans = <Map<String, dynamic>>[];
+  void Function(List<Map<String, dynamic>>)? changeHistory;
   void Function(Map<String, dynamic>)? changeReceipt;
   Completer<void>? pendingPost;
   final paths = <String>[], posts = <Map<String, dynamic>>[];
@@ -42,9 +44,13 @@ class IepDraftSaveFixture {
       if (path.endsWith('iep-draft-options')) return http.Response(jsonEncode(optionsOverride ?? {
         'child_id': 8, 'can_create_draft': canCreate, 'evaluation_ids': evaluationIds,
       }), optionsStatus, headers: iepSaveHeaders);
-      if (path == '/children/8/iep-plans') return http.Response(jsonEncode({
-        'child_id': 8, 'plans': ((saved && !failConfirmation) || duplicateId) ? [plan] : <Object>[],
-      }), 200, headers: iepSaveHeaders);
+      if (path == '/children/8/iep-plans') {
+        final plans = [...existingPlans,
+          if ((saved && !failConfirmation) || duplicateId) plan];
+        if (saved) changeHistory?.call(plans);
+        return http.Response(jsonEncode({'child_id': 8, 'plans': plans}),
+          200, headers: iepSaveHeaders);
+      }
       throw StateError('Unexpected GET $path');
     },
     post: (path, body) async {

@@ -48,14 +48,38 @@ Additional evaluation fixes in this batch:
 | Enrollment history | Reconcile organization ownership/history after transfer. |
 | Director profile documents | Only appointment APIs exist; legacy personal-profile/evidence APIs are not implemented. |
 
-## Batches 2 and 3 remain open
+## Batch 2: IEP, class lessons and progress integrity
 
-2. Education, IEP, class lessons and progress: reuse existing Flutter implementations
-   and regression tests, fix client defects found, and verify APIs against source.
-   IEP draft/options/review/evidence and class assignment/result contracts require
-   server implementation and cross-role acceptance. See
-   `PHASES_05_08_BACKEND_HANDOFF_2026_10_31.md` and the IEP/class contract documents.
-3. Operations, statistics, notifications and final integration: address client
+Implemented on the Flutter side:
+- Saved-draft preflight compares complete prior version content, goals and audit
+  history, even when a server erroneously reuses a revision token.
+- PATCH confirmation preserves prior versions, the approved reference and draft
+  audit identity. Matching receipt/readback cannot conceal rewritten history.
+  Authored fields and replacement draft goal IDs remain editable.
+- Creating a new plan confirms that every prior plan remains unchanged and that
+  the new plan's receipt and readback match, including goal IDs and audit fields.
+- Invalid timestamp hours, minutes, seconds and offsets cannot be silently
+  normalized into apparently valid audit dates.
+- Class-result inputs accept Arabic/Persian digits and the Arabic decimal
+  separator using the existing decimal parser. Zero remains distinct from an
+  omitted value; score and goal measurement remain independent.
+
+Regression coverage includes unchanged revisions with altered approved content,
+corrupt-but-matching receipt/readback, legitimate draft edits, preserved old plans,
+invalid audit times, localized decimal submission and Arabic/English result UI
+at widths 320/720/1280 with large text.
+
+**Integration boundary:** routes were checked against the current repository's
+Laravel route sources. The proposed IEP draft/options/update/review/evidence and
+class assignment/result endpoints are still absent. Existing capability checks
+keep writes disabled on unavailable APIs; no production fixtures or fake success
+were added. This batch supplies Flutter implementation and a Backend handoff,
+not a claim of deployed persistence or live cross-role acceptance. See
+`PHASES_05_08_BACKEND_HANDOFF_2026_10_31.md` and the IEP/class contract documents.
+
+## Batch 3 remains open
+
+Operations, statistics, notifications and final integration: address client
    errors without presenting failed loads as empty data; complete relevant
    regression checks and device/live acceptance. Do not declare all phases done
    from one green PR.

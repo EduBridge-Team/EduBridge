@@ -31,6 +31,11 @@ requires a linked goal and service-supplied unit. It is independent of the lesso
 score. With a linked goal, the observation is qualitative goal evidence even when
 there is no numeric measurement. No goal means no goal evidence at all.
 
+Flutter input accepts Latin, Arabic-Indic and Persian digits and an Arabic decimal
+separator. The API receives JSON numbers, never localized numeric strings. Empty
+input remains null. Malformed decimals, nonfinite values and negative result
+measurements cannot enable recording; numeric input does not change authored text.
+
 Server must atomically authorize teacher/current section/year/student membership,
 assignment/lesson ownership, current approved goal link and unit, allowed action,
 and revision at commit. Roster/goal/capability changes conflict without any write.

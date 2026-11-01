@@ -6,6 +6,11 @@ ministry approval changes are included. The existing preparation editor remains
 usable when this write service is unavailable; its values are not persisted
 locally. Editing existing server versions and submission/review are later phases.
 
+Confirmation integrity (2026-11-01): the history read after creation must preserve
+every pre-existing plan in full. Deleted, extra or modified plans make the result
+uncertain. The newly created plan must match its receipt including goal IDs and
+audit fields, not only authored text. No automatic POST retry is introduced.
+
 ## Authorization and explicit entry
 
 The checked editor snapshot opens a separate branded save screen. Opening,

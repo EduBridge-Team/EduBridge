@@ -1,5 +1,5 @@
-import 'dart:convert';
 import '../../model/iep/iep_plan_history.dart';
+import '../../model/iep/iep_snapshot.dart';
 import '../../model/iep/iep_review.dart';
 import '../../model/iep/iep_version.dart';
 import '../enrollment/enrollment_api_client.dart';
@@ -76,7 +76,7 @@ class IepReviewRepository implements IepReviewGateway {
       };
       if (plan.id != source.plan.id || plan.childId != source.plan.childId || plan.closed ||
           plan.title != source.plan.title || version.status != status ||
-          jsonEncode(iepReviewContent(version)) != jsonEncode(iepReviewContent(source.version)) ||
+          iepSnapshotFingerprint(iepReviewContent(version)) != iepSnapshotFingerprint(iepReviewContent(source.version)) ||
           source.version.comments.any((before) => !version.comments.any((after) =>
             before.id == after.id && before.text == after.text && before.author == after.author &&
             before.createdAt == after.createdAt)) ||
