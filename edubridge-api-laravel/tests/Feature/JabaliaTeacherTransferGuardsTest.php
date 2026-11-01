@@ -80,6 +80,17 @@ class JabaliaTeacherTransferGuardsTest extends TestCase
         $this->assertSame(0,DB::table('jabalia_teacher_school_transfers')->count());
     }
 
+    public function test_transfer_rejects_orphaned_scheduled_lesson_without_active_assignment(): void
+    {
+        DB::table('teacher_assignments')->delete();
+        DB::table('timetable_entries')->insert([
+            'school_id'=>1,'section_id'=>1,'subject_id'=>1,'teacher_id'=>10,
+        ]);
+        $this->assertSame(409,$this->transfer()->getStatusCode());
+        $this->assertSame(0,DB::table('jabalia_teacher_school_transfers')->count());
+        $this->assertSame(1,DB::table('timetable_entries')->count());
+    }
+
     public function test_transfer_closes_assignments_after_lessons_are_removed(): void
     {
         $this->assertSame(201,$this->transfer()->getStatusCode());
