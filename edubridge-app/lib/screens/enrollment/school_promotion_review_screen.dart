@@ -243,12 +243,15 @@ class _SchoolPromotionReviewScreenState extends State<SchoolPromotionReviewScree
                       DropdownButtonFormField<int>(
                         key: ValueKey('promotion-destination-${student.enrollmentId}-${_choices[student.enrollmentId]!.outcome.name}'),
                         initialValue: _choices[student.enrollmentId]!.targetSectionId,
+                        isExpanded: true,
                         decoration: InputDecoration(labelText: tr('الشعبة الجديدة', 'Target section')),
                         items: [
                           for (final section in roster.sections.where((section) =>
                             _choices[student.enrollmentId]!.outcome == PromotionOutcome.repeating
                               ? section.gradeId == student.gradeId
-                              : section.gradeId != student.gradeId))
+                              : section.gradeId != student.gradeId &&
+                                student.gradePosition != null &&
+                                section.gradePosition == student.gradePosition! + 1))
                             DropdownMenuItem(value: section.id, child: Text(section.name)),
                         ],
                         onChanged: (id) => _destination(student, id),

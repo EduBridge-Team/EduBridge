@@ -4,19 +4,30 @@ import '../../l10n/l10n.dart';
 import '../../services/schools/school_director_repository.dart';
 import '../../theme.dart';
 import 'director_directory_view.dart';
+import 'school_director_appointment_screen.dart';
 import 'director_failure_message.dart';
 import 'director_profile_form.dart';
 import 'school_directors_controller.dart';
 
-class SchoolDirectorsScreen extends StatefulWidget {
+class SchoolDirectorsScreen extends StatelessWidget {
   const SchoolDirectorsScreen({super.key, this.gateway});
   final SchoolDirectorGateway? gateway;
 
   @override
-  State<SchoolDirectorsScreen> createState() => _SchoolDirectorsScreenState();
+  Widget build(BuildContext context) => gateway == null
+      ? const SchoolDirectorAppointmentScreen()
+      : _LegacySchoolDirectorsScreen(gateway: gateway);
 }
 
-class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen>
+class _LegacySchoolDirectorsScreen extends StatefulWidget {
+  const _LegacySchoolDirectorsScreen({this.gateway});
+  final SchoolDirectorGateway? gateway;
+
+  @override
+  State<_LegacySchoolDirectorsScreen> createState() => _SchoolDirectorsScreenState();
+}
+
+class _SchoolDirectorsScreenState extends State<_LegacySchoolDirectorsScreen>
     with WidgetsBindingObserver {
   late SchoolDirectorsController _controller;
 
@@ -35,7 +46,7 @@ class _SchoolDirectorsScreenState extends State<SchoolDirectorsScreen>
   }
 
   @override
-  void didUpdateWidget(covariant SchoolDirectorsScreen oldWidget) {
+  void didUpdateWidget(covariant _LegacySchoolDirectorsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.gateway != oldWidget.gateway) {
       _controller.dispose();

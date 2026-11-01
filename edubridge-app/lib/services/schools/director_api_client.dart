@@ -65,8 +65,9 @@ class DirectorApiClient {
   ) => _send(() => _upload(path, fields, files), 201, mutation: true);
 
   Future<Map<String, dynamic>> get(String path) => _send(() => _get(path), 200);
-  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> data) =>
-      _send(() => _post(path, data), 201, mutation: true);
+  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> data,
+      {int expectedStatus = 201}) =>
+      _send(() => _post(path, data), expectedStatus, mutation: true);
   Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> data) =>
       _send(() => _patch(path, data), 200, mutation: true);
 

@@ -27,7 +27,7 @@ class SchoolPromotionReceipt {
     final repeating = count('repeating');
     final transferred = count('transferred');
     if (enrollmentId(value['school_id']) != schoolId ||
-        operationId.isEmpty || source <= 0 || target <= source ||
+        operationId.isEmpty || source <= 0 || target <= 0 || target == source ||
         !['completed', 'pending', 'failed'].contains(status) ||
         promoted < 0 || repeating < 0 || transferred < 0) {
       throw const FormatException('Invalid school promotion receipt');
