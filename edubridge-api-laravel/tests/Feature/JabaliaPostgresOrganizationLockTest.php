@@ -120,7 +120,7 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
                 if ($second->inTransaction()) $second->rollBack();
             }
             DB::commit();
-        } catch (\\Throwable $exception) {
+        } catch (\Throwable $exception) {
             if (DB::transactionLevel() > 0) DB::rollBack();
             throw $exception;
         }
