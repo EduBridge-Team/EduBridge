@@ -2,6 +2,12 @@
 
 Status: NOT VERIFIED. This checklist is not a claim that CI or staging tests passed. Use synthetic records in isolated nonproduction only.
 
+## Verification update (2026-11-01)
+- Laravel Feature tests: 374 passed on isolated SQLite and the four PostgreSQL-only tests passed on disposable PostgreSQL 17; 378 distinct tests, 1,777 combined assertions. See [verification evidence](VERIFICATION_EVIDENCE_2026_11_01.md).
+- Postdeploy read-only smoke: all 11 checks passed (0 failures).
+- **A01–A19 remain NOT RUN.** Unit/Feature test success and health checks do not establish end-to-end acceptance.
+- React test entry point is `edubridge-web/package.json`: `npm test`; also `npm run lint` and `npm run build`. No React test result is recorded yet.
+
 ## Prerequisites
 - Record exact SHA, staging environment, operator, CI links, Flutter logs and Laravel feature test logs.
 - Prepare two unrelated schools (affiliated and independent), two guardians and children, two directors, two academic years, and sections with capacity limits.
