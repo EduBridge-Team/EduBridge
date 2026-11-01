@@ -48,6 +48,7 @@ export default function InstitutionSchoolsPage() {
   const [detailsError, setDetailsError] = useState('')
   const [details, setDetails] = useState(null)
   const [showCreate, setShowCreate] = useState(false)
+  const [createdSchool, setCreatedSchool] = useState(null)
   const [search, setSearch] = useState('')
   const schoolsVersion = useRef(0)
   const detailsVersion = useRef(0)
@@ -130,7 +131,7 @@ export default function InstitutionSchoolsPage() {
           <div className="role-hero-copy">
             <span className="role-eyebrow"><School size={17} /> إدارة مدارس المؤسسة</span>
             <h1>{institution.settings?.display_name || institution.name}</h1>
-            <p>أنشئ المدرسة بحساب مدير شخصي موثّق، ثم راقب جاهزية الهيكل الأكاديمي والحضور والجدول والمناهج قبل بدء التجربة الميدانية.</p>
+            <p>أنشئ المدرسة ببريدها الإلكتروني وكلمة مرور مستقلة، ثم أكّد بريدها وعيّن مديرها لاحقًا من لوحة الإدارة.</p>
             <div className="role-hero-actions">
               <button className="btn" onClick={() => setShowCreate((value) => !value)}><Plus size={17} /> إضافة مدرسة</button>
               <button className="btn outline" onClick={() => { loadSchools(); loadDetails() }} disabled={loading || detailsLoading}><RefreshCw size={17} /> تحديث</button>
@@ -140,11 +141,14 @@ export default function InstitutionSchoolsPage() {
         </section>
 
         {error && <div className="state error">{error}</div>}
+        {createdSchool && <div className="state" role="status">{createdSchool.school.name} — {createdSchool.verification_email_sent ? "تم إنشاء حساب المدرسة. يجب تأكيد بريد المدرسة قبل الدخول." : "تم إنشاء حساب المدرسة، لكن رسالة التأكيد لم تُرسل. استخدم إعادة إرسال تأكيد البريد من صفحة الدخول."}</div>}
 
-        {showCreate && <SchoolProvisionForm key={slug} institutionSlug={slug} onCancel={() => setShowCreate(false)} onCreated={({ school }) => {
+        {showCreate && <SchoolProvisionForm key={slug} institutionSlug={slug} onCancel={() => setShowCreate(false)} onCreated={(data) => {
+          const { school } = data
           setSchools(current => [...current, school].sort((a, b) => a.name.localeCompare(b.name, 'ar')))
           setSelectedId(school.id)
           setSearch('')
+          setCreatedSchool(data)
           setShowCreate(false)
         }} />}
 
