@@ -282,6 +282,16 @@ class InstitutionAcademicController extends Controller
             if (!$current) {
                 return response()->json(['error' => 'التعيين غير موجود'], 404);
             }
+            if ($organization && $organization->slug === 'jabalia'
+                && DB::table('timetable_entries')
+                    ->where('school_id', $school)
+                    ->where('section_id', $current->section_id)
+                    ->where('subject_id', $current->subject_id)
+                    ->where('teacher_id', $current->teacher_id)->exists()) {
+                return response()->json([
+                    'error' => 'لا يمكن إلغاء تكليف المعلم قبل إزالة حصصه من الجدول',
+                ], 409);
+            }
             if ($organization && $organization->slug === 'jabalia') {
                 $open = DB::table('jabalia_teacher_assignment_history')
                     ->where('organization_id', $organization->id)->where('school_id', $school)
