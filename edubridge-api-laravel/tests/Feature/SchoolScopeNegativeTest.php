@@ -70,4 +70,18 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
         app(\App\Http\Controllers\SchoolOperationsController::class)->handle($request, 'years');
     }
 
+    public function test_school_operations_reject_incorrect_http_method(): void
+    {
+        $request = $this->requestFor(20, ['expected_school_id' => 10]);
+        $response = app(\App\Http\Controllers\SchoolOperationsController::class)->handle($request, 'student-status');
+        $this->assertSame(405, $response->getStatusCode());
+    }
+
+    public function test_school_operations_reject_unknown_action(): void
+    {
+        $request = $this->requestFor(20, ['expected_school_id' => 10]);
+        $response = app(\App\Http\Controllers\SchoolOperationsController::class)->handle($request, 'nonexistent-action');
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
 }
