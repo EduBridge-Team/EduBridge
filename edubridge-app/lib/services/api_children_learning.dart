@@ -153,16 +153,14 @@ Future<Map<String, dynamic>?> _apiEvaluateChild({
 }
 
 Future<List<dynamic>> _apiGetChildEvaluations(int childId) async {
-  try {
-    final res = await ApiService.authGet('/evaluations/child/$childId');
-    final data = ApiService._decodeBody(res);
-    if (res.statusCode == 200) {
-      return data['evaluations'] ?? [];
-    }
-    return [];
-  } catch (e) {
-    return [];
-  }
+  if (childId < 1) throw ArgumentError.value(childId, 'childId');
+  final res = await ApiService.authGet('/evaluations/child/$childId');
+  if (res.statusCode != 200) throw Exception('Failed to load evaluations');
+  final data = ApiService._decodeBody(res);
+  final history = EvaluationHistory.fromJson(childId, data);
+  final byId = {for (final value in data['evaluations'] as List)
+    (value as Map<String, dynamic>)['id']: value};
+  return [for (final record in history.records) byId[record.id]!];
 }
 
 Future<Map<String, dynamic>?> _apiAssignTeacherToChild(

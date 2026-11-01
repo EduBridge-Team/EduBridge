@@ -12,10 +12,10 @@ PromotionDraft draft() {
     'complete': true, 'revision': 'rev-1',
     'students': [
       {'enrollment_id': 101, 'child_id': 201, 'child_name': 'Sara',
-        'source_grade_id': 20, 'source_section_id': 30},
+        'source_grade_id': 20, 'source_grade_position': 2, 'source_section_id': 30},
     ],
     'target_sections': [
-      {'id': 31, 'grade_id': 21, 'name': 'Third A',
+      {'id': 31, 'grade_id': 21, 'grade_position': 3, 'name': 'Third A',
         'capacity': 10, 'occupied': 0},
     ],
   }, schoolId: 5, sourceYearId: 10, targetYearId: 11);
@@ -37,6 +37,14 @@ Map<String, dynamic> receiptJson({int schoolId = 5, String status = 'completed'}
 };
 
 void main() {
+  test('receipt year IDs need to differ but need not be chronological', () {
+    final value = {...receiptJson(), 'source_year_id': 11, 'target_year_id': 3};
+    expect(SchoolPromotionReceipt.fromJson(value, schoolId: 5).targetYearId, 3);
+    expect(() => SchoolPromotionReceipt.fromJson(
+      {...value, 'target_year_id': 11}, schoolId: 5), throwsFormatException);
+    expect(() => SchoolPromotionReceipt.fromJson(
+      {...value, 'target_year_id': 0}, schoolId: 5), throwsFormatException);
+  });
   test('server preview checks school, years and revision', () {
     expect(SchoolPromotionServerPreview.fromJson(previewJson(), draft()).ready, isTrue);
     expect(() => SchoolPromotionServerPreview.fromJson(previewJson(schoolId: 8),

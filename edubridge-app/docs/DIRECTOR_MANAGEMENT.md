@@ -1,5 +1,11 @@
 # Director management lifecycle — roadmap phase 02
 
+Production entry update (2026-11-01): the default `SchoolDirectorsScreen` now
+opens existing verified personal-account appointments using the implemented
+GET/POST `/admin/schools/{school}/director` endpoints. The profile directory
+described below is retained only for explicitly injected legacy gateways; it is
+not the default production workflow. See `FLUTTER_FAST_TRACK_2026_11_01.md`.
+
 The directory replaces and disposes its controller when its gateway changes.
 The replacement starts from the authorized school list; it does not retain a
 school, director list, success message or selection from the previous source.

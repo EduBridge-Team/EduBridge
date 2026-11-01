@@ -18,10 +18,10 @@ void main() {
           'complete': true, 'revision': 'rev1',
           'students': [
             {'enrollment_id': 101, 'child_id': 201, 'child_name': 'Sara',
-              'source_grade_id': 20, 'source_section_id': 30},
+              'source_grade_id': 20, 'source_grade_position': 2, 'source_section_id': 30},
           ],
           'target_sections': [
-            {'id': 31, 'grade_id': 21, 'name': 'Third A', 'capacity': 20, 'occupied': 1},
+            {'id': 31, 'grade_id': 21, 'grade_position': 3, 'name': 'Third A', 'capacity': 20, 'occupied': 1},
           ],
         }), 200);
       },
