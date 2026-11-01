@@ -80,6 +80,7 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
         ]);
         $yearId = DB::table('academic_years')->insertGetId([
             'school_id' => $schoolId, 'name' => '2026/27',
+            'starts_on' => '2026-09-01', 'ends_on' => '2027-06-30',
         ]);
         $gradeId = DB::table('grades')->insertGetId([
             'school_id' => $schoolId, 'name' => 'Grade 2',
