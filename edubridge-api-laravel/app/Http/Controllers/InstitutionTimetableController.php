@@ -64,6 +64,8 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
+        $org = $request->attributes->get('organization');
+
         return DB::transaction(function () use ($org, $school, $data) {
             // Serialize Jabalia timetable writers at the organization level.
             // A school-only lock cannot prevent two schools from concurrently
