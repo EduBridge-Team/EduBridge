@@ -59,8 +59,8 @@ class SchoolScopeNegativeTest extends SchoolDeputyManagementTest
     public function test_school_operations_reject_foreign_expected_school_id(): void
     {
         $request = $this->requestFor(20, ['expected_school_id' => 11]);
-        $response = app(\App\Http\Controllers\SchoolOperationsController::class)->handle($request, 'years');
-        $this->assertSame(422, $response->getStatusCode());
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        app(\App\Http\Controllers\SchoolOperationsController::class)->handle($request, 'years');
     }
 
 }
