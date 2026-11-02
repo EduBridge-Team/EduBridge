@@ -258,4 +258,39 @@ void main() {
       failsWith(SchoolAccountFailure.uncertain),
     );
   });
+  test('personal director invitation is separate from official school email', () async {
+    const withDirector = SchoolAccountRequest(
+      name: 'School',
+      email: ' School@example.org ',
+      directorEmail: ' DIRECTOR@example.org ',
+      inviteDirector: true,
+      password: 'not-sent',
+    );
+    expect(withDirector.toJson(), {
+      'name': 'School',
+      'email': 'school@example.org',
+      'director_email': 'director@example.org',
+      'invite_director': true,
+    });
+    final repository = SchoolAccountRepository(
+      post: (_, body) async {
+        expect(body['email'], 'school@example.org');
+        expect(body['director_email'], 'director@example.org');
+        expect(body.containsKey('password'), isFalse);
+        return response({
+          ...result(),
+          'invitation': {
+            'id': 31,
+            'email': 'director@example.org',
+            'expires_at': '2026-11-09T12:00:00Z',
+          },
+        });
+      },
+    );
+    final account = await repository.createIndependent(withDirector);
+    expect(account.email, 'school@example.org');
+    expect(account.activationPending, isTrue);
+    expect(account.invitationPending, isTrue);
+  });
+
 }
