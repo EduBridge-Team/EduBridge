@@ -46,7 +46,9 @@ class SchoolDirectorAppointmentController extends Controller
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 422);
         }
-        $email = mb_strtolower(trim($validation->validated()['director_email']));
+        // Existing accounts must not be promoted into school directors.
+        // Use the dedicated invite-and-activate flow for a new email instead.
+        return response()->json(['error' => 'Use a new email and invite a dedicated director'], 422);
 
         return DB::transaction(function () use ($actor, $school, $email) {
             $schoolRecord = DB::table('schools')->where('id', $school)
