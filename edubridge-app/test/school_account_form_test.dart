@@ -26,7 +26,7 @@ final submit = find.byKey(const ValueKey('school-account-submit'));
 Future<void> fill(WidgetTester tester) async {
   for (final entry in {
     'name': 'School',
-    'director_email': 'school@example.org',
+    'school_email': 'school@example.org',
   }.entries) {
     await tester.ensureVisible(field(entry.key));
     await tester.enterText(field(entry.key), entry.value);
@@ -39,8 +39,8 @@ Future<void> fill(WidgetTester tester) async {
 
 http.Response created({int? organizationId}) => http.Response(
   jsonEncode({
-    'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-    'director': {'id': 50, 'email': 'school@example.org'},
+    'school': {'id': 10, 'name': 'School', 'organization_id': organizationId, 'email': 'school@example.org', 'activation_status': 'pending'},
+    'account': {'id': 50, 'email': 'school@example.org', 'role': 'school_identity'},
   }),
   201,
 );
@@ -183,7 +183,7 @@ void main() {
       expect(posts, 1);
       pending.complete(created());
       await tester.pumpAndSettle();
-      expect(find.text('School created and director assigned successfully.'), findsOneWidget);
+      expect(find.text('School created. Activation link sent to the official school mailbox.'), findsOneWidget);
       expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget);
       expect(submit, findsNothing);
     },
