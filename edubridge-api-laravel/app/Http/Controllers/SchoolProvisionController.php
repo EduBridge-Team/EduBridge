@@ -43,6 +43,8 @@ class SchoolProvisionController extends Controller
             return $this->createWithOfficialEmail($request, $organizationId);
         }
 
+        // Legacy director assignment via existing users is no longer permitted.
+        return response()->json(['error' => 'Use official_email and invite a dedicated director'], 422);
         // Compatibility path for existing clients. New clients use official_email.
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:150'],
@@ -146,6 +148,9 @@ class SchoolProvisionController extends Controller
         $directorEmail = isset($data['director_email'])
             ? mb_strtolower(trim($data['director_email'])) : '';
         $invite = (bool) ($data['invite_director'] ?? false);
+        if ($directorEmail !== '' && !$invite) {
+            return response()->json(['error' => 'Existing-user director assignment disabled. Send an invitation to a new email.'], 422);
+        }
         if ($name === '' || str_ends_with($email, '.edubridge')
             || ($directorEmail !== '' && (str_ends_with($directorEmail, '.edubridge') || $directorEmail === $email))
             || ($invite && $directorEmail === '')) {
