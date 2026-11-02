@@ -51,6 +51,7 @@ class SchoolAccount {
   factory SchoolAccount.fromJson(Map<String, dynamic> json) {
     final school = json['school'];
     final account = json['director'];
+    final invitation = json['invitation'];
     final officialEmail = school is Map<String, dynamic> ? school['official_email'] : null;
     if (school is Map<String, dynamic> && school['id'] is int && (school['id'] as int) > 0 &&
         school['name'] is String && school.containsKey('organization_id') &&
@@ -62,7 +63,6 @@ class SchoolAccount {
         organizationId: school['organization_id'] as int?,
         invitationPending: invitation is Map<String,dynamic>);
     }
-    final invitation = json['invitation'];
     if (school is Map<String,dynamic> && invitation is Map<String,dynamic> &&
         school['id'] is int && (school['id'] as int)>0 && school['name'] is String &&
         (school['name'] as String).trim().isNotEmpty && invitation['id'] is int && (invitation['id'] as int)>0 &&
