@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:edubridge_app/l10n/generated/app_localizations.dart';
-import 'package:edubridge_app/screens/schools/school_account_form.dart';
+import 'package:edubridge_app/screens/schools/school_account_form.dart' show SchoolAccountForm, SchoolAccountScope;
 import 'package:edubridge_app/services/schools/school_account_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,8 +36,7 @@ void main() {
           await fill(tester);
           await tester.tap(submit);
           await tester.pumpAndSettle();
-          final l = await AppLocalizations.delegate.load(Locale(language));
-          expect(find.text(l.schoolAccountSuccess), findsOneWidget);
+          expect(find.text(language == 'en' ? 'School created. Official account setup awaits email verification and password setup.' : 'تم إنشاء المدرسة. الحساب الرسمي ينتظر التحقق من البريد وتعيين كلمة المرور.'), findsOneWidget);
           expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget,
             reason: 'The receipt explains how the existing director signs in');
           expect(find.byKey(const ValueKey('school-account-created-email')), findsOneWidget);

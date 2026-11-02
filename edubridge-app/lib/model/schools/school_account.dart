@@ -6,11 +6,13 @@ class SchoolAccountRequest {
     this.password = '',
     this.passwordConfirmation = '',
     this.inviteDirector = false,
+    this.directorEmail = '',
     this.phone = '',
     this.address = '',
   });
 
   final bool inviteDirector;
+  final String directorEmail;
   final String name;
   final String email;
   final String password;
@@ -20,7 +22,8 @@ class SchoolAccountRequest {
 
   Map<String, dynamic> toJson() => {
     'name': name.trim(),
-    'director_email': email.trim().toLowerCase(),
+    'official_email': email.trim().toLowerCase(),
+    if (directorEmail.trim().isNotEmpty) 'director_email': directorEmail.trim().toLowerCase(),
     if (inviteDirector) 'invite_director': true,
     if (phone.trim().isNotEmpty) 'phone': phone.trim(),
     if (address.trim().isNotEmpty) 'address': address.trim(),
@@ -49,6 +52,17 @@ class SchoolAccount {
     final school = json['school'];
     final account = json['director'];
     final invitation = json['invitation'];
+    final officialEmail = school is Map<String, dynamic> ? school['official_email'] : null;
+    if (school is Map<String, dynamic> && school['id'] is int && (school['id'] as int) > 0 &&
+        school['name'] is String && school.containsKey('organization_id') &&
+        (school['organization_id'] == null || school['organization_id'] is int) &&
+        officialEmail is String && officialEmail.isNotEmpty &&
+        json['account_setup'] is Map<String, dynamic>) {
+      return SchoolAccount(schoolId: school['id'] as int, accountId: account is Map<String,dynamic> ? account['id'] as int? : null,
+        name: school['name'] as String, email: officialEmail,
+        organizationId: school['organization_id'] as int?,
+        invitationPending: invitation is Map<String,dynamic>);
+    }
     if (school is Map<String,dynamic> && invitation is Map<String,dynamic> &&
         school['id'] is int && (school['id'] as int)>0 && school['name'] is String &&
         (school['name'] as String).trim().isNotEmpty && invitation['id'] is int && (invitation['id'] as int)>0 &&

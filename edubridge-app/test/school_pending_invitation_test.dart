@@ -9,8 +9,8 @@ void main() {
     expect(account.invitationPending,isTrue);
     expect(account.accountId,isNull);
     expect(account.email,'director@example.org');
-    expect(const SchoolAccountRequest(name:'School',email:'Director@example.org',inviteDirector:true).toJson(),{
-      'name':'School','director_email':'director@example.org','invite_director':true,
+    expect(const SchoolAccountRequest(name:'School',email:'school@example.org',directorEmail:'Director@example.org',inviteDirector:true).toJson(),{
+      'name':'School','official_email':'school@example.org','director_email':'director@example.org','invite_director':true,
     });
   });
   test('malformed invitation cannot be shown as a successful creation', () {

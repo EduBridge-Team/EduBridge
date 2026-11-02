@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useSchoolLanguage } from '../School/useSchoolLanguage'
 import { provisionSchool } from '../../api/schools'
 
-const EMPTY = { name: '', director_email: '', phone: '', address: '', invite_director: false }
+const EMPTY = { name: '', official_email: '', director_email: '', phone: '', address: '', invite_director: false }
 
 export default function SchoolProvisionForm({ institutionSlug, onCreated, onCancel }) {
   const { t, dir, toggle } = useSchoolLanguage()
@@ -15,15 +15,16 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
   async function submit(event) {
     event.preventDefault()
     if (pending.current) return
-    if (!form.name.trim() || !form.director_email.trim() || form.director_email.trim().toLowerCase().endsWith('.edubridge')) {
-      setError('أدخل اسم المدرسة والبريد الشخصي الحقيقي للمدير.')
+    if (!form.name.trim() || !form.official_email.trim() || (form.director_email.trim() && (form.director_email.trim().toLowerCase().endsWith('.edubridge') || form.director_email.trim().toLowerCase() === form.official_email.trim().toLowerCase())) || (form.invite_director && !form.director_email.trim())) {
+      setError('أدخل اسم المدرسة وبريدها الرسمي. البريد الشخصي للمدير اختياري ويجب أن يختلف عن بريد المدرسة.')
       return
     }
     pending.current = true
     setSaving(true); setError(''); setReceipt(null)
     try {
       const payload = {
-        name: form.name.trim(), director_email: form.director_email.trim().toLowerCase(),
+        name: form.name.trim(), official_email: form.official_email.trim().toLowerCase(),
+        ...(form.director_email.trim() ? { director_email: form.director_email.trim().toLowerCase() } : {}),
         ...(form.invite_director ? { invite_director: true } : {}),
         ...(form.phone.trim() ? { phone: form.phone.trim() } : {}),
         ...(form.address.trim() ? { address: form.address.trim() } : {}),
@@ -37,6 +38,8 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
         'Existing verified director account required': 'يجب أن يملك المدير حسابًا شخصيًا قائمًا وموثّقًا مع تأكيد بريده الإلكتروني.',
         'Director already has an active school assignment': 'المدير مكلّف بمدرسة أخرى حاليًا. راجع التكليف قبل إنشاء المدرسة.',
         'Director must use a personal email': 'استخدم البريد الشخصي للمدير.',
+        'School email already in use': 'البريد الرسمي مستخدم مسبقًا.',
+        'Invalid school/director email': 'تحقق من بريدي المدرسة والمدير.',
       }
       setError(messages[err.message] || err.message)
     } finally {
@@ -46,15 +49,16 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
 
   return <section className="institution-panel" dir={dir}>
     <button className="btn outline" type="button" onClick={toggle}>العربية / English</button>
-    <h2>{institutionSlug ? t('إنشاء مدرسة تابعة وتكليف مديرها', 'Create institution school') : t('إنشاء مدرسة مستقلة وتكليف مديرها', 'Create independent school')}</h2>
-    <p>{t('عيّن مديرًا بحسابه الشخصي الموثّق، أو أرسل دعوة لمدير جديد. يستخدم المدير كلمة مرور حسابه الشخصي.', 'Appoint a verified personal account or invite a new director. The director uses their personal password.')}</p>
+    <h2>{institutionSlug ? t('إنشاء مدرسة تابعة', 'Create institution school') : t('إنشاء مدرسة مستقلة', 'Create independent school')}</h2>
+    <p>{t('استخدم البريد الرسمي للمدرسة. يمكن تعيين المدير لاحقًا، ويُعد الحساب الرسمي بانتظار التفعيل حتى تأكيد البريد وتعيين كلمة المرور.', 'Use the school official email. A director can be appointed later; account setup requires email verification and a password.')}</p>
     {error && <div className="state error" role="alert">{error}</div>}
-    {receipt && <p role="status">{receipt.school.name} — {receipt.invitation ? t('أُنشئت دعوة المدير؛ التكليف ينتظر القبول.', 'Director invitation created; appointment awaits acceptance.') : t('تم تكليف المدير.', 'Director appointed.')}</p>}
+    {receipt && <p role="status">{receipt.school.name} — {t('أُنشئت المدرسة. إعداد الحساب الرسمي ينتظر التفعيل.', 'School created. Official account setup awaits verification.')}</p>}
     <form className="institution-school-form" onSubmit={submit}>
       <fieldset disabled={saving} style={{ border: 0, padding: 0, margin: 0, display: 'contents' }}>
         <label>{t('اسم المدرسة', 'School name')}<input required maxLength={150} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
-        <label>{t('البريد الشخصي للمدير', 'Director personal email')}<input required type="email" dir="ltr" maxLength={190} autoComplete="off" value={form.director_email} onChange={e => setForm({ ...form, director_email: e.target.value })} /></label>
-        <label><input type="checkbox" checked={form.invite_director} onChange={event => setForm({ ...form, invite_director: event.target.checked })} />{t('دعوة مدير بدل التعيين المباشر؛ يلزمه التسجيل وتأكيد بريده والهوية قبل القبول.', 'Invite a director instead of direct appointment; registration and email/identity verification are required before acceptance.')}</label>
+        <label>{t('البريد الرسمي للمدرسة', 'School official email')}<input required type="email" dir="ltr" maxLength={190} autoComplete="off" value={form.official_email} onChange={e => setForm({ ...form, official_email: e.target.value })} /></label>
+        <label>{t('البريد الشخصي للمدير (اختياري)', 'Director personal email (optional)')}<input type="email" dir="ltr" maxLength={190} autoComplete="off" value={form.director_email} onChange={e => setForm({ ...form, director_email: e.target.value })} /></label>
+        <label><input type="checkbox" checked={form.invite_director} onChange={event => setForm({ ...form, invite_director: event.target.checked })} />{t('إرسال دعوة إلى المدير المحدد بدل تعيينه مباشرة.', 'Invite the specified director instead of direct appointment.')}</label>
         <label>{t('الهاتف', 'Phone')}<input type="tel" dir="ltr" maxLength={30} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></label>
         <label>{t('العنوان', 'Address')}<input maxLength={255} value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></label>
         <div className="role-hero-actions institution-school-form-actions">
