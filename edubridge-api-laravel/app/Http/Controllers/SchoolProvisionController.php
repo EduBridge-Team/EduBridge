@@ -44,7 +44,7 @@ class SchoolProvisionController extends Controller
         }
 
         // Legacy director assignment via existing users is no longer permitted.
-        return response()->json(['error' => 'Use official_email and invite a dedicated director'], 422);
+        return response()->json(['errors' => ['official_email' => ['Official school email is required; existing director accounts cannot be reused.']]], 422);
         // Compatibility path for existing clients. New clients use official_email.
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:150'],
