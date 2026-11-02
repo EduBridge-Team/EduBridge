@@ -65,7 +65,7 @@ class SchoolAccountActivationTest extends TestCase
 
     public function test_setup_is_one_time_and_creates_restricted_school_role(): void
     {
-        $token = 'secure-one-time-token';
+        $token = str_repeat('a', 48);
         DB::table('school_account_setup_tokens')->insert([
             'school_id' => 5, 'token_hash' => hash('sha256', $token),
             'expires_at' => now()->addMinutes(30), 'created_at' => now(), 'updated_at' => now(),
@@ -83,11 +83,11 @@ class SchoolAccountActivationTest extends TestCase
     public function test_expired_or_wrong_token_never_creates_an_account(): void
     {
         DB::table('school_account_setup_tokens')->insert([
-            'school_id' => 5, 'token_hash' => hash('sha256', 'correct'),
+            'school_id' => 5, 'token_hash' => hash('sha256', str_repeat('b', 48)),
             'expires_at' => now()->subMinute(), 'created_at' => now(), 'updated_at' => now(),
         ]);
-        $this->assertSame(422, $this->redeem('correct')->status());
-        $this->assertSame(422, $this->redeem('wrong')->status());
+        $this->assertSame(422, $this->redeem(str_repeat('b', 48))->status());
+        $this->assertSame(422, $this->redeem(str_repeat('c', 48))->status());
         $this->assertSame(0, DB::table('users')->count());
     }
 
