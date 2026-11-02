@@ -43,11 +43,19 @@ Route::get('/auth/verify-email', [AuthController::class, 'verifyEmail'])
 Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers\LessonFileController::class, 'show'])
     ->name('lesson.file')->middleware(['signed:relative', 'throttle:300,1']);
 
+Route::post('/school-official/activate', [\App\Http\Controllers\SchoolOfficialSetupController::class, 'activate'])
+    ->middleware('throttle:auth-recovery');
+Route::get('/school-official/me', [\App\Http\Controllers\SchoolOfficialSetupController::class, 'me'])
+    ->middleware(['auth.jwt', 'api.abuse', 'throttle:60,1']);
+
 Route::post('/school/director-invitations/accept', [\App\Http\Controllers\SchoolDirectorInvitationController::class, 'accept'])
     ->middleware(['auth.jwt', 'api.abuse', 'throttle:10,1']);
 
 // كل ما يلي يتطلب توكن صالح، تحقق هوية، وحماية موحدة من الإغراق.
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
+    Route::post('/admin/schools/{school}/official-setup', [\App\Http\Controllers\SchoolOfficialSetupController::class, 'send'])
+        ->whereNumber('school')->middleware('throttle:6,1');
+
     Route::get('/me/director-schools', [\App\Http\Controllers\MySchoolDirectorAssignmentsController::class, 'index'])
         ->middleware('throttle:60,1');
     Route::patch('/school/internal-identities/{identity}', [\App\Http\Controllers\SchoolInternalLifecycleController::class, 'update'])
