@@ -39,8 +39,11 @@ class SchoolAccount {
     required this.email,
     required this.organizationId,
     this.invitationPending = false,
+    this.emailDelivery = 'unconfirmed',
   });
 
+  /// Mail transport acceptance is not recipient inbox delivery.
+  final String emailDelivery;
   final int schoolId;
   final int? accountId;
   final bool invitationPending;
@@ -61,7 +64,10 @@ class SchoolAccount {
       return SchoolAccount(schoolId: school['id'] as int, accountId: account is Map<String,dynamic> ? account['id'] as int? : null,
         name: school['name'] as String, email: officialEmail,
         organizationId: school['organization_id'] as int?,
-        invitationPending: invitation is Map<String,dynamic>);
+        invitationPending: invitation is Map<String,dynamic>,
+        emailDelivery: (json['account_setup'] as Map<String,dynamic>)['email_delivery'] is String
+          ? (json['account_setup'] as Map<String,dynamic>)['email_delivery'] as String
+          : 'unconfirmed');
     }
     if (school is Map<String,dynamic> && invitation is Map<String,dynamic> &&
         school['id'] is int && (school['id'] as int)>0 && school['name'] is String &&
