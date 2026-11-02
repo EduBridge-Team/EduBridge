@@ -37,7 +37,7 @@ class SchoolAccountReceipt extends StatelessWidget {
           OutlinedButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SchoolDirectorManagementScreen(schoolId: account.schoolId, schoolName: account.name))), child: Text(arabic ? 'إدارة مدير المدرسة والدعوات' : 'Manage school director and invitations')),
           SelectableText('${l.schoolAccountName}: ${account.name}'),
           const SizedBox(height: 8),
-          Text(l.schoolAccountEmail),
+          Text(arabic ? 'البريد الرسمي للمدرسة' : 'Official school email'),
           SelectableText(account.email, textDirection: TextDirection.ltr,
             key: const ValueKey('school-account-created-email')),
         ],
