@@ -91,6 +91,40 @@ class SchoolAccountActivationTest extends TestCase
         $this->assertSame(0, DB::table('users')->count());
     }
 
+    public function test_dispatch_creates_one_time_token_and_cools_down_resends(): void
+    {
+        $controller = app(SchoolAccountActivationController::class);
+        $this->assertSame('sent', $controller->dispatchForSchoolId(5));
+        $first = DB::table('school_account_setup_tokens')->value('token_hash');
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $first);
+        $this->assertSame('not_eligible', $controller->dispatchForSchoolId(5));
+        $this->assertSame($first, DB::table('school_account_setup_tokens')->value('token_hash'));
+    }
+
+    public function test_new_official_school_identity_is_read_only_while_legacy_school_remains_compatible(): void
+    {
+        $token = str_repeat('d', 48);
+        DB::table('school_account_setup_tokens')->insert([
+            'school_id' => 5, 'token_hash' => hash('sha256', $token),
+            'expires_at' => now()->addMinutes(30),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->assertSame(200, $this->redeem($token)->status());
+        $newUser = (int) DB::table('users')->where('email', 'school@example.test')->value('id');
+        $write = Request::create('/api/school/operations/years', 'POST', ['expected_school_id' => 5]);
+        $write->attributes->set('jwt_user', (object) ['id' => $newUser, 'role' => 'school']);
+        $this->assertNull(\App\Support\SchoolScopedAccess::resolve($write, 'academic'));
+        $this->assertSame(403, app(\App\Http\Controllers\SchoolOperationsController::class)
+            ->handle($write, 'years')->status());
+        $read = Request::create('/api/school/context', 'GET');
+        $read->attributes->set('jwt_user', (object) ['id' => $newUser, 'role' => 'school']);
+        $this->assertNotNull(\App\Support\SchoolScopedAccess::resolve($read, 'context'));
+
+        DB::table('schools')->where('id', 5)->update(['official_email_verified_at' => null]);
+        $this->assertNotNull(\App\Support\SchoolScopedAccess::resolve($write, 'academic'),
+            'An unverified legacy school role retains existing operational scope');
+    }
+
     public function test_unknown_email_setup_request_does_not_reveal_school_existence(): void
     {
         $response = app(SchoolAccountActivationController::class)->requestSetup(

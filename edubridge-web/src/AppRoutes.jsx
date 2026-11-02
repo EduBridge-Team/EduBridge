@@ -15,6 +15,7 @@ const StudentDashboard = lazy(() => import('./pages/Dashboards/StudentDashboard'
 const SchoolWorkspacePage = lazy(() => import('./pages/Dashboards/SchoolWorkspacePage'))
 const SchoolInvitationPage = lazy(() => import('./pages/Dashboards/SchoolInvitationPage'))
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage'))
+const SchoolAccountSetupPage = lazy(() => import('./pages/Auth/SchoolAccountSetupPage'))
 const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('./pages/Auth/ResetPasswordPage'))
@@ -115,6 +116,7 @@ export default function AppRoutes() {
         <Routes>
           <Route path="/school" element={<Protected><Page><SchoolWorkspacePage /></Page></Protected>} />
           <Route path="/school/invitation" element={<Page><SchoolInvitationPage /></Page>} />
+          <Route path="/school-account/setup" element={<Page><SchoolAccountSetupPage /></Page>} />
           <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
           <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
           <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />

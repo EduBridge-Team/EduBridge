@@ -3,7 +3,10 @@ export const VERIFICATION_PATHS = new Set(['/verify', '/profile', '/support'])
 export const IDENTITY_VERIFICATION_EXEMPT_ROLES = new Set(['admin', 'parent', 'student', 'ministry', 'institution'])
 
 export function isIdentityVerificationExempt(user) {
-  return IDENTITY_VERIFICATION_EXEMPT_ROLES.has(user?.role)
+  // School mailbox ownership was verified by the dedicated one-time setup flow.
+  // Only verified new official school accounts take this exemption.
+  return (user?.role === 'school' && user?.verification_status === 'verified')
+    || IDENTITY_VERIFICATION_EXEMPT_ROLES.has(user?.role)
 }
 
 export function isIdentityVerified(user, verification) {

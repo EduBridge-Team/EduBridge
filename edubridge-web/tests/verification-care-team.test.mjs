@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
-import { isIdentityVerified, canAccessPortal, canOpenUnverifiedPath } from '../src/verificationPolicy.js'
+import { isIdentityVerified, canAccessPortal, canOpenUnverifiedPath, isIdentityVerificationExempt } from '../src/verificationPolicy.js'
 import { isAssignedToSpecialist, isWaitingForSpecialist } from '../src/pages/Dashboards/specialistAssignment.js'
 import { defaultProfile, recommendedProfile, typeFromText, DISABILITY_TYPES } from '../src/accessibility.js'
 import { ACCESSIBILITY_SETTINGS } from '../src/pages/Children/accessibilitySettings.js'
@@ -16,6 +16,12 @@ test('identity approval is authoritative and email approval never unlocks privat
   assert.equal(isIdentityVerified({ role: 'admin' }, null), true)
   for (const path of ['/verify', '/profile', '/support']) assert.equal(canOpenUnverifiedPath(path), true)
   for (const path of ['/parent', '/children/5', '/lessons', '/conversations', '/parent-lessons', '/aac']) assert.equal(canOpenUnverifiedPath(path), false)
+})
+
+test('new activated school mailbox bypasses personal ID verification only after setup', () => {
+  assert.equal(isIdentityVerificationExempt({role: 'school', verification_status: 'pending'}), false)
+  assert.equal(isIdentityVerificationExempt({role: 'school', verification_status: 'verified'}), true)
+  assert.equal(canAccessPortal({role: 'school', verification_status: 'verified'}, null), true)
 })
 
 test('admin-created ministry and institution accounts do not require identity verification', () => {

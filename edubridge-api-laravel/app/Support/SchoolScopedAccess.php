@@ -32,6 +32,14 @@ final class SchoolScopedAccess
         if (($actor->role ?? null) === 'school' && $schools->count() !== 1) return null;
         if (($actor->role ?? null) !== 'school' && $schools->groupBy('management_role')->contains(fn ($rows) => $rows->count() > 1)) return null;
         $school = $schools->firstWhere('management_role', 'director') ?? $schools->first();
+        // Newly verified official school mailboxes are read-only identities.
+        // Operational writes remain with the separately appointed director.
+        // Legacy school accounts keep their previous behaviour (nullable marker).
+        if (($actor->role ?? null) === 'school'
+            && ($school->official_email_verified_at ?? null) !== null
+            && !$request->isMethod('GET')) {
+            return null;
+        }
         if (($school->management_role ?? null) === 'deputy_director') {
             $permissions = json_decode($school->delegated_permissions ?? '[]', true);
             if (!is_array($permissions) || !array_intersect(self::PERMISSIONS, $permissions)) return null;

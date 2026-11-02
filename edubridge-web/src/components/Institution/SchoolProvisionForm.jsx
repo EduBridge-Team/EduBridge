@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useSchoolLanguage } from '../School/useSchoolLanguage'
-import { provisionSchool } from '../../api/schools'
+import { provisionSchool, requestSchoolAccountSetup } from '../../api/schools'
 
 const EMPTY = { name: '', official_email: '', director_email: '', phone: '', address: '', invite_director: false }
 
@@ -10,6 +10,8 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [receipt, setReceipt] = useState(null)
+  const [resending, setResending] = useState(false)
+  const [resendNotice, setResendNotice] = useState('')
   const pending = useRef(false)
 
   async function submit(event) {
@@ -20,7 +22,7 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
       return
     }
     pending.current = true
-    setSaving(true); setError(''); setReceipt(null)
+    setSaving(true); setError(''); setReceipt(null); setResendNotice('')
     try {
       const payload = {
         name: form.name.trim(), official_email: form.official_email.trim().toLowerCase(),
@@ -47,12 +49,32 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
     }
   }
 
+  async function resend() {
+    if (!receipt?.school?.official_email || resending) return
+    setResending(true); setError(''); setResendNotice('')
+    try {
+      await requestSchoolAccountSetup(receipt.school.official_email)
+      setResendNotice(t('إذا كان البريد مؤهلًا فسيُرسل رابط التفعيل إليه. تحقق من الوارد.', 'If eligible, a setup link will be sent to the school mailbox.'))
+    } catch (err) {
+      setError(err.message || t('تعذر إعادة طلب التفعيل.', 'Could not request another activation link.'))
+    } finally {
+      setResending(false)
+    }
+  }
+
   return <section className="institution-panel" dir={dir}>
     <button className="btn outline" type="button" onClick={toggle}>العربية / English</button>
     <h2>{institutionSlug ? t('إنشاء مدرسة تابعة', 'Create institution school') : t('إنشاء مدرسة مستقلة', 'Create independent school')}</h2>
     <p>{t('استخدم البريد الرسمي للمدرسة. يمكن تعيين المدير لاحقًا، ويُعد الحساب الرسمي بانتظار التفعيل حتى تأكيد البريد وتعيين كلمة المرور.', 'Use the school official email. A director can be appointed later; account setup requires email verification and a password.')}</p>
     {error && <div className="state error" role="alert">{error}</div>}
-    {receipt && <p role="status">{receipt.school.name} — {t('أُنشئت المدرسة. إعداد الحساب الرسمي ينتظر التفعيل.', 'School created. Official account setup awaits verification.')}</p>}
+    {receipt && <div role="status">
+      <p>{receipt.school.name} — {t('أُنشئت المدرسة. حسابها الرسمي ينتظر التفعيل.', 'School created. Official account awaits activation.')}</p>
+      <p>{receipt.account_setup?.email_delivery === 'sent'
+        ? t('تم تسليم رسالة التفعيل إلى خدمة البريد. تحقق من بريد المدرسة.', 'Activation message submitted to the mail service. Check the school mailbox.')
+        : t('لم يُؤكّد إرسال رسالة التفعيل. يمكنك طلب رابط جديد.', 'Activation email submission is not confirmed. You may request a new link.')}</p>
+      <button type="button" className="btn outline" onClick={resend} disabled={resending}>{resending ? t('جارِ الطلب…', 'Requesting…') : t('إعادة طلب رابط التفعيل', 'Request activation link again')}</button>
+      {resendNotice && <p role="status">{resendNotice}</p>}
+    </div>}
     <form className="institution-school-form" onSubmit={submit}>
       <fieldset disabled={saving} style={{ border: 0, padding: 0, margin: 0, display: 'contents' }}>
         <label>{t('اسم المدرسة', 'School name')}<input required maxLength={150} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>

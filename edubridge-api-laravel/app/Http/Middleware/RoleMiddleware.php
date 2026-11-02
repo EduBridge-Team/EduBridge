@@ -17,6 +17,12 @@ class RoleMiddleware
             $permission = $request->is('api/school/academic*') ? 'academic' : 'enrollment';
             $allowed = \App\Support\SchoolScopedAccess::resolve($request, $permission) !== null;
         }
+        // A school role is not automatically a director. Enforce the same
+        // read-only restriction for direct role:school routes as for school scope.
+        if ($allowed && ($user->role ?? null) === 'school' && !$request->isMethod('GET')) {
+            $allowed = \App\Support\SchoolScopedAccess::resolve($request, 'context') !== null;
+        }
+
         if (!$allowed) {
             return response()->json(['error' => 'لا تملك صلاحية لهذا الإجراء'], 403);
         }
