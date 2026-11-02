@@ -107,6 +107,8 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
                   const SizedBox(height: 12),
                   LayoutBuilder(builder: (context, constraints) {
                     final columns = constraints.maxWidth < 560 ? 2 : constraints.maxWidth < 800 ? 3 : 4;
+                    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+                    final tileHeight = 112.0 + (textScale - 1.0).clamp(0.0, 3.0) * 72.0;
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -114,7 +116,7 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
                         crossAxisCount: columns,
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
-                        mainAxisExtent: 112,
+                        mainAxisExtent: tileHeight,
                       ),
                       itemCount: entries.length,
                       itemBuilder: (context, index) {
