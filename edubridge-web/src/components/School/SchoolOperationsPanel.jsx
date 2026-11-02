@@ -12,10 +12,10 @@ import SchoolTransferSourcePanel from './SchoolTransferSourcePanel'
 const CATEGORIES = { academic: ['الهيكل والمعلمون', 'Structure and teachers'], enrollment: ['الطلاب والترفيع', 'Students and progression'], attendance: ['الحضور', 'Attendance'], timetable: ['الجدول', 'Timetable'], curriculum: ['المنهاج', 'Curriculum'], reports: ['التقارير', 'Reports'] }
 const READ_ACTION = { academic: 'academic', enrollment: 'students', attendance: 'attendance', timetable: 'timetable', curriculum: 'curriculum', reports: 'reports' }
 
-export default function SchoolOperationsPanel({ permissions, schoolId }) {
+export default function SchoolOperationsPanel({ permissions, schoolId, initialCategory, compactNavigation = false }) {
   const { t } = useSchoolLanguage()
   const available = Object.keys(CATEGORIES).filter(key => permissions.includes(key))
-  const [category, setCategory] = useState(available[0] || '')
+  const [category, setCategory] = useState(available.includes(initialCategory) ? initialCategory : available[0] || '')
   const reference = useSchoolResource(available.length ? '/school/operations/academic' : null)
   const teachers = useSchoolResource(permissions.includes('academic') || permissions.includes('timetable') ? '/school/operations/teachers' : null)
   const participants = useSchoolResource(permissions.includes('academic') ? '/school/operations/participants' : null)
@@ -29,8 +29,8 @@ export default function SchoolOperationsPanel({ permissions, schoolId }) {
   if (reference.data && Number(reference.data.school?.id) !== Number(schoolId) || resource.data && Number(resource.data.school_id) !== Number(schoolId) || teachers.data && Number(teachers.data.school_id) !== Number(schoolId) || participants.data && Number(participants.data.school_id) !== Number(schoolId)) return <p role="alert">{t('تغير تكليف المدرسة. حدّث الصلاحيات قبل المتابعة.', 'School assignment changed. Refresh permissions before continuing.')}</p>
   const lists = Object.entries(resource.data || {}).filter(([, rows]) => Array.isArray(rows))
   return <section className="institution-panel">
-    <h2>{t('العمليات المدرسية', 'School operations')}</h2>
-    <nav className="role-hero-actions">{available.map(key => <button key={key} className={'btn ' + (category === key ? '' : 'outline')} onClick={() => setCategory(key)} aria-pressed={category === key}>{t(...CATEGORIES[key])}</button>)}</nav>
+    {!compactNavigation && <h2>{t('العمليات المدرسية', 'School operations')}</h2>}
+    {!compactNavigation && <nav className="role-hero-actions">{available.map(key => <button key={key} className={'btn ' + (category === key ? '' : 'outline')} onClick={() => setCategory(key)} aria-pressed={category === key}>{t(...CATEGORIES[key])}</button>)}</nav>}
     <button className="btn outline" onClick={reload}>{t('تحديث', 'Refresh')}</button>
     {(resource.error || reference.error || teachers.error) && <p role="alert">{resource.error || reference.error || teachers.error}</p>}
     {resource.loading ? <p role="status">{t('جارِ التحميل…', 'Loading…')}</p> : resource.data && <>
