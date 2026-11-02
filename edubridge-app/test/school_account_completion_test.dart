@@ -37,7 +37,6 @@ void main() {
           await fill(tester);
           await tester.tap(submit);
           await tester.pumpAndSettle();
-          final l = await AppLocalizations.delegate.load(Locale(language));
           expect(find.text(language == 'en' ? 'School created. Activation link sent to the official school mailbox.' : 'تم إنشاء المدرسة وإرسال رابط التفعيل إلى بريدها الرسمي.'), findsOneWidget);
           expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget,
             reason: 'Receipt explains separate school activation and director access');
