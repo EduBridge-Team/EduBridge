@@ -114,6 +114,13 @@ class SchoolOfficialAccountActivationTest extends TestCase
         ]));
         $this->assertSame(200, $login->getStatusCode());
         $this->assertSame('school_identity', $login->getData(true)['user']['role']);
+        $jwt = $login->getData(true)['token'];
+        $this->withToken($jwt)->getJson('/api/school/official-profile')
+            ->assertOk()->assertJsonPath('school.email', 'office@example.test');
+        $this->withToken($jwt)->postJson('/api/school/operations/years', [])
+            ->assertForbidden();
+        $this->withToken($jwt)->deleteJson('/api/me')
+            ->assertForbidden();
     }
 
     public function test_expired_token_cannot_activate_and_duplicated_official_email_is_denied(): void
