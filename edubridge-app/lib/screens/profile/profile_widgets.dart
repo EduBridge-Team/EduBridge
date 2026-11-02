@@ -36,6 +36,8 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
         return context.l10n.ministryRole;
       case 'school':
         return context.l10n.schoolRole;
+      case 'school_director':
+        return Localizations.localeOf(context).languageCode == 'en' ? 'School director' : 'مدير مدرسة';
       case 'institution':
         return context.l10n.institutionRole;
       default:
