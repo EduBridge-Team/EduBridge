@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\SchoolInternalAccountController;
+use App\Http\Controllers\SchoolInternalDomainController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +23,9 @@ class SchoolInternalAccountTest extends TestCase
             $t->id();
             $t->unsignedBigInteger('organization_id')->nullable();
             $t->boolean('is_active')->default(true);
-            $t->string('internal_domain')->nullable();
+            $t->string('internal_domain')->nullable()->unique();
             $t->timestamp('internal_domain_confirmed_at')->nullable();
+            $t->timestamps();
         });
         Schema::create('users', function (Blueprint $t) {
             $t->id();
@@ -143,4 +145,41 @@ class SchoolInternalAccountTest extends TestCase
         $this->assertSame(403, $this->createAccount()->getStatusCode());
         $this->assertSame(0, DB::table('users')->count());
     }
+    private function confirmNamespace(string $value, int $actor = 20, string $role = 'school_director'): \Illuminate\Http\JsonResponse
+    {
+        $request = Request::create('/api/school/internal-domain/confirm', 'POST', [
+            'internal_domain' => $value, 'expected_school_id' => 10,
+        ]);
+        $request->attributes->set('jwt_user', (object) ['id' => $actor, 'role' => $role]);
+        return app(SchoolInternalDomainController::class)->confirm($request);
+    }
+
+    public function test_namespace_prefix_is_canonical_and_used_for_account_login_only(): void
+    {
+        DB::table('schools')->where('id', 10)->update([
+            'internal_domain' => null, 'internal_domain_confirmed_at' => null,
+        ]);
+        $response = $this->confirmNamespace('alreyada');
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('alreyada.edubridge', $response->getData(true)['internal_domain']);
+        $this->assertSame('alreyada.edubridge', DB::table('schools')->where('id', 10)->value('internal_domain'));
+        $this->assertSame('teacher01@alreyada.edubridge', $this->createAccount()->getData(true)['login_identifier']);
+        $this->assertSame(409, $this->confirmNamespace('changed')->getStatusCode());
+        $this->assertSame('alreyada.edubridge', DB::table('schools')->where('id', 10)->value('internal_domain'));
+    }
+
+    public function test_namespace_rejects_duplicate_or_invalid_and_school_account_cannot_confirm(): void
+    {
+        DB::table('schools')->where('id', 10)->update([
+            'internal_domain' => null, 'internal_domain_confirmed_at' => null,
+        ]);
+        $this->assertSame(422, $this->confirmNamespace('bad.example.com')->getStatusCode());
+        $this->assertSame(422, $this->confirmNamespace('ab')->getStatusCode());
+        $this->assertSame(403, $this->confirmNamespace('other', 20, 'school')->getStatusCode());
+        $this->assertSame(409, $this->confirmNamespace('beta')->getStatusCode());
+        $this->assertNull(DB::table('schools')->where('id', 10)->value('internal_domain'));
+        $this->assertSame(200, $this->confirmNamespace('alpha.edubridge')->getStatusCode());
+        $this->assertSame('alpha.edubridge', DB::table('schools')->where('id', 10)->value('internal_domain'));
+    }
+
 }
