@@ -93,27 +93,48 @@ trait AuthAccountRecoveryActions
             return response()->json(['error' => 'كلمة المرور يجب أن تكون بين 8 و128 حرفاً'], 422);
         }
 
-        $record = DB::table('password_reset_tokens')->where('email', $email)->first();
-        if (!$record || !hash_equals((string) $record->token, hash('sha256', $token))) {
-            return response()->json(['error' => 'رابط الاستعادة غير صالح أو منتهي'], 422);
-        }
+        // Lock the token before consumption so concurrent requests cannot reuse
+        // the same activation/reset link.
+        return DB::transaction(function () use ($email, $token, $password) {
+            $record = DB::table('password_reset_tokens')->where('email', $email)
+                ->lockForUpdate()->first();
+            if (!$record || !hash_equals((string) $record->token, hash('sha256', $token))) {
+                return response()->json(['error' => 'رابط الاستعادة غير صالح أو منتهي'], 422);
+            }
 
-        if (!$record->created_at || \Illuminate\Support\Carbon::parse($record->created_at)->lte(now()->subMinutes(60))) {
+            if (!$record->created_at || \Illuminate\Support\Carbon::parse($record->created_at)->lte(now()->subMinutes(60))) {
+                DB::table('password_reset_tokens')->where('email', $email)->delete();
+                return response()->json(['error' => 'انتهت صلاحية رابط الاستعادة'], 422);
+            }
+
+            $passwordColumn = $this->getPasswordColumn();
+            if (!$passwordColumn) {
+                return response()->json(['error' => 'بنية جدول المستخدمين غير مكتملة على السيرفر'], 500);
+            }
+
+            $user = DB::table('users')->where('email', $email)->lockForUpdate()->first();
+            if (!$user) {
+                return response()->json(['error' => 'رابط الاستعادة غير صالح أو منتهي'], 422);
+            }
+
+            $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);
+            $update = [$passwordColumn => $hash];
+            if (Schema::hasColumn('users', 'password_hash') && Schema::hasColumn('users', 'password')) {
+                $update['password_hash'] = $hash;
+                $update['password'] = $hash;
+            }
+
+            // An activation link is delivered only to the school's official
+            // mailbox; using it proves ownership and enables that login.
+            if ($user->role === 'school' && Schema::hasColumn('users', 'email_verified_at')
+                && DB::table('school_accounts')->where('user_id', $user->id)->exists()) {
+                $update['email_verified_at'] = $user->email_verified_at ?: now();
+            }
+            DB::table('users')->where('id', $user->id)->update($update);
             DB::table('password_reset_tokens')->where('email', $email)->delete();
-            return response()->json(['error' => 'انتهت صلاحية رابط الاستعادة'], 422);
-        }
 
-        $passwordColumn = $this->getPasswordColumn();
-        if (!$passwordColumn) {
-            return response()->json(['error' => 'بنية جدول المستخدمين غير مكتملة على السيرفر'], 500);
-        }
-
-        DB::table('users')->where('email', $email)->update([
-            $passwordColumn => password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]),
-        ]);
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
-
-        return response()->json(['message' => 'تم تغيير كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.']);
+            return response()->json(['message' => 'تم تغيير كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.']);
+        }, 3);
     }
 
     public function resendEmailVerification(Request $request)
