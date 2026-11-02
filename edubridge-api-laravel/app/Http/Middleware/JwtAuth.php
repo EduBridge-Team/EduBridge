@@ -60,7 +60,7 @@ class JwtAuth
                 }
             }
 
-            if ($account->role === 'school') {
+            if (in_array($account->role, ['school', 'school_identity'], true)) {
                 // Check every request, not only login. A previously issued JWT must
                 // stop working as soon as its school or institution is disabled.
                 $activeSchools = DB::table('school_accounts as sa')
@@ -80,6 +80,14 @@ class JwtAuth
                         'code' => 'SESSION_INVALID',
                     ], 401);
                 }
+            }
+
+            // Official school credentials authenticate only the school identity.
+            // They never inherit the director's teaching or management permissions.
+            if ($account->role === 'school_identity' && !$request->is(
+                'api/school/official-profile', 'api/auth/logout', 'api/me'
+            )) {
+                return response()->json(['error' => 'Official school account has limited access'], 403);
             }
 
             // The current database account is authoritative for every policy.
