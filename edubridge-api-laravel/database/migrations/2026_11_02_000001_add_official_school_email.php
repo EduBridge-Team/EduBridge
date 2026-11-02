@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->string('official_email', 190)->nullable()->unique();
+            $table->timestamp('official_email_verified_at')->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->dropUnique(['official_email']);
+            $table->dropColumn(['official_email', 'official_email_verified_at']);
+        });
+    }
+};
