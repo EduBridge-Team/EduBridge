@@ -39,6 +39,11 @@ class SchoolProvisionController extends Controller
 
     private function create(Request $request, ?int $organizationId): JsonResponse
     {
+        // New official-school contract: school mailbox and director are distinct identities.
+        // The director-only contract remains temporarily for deployed older clients.
+        if ($request->exists('email')) {
+            return app(\App\Support\SchoolOfficialAccountProvisioning::class)->create($request, $organizationId);
+        }
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:150'],
             'director_email' => ['required', 'email', 'max:190'],
