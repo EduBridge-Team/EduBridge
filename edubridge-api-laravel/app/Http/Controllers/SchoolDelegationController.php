@@ -18,9 +18,21 @@ class SchoolDelegationController extends Controller
         if (($request->attributes->get('jwt_user')->role ?? null) === 'school'
             && ($school->official_email_verified_at ?? null) !== null) {
             // Official identity is not a director, and may not receive delegated writes.
+            $director = DB::table('school_management_assignments as a')
+                ->join('users as u', 'u.id', '=', 'a.user_id')
+                ->where('a.school_id', $school->id)
+                ->where('a.role', 'director')
+                ->whereNull('a.ends_at')
+                ->orderByDesc('a.id')
+                ->first(['u.name']);
             return response()->json(['school' => [
-                'id' => (int) $school->id, 'name' => $school->name,
-            ], 'role' => 'school', 'permissions' => []]);
+                'id' => (int) $school->id,
+                'name' => $school->name,
+                'official_email' => $school->official_email,
+                'official_email_verified' => $school->official_email_verified_at !== null,
+                'is_active' => (bool) $school->is_active,
+            ], 'director' => $director ? ['name' => $director->name] : null,
+                'role' => 'school', 'permissions' => []]);
         }
         $deputy = ($school->management_role ?? null) === 'deputy_director';
         return response()->json(['school' => ['id' => (int) $school->id, 'name' => $school->name],
