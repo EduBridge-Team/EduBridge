@@ -23,6 +23,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   var _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
+  final _directorEmail = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
   late SchoolAccountRepository _repository;
@@ -49,7 +50,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _inviteDirector = false;
       _createdAccount = null;
       _error = null;
-      for (final controller in [_name, _email, _phone, _address]) {
+      for (final controller in [_name, _email, _directorEmail, _phone, _address]) {
         controller.clear();
       }
     }
@@ -60,6 +61,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     for (final controller in [
       _name,
       _email,
+      _directorEmail,
       _phone,
       _address,
     ]) {
@@ -76,6 +78,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final request = SchoolAccountRequest(
       name: _name.text,
       email: _email.text,
+      directorEmail: _directorEmail.text,
       inviteDirector: _inviteDirector,
       phone: _phone.text,
       address: _address.text,
@@ -180,8 +183,10 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 : null,
                           ),
                           _field(
-                            'director_email',
-                            l10n.schoolAccountEmail,
+                            'school_email',
+                            Localizations.localeOf(context).languageCode == 'en'
+                                ? 'Official school email'
+                                : 'البريد الرسمي للمدرسة',
                             _email,
                             maxLength: 190,
                             keyboard: TextInputType.emailAddress,
@@ -191,6 +196,26 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                     !(v ?? '').trim().toLowerCase().endsWith('.edubridge')
                                 ? null
                                 : l10n.schoolAccountEmailInvalid,
+                          ),
+                          Text(Localizations.localeOf(context).languageCode == 'en'
+                            ? 'Director personal email (optional; separate from the school account)'
+                            : 'البريد الشخصي للمدير (اختياري ومستقل عن بريد المدرسة)'),
+                          _field(
+                            'director_email',
+                            Localizations.localeOf(context).languageCode == 'en'
+                                ? 'Director personal email'
+                                : 'البريد الشخصي للمدير',
+                            _directorEmail,
+                            maxLength: 190,
+                            keyboard: TextInputType.emailAddress,
+                            validator: (v) {
+                              final email = (v ?? '').trim().toLowerCase();
+                              if (email.isEmpty && !_inviteDirector) return null;
+                              return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email) &&
+                                  !email.endsWith('.edubridge') &&
+                                  email != _email.text.trim().toLowerCase()
+                                  ? null : l10n.schoolAccountEmailInvalid;
+                            },
                           ),
                           CheckboxListTile(value: _inviteDirector,
                             onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
