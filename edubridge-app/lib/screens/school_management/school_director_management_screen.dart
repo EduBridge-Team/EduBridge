@@ -18,7 +18,7 @@ class _SchoolDirectorManagementScreenState extends State<SchoolDirectorManagemen
   final _email=TextEditingController();
   Map? _director;
   List<Map> _invitations=[],_history=[];
-  bool _busy=false,_invite=false,_authorized=false;
+  bool _busy=false,_authorized=false;
   EnrollmentFailure? _failure;
   int _version=0;
   String get _root=>'/admin/schools/${widget.schoolId}';
@@ -57,9 +57,8 @@ class _SchoolDirectorManagementScreenState extends State<SchoolDirectorManagemen
       if(_authorized)...[
         Text(_director==null?t('لم يُكلّف مدير بعد.','No director appointed yet.'):'${_director!['name']} — ${_director!['email']}'),
         TextField(controller:_email,enabled:!_busy,keyboardType:TextInputType.emailAddress,decoration:InputDecoration(labelText:t('البريد الشخصي للمدير','Director personal email'))),
-        CheckboxListTile(value:_invite,onChanged:_busy?null:(value)=>setState(()=>_invite=value==true),title:Text(t('دعوة بدل التعيين المباشر','Invite instead of direct appointment'))),
-        FilledButton(onPressed:_busy?null:(){if(RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(_email.text.trim())&&!_email.text.trim().toLowerCase().endsWith('.edubridge'))_write('$_root/${_invite?'director-invitations':'director'}','POST',{'director_email':_email.text.trim().toLowerCase()},success:_invite?201:200);},child:Text(t('مراجعة وحفظ','Review and save'))),
-        Text(t('الدعوة تتطلب قبول صاحب البريد المؤكّد. إنشاء دعوة جديدة يلغي السابقة.','The invited verified mailbox owner must accept. A new invitation revokes earlier invitations.')),
+        FilledButton(onPressed:_busy?null:(){if(RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(_email.text.trim())&&!_email.text.trim().toLowerCase().endsWith('.edubridge'))_write('$_root/director-invitations','POST',{'director_email':_email.text.trim().toLowerCase()},success:201);},child:Text(t('مراجعة وحفظ','Review and save'))),
+        Text(t('تُرسل دعوة إلى بريد جديد غير مسجل؛ ينشئ صاحب البريد حساب مدير مستقلًا عبر الرابط. إصدار دعوة جديدة يلغي السابقة.','The invitation requires an unused email address; the recipient creates a dedicated director account using the link. A new invitation revokes earlier invitations.')),
         for(final invitation in _invitations)Card(child:Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
           Text('${invitation['email']} — ${invitation['expires_at']}'),
           Text(invitation['accepted_at']!=null?t('مقبولة','Accepted'):invitation['revoked_at']!=null?t('ملغاة','Revoked'):t('بانتظار القبول أو منتهية','Pending or expired')),
