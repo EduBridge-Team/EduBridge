@@ -15,7 +15,7 @@ class RequireIdentityVerification
             'api/me', 'api/me/*', 'api/settings', 'api/uploads', 'api/certificates',
             'api/certificates/*', 'api/private-files/user/*', 'api/support', 'api/support/*'
         );
-        $verificationExemptRoles = ['admin', 'parent', 'ministry', 'institution'];
+        $verificationExemptRoles = ['admin', 'parent', 'ministry', 'institution', 'school_identity'];
 
         if ($user && (in_array($user->role, $verificationExemptRoles, true) || $onboarding
             || ($user->verification_status ?? null) === 'verified')) {
