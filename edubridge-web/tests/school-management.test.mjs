@@ -26,6 +26,11 @@ test('school creation and director replacement use the identity API and preserve
     assert.equal(calls[3].path, '/admin/schools/12/director')
     assert.deepEqual(JSON.parse(calls[3].options.body), { director_email: 'new@example.test' })
     await assert.rejects(api.provisionSchool(payload, 'forbidden'), /Forbidden/)
+    await api.requestSchoolAccountSetup('school@example.test')
+    assert.equal(calls[5].path, '/school-account/request-setup')
+    await api.completeSchoolAccountSetup('school@example.test', 'sample-code', 'example-strong-password')
+    assert.equal(calls[6].path, '/school-account/complete-setup')
+    assert.equal(JSON.parse(calls[6].options.body).password_confirmation, 'example-strong-password')
   } finally {
     delete globalThis.__schoolRequest
   }
