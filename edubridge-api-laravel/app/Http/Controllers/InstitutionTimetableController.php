@@ -67,13 +67,13 @@ class InstitutionTimetableController extends Controller
         $org = $request->attributes->get('organization');
 
         return DB::transaction(function () use ($org, $school, $data) {
-            // Serialize Jabalia timetable writers at the organization level.
-            // A school-only lock cannot prevent two schools from concurrently
-            // booking the same teacher into the same weekday and period.
-            if (($org->slug ?? null) === 'jabalia') {
+            // Serialize school timetable writes, including independent schools.
+            // Organization-level locking also protects shared-teacher slots
+            // across multiple schools in the same organization.
+            if (($org->id ?? null) !== null) {
                 DB::table('organizations')->where('id', $org->id)->lockForUpdate()->first();
-                DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             }
+            DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             // Timetable settings updates lock the school row. Read settings only
             // after taking that lock, so a concurrent update cannot invalidate
             // the slot between validation and timetable insertion.
@@ -139,7 +139,7 @@ class InstitutionTimetableController extends Controller
 
             // A teacher may serve multiple Jabalia schools, but cannot teach
             // simultaneous periods in two schools of the same institution.
-            if (!$conflict && ($org->slug ?? null) === 'jabalia' && !empty($data['teacher_id'])) {
+            if (!$conflict && ($org->id ?? null) !== null && !empty($data['teacher_id'])) {
                 $conflict = DB::table('timetable_entries as other')
                     ->join('schools as other_school', 'other_school.id', '=', 'other.school_id')
                     ->where('other_school.organization_id', $org->id)
@@ -186,11 +186,11 @@ class InstitutionTimetableController extends Controller
 
         return DB::transaction(function () use ($request, $school, $entry) {
             $organization = $request->attributes->get('organization');
-            if (($organization->slug ?? null) === 'jabalia') {
-                // Keep deletes ordered with inserts, transfers and settings updates.
+            // Match the locking order of timetable inserts.
+            if (($organization->id ?? null) !== null) {
                 DB::table('organizations')->where('id', $organization->id)->lockForUpdate()->first();
-                DB::table('schools')->where('id', $school)->lockForUpdate()->first();
             }
+            DB::table('schools')->where('id', $school)->lockForUpdate()->first();
 
             $deleted = DB::table('timetable_entries')
                 ->where('id', $entry)->where('school_id', $school)->delete();
