@@ -39,6 +39,11 @@ class SchoolProvisionController extends Controller
 
     private function create(Request $request, ?int $organizationId): JsonResponse
     {
+        if ($request->exists('official_email')) {
+            return $this->createWithOfficialEmail($request, $organizationId);
+        }
+
+        // Compatibility path for existing clients. New clients use official_email.
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:150'],
             'director_email' => ['required', 'email', 'max:190'],
@@ -117,4 +122,108 @@ class SchoolProvisionController extends Controller
         }
         return response()->json(['error' => 'Could not provision school'], 500);
     }
+
+    /**
+     * Provision school identity without requiring a director's personal account.
+     * Account credentials must only be set after separate mailbox verification.
+     */
+    private function createWithOfficialEmail(Request $request, ?int $organizationId): JsonResponse
+    {
+        $validation = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:150'],
+            'official_email' => ['required', 'email', 'max:190'],
+            'director_email' => ['nullable', 'email', 'max:190'],
+            'invite_director' => ['sometimes', 'boolean'],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:255'],
+        ]);
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 422);
+        }
+        $data = $validation->validated();
+        $name = trim($data['name']);
+        $email = mb_strtolower(trim($data['official_email']));
+        $directorEmail = isset($data['director_email'])
+            ? mb_strtolower(trim($data['director_email'])) : '';
+        $invite = (bool) ($data['invite_director'] ?? false);
+        if ($name === '' || str_ends_with($email, '.edubridge')
+            || ($directorEmail !== '' && (str_ends_with($directorEmail, '.edubridge') || $directorEmail === $email))
+            || ($invite && $directorEmail === '')) {
+            return response()->json(['error' => 'Invalid school/director email'], 422);
+        }
+
+        try {
+            return DB::transaction(function () use ($request, $data, $name, $email, $directorEmail, $invite, $organizationId) {
+                // Never inherit an existing user's identity or password.
+                if (DB::table('schools')->whereRaw('LOWER(official_email) = ?', [$email])->exists()
+                    || DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->exists()) {
+                    return response()->json(['error' => 'School email already in use'], 409);
+                }
+                $director = null;
+                if ($directorEmail !== '' && !$invite) {
+                    $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$directorEmail])->lockForUpdate()->first();
+                    if (!$director || ($director->role ?? null) === 'school'
+                        || empty($director->email_verified_at)
+                        || (property_exists($director, 'verification_status')
+                            && !in_array($director->verification_status, ['verified', 'approved'], true))) {
+                        return response()->json(['error' => 'Existing verified director account required'], 422);
+                    }
+                    if (DB::table('school_management_assignments')->where('user_id', $director->id)
+                        ->where('role', 'director')->whereNull('ends_at')->exists()) {
+                        return response()->json(['error' => 'Director already has an active school assignment'], 409);
+                    }
+                }
+                $schoolId = DB::table('schools')->insertGetId([
+                    'organization_id' => $organizationId,
+                    'name' => $name,
+                    'slug' => 'school-' . Str::lower(Str::random(24)),
+                    'address' => $data['address'] ?? null,
+                    'phone' => $data['phone'] ?? null,
+                    // Keep the legacy NOT NULL email column populated for old readers.
+                    'email' => $email,
+                    'official_email' => $email,
+                    'official_email_verified_at' => null,
+                    'settings' => '{}',
+                    'is_active' => true,
+                    'created_at' => now(), 'updated_at' => now(),
+                ]);
+                $response = [
+                    'school' => [
+                        'id' => $schoolId, 'name' => $name,
+                        'organization_id' => $organizationId,
+                        'official_email' => $email,
+                        'official_email_verified' => false,
+                    ],
+                    'account_setup' => ['status' => 'pending_verification'],
+                ];
+                if ($invite) {
+                    $school = DB::table('schools')->find($schoolId);
+                    $response['invitation'] = \App\Support\SchoolDirectorInvitations::issue(
+                        $school, $directorEmail, $request->attributes->get('jwt_user')->id
+                    );
+                } elseif ($director) {
+                    DB::table('school_management_assignments')->insert([
+                        'school_id' => $schoolId,
+                        'user_id' => $director->id,
+                        'role' => 'director',
+                        'appointed_by' => $request->attributes->get('jwt_user')->id,
+                        'starts_at' => now(), 'ends_at' => null,
+                        'created_at' => now(), 'updated_at' => now(),
+                    ]);
+                    $response['director'] = ['id' => (int) $director->id, 'email' => $directorEmail];
+                }
+                // Account setup is deliberately NOT activated by provisioning.
+                return response()->json($response, 201);
+            }, 3);
+        } catch (QueryException $e) {
+            if (in_array((string) $e->getCode(), ['23505', '23000'], true)) {
+                return response()->json(['error' => 'Duplicate school identity'], 409);
+            }
+            report($e);
+        } catch (\Throwable $e) {
+            report($e);
+        }
+        return response()->json(['error' => 'Could not provision school'], 500);
+    }
+
 }
