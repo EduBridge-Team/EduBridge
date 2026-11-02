@@ -37,6 +37,8 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])
     ->middleware('throttle:auth-recovery');
 Route::post('/auth/resend-verification', [AuthController::class, 'resendEmailVerification'])
     ->middleware('throttle:auth-recovery');
+Route::post('/auth/school-activate', [\App\Http\Controllers\SchoolOfficialAccountController::class, 'activate'])
+    ->middleware('throttle:auth-recovery');
 Route::get('/auth/verify-email', [AuthController::class, 'verifyEmail'])
     ->middleware('throttle:20,1');
 
@@ -48,6 +50,10 @@ Route::post('/school/director-invitations/accept', [\App\Http\Controllers\School
 
 // كل ما يلي يتطلب توكن صالح، تحقق هوية، وحماية موحدة من الإغراق.
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
+    Route::get('/school/official-profile', [\App\Http\Controllers\SchoolOfficialAccountController::class, 'profile'])
+        ->middleware(['role:school_identity', 'throttle:60,1']);
+    Route::post('/admin/schools/{school}/activation/resend', [\App\Http\Controllers\SchoolOfficialAccountController::class, 'resend'])
+        ->whereNumber('school')->middleware(['role:admin,institution', 'throttle:10,1']);
     Route::get('/me/director-schools', [\App\Http\Controllers\MySchoolDirectorAssignmentsController::class, 'index'])
         ->middleware('throttle:60,1');
     Route::patch('/school/internal-identities/{identity}', [\App\Http\Controllers\SchoolInternalLifecycleController::class, 'update'])
