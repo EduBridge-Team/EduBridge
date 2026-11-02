@@ -65,7 +65,7 @@ const LessonEditorPage = lazy(() => import('./pages/Learning/LessonEditorPage'))
 function Protected({ children }) {
   const location = useLocation()
   const { verified: identityVerified } = useVerification()
-  const verified = identityVerified || ['parent', 'student'].includes(getUser()?.role)
+  const verified = identityVerified || ['parent', 'student', 'school_official'].includes(getUser()?.role)
   if (!getToken()) return <Navigate to="/login" replace />
   if (!verified && !canOpenUnverifiedPath(location.pathname)) return <VerificationRequired />
   return children
