@@ -1,91 +1,93 @@
-# School account provisioning — Flutter contract v1
+# School account provisioning — Flutter contract v2 (official mailbox)
 
-Status: Flutter implemented; backend endpoints below are REQUIRED, not implemented
-by this change. No Laravel, database, web, or deployment changes are included.
+Status: Flutter, Laravel and React implemented in PR #1312. **Staging end-to-end
+mail delivery and acceptance are still required before production rollout.**
+See [School Official Email Activation](SCHOOL_OFFICIAL_EMAIL_ACTIVATION_2026_11_02.md).
 
-## Operations
+## Endpoints
 
-All paths are relative to the configured API base URL. Requests use the existing
-Bearer session and JSON request bodies. Responses must be JSON. Do not return
-credentials or sign the operator into the new account.
-
-| Operator | Method and path | Expected response |
+| Operator | Method and path | Expected result |
 | --- | --- | --- |
-| Admin | `POST /admin/school-accounts` | `201` with independent school and account |
-| Institution owner/admin | `GET /institutions/my-organization` (existing) | `200` with `organization.id` and `organization.slug` |
-| Institution owner/admin | `POST /institutions/{organizationSlug}/school-accounts` | `201` with affiliated school and account |
+| Admin | `POST /admin/school-accounts` | 201 |
+| Institution owner/admin | `GET /institutions/my-organization` | Resolved server-side organization |
+| Institution owner/admin | `POST /institutions/{slug}/school-accounts` | 201 |
+| School mailbox holder | `POST /auth/school-activate` | Set password with one-time token |
+| School identity | `POST /auth/login` | School identity session |
+| School identity | `GET /school/official-profile` | Read-only official profile |
+| Admin/institution admin | `POST /admin/schools/{school}/activation/resend` | Reissue activation |
 
-Flutter resolves institution context from the authenticated GET immediately before
-creation. It does not submit a caller-selected organization ID, operator ID, or
-role. The server MUST authenticate and authorize every operation and resolve the
-institution independently; the path slug is not authorization.
+Flutter resolves an authenticated institution context before submitting, never
+provides a caller-selected organization, user or role, and does not retry a
+provisioning POST after a timeout.
 
 ## Request
 
 ```json
 {
   "name": "Example School",
-  "email": "school@example.org",
-  "password": "<user-entered password>",
-  "password_confirmation": "<same password>",
+  "school_email": "office@example.org",
   "phone": "+970000000000",
   "address": "School address"
 }
 ```
 
-`name`: required, trimmed, 1–150 characters. `email`: required, trimmed, valid,
-maximum 190 characters. Password: required, 8–128 characters, confirmation must
-match; never trim passwords. `phone` (max 30) and `address` (max 255) are optional;
-Flutter omits blank values. Server validation remains mandatory.
+`name` and `school_email` are required. `director_email` is optional and
+distinct from `school_email`. If `invite_director=true`, a director's personal
+email must also be provided. With a personal email and no invitation, the API
+requires a currently verified, eligible personal user who is not directing
+another active school. Director assignment is optional at creation.
 
-## Successful response
+**No `password` or `password_confirmation` is sent when creating the school.**
+The official mailbox holder uses the activation link to set the password later.
+
+## 201 response
 
 ```json
 {
-  "school": {"id": 10, "name": "Example School", "organization_id": null},
-  "account": {"id": 50, "email": "school@example.org", "role": "school"}
+  "school": {
+    "id": 10, "name": "Example School",
+    "email": "office@example.org", "organization_id": null,
+    "activation_status": "pending"
+  },
+  "account": {"id": 50, "email": "office@example.org", "role": "school_identity"}
 }
 ```
 
-IDs must be positive JSON integers. `school.organization_id` must be present:
-null for independent, the authenticated institution's ID for affiliated. Account
-email must match the submitted email (case insensitive). Account role is `school`.
-Only a valid `201` response confirms success; a school record alone is insufficient.
-Extra response fields are ignored. Flutter never saves provisioning credentials or
-replaces the admin/institution token. Backend must hash the password and create
-school + account + scope atomically, enforce email uniqueness, and roll back on
-failure. Independent school provisioning requires nullable institution ownership
-or an equivalent schema approved before implementing this contract.
+An optional `director` or `invitation` object may be present. These
+represent separate personal director identities; neither replaces the
+official school account. The API never returns the school password or
+activation token. Flutter validates exact school scope and mailbox matching
+and does not overwrite the authenticated administrator's session.
 
-## Errors and lifecycle
+## Activation lifecycle
 
-| HTTP | Flutter behavior |
-| --- | --- |
-| 401 | Session expired; existing auth transport handles session invalidation |
-| 403 | Permission denied |
-| 404 / 405 / 501 | Service not yet available; never fall back to record creation |
-| 409 | Account/school conflict; ask user to check before retrying |
-| 422 | Validation summary and field markers from `errors` keys |
-| 429 | Wait before retrying |
-| Other failure / malformed success | No success confirmation; check account before resubmitting |
+- A random, non-disclosed password prevents login until the school mailbox
+  holder receives a single-use, 24-hour activation link.
+- React handles `/school/activate#token=...` and posts `token`,
+  `password` and `password_confirmation` (12–128 characters) to the API.
+- The token is stored hashed and is consumed in an atomic transaction;
+  replay, expiry or a disabled school/institution are rejected.
+- On successful activation, `email_verified_at` is set and login works
+  through the official school mailbox. Role `school_identity` is restricted
+  to profile viewing and logout; no director, student, teacher, timetable,
+  attendance or promotion rights.
+- Directors retain separate personal logins and revocable assignments.
 
-Validation example: `{"errors":{"email":["Already in use"]}}`. Recognized field
-keys: name, email, phone, address, password, password_confirmation. UI uses localized
-field markers rather than displaying arbitrary raw server errors or HTML.
+## Compatibility and failures
 
-Flutter disables fields and submission while pending, checks widget lifecycle
-before updating UI, and applies a 30-second deadline. It never automatically retries
-POST requests. Timeout/disconnection after submission is ambiguous: a server may
-have committed the account. The UI tells the operator to check account existence
-before resubmitting. Backend must prevent duplicate provisioning. After confirmed
-success, Flutter clears password fields and prevents a second submission.
+The legacy director-first request *without `school_email`* is still accepted
+by Laravel to avoid interrupting older deployed clients. All new Flutter
+requests use `school_email`. Backend remains authoritative on validation,
+authorization, and de-duplication.
 
-## Validation and remaining work
+401: unauthenticated; 403: forbidden; 409: duplicate or active-director conflict;
+422: invalid form; 429: rate limited; other errors: no confirmed success.
+After ambiguous network failure, check the school directory before retrying.
 
-Repository tests cover request shapes, scope resolution/mismatch, strict success
-parsing, and failure responses. Widget tests cover validation, pending duplicate
-submission, errors, success, leaving the screen during a request, and Arabic/English.
+## Validation
 
-Backend implementation and live end-to-end school login remain outstanding. This
-contract provisions an identity; school login routing, director assignments,
-enrollment, and the other roadmap phases are separate work.
+The Flutter repository and widget tests, Laravel feature tests, React build,
+PostgreSQL migrations, and full CI must pass before merge. A separate staging
+test must confirm real email delivery, school activation, limited role access,
+and safe director replacement. No production school records are silently
+migrated or replaced by this change.
