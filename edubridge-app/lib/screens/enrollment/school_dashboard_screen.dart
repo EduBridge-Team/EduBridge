@@ -1,3 +1,6 @@
+import '../school_transfers/school_transfers_screen.dart';
+import '../../services/transfers/school_transfer_repository.dart';
+import '../../services/schools/school_management_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
@@ -43,9 +46,12 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.gateway != widget.gateway) {
       _controller.dispose();
-      _controller = SchoolEnrollmentController(widget.gateway ?? SchoolEnrollmentRepository())..reload();
+      _controller = SchoolEnrollmentController(
+          widget.gateway ?? SchoolEnrollmentRepository())
+        ..reload();
     }
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _controller.reload();
@@ -78,173 +84,202 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
         sections: expected.sections,
       ),
     );
-    if (mounted && decision != null && identical(controller, _controller) && identical(expected, controller.snapshot)) {
+    if (mounted &&
+        decision != null &&
+        identical(controller, _controller) &&
+        identical(expected, controller.snapshot)) {
       await controller.decide(request, decision);
     }
   }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _controller,
-    builder: (context, child) {
-      final l10n = context.l10n;
-      final data = _controller.snapshot;
-      return Scaffold(
-        appBar: BrandAppBar(
-          leading: const BackButton(),
-          toolbarHeight: MediaQuery.textScalerOf(context)
-              .scale(80)
-              .clamp(96, 160)
-              .toDouble(),
-          title: DashboardProfileIdentity(
-            roleLabel: l10n.schoolRole,
-            subtitle: data?.identity.school.name ?? l10n.enrollmentSchoolTitle,
-          ),
-          actions: [
-            DashboardHeaderActions(
-              menuIcon: Icons.menu,
+        animation: _controller,
+        builder: (context, child) {
+          final l10n = context.l10n;
+          final data = _controller.snapshot;
+          return Scaffold(
+            appBar: BrandAppBar(
+              leading: const BackButton(),
+              toolbarHeight: MediaQuery.textScalerOf(context)
+                  .scale(80)
+                  .clamp(96, 160)
+                  .toDouble(),
+              title: DashboardProfileIdentity(
+                roleLabel: l10n.schoolRole,
+                subtitle:
+                    data?.identity.school.name ?? l10n.enrollmentSchoolTitle,
+              ),
               actions: [
-                DashboardMenuAction(
-                  id: 'theme',
-                  label: l10n.switchAppearance,
-                  icon: Icons.brightness_6_outlined,
-                  onSelected: toggleThemeMode,
-                ),
-                DashboardMenuAction(
-                  id: 'legal',
-                  label: l10n.privacyAndAccount,
-                  icon: Icons.privacy_tip_outlined,
-                  onSelected: () => const LegalLinksButton().show(context),
-                ),
-                DashboardMenuAction(
-                  id: 'logout',
-                  label: l10n.logout,
-                  icon: Icons.logout,
-                  destructive: true,
-                  onSelected: _logout,
+                DashboardHeaderActions(
+                  menuIcon: Icons.menu,
+                  actions: [
+                    if (data != null)
+                      DashboardMenuAction(
+                        id: 'school-transfers',
+                        label:
+                            Localizations.localeOf(context).languageCode == 'en'
+                                ? 'School transfers'
+                                : 'النقل بين المدارس',
+                        icon: Icons.swap_horiz,
+                        onSelected: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                                builder: (_) => SchoolTransfersScreen(
+                                    gateway: SchoolTransferRepository(
+                                        schoolId: data.identity.school.id,
+                                        repository:
+                                            SchoolManagementRepository())))),
+                      ),
+                    DashboardMenuAction(
+                      id: 'theme',
+                      label: l10n.switchAppearance,
+                      icon: Icons.brightness_6_outlined,
+                      onSelected: toggleThemeMode,
+                    ),
+                    DashboardMenuAction(
+                      id: 'legal',
+                      label: l10n.privacyAndAccount,
+                      icon: Icons.privacy_tip_outlined,
+                      onSelected: () => const LegalLinksButton().show(context),
+                    ),
+                    DashboardMenuAction(
+                      id: 'logout',
+                      label: l10n.logout,
+                      icon: Icons.logout,
+                      destructive: true,
+                      onSelected: _logout,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: _controller.reload,
-          child: SafeArea(
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  l10n.enrollmentSchoolTitle,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                OutlinedButton.icon(
-                  onPressed: _controller.loading || _controller.busy
-                      ? null
-                      : _controller.reload,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.enrollmentReload),
-                ),
-                OutlinedButton.icon(
-                  key: const ValueKey('open-school-academics'),
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const AcademicScreen(),
+            body: RefreshIndicator(
+              onRefresh: _controller.reload,
+              child: SafeArea(
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Text(
+                      l10n.enrollmentSchoolTitle,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                  ),
-                  icon: const Icon(Icons.school_outlined),
-                  label: Text(l10n.academicTitle),
-                ),
-                OutlinedButton.icon(
-                  key: const ValueKey('open-school-internal-accounts'),
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SchoolInternalAccountsScreen(),
+                    OutlinedButton.icon(
+                      onPressed: _controller.loading || _controller.busy
+                          ? null
+                          : _controller.reload,
+                      icon: const Icon(Icons.refresh),
+                      label: Text(l10n.enrollmentReload),
                     ),
-                  ),
-                  icon: const Icon(Icons.manage_accounts_outlined),
-                  label: Text(Localizations.localeOf(context).languageCode == 'en'
-                      ? 'School internal accounts'
-                      : 'الحسابات الداخلية للمدرسة'),
-                ),
-                OutlinedButton.icon(
-                  key: const ValueKey('open-school-annual-promotion'),
-                  onPressed: _controller.loading || _controller.busy || data == null
-                      ? null
-                      : () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const SchoolAnnualPromotionScreen(),
+                    OutlinedButton.icon(
+                      key: const ValueKey('open-school-academics'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const AcademicScreen(),
+                        ),
+                      ),
+                      icon: const Icon(Icons.school_outlined),
+                      label: Text(l10n.academicTitle),
+                    ),
+                    OutlinedButton.icon(
+                      key: const ValueKey('open-school-internal-accounts'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const SchoolInternalAccountsScreen(),
+                        ),
+                      ),
+                      icon: const Icon(Icons.manage_accounts_outlined),
+                      label: Text(
+                          Localizations.localeOf(context).languageCode == 'en'
+                              ? 'School internal accounts'
+                              : 'الحسابات الداخلية للمدرسة'),
+                    ),
+                    OutlinedButton.icon(
+                      key: const ValueKey('open-school-annual-promotion'),
+                      onPressed: _controller.loading ||
+                              _controller.busy ||
+                              data == null
+                          ? null
+                          : () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) =>
+                                      const SchoolAnnualPromotionScreen(),
+                                ),
+                              ),
+                      icon: const Icon(Icons.school_outlined),
+                      label: Text(
+                          Localizations.localeOf(context).languageCode == 'en'
+                              ? 'Annual promotion'
+                              : 'الترفيع السنوي'),
+                    ),
+                    if (_controller.loading || _controller.busy)
+                      const LinearProgressIndicator(),
+                    if (_controller.saved)
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          l10n.enrollmentSaved,
+                          key: const ValueKey('school-enrollment-saved'),
+                        ),
+                      ),
+                    if (_controller.error != null)
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          enrollmentFailureMessage(l10n, _controller.error!),
+                          key: const ValueKey('school-enrollment-error'),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
                           ),
                         ),
-                  icon: const Icon(Icons.school_outlined),
-                  label: Text(Localizations.localeOf(context).languageCode == 'en'
-                      ? 'Annual promotion'
-                      : 'الترفيع السنوي'),
-                ),
-                if (_controller.loading || _controller.busy)
-                  const LinearProgressIndicator(),
-                if (_controller.saved)
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      l10n.enrollmentSaved,
-                      key: const ValueKey('school-enrollment-saved'),
-                    ),
-                  ),
-                if (_controller.error != null)
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      enrollmentFailureMessage(l10n, _controller.error!),
-                      key: const ValueKey('school-enrollment-error'),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
                       ),
-                    ),
-                  ),
-                if (data != null) ...[
-                  Text(
-                    data.identity.school.name,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Text(
-                    '${l10n.enrollmentPending}: ${data.requests.where((r) => r.status == EnrollmentStatus.pending).length}',
-                  ),
-                  Text(
-                    l10n.enrollmentRequests,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  if (data.requests.isEmpty) Text(l10n.enrollmentNoRequests),
-                  if (data.sections.isEmpty) Text(l10n.enrollmentNoSections),
-                  for (final request in data.requests)
-                    EnrollmentRequestCard(
-                      request: request,
-                      actions: [
-                        if (request.status == EnrollmentStatus.pending) ...[
-                          FilledButton(
-                            key: ValueKey('enrollment-approve-${request.id}'),
-                            onPressed:
-                                _controller.canWrite && data.sections.isNotEmpty
-                                ? () => _decide(request, true)
-                                : null,
-                            child: Text(l10n.enrollmentApprove),
-                          ),
-                          OutlinedButton(
-                            key: ValueKey('enrollment-reject-${request.id}'),
-                            onPressed: _controller.canWrite
-                                ? () => _decide(request, false)
-                                : null,
-                            child: Text(l10n.enrollmentReject),
-                          ),
-                        ],
-                      ],
-                    ),
-                ],
-              ],
+                    if (data != null) ...[
+                      Text(
+                        data.identity.school.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Text(
+                        '${l10n.enrollmentPending}: ${data.requests.where((r) => r.status == EnrollmentStatus.pending).length}',
+                      ),
+                      Text(
+                        l10n.enrollmentRequests,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      if (data.requests.isEmpty)
+                        Text(l10n.enrollmentNoRequests),
+                      if (data.sections.isEmpty)
+                        Text(l10n.enrollmentNoSections),
+                      for (final request in data.requests)
+                        EnrollmentRequestCard(
+                          request: request,
+                          actions: [
+                            if (request.status == EnrollmentStatus.pending) ...[
+                              FilledButton(
+                                key: ValueKey(
+                                    'enrollment-approve-${request.id}'),
+                                onPressed: _controller.canWrite &&
+                                        data.sections.isNotEmpty
+                                    ? () => _decide(request, true)
+                                    : null,
+                                child: Text(l10n.enrollmentApprove),
+                              ),
+                              OutlinedButton(
+                                key:
+                                    ValueKey('enrollment-reject-${request.id}'),
+                                onPressed: _controller.canWrite
+                                    ? () => _decide(request, false)
+                                    : null,
+                                child: Text(l10n.enrollmentReject),
+                              ),
+                            ],
+                          ],
+                        ),
+                    ],
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       );
-    },
-  );
 }

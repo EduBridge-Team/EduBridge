@@ -9,6 +9,8 @@ import '../enrollment/school_dashboard_screen.dart';
 import '../school_internal_accounts_screen.dart';
 import 'school_identity_settings_screen.dart';
 import 'school_operations_screen.dart';
+import '../school_transfers/school_transfers_screen.dart';
+import '../../services/transfers/school_transfer_repository.dart';
 
 class SchoolManagementScreen extends StatefulWidget {
   const SchoolManagementScreen({super.key, this.repository, this.personalHome});
@@ -68,6 +70,7 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
           for (final permission in permissions.where(labels.containsKey))
             OutlinedButton(onPressed: () => _open(SchoolOperationsScreen(repository: _repository.scoped((_data!['school'] as Map)['id'] as int), category: permission, schoolId: (_data!['school'] as Map)['id'] as int)), child: Text(labels[permission]!)),
           if (permissions.contains('enrollment')) ...[
+            OutlinedButton(onPressed: () => _open(SchoolTransfersScreen(gateway: SchoolTransferRepository(schoolId: (_data!['school'] as Map)['id'] as int, repository: _repository))), child: Text(t('النقل بين المدارس', 'School transfers'))),
             OutlinedButton(onPressed: () => _open(const SchoolDashboardScreen()), child: Text(t('طلبات التسجيل', 'Enrollment requests'))),
             FilledButton(onPressed: () => _open(SchoolAnnualPromotionScreen(gateway: ManagedAcademicRepository(_repository.scoped((_data!['school'] as Map)['id'] as int)), enableApproval: true)), child: Text(t('الترفيع السنوي', 'Annual progression'))),
           ],

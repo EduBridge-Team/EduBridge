@@ -54,7 +54,12 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byType(BrandAppBar), findsOneWidget);
+        expect(find.byKey(const ValueKey('director-profile-documents')),
+            findsOneWidget);
+        await tester.scrollUntilVisible(find.byType(TextFormField), 200,
+            scrollable: find.byType(Scrollable).first);
         await tester.ensureVisible(find.byType(TextFormField));
+        await tester.pumpAndSettle();
         await tester.enterText(
           find.byType(TextFormField),
           'person@example.org',
@@ -91,7 +96,10 @@ void main() {
         curriculumHost(SchoolDirectorAppointmentScreen(gateway: gateway), 'en'),
       );
       await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.byType(TextFormField), 200,
+          scrollable: find.byType(Scrollable).first);
       await tester.ensureVisible(find.byType(TextFormField));
+      await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField), 'person@example.org');
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();

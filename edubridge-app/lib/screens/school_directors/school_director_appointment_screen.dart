@@ -6,6 +6,7 @@ import '../../services/schools/director_api_client.dart';
 import '../../services/schools/school_director_appointment_repository.dart';
 import '../../theme.dart';
 import 'director_failure_message.dart';
+import 'school_director_profiles_screen.dart';
 
 class SchoolDirectorAppointmentScreen extends StatefulWidget {
   const SchoolDirectorAppointmentScreen({super.key, this.gateway});
@@ -240,6 +241,23 @@ class _SchoolDirectorAppointmentScreenState
                       else
                         SelectableText(
                             '${_director!.name}\n${_director!.email}'),
+                    ],
+                    if (!_loading && _failure == null && _school != null) ...[
+                      OutlinedButton.icon(
+                        key: const ValueKey('director-profile-documents'),
+                        onPressed: _saving
+                            ? null
+                            : () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                    builder: (_) =>
+                                        const SchoolDirectorProfilesScreen())),
+                        icon: const Icon(Icons.folder_outlined),
+                        label: Text(_tr('الملفات الإدارية ومستندات المديرين',
+                            'Director administrative profiles and documents')),
+                      ),
+                      Text(_tr(
+                          'الملفات الإدارية منفصلة عن حساب الدخول. يتطلب عرضها وتعديلها توفر خدمة الملفات.',
+                          'Administrative profiles are separate from the login account. Viewing and editing require the profile service.')),
                     ],
                     if (_saved)
                       Semantics(
