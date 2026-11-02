@@ -13,7 +13,7 @@ class SchoolAnnualPromotionContractTest extends TestCase
         parent::setUp();
         Schema::create('organizations', function (Blueprint $t) { $t->id(); $t->boolean('is_active'); });
         Schema::create('schools', function (Blueprint $t) { $t->id(); $t->string('name')->default('School'); $t->boolean('is_active')->default(true); $t->unsignedBigInteger('organization_id')->nullable(); });
-        Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id'); });
+        Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id')->nullable(); });
         Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->integer('position'); });
         Schema::create('academic_years', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->date('starts_on'); });
         Schema::create('sections', function (Blueprint $t) {
