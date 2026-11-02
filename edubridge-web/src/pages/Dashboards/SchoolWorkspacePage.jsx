@@ -23,12 +23,15 @@ export default function SchoolWorkspacePage() {
       {resource.error && <p role="alert">{t('تعذر فتح المدرسة. تأكد من التكليف النشط وتوثيق حسابك.', 'School access is unavailable. Check your active assignment and account verification.')}</p>}
     </section>
     {resource.data && <div key={resource.data.school.id + ':' + resource.data.role}>
+      {resource.data.role === 'school' && <p role="status">
+        {t('هذا حساب المدرسة الرسمي للعرض والتحقق من هوية المدرسة. إدارة الصفوف والطلاب والصلاحيات تتم عبر حساب المدير الشخصي.', 'This is the official read-only school identity. Operational administration remains with the director personal account.')}
+      </p>}
       {resource.data.role === 'director' && <>
         <SchoolDomainPanel schoolId={resource.data.school.id} onConfirmed={() => setRevision(value => value + 1)} />
         <SchoolInternalAccountsPanel schoolId={resource.data.school.id} revision={revision} />
         <SchoolDeputiesPanel schoolId={resource.data.school.id} />
       </>}
-      <SchoolOperationsPanel schoolId={resource.data.school.id} key={JSON.stringify(resource.data.permissions)} permissions={resource.data.permissions} />
+      {resource.data.role !== 'school' && <SchoolOperationsPanel schoolId={resource.data.school.id} key={JSON.stringify(resource.data.permissions)} permissions={resource.data.permissions} />}
     </div>}
   </main>
 }
