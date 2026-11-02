@@ -15,7 +15,7 @@ const request = SchoolAccountRequest(
 
 Map<String, dynamic> result({int? organizationId}) => {
   'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-  'director': {'id': 50, 'email': 'school@example.org'},
+  'account': {'id': 50, 'email': 'school@example.org', 'role': 'school', 'activation_pending': true},
 };
 
 http.Response response(Object body, [int status = 201]) =>
@@ -27,14 +27,14 @@ Matcher failsWith(SchoolAccountFailure failure) => throwsA(
 
 void main() {
   test(
-    'independent creation sends credentials only to provisioning endpoint',
+    'independent school creation uses official email without credentials',
     () async {
       final repository = SchoolAccountRepository(
         post: (path, body) async {
           expect(path, '/admin/school-accounts');
           expect(body, {
             'name': 'School',
-            'director_email': 'school@example.org',
+            'email': 'school@example.org',
           });
           return response(result());
         },
@@ -178,11 +178,11 @@ void main() {
     [],
     {
       ...result(),
-      'director': {'id': 50, 'email': 'other@example.org'},
+      'account': {'id': 50, 'email': 'other@example.org', 'role': 'school', 'activation_pending': true},
     },
     {
       ...result(),
-      'director': {'id': 0, 'email': 'school@example.org'},
+      'account': {'id': 0, 'email': 'school@example.org', 'role': 'school', 'activation_pending': true},
     },
     result(organizationId: 4),
     {
