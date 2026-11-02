@@ -38,9 +38,9 @@ void main() {
           await tester.tap(submit);
           await tester.pumpAndSettle();
           final l = await AppLocalizations.delegate.load(Locale(language));
-          expect(find.text(l.schoolAccountSuccess), findsOneWidget);
+          expect(find.text(language == 'en' ? 'School created. Activation link sent to the official school mailbox.' : 'تم إنشاء المدرسة وإرسال رابط التفعيل إلى بريدها الرسمي.'), findsOneWidget);
           expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget,
-            reason: 'The receipt explains how the existing director signs in');
+            reason: 'Receipt explains separate school activation and director access');
           expect(find.byKey(const ValueKey('school-account-created-email')), findsOneWidget);
           expect(find.text('school@example.org'), findsOneWidget);
           expect(find.text('password123'), findsNothing);
@@ -70,7 +70,7 @@ void main() {
       await tester.pumpWidget(host(SchoolAccountForm(scope: SchoolAccountScope.affiliated, repository: second), 'en'));
       await tester.pumpAndSettle();
       expect(field('password'), findsNothing);
-      expect(tester.widget<TextFormField>(field('director_email')).controller!.text, isEmpty);
+      expect(tester.widget<TextFormField>(field('school_email')).controller!.text, isEmpty);
       await fill(tester);
       await tester.tap(submit);
       await tester.pump();
