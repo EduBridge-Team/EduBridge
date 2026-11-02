@@ -24,8 +24,6 @@ class SchoolOperationsController extends Controller
         'students' => ['enrollment', 'GET', InstitutionStudentEnrollmentController::class, 'history'],
         'student-status' => ['enrollment', 'PATCH', InstitutionStudentEnrollmentController::class, 'close', 'enrollment_id'],
         'student-transfer' => ['enrollment', 'POST', InstitutionStudentEnrollmentController::class, 'transfer', 'enrollment_id'],
-        'promotion-preview' => ['enrollment', 'POST', JabaliaBulkPromotionController::class, 'preview'],
-        'promotion-approve' => ['enrollment', 'POST', JabaliaBulkPromotionController::class, 'approve'],
         'staff-attendance' => ['attendance', 'GET', SchoolStaffAttendanceController::class, 'index'],
         'staff-attendance-mark' => ['attendance', 'PUT', SchoolStaffAttendanceController::class, 'mark'],
         'attendance' => ['attendance', 'GET', InstitutionAttendanceController::class, 'index'],
