@@ -49,6 +49,9 @@ class SchoolDirectorInvitationController extends Controller
 
     public function accept(Request $request): JsonResponse
     {
+        // Legacy acceptance of existing users is disabled. A director must activate
+        // a new, separate account via the dedicated invitation endpoint.
+        return response()->json(['error' => 'Use dedicated director activation'], 410);
         $data = $request->validate(['token' => ['required', 'string', 'size:64'], 'preview' => ['sometimes', 'boolean']]);
         return DB::transaction(function () use ($request, $data) {
             $candidate = DB::table('school_director_invitations')->where('token_hash', hash('sha256', $data['token']))->first();
