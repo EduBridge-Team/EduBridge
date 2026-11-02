@@ -19,7 +19,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
         Schema::create('organizations', function (Blueprint $t) { $t->id(); $t->string('slug'); $t->boolean('is_active')->default(true); });
         Schema::create('users', function (Blueprint $t) { $t->id(); $t->string('name'); });
         Schema::create('organization_user', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('user_id'); $t->string('role'); $t->boolean('is_active')->default(true); });
-        Schema::create('schools', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('organization_id'); $t->string('name'); });
+        Schema::create('schools', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('organization_id')->nullable(); $t->string('name'); });
         Schema::create('academic_years', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
         Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
         Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); $t->unsignedBigInteger('academic_year_id'); $t->string('name'); });
@@ -197,6 +197,59 @@ class InstitutionTimetableAttendanceTest extends TestCase
         DB::table('organizations')->insert(['id'=>2,'slug'=>'other','is_active'=>true]);
         DB::table('schools')->insert(['id'=>3,'organization_id'=>2,'name'=>'Foreign school']);
         $this->assertSame(404, $controller->destroy($this->tenantRequest([]), 'jabalia', 3, 999)->getStatusCode());
+    }
+
+    public function test_non_jabalia_organization_rejects_teacher_booking_in_two_schools_same_slot(): void
+    {
+        DB::table('organizations')->insert(['id' => 2, 'slug' => 'demo', 'is_active' => true]);
+        DB::table('organization_user')->insert(['organization_id' => 2, 'user_id' => 10, 'role' => 'teacher', 'is_active' => true]);
+        DB::table('schools')->insert([
+            ['id' => 3, 'organization_id' => 2, 'name' => 'Demo A'],
+            ['id' => 4, 'organization_id' => 2, 'name' => 'Demo B'],
+        ]);
+        DB::table('academic_years')->insert([
+            ['id' => 3, 'school_id' => 3, 'name' => '2026/2027'],
+            ['id' => 4, 'school_id' => 4, 'name' => '2026/2027'],
+        ]);
+        DB::table('grades')->insert([
+            ['id' => 3, 'school_id' => 3, 'name' => 'Grade A'],
+            ['id' => 4, 'school_id' => 4, 'name' => 'Grade B'],
+        ]);
+        DB::table('sections')->insert([
+            ['id' => 3, 'grade_id' => 3, 'academic_year_id' => 3, 'name' => 'A'],
+            ['id' => 4, 'grade_id' => 4, 'academic_year_id' => 4, 'name' => 'B'],
+        ]);
+        DB::table('subjects')->insert([
+            ['id' => 3, 'school_id' => 3, 'name' => 'English'],
+            ['id' => 4, 'school_id' => 4, 'name' => 'English'],
+        ]);
+        $request = fn (int $year, int $section, int $subject) =>
+            tap(Request::create('/', 'POST', [
+                'academic_year_id' => $year, 'section_id' => $section,
+                'subject_id' => $subject, 'teacher_id' => 10,
+                'weekday' => 1, 'period_number' => 2,
+            ]), fn ($request) => $request->attributes->set('organization', (object) ['id' => 2, 'slug' => 'demo']));
+        $controller = app(InstitutionTimetableController::class);
+        $this->assertSame(201, $controller->store($request(3, 3, 3), 'demo', 3)->getStatusCode());
+        $this->assertSame(409, $controller->store($request(4, 4, 4), 'demo', 4)->getStatusCode());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_independent_school_can_write_and_reject_duplicate_timetable_slot(): void
+    {
+        DB::table('schools')->insert(['id' => 5, 'organization_id' => null, 'name' => 'Independent']);
+        DB::table('academic_years')->insert(['id' => 5, 'school_id' => 5, 'name' => '2026/2027']);
+        DB::table('grades')->insert(['id' => 5, 'school_id' => 5, 'name' => 'Grade']);
+        DB::table('sections')->insert(['id' => 5, 'grade_id' => 5, 'academic_year_id' => 5, 'name' => 'A']);
+        DB::table('subjects')->insert(['id' => 5, 'school_id' => 5, 'name' => 'Arabic']);
+        $request = fn () => tap(Request::create('/', 'POST', [
+            'academic_year_id' => 5, 'section_id' => 5,
+            'subject_id' => 5, 'weekday' => 1, 'period_number' => 2,
+        ]), fn ($request) => $request->attributes->set('organization', (object) ['id' => null, 'slug' => null]));
+        $controller = app(InstitutionTimetableController::class);
+        $this->assertSame(201, $controller->store($request(), '', 5)->getStatusCode());
+        $this->assertSame(409, $controller->store($request(), '', 5)->getStatusCode());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
     }
 
     private function tenantRequest(array $payload): Request
