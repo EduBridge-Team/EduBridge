@@ -20,9 +20,11 @@ void main() {
       'name': 'School One',
       'organization_id': organizationId,
     },
-    'director': {
+    'account': {
       'id': 20,
       'email': 'school@example.com',
+      'role': 'school',
+      'activation_pending': true,
     },
   });
 
@@ -39,7 +41,7 @@ void main() {
     );
     final account = await repo.createIndependent(request);
     expect(postedPath, '/admin/school-accounts');
-    expect(postedBody!['director_email'], 'school@example.com');
+    expect(postedBody!['email'], 'school@example.com');
     expect(postedBody!.containsKey('password_confirmation'), isFalse);
     expect(postedBody!.containsKey('password'), isFalse);
     expect(account.organizationId, isNull);
