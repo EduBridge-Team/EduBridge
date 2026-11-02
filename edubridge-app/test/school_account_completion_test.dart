@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/schools/school_account_form.dart' show SchoolAccountForm, SchoolAccountScope;
 import 'package:edubridge_app/services/schools/school_account_repository.dart';
 import 'package:flutter/material.dart';
