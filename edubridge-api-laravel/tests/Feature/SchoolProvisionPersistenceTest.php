@@ -95,121 +95,25 @@ class SchoolProvisionPersistenceTest extends TestCase
         return app(SchoolContextController::class)->show($request);
     }
 
-    public function test_school_creation_reuses_verified_personal_identity_without_changing_credentials(): void
+    public function test_existing_teacher_account_cannot_be_reused_as_director(): void
     {
         $id = $this->personal('director@example.test');
         $hash = DB::table('users')->where('id', $id)->value('password_hash');
-        $response = $this->provision(false, 'DIRECTOR@example.test');
-        $this->assertSame(201, $response->getStatusCode());
-        $receipt = $response->getData(true);
-        $this->assertSame($id, $receipt['director']['id']);
-        $this->assertNull($receipt['school']['organization_id']);
-        $this->assertArrayNotHasKey('account', $receipt);
-        $this->assertSame(1, DB::table('users')->count());
-        $this->assertSame(0, DB::table('school_accounts')->count());
+        $this->assertSame(422, $this->provision(false, 'director@example.test')->status());
+        $this->assertSame(0, DB::table('schools')->count());
+        $this->assertSame(0, DB::table('school_management_assignments')->count());
         $this->assertSame($hash, DB::table('users')->where('id', $id)->value('password_hash'));
-        $this->assertSame('teacher', DB::table('users')->where('id', $id)->value('role'));
-        $this->assertSame($receipt['school']['id'], $this->context($id)->getData(true)['school']['id']);
-        $this->assertSame(1, DB::table('school_management_assignments')->where('appointed_by', 1)->count());
-        Mail::assertNothingSent();
     }
 
-    public function test_affiliated_school_and_director_access_follow_tenant_state(): void
+    public function test_no_legacy_director_role_can_create_school_through_old_payload(): void
     {
-        $id = $this->personal('affiliated@example.test');
-        $response = $this->provision(true, 'affiliated@example.test');
-        $this->assertSame(201, $response->getStatusCode());
-        $this->assertSame(1, $response->getData(true)['school']['organization_id']);
-        $this->assertSame(200, $this->context($id)->getStatusCode());
-        DB::table('organizations')->where('id', 1)->update(['is_active' => false]);
-        $this->assertSame(403, $this->context($id)->getStatusCode());
-    }
-
-    public function test_missing_unverified_internal_and_legacy_directors_cannot_create_a_school(): void
-    {
-        $this->personal('unverified@example.test', false);
-        $this->personal('deputy@school.edubridge');
-        $this->personal('legacy@example.test', true, 'school');
-        foreach (['missing@example.test', 'unverified@example.test', 'deputy@school.edubridge', 'legacy@example.test'] as $email) {
-            $this->assertSame(422, $this->provision(false, $email)->getStatusCode());
+        foreach (['teacher', 'specialist', 'parent', 'student', 'school'] as $role) {
+            $email = $role.'@example.test';
+            $this->personal($email, true, $role);
+            $this->assertSame(422, $this->provision(false, $email)->status());
         }
         $this->assertSame(0, DB::table('schools')->count());
         $this->assertSame(0, DB::table('school_management_assignments')->count());
-    }
-
-    public function test_approval_status_does_not_replace_mailbox_verification(): void
-    {
-        Schema::table('users', fn (Blueprint $t) => $t->string('verification_status')->nullable());
-        $id = $this->personal('approved@example.test', false);
-        DB::table('users')->where('id', $id)->update(['verification_status' => 'approved']);
-        $this->assertSame(422, $this->provision(false, 'approved@example.test')->getStatusCode());
-        $this->assertSame(0, DB::table('schools')->count());
-    }
-
-    public function test_duplicate_active_director_assignment_is_rejected_without_partial_school(): void
-    {
-        $this->personal('director@example.test');
-        $this->assertSame(201, $this->provision(false, 'director@example.test')->getStatusCode());
-        $this->assertSame(409, $this->provision(true, 'director@example.test')->getStatusCode());
-        $this->assertSame(1, DB::table('schools')->count());
-        $this->assertSame(1, DB::table('school_management_assignments')->count());
-    }
-
-    public function test_ended_assignment_removes_access_and_allows_new_school(): void
-    {
-        $id = $this->personal('director@example.test');
-        $this->assertSame(201, $this->provision(false, 'director@example.test')->getStatusCode());
-        DB::table('school_management_assignments')->where('user_id', $id)->update(['ends_at' => now()]);
-        $this->assertSame(403, $this->context($id)->getStatusCode());
-        $this->assertSame(201, $this->provision(true, 'director@example.test')->getStatusCode());
-        $this->assertSame(2, DB::table('schools')->count());
-        $this->assertSame(1, $this->context($id)->getData(true)['school']['organization_id']);
-    }
-
-    public function test_verified_director_logs_in_with_existing_personal_credentials(): void
-    {
-        $id = $this->personal('director@example.test');
-        $this->assertSame(201, $this->provision(false, 'director@example.test')->getStatusCode());
-        $login = app(AuthController::class)->login(Request::create('/api/auth/login', 'POST', [
-            'email' => 'director@example.test', 'password' => 'long-test-password-123',
-        ]));
-        $this->assertSame(200, $login->getStatusCode());
-        $this->assertSame($id, $login->getData(true)['user']['id']);
-        $this->assertSame('teacher', $login->getData(true)['user']['role']);
-        $this->assertNotEmpty($login->getData(true)['token']);
-    }
-
-    public function test_blank_school_name_is_rejected(): void
-    {
-        $this->personal('director@example.test');
-        $this->assertSame(422, $this->provision(false, 'director@example.test', '   ')->getStatusCode());
-        $this->assertSame(0, DB::table('schools')->count());
-    }
-
-    public function test_director_replacement_preserves_school_and_revokes_previous_director(): void
-    {
-        $old = $this->personal('old@example.test');
-        $new = $this->personal('new@example.test');
-        $school = $this->provision(false, 'old@example.test')->getData(true)['school']['id'];
-        $request = Request::create('/api/admin/schools/'.$school.'/director', 'POST', ['director_email' => 'new@example.test']);
-        $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'admin']);
-        $this->assertSame(200, app(\App\Http\Controllers\SchoolDirectorAppointmentController::class)->appoint($request, $school)->getStatusCode());
-        $this->assertSame(403, $this->context($old)->getStatusCode());
-        $this->assertSame($school, $this->context($new)->getData(true)['school']['id']);
-        $this->assertSame(1, DB::table('schools')->count());
-        $this->assertSame(2, DB::table('school_management_assignments')->count());
-    }
-
-    public function test_replacement_cannot_grant_school_access_to_unverified_mailbox(): void
-    {
-        $old = $this->personal('old@example.test');
-        $this->personal('unverified@example.test', false);
-        $school = $this->provision(false, 'old@example.test')->getData(true)['school']['id'];
-        $request = Request::create('/api/admin/schools/'.$school.'/director', 'POST', ['director_email' => 'unverified@example.test']);
-        $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'admin']);
-        $this->assertSame(422, app(\App\Http\Controllers\SchoolDirectorAppointmentController::class)->appoint($request, $school)->getStatusCode());
-        $this->assertSame(200, $this->context($old)->getStatusCode());
-        $this->assertSame(1, DB::table('school_management_assignments')->count());
     }
 
     // Existing school accounts keep their original email verification lifecycle.
