@@ -15,7 +15,7 @@ class InstitutionStudentEnrollmentTest extends TestCase
     {
         parent::setUp();
         Schema::create('schools', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('organization_id')->nullable(); });
-        Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id'); });
+        Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id')->nullable(); });
         Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
         Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); $t->unsignedBigInteger('academic_year_id'); $t->string('name'); });
         Schema::create('student_enrollments', function (Blueprint $t) {
@@ -32,11 +32,11 @@ class InstitutionStudentEnrollmentTest extends TestCase
             ['id' => 4, 'grade_id' => 3, 'academic_year_id' => 1, 'name' => 'Standalone A'],
             ['id' => 5, 'grade_id' => 3, 'academic_year_id' => 1, 'name' => 'Standalone B'],
         ]);
-        DB::table('student_enrollments')->insert([
+        DB::table('student_enrollments')->insert([[
             'id' => 1, 'section_id' => 1, 'child_id' => 1, 'status' => 'active',
             'enrolled_on' => now()->toDateString(), 'created_at' => now(), 'updated_at' => now(),
         ], ['id'=>3, 'section_id'=>4, 'child_id'=>3, 'status'=>'active',
-            'enrolled_on' => now()->toDateString(), 'created_at' => now(), 'updated_at' => now()]);
+            'enrolled_on' => now()->toDateString(), 'created_at' => now(), 'updated_at' => now()]]);
     }
 
     protected function tearDown(): void
@@ -64,7 +64,7 @@ class InstitutionStudentEnrollmentTest extends TestCase
     {
         $this->assertSame(404, $this->transfer(2, 2)->getStatusCode());
         $this->assertSame(422, $this->transfer(1, 3)->getStatusCode());
-        $this->assertSame(1, DB::table('student_enrollments')->count());
+        $this->assertSame(2, DB::table('student_enrollments')->count());
     }
     public function test_standalone_school_can_list_and_transfer_own_students_without_an_organization(): void
     {
