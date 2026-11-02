@@ -69,7 +69,7 @@ class SchoolAccountActivationController extends Controller
                 $hash = hash('sha256', $token);
                 DB::table('school_account_setup_tokens')->updateOrInsert(
                     ['school_id' => $school->id],
-                    ['token_hash' => $hash, 'expires_at' => now()->addHour(),
+                    ['token_hash' => $hash, 'expires_at' => now()->addHours(24),
                         'created_at' => now(), 'updated_at' => now()]
                 );
                 return [
@@ -100,7 +100,7 @@ class SchoolAccountActivationController extends Controller
                 'intro' => 'لتأكيد البريد الرسمي للمدرسة وإنشاء كلمة المرور، افتح الرابط التالي.',
                 'actionUrl' => $url,
                 'actionText' => 'تفعيل حساب المدرسة',
-                'expiryText' => 'صلاحية الرابط 60 دقيقة فقط.',
+                'expiryText' => 'صلاحية الرابط 24 ساعة فقط.',
                 'ignoreText' => 'إذا لم تطلب هذه الرسالة، يمكنك تجاهلها.',
             ], fn ($message) => $message->to($delivery['email'])
                 ->subject('تفعيل الحساب الرسمي للمدرسة — EduBridge'));
