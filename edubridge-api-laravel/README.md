@@ -211,3 +211,13 @@ php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
 ## خصوصية نور
 
 المسار `POST /api/assistant/chat` يتطلب مصادقة ومحدود بعدد طلبات. يقوم الخادم بإزالة المعرّفات المباشرة الشائعة، مثل عناوين البريد الإلكتروني وأرقام الهاتف أو الهوية الطويلة، قبل إرسال المحادثة إلى Groq. يجب أن تبقى مفاتيح API على الخادم فقط، وألا تُضمَّن داخل تطبيق Flutter أو تُرفع إلى Git.
+
+
+## Official school account activation — production notes
+
+- School accounts use the school's `official_email`, independently from any director's personal login.
+- The one-time setup link is valid for 24 hours for links issued by the updated backend. Previously issued links retain their original expiry. Resend requests are rate-limited (10-minute cooldown).
+- The public page is `/school-account/setup`; the mailbox owner chooses a password of at least 12 characters. Never share setup tokens or passwords in logs or tickets.
+- Production's `users` table may omit `updated_at`. The activation controller checks the column before inserting a user. Do not add a production column solely to work around this issue.
+- After deploying a fix, use an existing unexpired link or request a new one. Check API and web health, then verify school sign-in and its read-only scope. Do not recreate the school or directly insert a user into PostgreSQL.
+- Deployment and database migrations are separate operations; back up and review migrations before applying them.
