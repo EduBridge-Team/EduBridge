@@ -84,8 +84,10 @@ class JwtAuth
 
             // Official school credentials authenticate only the school identity.
             // They never inherit the director's teaching or management permissions.
-            if ($account->role === 'school_identity' && !$request->is(
-                'api/school/official-profile', 'api/auth/logout', 'api/me'
+            if ($account->role === 'school_identity' && !(
+                ($request->is('api/school/official-profile') && $request->isMethod('GET'))
+                || ($request->is('api/me') && $request->isMethod('GET'))
+                || ($request->is('api/auth/logout') && $request->isMethod('POST'))
             )) {
                 return response()->json(['error' => 'Official school account has limited access'], 403);
             }
