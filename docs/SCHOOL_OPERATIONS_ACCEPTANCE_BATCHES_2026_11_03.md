@@ -52,6 +52,23 @@ This update implements verified code changes; it does **not** constitute live pr
 - **Still to accept manually:** attendance write/reload, timetable settings and quota edits, curriculum create/reload, promotion preview/approval with current production data, permission changes and revocation, and mobile/bilingual walkthrough.
 - **Release gate:** full GitHub CI must pass before squash merge. A main-branch merge is *not* a Cloudflare or Oracle deployment confirmation.
 
+## Final acceptance code hardening (2026-11-03)
+
+This is a **code and automated-test checkpoint**, not proof of live school data acceptance.
+
+- **Full annual progression in React:** all active enrollments receive explicit promoted, repeating or leaving-school decisions; the director selects source and target academic years and eligible sections/schools. The React client now uses the same server-authoritative `/school/annual-promotion/roster`, `/preview`, `/approve`, `/operations/{id}` contract as Flutter.
+- **Safety:** The legacy school-scoped single-section `/school/operations/promotion-preview` and `/school/operations/promotion-approve` paths are removed. Institution-level Jabalia operations remain intact. The modern flow validates a complete roster, limits writes to an explicit 15-minute preview token, requires confirmation, creates a unique idempotency key and verifies completed receipts against the school, year pair and counts. Ambiguous network outcomes must be recovered by operation ID rather than blindly retried.
+- **Chronology:** progression ordering depends on academic year start dates, not numeric IDs, so school years created or migrated out of chronological order remain valid.
+- **Regression:** Laravel tests include later-year IDs that decrease, standalone school promotion, former-director revocation with retained school history, and denial of legacy bypass; React tests cover mixed promoted/repeating/transferred decisions, partial or foreign payload rejection and bilingual rendering.
+- **Release gate:** review changed app/API contracts and run all required CI for the exact PR head SHA. Do not deploy to production before the merge. Do not alter school/student production records to prove acceptance.
+
+### Remaining live acceptance (not performed by GitHub CI)
+
+1. Confirm production container and Cloudflare Pages build both run the merged SHA, and that React and Flutter Web contain the new annual-promotion UI.
+2. Use a **disposable test school** or transaction-rolled-back staging copy: source/target academic years, grades, sections, student enrollments, teacher assignments, timetable conflicts, real attendance reports, lesson creation, deputy permissions, year promotion. Do not run final promotion approval on real student records.
+3. Verify access denied for official read-only school account, former director, unauthorized deputy, foreign school, inactive organization and stale session; verify new director retains historical school records.
+4. Verify operation receipts and historical records after login refresh, previous-year snapshots and capacity/duplicate failures; inspect mobile Arabic/English at 320px, 360px, desktop and enlarged type.
+
 ## Release and verification
 
 GitHub merge and production deployment are separate events. Once PR checks pass and it is merged:
