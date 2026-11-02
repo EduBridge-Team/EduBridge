@@ -14,8 +14,8 @@ const request = SchoolAccountRequest(
 );
 
 Map<String, dynamic> result({int? organizationId}) => {
-  'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-  'director': {'id': 50, 'email': 'school@example.org'},
+  'school': {'id': 10, 'name': 'School', 'organization_id': organizationId, 'official_email': 'school@example.org'},
+  'account_setup': {'status': 'pending_verification'},
 };
 
 http.Response response(Object body, [int status = 201]) =>
@@ -34,14 +34,14 @@ void main() {
           expect(path, '/admin/school-accounts');
           expect(body, {
             'name': 'School',
-            'director_email': 'school@example.org',
+            'official_email': 'school@example.org',
           });
           return response(result());
         },
       );
       final account = await repository.createIndependent(request);
       expect(account.schoolId, 10);
-      expect(account.accountId, 50);
+      expect(account.accountId, isNull);
       expect(account.organizationId, isNull);
     },
   );
@@ -178,11 +178,11 @@ void main() {
     [],
     {
       ...result(),
-      'director': {'id': 50, 'email': 'other@example.org'},
+      'school': {'id': 10, 'name': 'School', 'organization_id': null, 'official_email': 'other@example.org'},
     },
     {
       ...result(),
-      'director': {'id': 0, 'email': 'school@example.org'},
+      'school': {'id': 0, 'name': 'School', 'organization_id': null, 'official_email': 'school@example.org'},
     },
     result(organizationId: 4),
     {
