@@ -37,6 +37,11 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])
     ->middleware('throttle:auth-recovery');
 Route::post('/auth/resend-verification', [AuthController::class, 'resendEmailVerification'])
     ->middleware('throttle:auth-recovery');
+Route::post('/school-account/request-setup', [\App\Http\Controllers\SchoolAccountActivationController::class, 'requestSetup'])
+    ->middleware('throttle:3,1');
+Route::post('/school-account/complete-setup', [\App\Http\Controllers\SchoolAccountActivationController::class, 'complete'])
+    ->middleware('throttle:10,1');
+
 Route::get('/auth/verify-email', [AuthController::class, 'verifyEmail'])
     ->middleware('throttle:20,1');
 
