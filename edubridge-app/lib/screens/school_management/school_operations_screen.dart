@@ -7,6 +7,7 @@ import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
 import 'school_operation_form.dart';
 import 'school_attendance_editor.dart';
+import 'school_attendance_report_screen.dart';
 
 class SchoolOperationsScreen extends StatefulWidget {
   const SchoolOperationsScreen({super.key, required this.repository, required this.category, required this.schoolId});
@@ -71,6 +72,13 @@ class _SchoolOperationsScreenState extends State<SchoolOperationsScreen> with Wi
             SchoolOperationForm(key:ValueKey('${selected['action']}-$_version'),definition:selected,references:references,repository:widget.repository,onSaved:_load),
           ],
           if (widget.category=='attendance') ...[
+            OutlinedButton.icon(
+              icon: const Icon(Icons.assessment_outlined),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
+                SchoolAttendanceReportScreen(repository: widget.repository, schoolId: widget.schoolId,
+                  sections: (_references?['sections'] as List? ?? []).whereType<Map>().map((row) => Map<String, dynamic>.from(row)).toList()))),
+              label: Text(t('تقرير الحضور', 'Attendance report')),
+            ),
             OutlinedButton(onPressed:() async { final date=await showDatePicker(context:context,firstDate:DateTime(2000),lastDate:DateTime(2100),initialDate:DateTime.now()); if(mounted && date!=null) _editAttendance(date:date.toIso8601String().substring(0,10)); },child:Text(t('حضور الموظفين','Staff attendance'))),
             for(final session in (_data!['attendance_sessions'] as List? ?? []).whereType<Map>()) OutlinedButton(onPressed:()=>_editAttendance(sessionId:session['id'] as int),child:Text('${session['attendance_date']} — ${session['section_name']}')),
           ],

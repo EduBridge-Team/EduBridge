@@ -4,6 +4,7 @@ import { useSchoolResource } from './useSchoolResource'
 import SchoolOperationForm from './SchoolOperationForm'
 import SchoolStaffAttendancePanel from './SchoolStaffAttendancePanel'
 import SchoolAttendancePanel from './SchoolAttendancePanel'
+import SchoolAttendanceReportPanel from './SchoolAttendanceReportPanel'
 import SchoolPromotionPanel from './SchoolPromotionPanel'
 import SchoolEnrollmentPanel from './SchoolEnrollmentPanel'
 import SchoolTransferInboxPanel from './SchoolTransferInboxPanel'
@@ -36,7 +37,7 @@ export default function SchoolOperationsPanel({ permissions, schoolId, initialCa
     {resource.loading ? <p role="status">{t('جارِ التحميل…', 'Loading…')}</p> : resource.data && <>
       {category !== 'reports' && !reference.loading && !reference.error && <SchoolOperationForm key={category} category={category} references={references} onSaved={reload} />}
       {category === 'enrollment' && <><SchoolEnrollmentPanel onSaved={reload} /><SchoolTransferInboxPanel onSaved={reload} /><SchoolTransferSourcePanel enrollments={resource.data.enrollments || []} onSaved={reload} /><SchoolPromotionPanel schoolId={schoolId} sections={references.sections || []} onSaved={reload} /></>}
-      {category === 'attendance' && <><SchoolAttendancePanel sessions={resource.data.attendance_sessions || []} onSaved={resource.reload} schoolId={schoolId} /><SchoolStaffAttendancePanel schoolId={schoolId} /></>}
+      {category === 'attendance' && <><SchoolAttendancePanel sessions={resource.data.attendance_sessions || []} onSaved={resource.reload} schoolId={schoolId} /><SchoolStaffAttendancePanel schoolId={schoolId} /><SchoolAttendanceReportPanel schoolId={schoolId} sections={references.sections || []} /></>}
       {resource.data.statistics && <div className="role-stats-grid">{Object.entries(resource.data.statistics).map(([key, value]) => <p key={key}>{({ students: t('الطلاب', 'Students'), teachers: t('المعلمون', 'Teachers'), grades: t('الصفوف', 'Grades'), lessons: t('حصص الجدول', 'Timetable lessons'), books: t('الكتب', 'Books') })[key]}: <b>{value}</b></p>)}</div>}
       {lists.map(([key, rows]) => <section key={key}>
         <h3>{({ academic_years: t('السنوات', 'Years'), academic_terms: t('الفصول الدراسية', 'Terms'), grades: t('الصفوف', 'Grades'), sections: t('الشعب', 'Sections'), subjects: t('المواد', 'Subjects'), enrollments: t('سجل الطلاب', 'Student history'), attendance_sessions: t('سجلات الحضور', 'Attendance sessions'), timetable: t('الحصص', 'Timetable entries'), books: t('الكتب', 'Books'), units: t('الوحدات', 'Units'), lessons: t('الدروس', 'Lessons') })[key] || t('السجلات', 'Records')} ({rows.length})</h3>

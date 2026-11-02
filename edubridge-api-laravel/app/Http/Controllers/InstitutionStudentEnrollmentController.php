@@ -93,7 +93,7 @@ class InstitutionStudentEnrollmentController extends Controller
         });
     }
 
-    private function scopedEnrollment(int $organization, int $school, int $id): ?object
+    private function scopedEnrollment(?int $organization, int $school, int $id): ?object
     {
         return DB::table('student_enrollments as se')
             ->join('sections as s', 's.id', '=', 'se.section_id')

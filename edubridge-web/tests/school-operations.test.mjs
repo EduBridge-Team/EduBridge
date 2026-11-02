@@ -25,6 +25,7 @@ test('school provisioning and operation forms render in both languages without s
   try {
     const { default: Form } = await server.ssrLoadModule('/src/components/Institution/SchoolProvisionForm.jsx')
     const { default: Operation } = await server.ssrLoadModule('/src/components/School/SchoolOperationForm.jsx')
+    const { default: AttendanceReport } = await server.ssrLoadModule('/src/components/School/SchoolAttendanceReportPanel.jsx')
     for (const language of ['ar', 'en']) {
       globalThis.localStorage = { getItem: () => language }
       const html = renderToStaticMarkup(createElement(Form, {}))
@@ -34,6 +35,10 @@ test('school provisioning and operation forms render in both languages without s
       assert.match(html, language === 'ar' ? /بريد المدير الجديد غير المسجل/ : /New unused director email/)
       const operation = renderToStaticMarkup(createElement(Operation, { category: 'academic', references: {}, onSaved() {} }))
       assert.match(operation, language === 'ar' ? /تاريخ البداية/ : /Start date/)
+      const report = renderToStaticMarkup(createElement(AttendanceReport, { schoolId: 10, sections: [{id: 1, grade_name: 'Grade', name: 'A'}] }))
+      assert.match(report, language === 'ar' ? /تقرير حضور الطلاب/ : /Student attendance report/)
+      assert.match(report, language === 'ar' ? /من تاريخ/ : /From date/)
+      assert.match(report, /type="date"/)
     }
   } finally { globalThis.localStorage = previous; await server.close() }
 })
