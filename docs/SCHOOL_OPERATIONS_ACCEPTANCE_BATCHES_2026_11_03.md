@@ -42,6 +42,8 @@ Absence of a functioning endpoint is a **blocker**, not a feature completion. Do
 
 ## Batch 2 code integration progress (2026-11-03)
 
+Tracked in PR #1325 (replaces closed PR #1324 to conform to the branch naming policy).
+
 This update implements verified code changes; it does **not** constitute live production acceptance.
 
 - **Standalone school enrollment:** `InstitutionStudentEnrollmentController` supports nullable `organization_id` while retaining school and child scoping. Regression tests cover history, intra-school transfer, withdrawal, and rejection of foreign-school enrollments.
