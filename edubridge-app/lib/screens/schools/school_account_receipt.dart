@@ -18,10 +18,10 @@ class SchoolAccountReceipt extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(account.invitationPending ? (arabic ? 'تم إنشاء المدرسة ودعوة المدير؛ التكليف بانتظار القبول.' : 'School created and director invited; appointment awaits acceptance.') : l.schoolAccountSuccess, key: const ValueKey('school-account-success')),
+          Text(account.accountId == null ? (arabic ? 'تم إنشاء المدرسة. الحساب الرسمي ينتظر التحقق من البريد وتعيين كلمة المرور.' : 'School created. Official account setup awaits email verification and password setup.') : account.invitationPending ? (arabic ? 'تم إنشاء المدرسة ودعوة المدير؛ التكليف بانتظار القبول.' : 'School created and director invited; appointment awaits acceptance.') : l.schoolAccountSuccess, key: const ValueKey('school-account-success')),
           const SizedBox(height: 12),
           Text(
-            account.invitationPending ? (arabic ? 'على المدعو التسجيل بنفس البريد وتأكيد البريد والهوية ثم فتح رابط الدعوة.' : 'The invitee must register with the same email, verify email and identity, then open the invitation link.') : arabic
+            account.accountId == null ? (arabic ? 'يمكن تعيين مدير المدرسة الآن أو لاحقًا من شاشة إدارة المديرين. لن يتاح دخول حساب المدرسة قبل إكمال التفعيل.' : 'You can appoint a director now or later. The school account cannot sign in until activation is implemented.') : account.invitationPending ? (arabic ? 'على المدعو التسجيل بنفس البريد وتأكيد البريد والهوية ثم فتح رابط الدعوة.' : 'The invitee must register with the same email, verify email and identity, then open the invitation link.') : arabic
                 ? 'تم تكليف المدير بحسابه الشخصي الموثّق. يدخل المدير ببريده وكلمة مرور حسابه الحاليين.'
                 : 'The director is assigned through their verified personal account. Sign in with the existing personal email and password.',
             key: const ValueKey('school-account-verification-guidance'),
