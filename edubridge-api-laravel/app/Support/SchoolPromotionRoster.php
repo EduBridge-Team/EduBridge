@@ -11,7 +11,7 @@ final class SchoolPromotionRoster
     {
         $years = DB::table('academic_years')->where('school_id', $school)->whereIn('id', [$sourceYear, $targetYear])->get()->keyBy('id');
         $source = $years->get($sourceYear); $target = $years->get($targetYear);
-        if (!$source || !$target || $targetYear <= $sourceYear || $target->starts_on <= $source->starts_on) {
+        if (!$source || !$target || $sourceYear === $targetYear || $target->starts_on <= $source->starts_on) {
             throw ValidationException::withMessages(['target_year_id' => ['Choose a later school year']]);
         }
         $students = DB::table('student_enrollments as e')->join('sections as s', 's.id', '=', 'e.section_id')
