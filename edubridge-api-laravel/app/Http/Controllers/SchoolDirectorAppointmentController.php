@@ -35,68 +35,11 @@ class SchoolDirectorAppointmentController extends Controller
 
     public function appoint(Request $request, int $school): JsonResponse
     {
-        $actor = $request->attributes->get('jwt_user');
-        if (!$actor) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
-        $validation = Validator::make($request->all(), [
-            'director_email' => ['required', 'email', 'max:190'],
-        ]);
-        if ($validation->fails()) {
-            return response()->json(['errors' => $validation->errors()], 422);
-        }
-        // Existing accounts must not be promoted into school directors.
-        // Use the dedicated invite-and-activate flow for a new email instead.
-        return response()->json(['error' => 'Use a new email and invite a dedicated director'], 422);
-
-        return DB::transaction(function () use ($actor, $school, $email) {
-            $schoolRecord = DB::table('schools')->where('id', $school)
-                ->where('is_active', true)->lockForUpdate()->first();
-            if (!$schoolRecord) {
-                return response()->json(['error' => 'School not found'], 404);
-            }
-            if (!$this->mayAppoint($actor, $schoolRecord)) {
-                return response()->json(['error' => 'Forbidden'], 403);
-            }
-
-            // Only an existing, verified personal email identity may become director.
-            $director = DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->lockForUpdate()->first();
-            if (!$director || ($director->role ?? null) === 'school' || empty($director->email_verified_at)
-                || !filter_var($director->email, FILTER_VALIDATE_EMAIL)
-                || str_ends_with(strtolower($director->email), '.edubridge')) {
-                return response()->json(['error' => 'Director must have an existing real-email account'], 422);
-            }
-            if (property_exists($director, 'verification_status')
-                && !in_array($director->verification_status, ['verified', 'approved'], true)) {
-                return response()->json(['error' => 'Director email is not verified'], 422);
-            }
-
-            if (DB::table('school_management_assignments')->where('user_id', $director->id)
-                ->where('role', 'director')->whereNull('ends_at')->where('school_id', '!=', $school)->exists()) {
-                return response()->json(['error' => 'Director already has an active school assignment'], 409);
-            }
-            $active = DB::table('school_management_assignments')
-                ->where('school_id', $school)->where('role', 'director')
-                ->whereNull('ends_at')->first();
-            if ($active && (int) $active->user_id === (int) $director->id) {
-                return response()->json(['school_id' => $school,
-                    'director_user_id' => (int) $director->id, 'unchanged' => true]);
-            }
-            if ($active) {
-                DB::table('school_management_assignments')->where('id', $active->id)
-                    ->update(['ends_at' => now(), 'updated_at' => now()]);
-            }
-            DB::table('school_management_assignments')->insert([
-                'school_id' => $school, 'user_id' => $director->id,
-                'role' => 'director', 'appointed_by' => $actor->id,
-                'starts_at' => now(), 'ends_at' => null,
-                'created_at' => now(), 'updated_at' => now(),
-            ]);
-            return response()->json(['school_id' => $school,
-                'director_user_id' => (int) $director->id,
-                'previous_director_user_id' => $active ? (int) $active->user_id : null]);
-        }, 3);
+        // Direct assignment from an existing user account is intentionally forbidden.
+        // Admins and institutions must invite a new mailbox through director-invitations.
+        return response()->json([
+            'error' => 'Direct appointment disabled. Invite a new director email instead.',
+        ], 422);
     }
 
     private function mayAppoint(object $actor, object $school): bool
