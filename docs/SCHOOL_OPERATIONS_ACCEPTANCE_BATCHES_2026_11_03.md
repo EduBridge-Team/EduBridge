@@ -40,6 +40,16 @@ Absence of a functioning endpoint is a **blocker**, not a feature completion. Do
 - Run migration status, health checks, asset smoke, and rollback exercise from a verified backup on a nonproduction environment first. Deployment scripts do not necessarily run migrations; review each migration independently.
 - Production acceptance requires actual account-scoped operations and visually checking mobile widths (320, 360, 720 and desktop) plus large text and Arabic/English.
 
+## Batch 2 code integration progress (2026-11-03)
+
+This update implements verified code changes; it does **not** constitute live production acceptance.
+
+- **Standalone school enrollment:** `InstitutionStudentEnrollmentController` supports nullable `organization_id` while retaining school and child scoping. Regression tests cover history, intra-school transfer, withdrawal, and rejection of foreign-school enrollments.
+- **Timetable safety:** all schools now serialize timetable insert/delete operations with school-row locks. Schools sharing an organization also lock the organization row and reject a teacher booked in another school at the same weekday/period. Jabalia's existing settings, assignments, and quotas remain intact. Tests cover ordinary organizations and independent schools.
+- **Attendance reports:** the existing server endpoint `GET /school/operations/attendance-report?from=...&to=...&section_id=...` is now accessible from both React and Flutter. Both check the returned school identity and use real server counts, names and rates; no fabricated data. Flutter service and React SSR tests added.
+- **Still to accept manually:** attendance write/reload, timetable settings and quota edits, curriculum create/reload, promotion preview/approval with current production data, permission changes and revocation, and mobile/bilingual walkthrough.
+- **Release gate:** full GitHub CI must pass before squash merge. A main-branch merge is *not* a Cloudflare or Oracle deployment confirmation.
+
 ## Release and verification
 
 GitHub merge and production deployment are separate events. Once PR checks pass and it is merged:
