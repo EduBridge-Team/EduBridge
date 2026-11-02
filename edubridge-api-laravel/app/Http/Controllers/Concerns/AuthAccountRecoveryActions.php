@@ -126,7 +126,7 @@ trait AuthAccountRecoveryActions
 
             // An activation link is delivered only to the school's official
             // mailbox; using it proves ownership and enables that login.
-            if ($user->role === 'school' && Schema::hasColumn('users', 'email_verified_at')
+            if (($user->role ?? null) === 'school' && Schema::hasColumn('users', 'email_verified_at')
                 && DB::table('school_accounts')->where('user_id', $user->id)->exists()) {
                 $update['email_verified_at'] = $user->email_verified_at ?: now();
             }
