@@ -62,7 +62,7 @@ trait AuthLoginActions
                 ], 500);
             }
 
-            if ($user->role === 'school') {
+            if (in_array($user->role, ['school', 'school_identity'], true)) {
                 // A valid password alone does not authorize an inactive or unlinked school.
                 $schools = DB::table('school_accounts as sa')
                     ->join('schools as s', 's.id', '=', 'sa.school_id')
