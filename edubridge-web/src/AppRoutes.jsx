@@ -13,6 +13,8 @@ import './styles/routes.css'
 
 const StudentDashboard = lazy(() => import('./pages/Dashboards/StudentDashboard'))
 const SchoolWorkspacePage = lazy(() => import('./pages/Dashboards/SchoolWorkspacePage'))
+const SchoolOfficialProfilePage = lazy(() => import('./pages/Dashboards/SchoolOfficialProfilePage'))
+const SchoolActivationPage = lazy(() => import('./pages/Auth/SchoolActivationPage'))
 const SchoolInvitationPage = lazy(() => import('./pages/Dashboards/SchoolInvitationPage'))
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage'))
@@ -114,6 +116,8 @@ export default function AppRoutes() {
       <Suspense fallback={<main className="container route-load-state" role="status" aria-live="polite" dir="rtl">جارِ تحميل الصفحة…</main>}>
         <Routes>
           <Route path="/school" element={<Protected><Page><SchoolWorkspacePage /></Page></Protected>} />
+          <Route path="/school/official" element={<RolePage roles={['school_identity']}><SchoolOfficialProfilePage /></RolePage>} />
+          <Route path="/school/activate" element={<SchoolActivationPage />} />
           <Route path="/school/invitation" element={<Page><SchoolInvitationPage /></Page>} />
           <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
           <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
