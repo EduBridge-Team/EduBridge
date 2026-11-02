@@ -210,56 +210,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                     ? l10n.schoolAccountEmailInvalid
                                     : null;
                               }
-                              if (!RegExp(r'^[^\\s@]+@[^\\s@]+\\.[^\\s@]+
-                          _field(
-                            'phone',
-                            l10n.schoolAccountPhone,
-                            _phone,
-                            maxLength: 30,
-                            keyboard: TextInputType.phone,
-                          ),
-                          _field(
-                            'address',
-                            l10n.schoolAccountAddress,
-                            _address,
-                            maxLength: 255,
-                          ),
-                          if (_error != null) ...[
-                            Semantics(
-                              liveRegion: true,
-                              child: Text(
-                                schoolAccountFailureMessage(
-                                  l10n,
-                                  _error!.failure,
-                                ),
-                                key: const ValueKey('school-account-error'),
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                          FilledButton(
-                            key: const ValueKey('school-account-submit'),
-                            onPressed: _submitting ? null : _submit,
-                            child: Text(
-                              _submitting
-                                  ? l10n.schoolAccountSubmitting
-                                  : l10n.schoolAccountSubmit,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-            ),
-          ),
-        ),
-      ),
-    ));
-  }
-}
-)
+                              if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
                                       .hasMatch(email) ||
                                   email.endsWith('.edubridge') ||
                                   email == _email.text.trim().toLowerCase()) {
