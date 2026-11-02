@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Building2, Users, UserRoundCog, GraduationCap, ClipboardCheck, CalendarDays, BookOpen, ChartColumn, Settings2, ArrowLeft, ArrowRight, RefreshCw, Languages } from 'lucide-react'
 import { useSchoolLanguage } from '../../components/School/useSchoolLanguage'
 import { useSchoolResource } from '../../components/School/useSchoolResource'
 import SchoolDomainPanel from '../../components/School/SchoolDomainPanel'
@@ -12,16 +13,32 @@ export default function SchoolWorkspacePage() {
   const { t, dir, toggle } = useSchoolLanguage()
   const resource = useSchoolResource('/school/delegation')
   const [revision, setRevision] = useState(0)
-  return <main className="container container-wide role-dashboard institution-dashboard-v2" dir={dir}>
-    <section className="institution-panel">
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1 style={{ margin: 0 }}>{resource.data?.role === 'school' ? t('لوحة معلومات المدرسة', 'School overview') : t('إدارة المدرسة', 'School administration')}</h1>
-        <button type="button" className="btn outline" onClick={toggle}>{t('English', 'العربية')}</button>
+  const [activeSection, setActiveSection] = useState(null)
+  const sections = [
+    { id: 'domain', ar: 'النطاق المدرسي', en: 'School domain', icon: Settings2, directorOnly: true },
+    { id: 'accounts', ar: 'الحسابات الداخلية', en: 'Internal accounts', icon: Users, directorOnly: true },
+    { id: 'deputies', ar: 'النواب والصلاحيات', en: 'Deputies and access', icon: UserRoundCog, directorOnly: true },
+    { id: 'academic', ar: 'الهيكل والمعلمون', en: 'Structure and teachers', icon: Building2, permission: 'academic' },
+    { id: 'enrollment', ar: 'الطلاب والترفيع', en: 'Students and progression', icon: GraduationCap, permission: 'enrollment' },
+    { id: 'attendance', ar: 'الحضور', en: 'Attendance', icon: ClipboardCheck, permission: 'attendance' },
+    { id: 'timetable', ar: 'الجدول الدراسي', en: 'Timetable', icon: CalendarDays, permission: 'timetable' },
+    { id: 'curriculum', ar: 'المنهاج', en: 'Curriculum', icon: BookOpen, permission: 'curriculum' },
+    { id: 'reports', ar: 'التقارير', en: 'Reports', icon: ChartColumn, permission: 'reports' },
+  ]
+  const director = resource.data && resource.data.role !== 'school'
+  const visibleSections = director ? sections.filter(section => section.directorOnly ? resource.data.role === 'director' : resource.data.permissions?.includes(section.permission)) : []
+  const selected = visibleSections.find(section => section.id === activeSection)
+  const BackIcon = dir === 'rtl' ? ArrowRight : ArrowLeft
+  return <main className="container container-wide role-dashboard institution-dashboard-v2 school-director-workspace" dir={dir}>
+    <section className="institution-panel school-workspace-heading">
+      <div className="school-workspace-heading-row">
+        <h1>{resource.data?.role === 'school' ? t('لوحة معلومات المدرسة', 'School overview') : t('إدارة المدرسة', 'School administration')}</h1>
+        <button type="button" className="btn outline school-workspace-action" onClick={toggle}><Languages size={18} aria-hidden="true" /> {t('English', 'العربية')}</button>
       </div>
-      {resource.data && <h2>{resource.data.school.name}</h2>}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-        <button type="button" className="btn outline" onClick={resource.reload}>{t('تحديث البيانات', 'Refresh data')}</button>
-        {resource.data?.role !== 'school' && <Link to="/dashboard">{t('حسابي الشخصي', 'My personal account')}</Link>}
+      {resource.data && <p className="school-workspace-school-name">{resource.data.school.name}</p>}
+      <div className="school-workspace-actions">
+        <button type="button" className="btn outline school-workspace-action" onClick={resource.reload}><RefreshCw size={17} aria-hidden="true" /> {t('تحديث', 'Refresh')}</button>
+        {resource.data?.role !== 'school' && <Link className="school-workspace-account-link" to="/dashboard">{t('حسابي الشخصي', 'My personal account')}</Link>}
       </div>
       {resource.loading && <p role="status">{t('جارِ التحقق من التكليف…', 'Checking assignment…')}</p>}
       {resource.error && <p role="alert">{t('تعذر فتح المدرسة. تأكد من التكليف النشط وتوثيق حسابك.', 'School access is unavailable. Check your active assignment and account verification.')}</p>}
@@ -51,12 +68,30 @@ export default function SchoolWorkspacePage() {
           </article>
         </div>
       </section>}
-      {resource.data.role === 'director' && <>
-        <SchoolDomainPanel schoolId={resource.data.school.id} onConfirmed={() => setRevision(value => value + 1)} />
-        <SchoolInternalAccountsPanel schoolId={resource.data.school.id} revision={revision} />
-        <SchoolDeputiesPanel schoolId={resource.data.school.id} />
-      </>}
-      {resource.data.role !== 'school' && <SchoolOperationsPanel schoolId={resource.data.school.id} key={JSON.stringify(resource.data.permissions)} permissions={resource.data.permissions} />}
+      {director && <section className="school-workspace-body" aria-label={t('أقسام إدارة المدرسة', 'School management sections')}>
+        {!selected ? <>
+          <h2 className="school-workspace-section-title">{t('الأقسام الإدارية', 'Management sections')}</h2>
+          <div className="school-workspace-grid">
+            {visibleSections.map(section => {
+              const Icon = section.icon
+              return <button type="button" className="school-workspace-tile" key={section.id} onClick={() => setActiveSection(section.id)} aria-label={t(section.ar, section.en)}>
+                <span className="school-workspace-tile-icon"><Icon size={24} strokeWidth={1.8} aria-hidden="true" /></span>
+                <span>{t(section.ar, section.en)}</span>
+              </button>
+            })}
+          </div>
+        </> : <>
+          <div className="school-workspace-detail-heading">
+            <button type="button" className="btn outline school-workspace-action" onClick={() => setActiveSection(null)}><BackIcon size={18} aria-hidden="true" /> {t('كل الأقسام', 'All sections')}</button>
+            <h2>{t(selected.ar, selected.en)}</h2>
+          </div>
+          {selected.id === 'domain' && <SchoolDomainPanel schoolId={resource.data.school.id} onConfirmed={() => setRevision(value => value + 1)} />}
+          {selected.id === 'accounts' && <SchoolInternalAccountsPanel schoolId={resource.data.school.id} revision={revision} />}
+          {selected.id === 'deputies' && <SchoolDeputiesPanel schoolId={resource.data.school.id} />}
+          {selected.permission && <SchoolOperationsPanel key={resource.data.school.id + ':' + selected.id} schoolId={resource.data.school.id} permissions={resource.data.permissions} initialCategory={selected.id} compactNavigation />}
+        </>}
+      </section>}
+
     </div>}
   </main>
 }

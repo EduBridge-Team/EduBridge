@@ -47,6 +47,9 @@ class _SchoolIdentitySettingsScreenState extends State<SchoolIdentitySettingsScr
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
     String t(String ar, String english) => en ? english : ar;
+    final domainPrefix = _domain.text.trim().toLowerCase();
+    final validDomainPrefix = RegExp(r'^[a-z][a-z0-9-]{2,39}$').hasMatch(domainPrefix);
+    final domainPreview = validDomainPrefix ? '$domainPrefix.edubridge' : '';
     final choices = {'academic': t('الهيكل الأكاديمي', 'Academic structure'), 'enrollment': t('التسجيل والترفيع', 'Enrollment and progression'), 'attendance': t('الحضور', 'Attendance'), 'timetable': t('الجدول', 'Timetable'), 'curriculum': t('المنهاج', 'Curriculum'), 'reports': t('التقارير', 'Reports')};
     return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(t('النطاق والنواب', 'Namespace and deputies')),
       actions: [IconButton(onPressed: _busy ? null : _load, tooltip: t('تحديث', 'Refresh'), icon: const Icon(Icons.refresh))]),
@@ -55,9 +58,17 @@ class _SchoolIdentitySettingsScreenState extends State<SchoolIdentitySettingsScr
         if (_failure != null) Text(enrollmentFailureMessage(context.l10n, _failure!)),
         if (_domainData != null) ...[
           if (_domainData!['confirmed_at'] != null) SelectableText('${_domainData!['internal_domain']}') else ...[
-            TextField(controller: _domain, enabled: !_busy, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: t('النطاق الداخلي مثل schoolname.edubridge', 'Namespace such as schoolname.edubridge'))),
+            TextField(controller: _domain, enabled: !_busy, textDirection: TextDirection.ltr,
+              maxLength: 40, autocorrect: false, textCapitalization: TextCapitalization.none,
+              onChanged: (_) => setState(() => _ack = false),
+              decoration: InputDecoration(labelText: t('الاسم المختصر للنطاق (مثل alreyada)', 'Namespace prefix (e.g. alreyada)'))),
+            Text(t('النطاق الناتج: ', 'Resulting namespace: ') + (domainPreview.isEmpty ? '—' : domainPreview),
+              textDirection: TextDirection.ltr),
+            const SizedBox(height: 8),
+            Text(t('لإنشاء معرّفات دخول الحسابات المدرسية الداخلية فقط؛ ليس موقعًا أو بريدًا يستقبل الرسائل.',
+              'Only for internal school account login identifiers; not a website or an email inbox.')),
             CheckboxListTile(value: _ack, onChanged: _busy ? null : (value) => setState(() => _ack = value == true), title: Text(t('أفهم أن النطاق دائم ولا يمكن تغييره.', 'I understand that the namespace is permanent.'))),
-            FilledButton(onPressed: _busy || !_ack ? null : () => _mutate('/school/internal-domain/confirm', {'internal_domain': _domain.text.trim().toLowerCase()}, success: 200), child: Text(t('تأكيد النطاق', 'Confirm namespace'))),
+            FilledButton(onPressed: _busy || !_ack || !validDomainPrefix ? null : () => _mutate('/school/internal-domain/confirm', {'internal_domain': domainPrefix}, success: 200), child: Text(t('تأكيد النطاق', 'Confirm namespace'))),
           ],
           const SizedBox(height: 24),
           TextField(controller: _email, enabled: !_busy, keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: t('بريد حساب النائب الموثّق', 'Verified deputy account email'))),
