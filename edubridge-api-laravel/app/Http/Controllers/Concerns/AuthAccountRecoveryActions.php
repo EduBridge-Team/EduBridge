@@ -124,7 +124,10 @@ trait AuthAccountRecoveryActions
         }
 
         $user = DB::table('users')->where('email', $email)->first();
-        if (!$user || (isset($user->email_verified_at) && $user->email_verified_at)) {
+        // Official school identities use a separate one-time activation flow.
+        // Do not send generic verification links that bypass password setup.
+        if (!$user || ($user->role ?? null) === 'school_identity'
+            || (isset($user->email_verified_at) && $user->email_verified_at)) {
             return response()->json(['message' => 'إذا كان الحساب بحاجة للتحقق فستصلك رسالة جديدة.']);
         }
 
