@@ -204,11 +204,18 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                             validator: (v) {
                               final text = (v ?? '').trim().toLowerCase();
                               if (text.isEmpty) return _inviteDirector ? l10n.schoolAccountEmailInvalid : null;
-                              return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+
+                              return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(text) &&
+                                  !text.endsWith('.edubridge') && text != _email.text.trim().toLowerCase()
+                                  ? null : l10n.schoolAccountEmailInvalid;
+                            },
+                          ),
+                          CheckboxListTile(
+                            value: _inviteDirector,
                             onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
                             title: Text(Localizations.localeOf(context).languageCode == 'en'
-                              ? 'Invite a new director; appointment requires email/identity verification and acceptance.'
-                              : 'دعوة مدير جديد؛ التكليف يتطلب تأكيد البريد والهوية وقبول الدعوة.')),
+                              ? 'Invite the specified director instead of assigning immediately.'
+                              : 'دعوة المدير المحدد بدل التعيين المباشر.'),
+                          ),
                           _field(
                             'phone',
                             l10n.schoolAccountPhone,
