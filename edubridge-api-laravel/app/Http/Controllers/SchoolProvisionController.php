@@ -153,7 +153,7 @@ class SchoolProvisionController extends Controller
         }
 
         try {
-            return DB::transaction(function () use ($request, $data, $name, $email, $directorEmail, $invite, $organizationId) {
+            $result = DB::transaction(function () use ($request, $data, $name, $email, $directorEmail, $invite, $organizationId) {
                 // Never inherit an existing user's identity or password.
                 if (DB::table('schools')->whereRaw('LOWER(official_email) = ?', [$email])->exists()
                     || DB::table('users')->whereRaw('LOWER(email) = ?', [$email])->exists()) {
@@ -215,6 +215,15 @@ class SchoolProvisionController extends Controller
                 // Account setup is deliberately NOT activated by provisioning.
                 return response()->json($response, 201);
             }, 3);
+
+            if ($result->status() !== 201) {
+                return $result;
+            }
+            $payload = $result->getData(true);
+            $delivery = app(SchoolAccountActivationController::class)
+                ->dispatchForSchoolId((int) $payload['school']['id']);
+            $payload['account_setup']['email_delivery'] = $delivery;
+            return response()->json($payload, 201);
         } catch (QueryException $e) {
             if (in_array((string) $e->getCode(), ['23505', '23000'], true)) {
                 return response()->json(['error' => 'Duplicate school identity'], 409);
