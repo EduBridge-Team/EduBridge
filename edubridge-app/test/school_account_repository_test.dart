@@ -26,6 +26,20 @@ Matcher failsWith(SchoolAccountFailure failure) => throwsA(
 );
 
 void main() {
+  test('provisioning records transport status without claiming verification', () {
+    final sent = SchoolAccount.fromJson({
+      ...result(),
+      'account_setup': {'status': 'pending_verification', 'email_delivery': 'sent'},
+    });
+    final failed = SchoolAccount.fromJson({
+      ...result(),
+      'account_setup': {'status': 'pending_verification', 'email_delivery': 'failed'},
+    });
+    expect(sent.emailDelivery, 'sent');
+    expect(failed.emailDelivery, 'failed');
+    expect(sent.accountId, isNull);
+  });
+
   test(
     'independent creation sends credentials only to provisioning endpoint',
     () async {
