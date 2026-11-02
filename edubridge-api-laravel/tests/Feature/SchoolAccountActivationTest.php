@@ -91,6 +91,16 @@ class SchoolAccountActivationTest extends TestCase
         $this->assertSame(0, DB::table('users')->count());
     }
 
+    public function test_dispatch_creates_one_time_token_and_cools_down_resends(): void
+    {
+        $controller = app(SchoolAccountActivationController::class);
+        $this->assertSame('sent', $controller->dispatchForSchoolId(5));
+        $first = DB::table('school_account_setup_tokens')->value('token_hash');
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $first);
+        $this->assertSame('not_eligible', $controller->dispatchForSchoolId(5));
+        $this->assertSame($first, DB::table('school_account_setup_tokens')->value('token_hash'));
+    }
+
     public function test_unknown_email_setup_request_does_not_reveal_school_existence(): void
     {
         $response = app(SchoolAccountActivationController::class)->requestSetup(
