@@ -39,6 +39,7 @@ Route::post('/auth/resend-verification', [AuthController::class, 'resendEmailVer
     ->middleware('throttle:auth-recovery');
 Route::post('/school-account/request-setup', [\App\Http\Controllers\SchoolAccountActivationController::class, 'requestSetup'])
     ->middleware('throttle:3,1');
+Route::post('/school/director-invitations/activate', [\App\Http\Controllers\DedicatedSchoolDirectorController::class, 'activate'])->middleware('throttle:10,1');
 Route::post('/school-account/complete-setup', [\App\Http\Controllers\SchoolAccountActivationController::class, 'complete'])
     ->middleware('throttle:10,1');
 
