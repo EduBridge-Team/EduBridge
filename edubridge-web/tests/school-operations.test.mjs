@@ -30,8 +30,8 @@ test('school provisioning and operation forms render in both languages without s
       const html = renderToStaticMarkup(createElement(Form, {}))
       assert.match(html, new RegExp('dir="' + (language === 'ar' ? 'rtl' : 'ltr') + '"'))
       assert.doesNotMatch(html, /type="password"/)
-      assert.match(html, /type="checkbox"/)
-      assert.match(html, language === 'ar' ? /البريد الشخصي للمدير/ : /Director personal email/)
+      assert.doesNotMatch(html, /type="checkbox"/)
+      assert.match(html, language === 'ar' ? /بريد المدير الجديد غير المسجل/ : /New unused director email/)
       const operation = renderToStaticMarkup(createElement(Operation, { category: 'academic', references: {}, onSaved() {} }))
       assert.match(operation, language === 'ar' ? /تاريخ البداية/ : /Start date/)
     }

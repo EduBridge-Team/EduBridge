@@ -28,7 +28,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   final _address = TextEditingController();
   late SchoolAccountRepository _repository;
   bool _submitting = false;
-  bool _inviteDirector = false;
   SchoolAccount? _createdAccount;
   int _generation = 0;
   SchoolAccountException? _error;
@@ -47,7 +46,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _formKey = GlobalKey<FormState>();
       _repository = widget.repository ?? SchoolAccountRepository();
       _submitting = false;
-      _inviteDirector = false;
       _createdAccount = null;
       _error = null;
       for (final controller in [_name, _email, _directorEmail, _phone, _address]) {
@@ -79,7 +77,6 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       name: _name.text,
       email: _email.text,
       directorEmail: _directorEmail.text,
-      inviteDirector: _inviteDirector,
       phone: _phone.text,
       address: _address.text,
     );
@@ -197,24 +194,17 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                           ),
                           _field(
                             'director_email',
-                            Localizations.localeOf(context).languageCode == 'en' ? 'Director personal email (optional)' : 'البريد الشخصي للمدير (اختياري)',
+                            Localizations.localeOf(context).languageCode == 'en' ? 'New unused director email (optional)' : 'بريد المدير الجديد غير المسجل (اختياري)',
                             _directorEmail,
                             maxLength: 190,
                             keyboard: TextInputType.emailAddress,
                             validator: (v) {
                               final text = (v ?? '').trim().toLowerCase();
-                              if (text.isEmpty) return _inviteDirector ? l10n.schoolAccountEmailInvalid : null;
+                              if (text.isEmpty) return null;
                               return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(text) &&
                                   !text.endsWith('.edubridge') && text != _email.text.trim().toLowerCase()
                                   ? null : l10n.schoolAccountEmailInvalid;
                             },
-                          ),
-                          CheckboxListTile(
-                            value: _inviteDirector,
-                            onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
-                            title: Text(Localizations.localeOf(context).languageCode == 'en'
-                              ? 'Invite the specified director instead of assigning immediately.'
-                              : 'دعوة المدير المحدد بدل التعيين المباشر.'),
                           ),
                           _field(
                             'phone',

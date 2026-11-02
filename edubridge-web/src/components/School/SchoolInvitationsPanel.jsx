@@ -20,7 +20,7 @@ export default function SchoolInvitationsPanel({ schoolId }) {
   }
   return <section className="institution-panel">
     <h3>{t('دعوات المديرين', 'Director invitations')}</h3>
-    <p>{t('يمكن دعوة مدير لم يسجل بعد. عليه التسجيل بنفس البريد وتأكيده قبل قبول الدعوة. إنشاء دعوة جديدة يلغي الدعوة السابقة.', 'You can invite a new director. They must register with and verify the same email before acceptance. Issuing a new invitation revokes the previous one.')}</p>
+    <p>{t('يمكن دعوة مدير باستخدام بريد شخصي جديد غير مسجل في النظام. يفتح صاحب البريد الرابط ويحدد اسمه وكلمة المرور لإنشاء حساب مدير مستقل. إصدار دعوة جديدة يلغي السابقة.', 'Invite a new director using an email not registered in EduBridge. The recipient follows the link and sets their name and password to create a dedicated account. A new invitation revokes the previous one.')}</p>
     {(error || resource.error) && <p role="alert">{error || resource.error}</p>}
     <button className="btn outline" disabled={busy} onClick={resource.reload}>{t('تحديث الدعوات', 'Refresh invitations')}</button>
     {!resource.error && <form className="institution-school-form" onSubmit={event => {

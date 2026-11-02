@@ -221,3 +221,12 @@ php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
 - Production's `users` table may omit `updated_at`. The activation controller checks the column before inserting a user. Do not add a production column solely to work around this issue.
 - After deploying a fix, use an existing unexpired link or request a new one. Check API and web health, then verify school sign-in and its read-only scope. Do not recreate the school or directly insert a user into PostgreSQL.
 - Deployment and database migrations are separate operations; back up and review migrations before applying them.
+
+
+## Dedicated school director accounts (new policy)
+
+- Do not appoint an existing teacher, specialist, parent, student, school, or other existing user as director. A director must have a new, unique personal email and a separate `school_director` login.
+- Admin or an authorized institution issues an invitation to the unused mailbox. The recipient creates a new personal director account at `/school/invitation` using a strong password. The invitation expires after seven days and is single-use.
+- Director appointment is stored in `school_management_assignments`, while the official school mailbox remains an independent read-only `school` account. Replacing the director closes the previous assignment without removing user records.
+- This feature adds the `school_director` user role to the PostgreSQL check constraint. **Back up production and review/run the additive migration before deploying the new code.** The default deployment script does not run migrations.
+- Do not reuse an existing personal email or update users to change roles. Tests should cover duplicate email rejection, expired/replayed invitations and an authorized school scope.

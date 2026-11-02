@@ -6,6 +6,7 @@ import '../../services/schools/director_api_client.dart';
 import '../../services/schools/school_director_appointment_repository.dart';
 import '../../theme.dart';
 import 'director_failure_message.dart';
+import '../school_management/school_director_management_screen.dart';
 
 class SchoolDirectorAppointmentScreen extends StatefulWidget {
   const SchoolDirectorAppointmentScreen({super.key, this.gateway});
@@ -19,13 +20,11 @@ class SchoolDirectorAppointmentScreen extends StatefulWidget {
 class _SchoolDirectorAppointmentScreenState
     extends State<SchoolDirectorAppointmentScreen> with WidgetsBindingObserver {
   late final _gateway = widget.gateway ?? SchoolDirectorAppointmentRepository();
-  final _email = TextEditingController();
-  final _form = GlobalKey<FormState>();
   List<DirectorSchool> _schools = const [];
   DirectorSchool? _school;
   PersonalSchoolDirector? _director;
   DirectorFailure? _failure;
-  bool _loading = true, _saving = false, _saved = false, _needsReload = false;
+  bool _loading = true, _saving = false;
   int _generation = 0;
 
   @override
@@ -39,7 +38,6 @@ class _SchoolDirectorAppointmentScreenState
   void dispose() {
     _generation++;
     WidgetsBinding.instance.removeObserver(this);
-    _email.dispose();
     super.dispose();
   }
 
@@ -56,9 +54,7 @@ class _SchoolDirectorAppointmentScreenState
     setState(() {
       _loading = true;
       _failure = null;
-      _saved = false;
       _director = null;
-      _email.clear();
     });
     try {
       final schools = await _gateway.schools();
@@ -74,7 +70,6 @@ class _SchoolDirectorAppointmentScreenState
         _schools = schools;
         _school = school;
         _director = director;
-        _needsReload = false;
       });
     } on DirectorApiException catch (e) {
       if (mounted && generation == _generation) {
@@ -88,75 +83,6 @@ class _SchoolDirectorAppointmentScreenState
       if (mounted && generation == _generation) {
         setState(() => _loading = false);
       }
-    }
-  }
-
-  Future<void> _appoint() async {
-    final school = _school;
-    if (_saving ||
-        _loading ||
-        _needsReload ||
-        school == null ||
-        !(_form.currentState?.validate() ?? false)) return;
-    final email = _email.text.trim();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        scrollable: true,
-        title: Text(_tr('تعيين مدير المدرسة', 'Appoint school director')),
-        content: Text(
-          _tr(
-            'سيصبح $email مديرًا لمدرسة ${school.name} وتنتهي صلاحية المدير الحالي إن وُجد.',
-            '$email will direct ${school.name}. Any current director appointment will end.',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(_tr('إلغاء', 'Cancel')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(_tr('تأكيد التعيين', 'Confirm appointment')),
-          ),
-        ],
-      ),
-    );
-    if (!mounted || confirmed != true) return;
-    setState(() {
-      _saving = true;
-      _saved = false;
-      _failure = null;
-    });
-    try {
-      final id = await _gateway.appoint(school, email);
-      // Read the authoritative account instead of constructing one locally.
-      final director = await _gateway.current(school);
-      if (director == null ||
-          director.id != id ||
-          director.email.toLowerCase() != email.toLowerCase()) {
-        throw const DirectorApiException(DirectorFailure.uncertain);
-      }
-      if (!mounted) return;
-      setState(() {
-        _director = director;
-        _saved = true;
-        _email.clear();
-      });
-    } on DirectorApiException catch (e) {
-      if (mounted)
-        setState(() {
-          _failure = e.failure;
-          _needsReload = true;
-        });
-    } catch (_) {
-      if (mounted)
-        setState(() {
-          _failure = DirectorFailure.uncertain;
-          _needsReload = true;
-        });
-    } finally {
-      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -185,8 +111,8 @@ class _SchoolDirectorAppointmentScreenState
                     if (_loading || _saving) const LinearProgressIndicator(),
                     Text(
                       _tr(
-                        'المدير يستخدم حسابه الشخصي ببريد موثّق. أدخل بريد حساب موجود لتعيينه أو استبدال المدير الحالي.',
-                        'The director uses a verified personal account. Enter an existing account email to appoint or replace the current director.',
+                        'يجب إنشاء حساب مدير مستقل باستخدام بريد جديد غير مستخدم في EduBridge. أرسل دعوة من شاشة إدارة المديرين.',
+                        'A director requires a dedicated account with a new, unused email. Send an invitation from the director management page.',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -241,53 +167,19 @@ class _SchoolDirectorAppointmentScreenState
                         SelectableText(
                             '${_director!.name}\n${_director!.email}'),
                     ],
-                    if (_saved)
-                      Semantics(
-                        liveRegion: true,
-                        child: Text(context.l10n.directorSaved),
-                      ),
                     if (_school != null)
-                      Form(
-                        key: _form,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _email,
-                              enabled: !_loading &&
-                                  !_saving &&
-                                  !_needsReload &&
-                                  _failure == null,
-                              keyboardType: TextInputType.emailAddress,
-                              textDirection: TextDirection.ltr,
-                              decoration: InputDecoration(
-                                labelText: _tr(
-                                  'البريد الشخصي للمدير',
-                                  'Director personal email',
-                                ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: FilledButton(
+                          onPressed: _loading ? null : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => SchoolDirectorManagementScreen(
+                                schoolId: _school!.id,
+                                schoolName: _school!.name,
                               ),
-                              validator: (value) =>
-                                  RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                                          .hasMatch((value ?? '').trim())
-                                      ? null
-                                      : _tr(
-                                          'أدخل بريدًا إلكترونيًا صالحًا.',
-                                          'Enter a valid email address.',
-                                        ),
                             ),
-                            const SizedBox(height: 16),
-                            FilledButton(
-                              onPressed: _loading ||
-                                      _saving ||
-                                      _needsReload ||
-                                      _failure != null
-                                  ? null
-                                  : _appoint,
-                              child:
-                                  Text(_tr('تعيين المدير', 'Appoint director')),
-                            ),
-                          ],
+                          ),
+                          child: Text(_tr('إدارة دعوات المدير', 'Manage director invitations')),
                         ),
                       ),
                   ],

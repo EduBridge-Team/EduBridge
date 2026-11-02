@@ -24,7 +24,7 @@ class SchoolAccountRequest {
     'name': name.trim(),
     'official_email': email.trim().toLowerCase(),
     if (directorEmail.trim().isNotEmpty) 'director_email': directorEmail.trim().toLowerCase(),
-    if (inviteDirector) 'invite_director': true,
+    if (inviteDirector || directorEmail.trim().isNotEmpty) 'invite_director': true,
     if (phone.trim().isNotEmpty) 'phone': phone.trim(),
     if (address.trim().isNotEmpty) 'address': address.trim(),
   };

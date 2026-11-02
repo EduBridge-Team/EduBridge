@@ -17,7 +17,7 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
   async function submit(event) {
     event.preventDefault()
     if (pending.current) return
-    if (!form.name.trim() || !form.official_email.trim() || (form.director_email.trim() && (form.director_email.trim().toLowerCase().endsWith('.edubridge') || form.director_email.trim().toLowerCase() === form.official_email.trim().toLowerCase())) || (form.invite_director && !form.director_email.trim())) {
+    if (!form.name.trim() || !form.official_email.trim() || (form.director_email.trim() && (form.director_email.trim().toLowerCase().endsWith('.edubridge') || form.director_email.trim().toLowerCase() === form.official_email.trim().toLowerCase()))) {
       setError('أدخل اسم المدرسة وبريدها الرسمي. البريد الشخصي للمدير اختياري ويجب أن يختلف عن بريد المدرسة.')
       return
     }
@@ -27,7 +27,7 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
       const payload = {
         name: form.name.trim(), official_email: form.official_email.trim().toLowerCase(),
         ...(form.director_email.trim() ? { director_email: form.director_email.trim().toLowerCase() } : {}),
-        ...(form.invite_director ? { invite_director: true } : {}),
+        ...(form.director_email.trim() ? { invite_director: true } : {}),
         ...(form.phone.trim() ? { phone: form.phone.trim() } : {}),
         ...(form.address.trim() ? { address: form.address.trim() } : {}),
       }
@@ -79,8 +79,7 @@ export default function SchoolProvisionForm({ institutionSlug, onCreated, onCanc
       <fieldset disabled={saving} style={{ border: 0, padding: 0, margin: 0, display: 'contents' }}>
         <label>{t('اسم المدرسة', 'School name')}<input required maxLength={150} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
         <label>{t('البريد الرسمي للمدرسة', 'School official email')}<input required type="email" dir="ltr" maxLength={190} autoComplete="off" value={form.official_email} onChange={e => setForm({ ...form, official_email: e.target.value })} /></label>
-        <label>{t('البريد الشخصي للمدير (اختياري)', 'Director personal email (optional)')}<input type="email" dir="ltr" maxLength={190} autoComplete="off" value={form.director_email} onChange={e => setForm({ ...form, director_email: e.target.value })} /></label>
-        <label><input type="checkbox" checked={form.invite_director} onChange={event => setForm({ ...form, invite_director: event.target.checked })} />{t('إرسال دعوة إلى المدير المحدد بدل تعيينه مباشرة.', 'Invite the specified director instead of direct appointment.')}</label>
+        <label>{t('بريد المدير الجديد غير المسجل (اختياري)', 'New unused director email (optional)')}<input type="email" dir="ltr" maxLength={190} autoComplete="off" value={form.director_email} onChange={e => setForm({ ...form, director_email: e.target.value })} /></label>
         <label>{t('الهاتف', 'Phone')}<input type="tel" dir="ltr" maxLength={30} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></label>
         <label>{t('العنوان', 'Address')}<input maxLength={255} value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></label>
         <div className="role-hero-actions institution-school-form-actions">
