@@ -24,3 +24,12 @@ A school has an official email identity separate from the personal identity of i
 ## Acceptance
 
 A school can be created without a director, and can be linked to a verified director later. Official mailbox setup must not reveal the password to the creator. An existing director's login and school access must remain unchanged.
+
+## Phase 2: restricted mailbox activation
+
+- An authorized Admin or institution owner/admin POSTs `/api/admin/schools/{school}/official-setup` to send an expiring one-time setup email to the stored school official mailbox. The setup link contains only an opaque token (its SHA-256 hash is saved).
+- A school mailbox holder opens `/school-account-setup`, submits the token and password (minimum 12 characters), and the backend atomically creates a `school_official` user, links `school_accounts`, sets both email verification timestamps and consumes the token.
+- School official identity has a separate restricted role. It may access only `/api/school-official/me` and logout with its JWT, not director/school administrative routes. Existing role=`school` users and director assignments remain unchanged.
+- New official mailboxes cannot also be registered through the personal account registration form.
+- Delivery is explicitly initiated with the setup endpoint. It is NOT automatically triggered by school creation; keep the school pending until activation. No password or live token is returned in a JSON response.
+- Mail delivery requires production SMTP configuration. Verify both the delivery and the actual sign-in flow in a nonproduction environment before deploying.
