@@ -15,6 +15,13 @@ class SchoolDelegationController extends Controller
     {
         $school = SchoolScopedAccess::resolve($request, 'context');
         if (!$school) return response()->json(['error' => 'School access unavailable'], 403);
+        if (($request->attributes->get('jwt_user')->role ?? null) === 'school'
+            && ($school->official_email_verified_at ?? null) !== null) {
+            // Official identity is not a director, and may not receive delegated writes.
+            return response()->json(['school' => [
+                'id' => (int) $school->id, 'name' => $school->name,
+            ], 'role' => 'school', 'permissions' => []]);
+        }
         $deputy = ($school->management_role ?? null) === 'deputy_director';
         return response()->json(['school' => ['id' => (int) $school->id, 'name' => $school->name],
             'role' => $deputy ? 'deputy_director' : 'director',
