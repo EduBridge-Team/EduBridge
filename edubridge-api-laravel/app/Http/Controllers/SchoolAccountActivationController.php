@@ -154,7 +154,8 @@ class SchoolAccountActivationController extends Controller
             $hash = password_hash($data['password'], PASSWORD_BCRYPT);
             $user = ['name' => $school->name, 'email' => $email, 'role' => 'school',
                 $passwordColumn => $hash, 'email_verified_at' => now(),
-                'created_at' => now(), 'updated_at' => now()];
+                'created_at' => now()];
+            if (Schema::hasColumn('users', 'updated_at')) $user['updated_at'] = now();
             if (Schema::hasColumn('users', 'password') && Schema::hasColumn('users', 'password_hash')) {
                 $user['password'] = $hash;
                 $user['password_hash'] = $hash;
