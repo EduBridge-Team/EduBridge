@@ -15,6 +15,12 @@ trait AuthRegisterActions
             return $validationError;
         }
 
+        // An official mailbox reserved by a school cannot be claimed through personal registration.
+        if (\Illuminate\Support\Facades\Schema::hasColumn('schools', 'official_email')
+            && DB::table('schools')->whereRaw('LOWER(official_email) = ?', [mb_strtolower(trim($input['email']))])->exists()) {
+            return response()->json(['error' => 'البريد الإلكتروني محجوز لحساب مدرسة رسمي'], 409);
+        }
+
         if (DB::table('users')->where('email', $input['email'])->exists()) {
             return response()->json(['error' => 'الإيميل مستخدم مسبقاً'], 409);
         }
