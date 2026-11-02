@@ -26,7 +26,7 @@ final submit = find.byKey(const ValueKey('school-account-submit'));
 Future<void> fill(WidgetTester tester) async {
   for (final entry in {
     'name': 'School',
-    'director_email': 'school@example.org',
+    'email': 'school@example.org',
   }.entries) {
     await tester.ensureVisible(field(entry.key));
     await tester.enterText(field(entry.key), entry.value);
@@ -40,7 +40,7 @@ Future<void> fill(WidgetTester tester) async {
 http.Response created({int? organizationId}) => http.Response(
   jsonEncode({
     'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-    'director': {'id': 50, 'email': 'school@example.org'},
+    'account': {'id': 50, 'email': 'school@example.org', 'role': 'school', 'activation_pending': true},
   }),
   201,
 );
@@ -144,13 +144,13 @@ void main() {
     );
   }
 
-  testWidgets('internal identifier cannot be appointed as a personal director', (tester) async {
+  testWidgets('internal mailbox cannot be used as an official school email', (tester) async {
     var posts = 0;
     final repository = SchoolAccountRepository(post: (_, body) async { posts++; return created(); });
     await tester.pumpWidget(host(AdminSchoolCreatePage(repository: repository), 'en'));
     await tester.pumpAndSettle();
     await fill(tester);
-    await tester.enterText(field('director_email'), 'user@school.edubridge');
+    await tester.enterText(field('email'), 'user@school.edubridge');
     await tester.ensureVisible(submit);
     await tester.tap(submit);
     await tester.pumpAndSettle();
@@ -178,12 +178,12 @@ void main() {
       await tester.tap(submit);
       await tester.pump();
       expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-      expect(tester.widget<TextFormField>(field('director_email')).enabled, isFalse);
+      expect(tester.widget<TextFormField>(field('email')).enabled, isFalse);
       await tester.tap(submit);
       expect(posts, 1);
       pending.complete(created());
       await tester.pumpAndSettle();
-      expect(find.text('School created and director assigned successfully.'), findsOneWidget);
+      expect(find.text('Official school account created. Activation email sent.'), findsOneWidget);
       expect(find.byKey(const ValueKey('school-account-verification-guidance')), findsOneWidget);
       expect(submit, findsNothing);
     },
