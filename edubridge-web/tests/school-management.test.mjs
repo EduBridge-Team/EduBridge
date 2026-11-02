@@ -7,13 +7,13 @@ test('school creation and director replacement use the identity API and preserve
   globalThis.__schoolRequest = async (path, options) => {
     calls.push({ path, options })
     if (path.includes('forbidden')) throw new Error('Forbidden')
-    return { school: { id: 12 }, director: { id: 30 } }
+    return { school: { id: 12 }, account: { id: 40, email: 'school@example.test', role: 'school', activation_pending: true }, director: { id: 30 } }
   }
   try {
     const source = (await readFile(new URL('../src/api/schools.js', import.meta.url), 'utf8'))
       .replace("import { request } from './core'", 'const request = globalThis.__schoolRequest')
     const api = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'))
-    const payload = { name: 'School A', director_email: 'director@example.test' }
+    const payload = { name: 'School A', email: 'school@example.test', director_email: 'director@example.test' }
     await api.provisionSchool(payload)
     assert.equal(calls[0].path, '/admin/school-accounts')
     assert.equal(calls[0].options.method, 'POST')
