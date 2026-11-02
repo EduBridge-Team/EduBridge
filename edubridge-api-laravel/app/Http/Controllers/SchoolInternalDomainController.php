@@ -24,13 +24,18 @@ class SchoolInternalDomainController extends Controller
     public function confirm(Request $request): JsonResponse
     {
         $validation = Validator::make($request->all(), [
-            'internal_domain' => ['required', 'string', 'regex:/^[a-z][a-z0-9-]{2,39}\\.edubridge$/'],
+            'internal_domain' => ['required', 'string', 'regex:/^[a-z][a-z0-9-]{2,39}(?:\\.edubridge)?$/D'],
         ]);
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 422);
         }
 
-        $domain = $validation->validated()['internal_domain'];
+        $input = $validation->validated()['internal_domain'];
+        // The field is a school-account namespace, not a DNS hostname or mailbox.
+        // Accept legacy full values for compatibility and persist one canonical format.
+        $slug = str_ends_with($input, '.edubridge')
+            ? substr($input, 0, -strlen('.edubridge')) : $input;
+        $domain = $slug.'.edubridge';
         try {
             return DB::transaction(function () use ($request, $domain) {
                 $school = $this->authorizedSchool($request, true);
@@ -64,6 +69,10 @@ class SchoolInternalDomainController extends Controller
         }
         // Personal director accounts are authorized by a live assignment,
         // not by their global user role. Legacy school accounts remain supported.
+        // Official school credentials can inspect the namespace but never change it.
+        if ($lock && ($actor->role ?? null) === 'school') {
+            return null;
+        }
         if (($actor->role ?? null) !== 'school') {
             $query = DB::table('school_management_assignments as assignment')
                 ->join('schools as school', 'school.id', '=', 'assignment.school_id')
