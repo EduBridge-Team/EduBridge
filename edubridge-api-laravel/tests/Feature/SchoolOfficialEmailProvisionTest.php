@@ -6,6 +6,7 @@ use App\Http\Controllers\SchoolProvisionController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -14,6 +15,7 @@ class SchoolOfficialEmailProvisionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Mail::fake();
         Schema::create('users', function (Blueprint $t) {
             $t->id();
             $t->string('name');
@@ -36,6 +38,19 @@ class SchoolOfficialEmailProvisionTest extends TestCase
             $t->boolean('is_active');
             $t->timestamps();
         });
+        Schema::create('school_accounts', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('school_id')->unique();
+            $t->unsignedBigInteger('user_id')->unique();
+            $t->timestamps();
+        });
+        Schema::create('school_account_setup_tokens', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('school_id')->unique();
+            $t->string('token_hash', 64);
+            $t->timestamp('expires_at');
+            $t->timestamps();
+        });
         Schema::create('school_management_assignments', function (Blueprint $t) {
             $t->id();
             $t->unsignedBigInteger('school_id');
@@ -50,7 +65,7 @@ class SchoolOfficialEmailProvisionTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['school_management_assignments', 'schools', 'users'] as $table) {
+        foreach (['school_account_setup_tokens', 'school_accounts', 'school_management_assignments', 'schools', 'users'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -61,6 +76,21 @@ class SchoolOfficialEmailProvisionTest extends TestCase
         $request = Request::create('/api/admin/school-accounts', 'POST', $payload);
         $request->attributes->set('jwt_user', (object) ['id' => 100, 'role' => 'admin']);
         return app(SchoolProvisionController::class)->independent($request);
+    }
+
+    public function test_provisioning_requests_mail_without_creating_school_user(): void
+    {
+        $response = $this->createSchool([
+            'name' => 'Mail School', 'official_email' => 'mail-school@example.test',
+        ]);
+        $this->assertSame(201, $response->status());
+        $data = $response->getData(true);
+        $this->assertSame('sent', $data['account_setup']['email_delivery']);
+        $this->assertSame('pending_verification', $data['account_setup']['status']);
+        $this->assertSame(1, DB::table('school_account_setup_tokens')->count());
+        $hash = DB::table('school_account_setup_tokens')->value('token_hash');
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $hash);
+        $this->assertSame(0, DB::table('users')->count());
     }
 
     public function test_school_can_be_created_without_director_or_password(): void
