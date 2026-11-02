@@ -18,14 +18,21 @@ class SchoolAccountReceipt extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(account.invitationPending ? (arabic ? 'تم إنشاء المدرسة ودعوة المدير؛ التكليف بانتظار القبول.' : 'School created and director invited; appointment awaits acceptance.') : l.schoolAccountSuccess, key: const ValueKey('school-account-success')),
+          Text(arabic
+              ? 'تم إنشاء المدرسة وإرسال رابط التفعيل إلى بريدها الرسمي.'
+              : 'School created. Activation link sent to the official school mailbox.',
+              key: const ValueKey('school-account-success')),
           const SizedBox(height: 12),
           Text(
-            account.invitationPending ? (arabic ? 'على المدعو التسجيل بنفس البريد وتأكيد البريد والهوية ثم فتح رابط الدعوة.' : 'The invitee must register with the same email, verify email and identity, then open the invitation link.') : arabic
-                ? 'تم تكليف المدير بحسابه الشخصي الموثّق. يدخل المدير ببريده وكلمة مرور حسابه الحاليين.'
-                : 'The director is assigned through their verified personal account. Sign in with the existing personal email and password.',
+            arabic
+                ? 'يفتح مسؤول البريد الرسمي رابط التفعيل ويحدد كلمة مرور المدرسة. حساب المدير مستقل ويمكن تكليفه لاحقًا.'
+                : 'The mailbox owner activates the school and sets its password. The director uses a separate personal account.',
             key: const ValueKey('school-account-verification-guidance'),
           ),
+          if (account.invitationPending)
+            Text(arabic ? 'أُرسلت دعوة المدير؛ ينتظر التكليف قبولها.' : 'Director invitation sent; appointment awaits acceptance.'),
+          if (account.directorAssigned)
+            Text(arabic ? 'تم ربط المدير بحسابه الشخصي.' : 'Director appointed through the personal account.'),
           const SizedBox(height: 16),
           OutlinedButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SchoolDirectorManagementScreen(schoolId: account.schoolId, schoolName: account.name))), child: Text(arabic ? 'إدارة مدير المدرسة والدعوات' : 'Manage school director and invitations')),
           SelectableText('${l.schoolAccountName}: ${account.name}'),
