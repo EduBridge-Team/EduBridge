@@ -12,7 +12,7 @@ class SchoolAnnualPromotionContractTest extends TestCase
     {
         parent::setUp();
         Schema::create('organizations', function (Blueprint $t) { $t->id(); $t->boolean('is_active'); });
-        Schema::create('schools', function (Blueprint $t) { $t->id(); $t->string('name')->default('School'); $t->boolean('is_active')->default(true); $t->unsignedBigInteger('organization_id'); });
+        Schema::create('schools', function (Blueprint $t) { $t->id(); $t->string('name')->default('School'); $t->boolean('is_active')->default(true); $t->unsignedBigInteger('organization_id')->nullable(); });
         Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id'); });
         Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->integer('position'); });
         Schema::create('academic_years', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->date('starts_on'); });
@@ -182,6 +182,138 @@ class SchoolAnnualPromotionContractTest extends TestCase
         $this->assertSame(403, $controller->destinations($this->request('GET', []))->getStatusCode());
         $this->assertSame(0, DB::table('school_promotion_previews')->count());
         $this->assertSame(2, DB::table('student_enrollments')->count());
+    }
+
+    public function test_year_order_uses_real_school_start_dates_not_database_ids(): void
+    {
+        DB::table('academic_years')->insert([
+            ['id' => 50, 'school_id' => 1, 'starts_on' => '2027-09-01'],
+            ['id' => 40, 'school_id' => 1, 'starts_on' => '2028-09-01'],
+        ]);
+        DB::table('sections')->insert([
+            ['id' => 50, 'grade_id' => 1, 'academic_year_id' => 50, 'capacity' => 30],
+            ['id' => 40, 'grade_id' => 2, 'academic_year_id' => 40, 'capacity' => 30],
+        ]);
+        DB::table('children')->insert(['id' => 50, 'name' => 'Later year student', 'organization_id' => 1]);
+        DB::table('student_enrollments')->insert([
+            'id' => 50, 'section_id' => 50, 'child_id' => 50,
+            'status' => 'active', 'enrolled_on' => '2027-09-01',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $controller = app(SchoolAnnualPromotionController::class);
+        $roster = $controller->roster($this->request('GET', [
+            'source_year_id' => 50, 'target_year_id' => 40,
+        ]))->getData(true);
+        $this->assertTrue($roster['complete']);
+        $this->assertCount(1, $roster['students']);
+        $payload = [
+            'source_year_id' => 50, 'target_year_id' => 40,
+            'roster_revision' => $roster['revision'],
+            'decisions' => [['enrollment_id' => 50, 'decision' => 'promoted', 'target_section_id' => 40]],
+        ];
+        $preview = $controller->preview($this->request('POST', $payload))->getData(true);
+        $this->assertTrue($preview['ready']);
+        $approved = $controller->approve($this->request('POST', [
+            ...$payload, 'preview_token' => $preview['preview_token'],
+            'idempotency_key' => 'reversed_year_order_01',
+        ]));
+        $this->assertSame(200, $approved->getStatusCode());
+        $this->assertDatabaseHas('student_enrollments', [
+            'section_id' => 40, 'child_id' => 50, 'status' => 'active',
+        ]);
+    }
+
+    public function test_standalone_school_promotion_preserves_old_enrollments(): void
+    {
+        DB::table('schools')->insert(['id' => 3, 'organization_id' => null, 'is_active' => true]);
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 3, 'user_id' => 30, 'role' => 'director',
+        ]);
+        DB::table('grades')->insert([
+            ['id' => 30, 'school_id' => 3, 'position' => 1],
+            ['id' => 31, 'school_id' => 3, 'position' => 2],
+        ]);
+        DB::table('academic_years')->insert([
+            ['id' => 30, 'school_id' => 3, 'starts_on' => '2025-09-01'],
+            ['id' => 31, 'school_id' => 3, 'starts_on' => '2026-09-01'],
+        ]);
+        DB::table('sections')->insert([
+            ['id' => 30, 'grade_id' => 30, 'academic_year_id' => 30, 'capacity' => 2],
+            ['id' => 31, 'grade_id' => 31, 'academic_year_id' => 31, 'capacity' => 2],
+        ]);
+        DB::table('children')->insert([
+            'id' => 30, 'name' => 'Independent pupil', 'organization_id' => null,
+        ]);
+        DB::table('student_enrollments')->insert([
+            'id' => 30, 'section_id' => 30, 'child_id' => 30,
+            'status' => 'active', 'enrolled_on' => '2025-09-01',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $controller = app(SchoolAnnualPromotionController::class);
+        $roster = $controller->roster($this->request('GET', [
+            'source_year_id' => 30, 'target_year_id' => 31,
+        ], 30))->getData(true);
+        $this->assertSame(3, $roster['school_id']);
+        $this->assertCount(1, $roster['students']);
+        $draft = ['source_year_id' => 30, 'target_year_id' => 31,
+            'roster_revision' => $roster['revision'], 'decisions' => [
+                ['enrollment_id' => 30, 'decision' => 'promoted', 'target_section_id' => 31],
+            ],
+        ];
+        $preview = $controller->preview($this->request('POST', $draft, 30))->getData(true);
+        $this->assertTrue($preview['ready']);
+        $approval = $controller->approve($this->request('POST', [
+            ...$draft, 'preview_token' => $preview['preview_token'],
+            'idempotency_key' => 'independent_promotion_30',
+        ], 30));
+        $this->assertSame(200, $approval->getStatusCode());
+        $this->assertDatabaseHas('student_enrollments', [
+            'id' => 30, 'child_id' => 30, 'status' => 'transferred',
+        ]);
+        $this->assertDatabaseHas('student_enrollments', [
+            'section_id' => 31, 'child_id' => 30, 'status' => 'active',
+        ]);
+    }
+
+    public function test_replacing_director_keeps_school_history_but_revokes_former_director(): void
+    {
+        $draft = $this->draft();
+        $preview = $this->preview($draft);
+        $controller = app(SchoolAnnualPromotionController::class);
+        $approval = $controller->approve($this->request('POST', [
+            ...$draft, 'preview_token' => $preview['preview_token'],
+            'idempotency_key' => 'director_rotation_123',
+        ]));
+        $this->assertSame(200, $approval->getStatusCode());
+        DB::table('school_management_assignments')->where('school_id', 1)
+            ->where('user_id', 10)->update(['ends_at' => now()]);
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 1, 'user_id' => 11, 'role' => 'director',
+        ]);
+        $this->assertSame(403, $controller->history($this->request('GET', [
+            'year_id' => 1,
+        ], 10))->getStatusCode());
+        $history = $controller->history($this->request('GET', [
+            'year_id' => 1,
+        ], 11))->getData(true);
+        $this->assertCount(1, $history['operations']);
+        $this->assertSame('director_rotation_123', $history['operations'][0]['operation_id']);
+        $this->assertSame(403, $controller->operation(
+            $this->request('GET', [], 10), 'director_rotation_123',
+        )->getStatusCode());
+        $this->assertSame(200, $controller->operation(
+            $this->request('GET', [], 11), 'director_rotation_123',
+        )->getStatusCode());
+    }
+
+    public function test_school_operation_dispatcher_rejects_legacy_promotion_bypass(): void
+    {
+        $dispatcher = app(\\App\\Http\\Controllers\\SchoolOperationsController::class);
+        foreach (['promotion-preview', 'promotion-approve'] as $action) {
+            $this->assertSame(404, $dispatcher->handle(
+                $this->request('POST', ['expected_school_id' => 1]), $action,
+            )->getStatusCode(), $action);
+        }
     }
 
 }
