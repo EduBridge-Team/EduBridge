@@ -128,8 +128,8 @@ class SchoolFinalIsolatedAcceptanceTest extends TestCase
         ]);
         DB::table('schools')->insert([
             ['id' => 10, 'organization_id' => 1, 'name' => 'Acceptance school', 'is_active' => true, 'official_email_verified_at' => now()],
-            ['id' => 20, 'organization_id' => 1, 'name' => 'Sibling school', 'is_active' => true],
-            ['id' => 30, 'organization_id' => 2, 'name' => 'Foreign school', 'is_active' => true],
+            ['id' => 20, 'organization_id' => 1, 'name' => 'Sibling school', 'is_active' => true, 'official_email_verified_at' => null],
+            ['id' => 30, 'organization_id' => 2, 'name' => 'Foreign school', 'is_active' => true, 'official_email_verified_at' => null],
         ]);
         DB::table('users')->insert([
             ['id' => 10, 'name' => 'Old director', 'role' => 'school_director'],
