@@ -18,6 +18,8 @@ const LoginPage = lazy(() => import('./pages/Auth/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('./pages/Auth/ResetPasswordPage'))
+const SchoolAccountSetupPage = lazy(() => import('./pages/Auth/SchoolAccountSetupPage'))
+const SchoolOfficialPage = lazy(() => import('./pages/Dashboards/SchoolOfficialPage'))
 const ChildrenPage = lazy(() => import('./pages/Children/ChildrenPage'))
 const ChildLessonsPage = lazy(() => import('./pages/Children/ChildLessonsPage'))
 const ChildProgressPage = lazy(() => import('./pages/Children/ChildProgressPage'))
@@ -119,6 +121,8 @@ export default function AppRoutes() {
           <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
           <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />
           <Route path="/reset-password" element={<GuestOnly><ResetPasswordPage /></GuestOnly>} />
+          <Route path="/school-account-setup" element={<SchoolAccountSetupPage />} />
+          <Route path="/school-official" element={<RolePage roles={['school_official']}><SchoolOfficialPage /></RolePage>} />
           <Route path="/dashboard" element={<DashboardRedirect />} />
           <Route path="/about" element={<Page><AboutPage /></Page>} />
           <Route path="/" element={<HomeRedirect />} />
