@@ -83,6 +83,7 @@ void main() {
             return http.Response(
               jsonEncode({
                 'school': {
+                  'id': 5,
                   'name': 'Long school name for the authorized institution',
                   'slug': 'school-five',
                   'address': 'Gaza',

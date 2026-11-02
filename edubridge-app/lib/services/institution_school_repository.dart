@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 import 'api_service.dart';
@@ -8,9 +10,15 @@ class InstitutionSchoolRepository {
       '/institutions/${Uri.encodeComponent(slug)}$endpoint';
 
   Map<String, dynamic> _decode(http.Response response, String failureMessage) {
-    final data = ApiService.decodeMap(response.body);
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      final data = ApiService.decodeMap(response.body);
       throw Exception(data['error'] ?? data['message'] ?? failureMessage);
+    }
+    final data = jsonDecode(response.body);
+    if (data is! Map<String, dynamic> ||
+        data['success'] == false ||
+        data['error'] != null) {
+      throw const FormatException('Invalid institution response');
     }
     return data;
   }
@@ -39,23 +47,48 @@ class InstitutionSchoolRepository {
     );
   }
 
-  Future<Map<String, dynamic>> loadReport(String slug) =>
-      _get(slug, '/management-report');
+  Future<Map<String, dynamic>> loadReport(String slug) async {
+    final data = await _get(slug, '/management-report');
+    if (data['summary'] is! Map<String, dynamic> || data['schools'] is! List) {
+      throw const FormatException('Missing management report');
+    }
+    return data;
+  }
 
   Future<List<Map<String, dynamic>>> loadSchools(String slug) async {
     final data = (await _get(slug, '/schools'))['schools'];
-    if (data is! List) return [];
-    return data
-        .whereType<Map>()
-        .map((item) => Map<String, dynamic>.from(item))
-        .toList();
+    if (data is! List) {
+      throw const FormatException('Missing school list');
+    }
+    final ids = <int>{};
+    return data.map((item) {
+      final school = _school(item);
+      if (!ids.add(school['id'] as int)) {
+        throw const FormatException('Duplicate school');
+      }
+      return school;
+    }).toList();
   }
 
   Future<Map<String, dynamic>> loadSchool(String slug, int schoolId) async {
     final response = await ApiService.authGet(
       _path(slug, '/schools/$schoolId'),
     );
-    return _decode(response, 'تعذّر تحميل بيانات المدرسة');
+    final data = _decode(response, 'تعذّر تحميل بيانات المدرسة');
+    _school(data['school'], expectedId: schoolId);
+    return data;
+  }
+
+  Map<String, dynamic> _school(dynamic value, {int? expectedId}) {
+    if (value is! Map<String, dynamic> ||
+        value['id'] is! int ||
+        value['id'] <= 0 ||
+        (expectedId != null && value['id'] != expectedId) ||
+        value['name'] is! String ||
+        (value['name'] as String).trim().isEmpty) {
+      throw const FormatException('Invalid school record');
+    }
+    return value;
   }
 
   Future<void> createSchool(String slug, Map<String, String> fields) async {

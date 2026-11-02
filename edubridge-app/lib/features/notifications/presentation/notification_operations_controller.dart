@@ -7,8 +7,10 @@ class NotificationOperationsController extends ChangeNotifier {
     required Future<void> Function() loadMore,
     required Future<void> Function() markAllRead,
     required Future<void> Function() refresh,
-  }) : _reload = reload, _loadMore = loadMore,
-       _markAllRead = markAllRead, _refresh = refresh;
+  })  : _reload = reload,
+        _loadMore = loadMore,
+        _markAllRead = markAllRead,
+        _refresh = refresh;
 
   final Future<void> Function() _reload, _loadMore, _markAllRead, _refresh;
   bool loading = true;
@@ -18,10 +20,12 @@ class NotificationOperationsController extends ChangeNotifier {
   bool _disposed = false;
   int _loadGeneration = 0;
 
-  void _notify() { if (!_disposed) notifyListeners(); }
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
 
   Future<void> reload() async {
-    if (_disposed) return;
+    if (_disposed || loadingMore || markingAll) return;
     final generation = ++_loadGeneration;
     loading = true;
     error = null;
@@ -41,19 +45,22 @@ class NotificationOperationsController extends ChangeNotifier {
   }
 
   Future<bool> loadMore() async {
-    if (_disposed || loadingMore || markingAll) return false;
+    if (_disposed || loading || loadingMore || markingAll) return false;
     loadingMore = true;
     _notify();
     try {
       await _loadMore();
       return !_disposed;
     } finally {
-      if (!_disposed) { loadingMore = false; _notify(); }
+      if (!_disposed) {
+        loadingMore = false;
+        _notify();
+      }
     }
   }
 
   Future<bool> markAllRead() async {
-    if (_disposed || markingAll || loadingMore) return false;
+    if (_disposed || loading || markingAll || loadingMore) return false;
     markingAll = true;
     _notify();
     try {
@@ -62,7 +69,10 @@ class NotificationOperationsController extends ChangeNotifier {
       await _refresh();
       return !_disposed;
     } finally {
-      if (!_disposed) { markingAll = false; _notify(); }
+      if (!_disposed) {
+        markingAll = false;
+        _notify();
+      }
     }
   }
 

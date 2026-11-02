@@ -33,6 +33,9 @@ class InstitutionStatistics {
     return total == 0 ? null : counts.first! * 100 / total;
   }
   factory InstitutionStatistics.fromJson(int organizationId, String slug, Map<String, dynamic> data, {DateTime? from, DateTime? to}) {
+    if (data['success'] == false || data['error'] != null) {
+      throw const FormatException('Rejected statistics response');
+    }
     // Optional response identity must never contradict the authenticated context.
     if ((data.containsKey('organization_id') && enrollmentId(data['organization_id']) != organizationId) ||
         (data.containsKey('organization_slug') && data['organization_slug'] != slug)) {

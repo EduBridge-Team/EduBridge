@@ -8,10 +8,10 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 http.Response response(Object data, [int status = 200]) => http.Response(
-  jsonEncode(data),
-  status,
-  headers: {'content-type': 'application/json; charset=utf-8'},
-);
+      jsonEncode(data),
+      status,
+      headers: {'content-type': 'application/json; charset=utf-8'},
+    );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -76,18 +76,19 @@ void main() {
           if (request.url.path.endsWith('/management-report')) {
             return response({
               'summary': {'schools': 1},
+              'schools': [
+                {'school_id': 3}
+              ],
             });
           }
           if (request.url.path.endsWith('/schools/3')) {
             return response({
-              'school': {'name': 'مدرسة'},
+              'school': {'id': 3, 'name': 'مدرسة'},
             });
           }
           return response({
             'schools': [
-              {'id': 3},
-              null,
-              'ignore',
+              {'id': 3, 'name': 'مدرسة'},
             ],
           });
         }),

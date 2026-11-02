@@ -3,6 +3,15 @@ import 'package:edubridge_app/services/enrollment/enrollment_api_client.dart';
 import 'institution_statistics_fixture.dart';
 
 void main() {
+  for (final error in [{'success': false}, {'error': 'Denied'}]) {
+    test('HTTP success with explicit failure is not a statistics report: $error', () async {
+      final f = InstitutionStatisticsFixture();
+      f.data.addAll(error);
+      await expectLater(f.repository.load(), throwsA(isA<EnrollmentApiException>().having(
+        (e) => e.failure, 'failure', EnrollmentFailure.invalidResponse)));
+    });
+  }
+
   test('report resolves scope and encodes inclusive dates without writes', () async {
     final f = InstitutionStatisticsFixture();
     final data = await f.repository.load(from: DateTime(2026, 10, 1, 12), to: DateTime(2026, 10, 26));
