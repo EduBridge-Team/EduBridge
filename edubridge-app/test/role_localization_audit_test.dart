@@ -155,13 +155,14 @@ void main() {
         expect(TtsService.instance.tapToRead.value, isFalse);
       });
     }
-    testWidgets('$language empty ministry statistics retain zero values', (tester) async {
+    testWidgets('$language empty ministry response shows error instead of invented zero values', (tester) async {
       final strings = await AppLocalizations.delegate.load(Locale(language));
       await http.runWithClient(() async {
         await _mount(tester, const MinistryStatisticsScreen(), language);
         expect(find.text(strings.ministryStatsPageTitle), findsOneWidget);
-        expect(find.text('0'), findsNWidgets(3));
-        expect(find.text('0%'), findsOneWidget);
+        expect(find.byKey(const ValueKey('ministry-statistics-error')), findsOneWidget);
+        expect(find.text('0'), findsNothing);
+        expect(find.text('0%'), findsNothing);
       }, () => _client(empty: true));
     });
   }

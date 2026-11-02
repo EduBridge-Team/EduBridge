@@ -178,9 +178,11 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen>
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(disability
-                        ? DisabilityDisplay.label(row.key, context.l10n)
-                        : row.key),
+                    Text(
+                        disability
+                            ? DisabilityDisplay.label(row.key, context.l10n)
+                            : row.key,
+                        textDirection: disability ? null : TextDirection.ltr),
                     Text(total == 0
                         ? '${row.value}'
                         : '${row.value} (${(row.value * 100 / total).toStringAsFixed(0)}%)'),
