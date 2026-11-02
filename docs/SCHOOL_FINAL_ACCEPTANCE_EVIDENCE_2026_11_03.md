@@ -23,9 +23,16 @@
 
 The school acceptance workflow requires each named test class to execute with **zero skipped tests and zero errors**. PostgreSQL contention tests use a CI-only PostgreSQL 17 service and credentials, never the Oracle production database.
 
+## Recorded GitHub Actions evidence
+
+- [School acceptance targeted tests](https://github.com/EduBridge-Team/EduBridge/actions/runs/41547972990): success, 130 cases / 527 assertions in SQLite, plus PostgreSQL locking regression.
+- [Web and API quality checks](https://github.com/EduBridge-Team/EduBridge/actions/runs/41547973012): success, including Laravel tests, fresh PostgreSQL migration, React production build and API image verification.
+- [Branch guard](https://github.com/EduBridge-Team/EduBridge/actions/runs/41547973054): success.
+- [Dependency security audit](https://github.com/EduBridge-Team/EduBridge/actions/runs/41547973004): success.
+
 ## Final sign-off status
 
-- **Automated acceptance:** pending the exact pull-request SHA / required workflows until recorded as green.
+- **Automated acceptance:** PASSED for PR [#1327](https://github.com/EduBridge-Team/EduBridge/pull/1327) at tested head `a26de7b49a9229224f3ab72dfc8a42a834693da3`. Squash-merged to `main` as `5a2cdedfb05891f7898e3451eca3cd11af9cca19`. School SQLite suite: **130 passed / 527 assertions / 0 skipped / 0 failed**. CI PostgreSQL locking passed; all four required workflows succeeded.
 - **Operator health/HTTP checks:** passed as supplied above; do not extrapolate to authenticated acceptance.
 - **Authenticated live director/Flutter/React walkthrough:** not performed. Requires a disposable school on staging, or a deliberately isolated test tenant with synthetic users and records.
 - **Production state-changing acceptance:** intentionally prohibited; never promote real students, rotate a real director, or write to the real school's records for a smoke test.
