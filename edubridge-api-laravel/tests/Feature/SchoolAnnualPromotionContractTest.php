@@ -308,7 +308,7 @@ class SchoolAnnualPromotionContractTest extends TestCase
 
     public function test_school_operation_dispatcher_rejects_legacy_promotion_bypass(): void
     {
-        $dispatcher = app(\\App\\Http\\Controllers\\SchoolOperationsController::class);
+        $dispatcher = app(\App\Http\Controllers\SchoolOperationsController::class);
         foreach (['promotion-preview', 'promotion-approve'] as $action) {
             $this->assertSame(404, $dispatcher->handle(
                 $this->request('POST', ['expected_school_id' => 1]), $action,
