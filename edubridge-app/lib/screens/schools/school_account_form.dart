@@ -23,6 +23,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   var _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
+  final _directorEmail = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
   late SchoolAccountRepository _repository;
@@ -49,7 +50,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _inviteDirector = false;
       _createdAccount = null;
       _error = null;
-      for (final controller in [_name, _email, _phone, _address]) {
+      for (final controller in [_name, _email, _directorEmail, _phone, _address]) {
         controller.clear();
       }
     }
@@ -60,6 +61,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     for (final controller in [
       _name,
       _email,
+      _directorEmail,
       _phone,
       _address,
     ]) {
@@ -76,6 +78,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final request = SchoolAccountRequest(
       name: _name.text,
       email: _email.text,
+      directorEmail: _directorEmail.text,
       inviteDirector: _inviteDirector,
       phone: _phone.text,
       address: _address.text,
@@ -180,8 +183,8 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 : null,
                           ),
                           _field(
-                            'director_email',
-                            l10n.schoolAccountEmail,
+                            'official_email',
+                            Localizations.localeOf(context).languageCode == 'en' ? 'School official email' : 'البريد الرسمي للمدرسة',
                             _email,
                             maxLength: 190,
                             keyboard: TextInputType.emailAddress,
@@ -191,6 +194,73 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                     !(v ?? '').trim().toLowerCase().endsWith('.edubridge')
                                 ? null
                                 : l10n.schoolAccountEmailInvalid,
+                          ),
+                          _field(
+                            'director_email',
+                            Localizations.localeOf(context).languageCode == 'en' ? 'Director personal email (optional)' : 'البريد الشخصي للمدير (اختياري)',
+                            _directorEmail,
+                            maxLength: 190,
+                            keyboard: TextInputType.emailAddress,
+                            validator: (v) {
+                              final text = (v ?? '').trim().toLowerCase();
+                              if (text.isEmpty) return _inviteDirector ? l10n.schoolAccountEmailInvalid : null;
+                              return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+
+                            onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
+                            title: Text(Localizations.localeOf(context).languageCode == 'en'
+                              ? 'Invite a new director; appointment requires email/identity verification and acceptance.'
+                              : 'دعوة مدير جديد؛ التكليف يتطلب تأكيد البريد والهوية وقبول الدعوة.')),
+                          _field(
+                            'phone',
+                            l10n.schoolAccountPhone,
+                            _phone,
+                            maxLength: 30,
+                            keyboard: TextInputType.phone,
+                          ),
+                          _field(
+                            'address',
+                            l10n.schoolAccountAddress,
+                            _address,
+                            maxLength: 255,
+                          ),
+                          if (_error != null) ...[
+                            Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                schoolAccountFailureMessage(
+                                  l10n,
+                                  _error!.failure,
+                                ),
+                                key: const ValueKey('school-account-error'),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          FilledButton(
+                            key: const ValueKey('school-account-submit'),
+                            onPressed: _submitting ? null : _submit,
+                            child: Text(
+                              _submitting
+                                  ? l10n.schoolAccountSubmitting
+                                  : l10n.schoolAccountSubmit,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    ));
+  }
+}
+).hasMatch(text) &&
+                                  !text.endsWith('.edubridge') && text != _email.text.trim().toLowerCase()
+                                  ? null : l10n.schoolAccountEmailInvalid;
+                            },
                           ),
                           CheckboxListTile(value: _inviteDirector,
                             onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
