@@ -48,7 +48,9 @@ class _SchoolIdentitySettingsScreenState extends State<SchoolIdentitySettingsScr
     final en = Localizations.localeOf(context).languageCode == 'en';
     String t(String ar, String english) => en ? english : ar;
     final domainPrefix = _domain.text.trim().toLowerCase();
-    final validDomainPrefix = RegExp(r'^[a-z][a-z0-9-]{2,39}'academic': t('الهيكل الأكاديمي', 'Academic structure'), 'enrollment': t('التسجيل والترفيع', 'Enrollment and progression'), 'attendance': t('الحضور', 'Attendance'), 'timetable': t('الجدول', 'Timetable'), 'curriculum': t('المنهاج', 'Curriculum'), 'reports': t('التقارير', 'Reports')};
+    final validDomainPrefix = RegExp(r'^[a-z][a-z0-9-]{2,39}$').hasMatch(domainPrefix);
+    final domainPreview = validDomainPrefix ? '$domainPrefix.edubridge' : '';
+    final choices = {'academic': t('الهيكل الأكاديمي', 'Academic structure'), 'enrollment': t('التسجيل والترفيع', 'Enrollment and progression'), 'attendance': t('الحضور', 'Attendance'), 'timetable': t('الجدول', 'Timetable'), 'curriculum': t('المنهاج', 'Curriculum'), 'reports': t('التقارير', 'Reports')};
     return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(t('النطاق والنواب', 'Namespace and deputies')),
       actions: [IconButton(onPressed: _busy ? null : _load, tooltip: t('تحديث', 'Refresh'), icon: const Icon(Icons.refresh))]),
       body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 720), child: ListView(padding: const EdgeInsets.all(16), children: [
