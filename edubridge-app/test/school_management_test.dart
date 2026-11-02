@@ -18,6 +18,32 @@ void main() {
     await repository.mutate('/school/operations/years', 'POST', {'name':'Year', 'expected_school_id':9});
     expect(written!['expected_school_id'], 5);
   });
+
+  test('attendance report uses scoped school identity and preserves date filters', () async {
+    String? requestedPath;
+    final client = EnrollmentApiClient(
+      get: (path) async {
+        requestedPath = path;
+        return http.Response(jsonEncode({
+          'school_id': 9,
+          'summary': {'present': 1, 'absent': 0, 'late': 0, 'excused': 0},
+          'students': [],
+        }), 200);
+      },
+    );
+    final repository = SchoolManagementRepository(client: client).scoped(9);
+    final report = await repository.operation('attendance-report', query: {
+      'from': '2026-11-01', 'to': '2026-11-03', 'section_id': '4',
+    });
+    expect(report['school_id'], 9);
+    expect(Uri.parse(requestedPath!).path, '/school/operations/attendance-report');
+    expect(Uri.parse(requestedPath!).queryParameters, {
+      'from': '2026-11-01', 'to': '2026-11-03', 'section_id': '4',
+    });
+    await expectLater(SchoolManagementRepository(client: client).scoped(10)
+        .operation('attendance-report'), throwsA(isA<EnrollmentApiException>()));
+  });
+
   for (final language in ['ar','en']) {
     for (final width in [320.0,720.0,1280.0]) {
       testWidgets('deputy sees only delegated operations at $width in $language with large text', (tester) async {
