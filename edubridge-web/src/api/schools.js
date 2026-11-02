@@ -16,3 +16,17 @@ export function appointSchoolDirector(schoolId, directorEmail) {
     method: 'POST', body: JSON.stringify({ director_email: directorEmail.trim().toLowerCase() }),
   })
 }
+
+export function requestSchoolAccountSetup(email) {
+  return request('/school-account/request-setup', {
+    method: 'POST', body: JSON.stringify({ email }),
+  })
+}
+
+export function completeSchoolAccountSetup(email, token, password) {
+  return request('/school-account/complete-setup', {
+    method: 'POST', body: JSON.stringify({
+      email, token, password, password_confirmation: password,
+    }),
+  })
+}
