@@ -168,9 +168,9 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            independent
-                                ? l10n.schoolAccountIndependentHint
-                                : l10n.schoolAccountAffiliatedHint,
+                            Localizations.localeOf(context).languageCode == 'en'
+                                ? 'Enter the school official email; its mailbox owner will activate and set a password. Director assignment is separate and optional.'
+                                : 'أدخل البريد الرسمي للمدرسة؛ يفعّل صاحب البريد الحساب ويعين كلمة المرور لاحقًا. تعيين المدير منفصل واختياري.',
                           ),
                           const SizedBox(height: 20),
                           _field(
