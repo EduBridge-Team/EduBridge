@@ -14,8 +14,8 @@ const request = SchoolAccountRequest(
 );
 
 Map<String, dynamic> result({int? organizationId}) => {
-  'school': {'id': 10, 'name': 'School', 'organization_id': organizationId},
-  'director': {'id': 50, 'email': 'school@example.org'},
+  'school': {'id': 10, 'name': 'School', 'organization_id': organizationId, 'email': 'school@example.org', 'activation_status': 'pending'},
+  'account': {'id': 50, 'email': 'school@example.org', 'role': 'school_identity'},
 };
 
 http.Response response(Object body, [int status = 201]) =>
@@ -34,7 +34,7 @@ void main() {
           expect(path, '/admin/school-accounts');
           expect(body, {
             'name': 'School',
-            'director_email': 'school@example.org',
+            'school_email': 'school@example.org',
           });
           return response(result());
         },
@@ -156,7 +156,7 @@ void main() {
     final repository = SchoolAccountRepository(
       post: (path, body) async => response({
         'errors': {
-          'email': ['Already used'],
+          'school_email': ['Already used'],
         },
       }, 422),
     );
@@ -164,7 +164,7 @@ void main() {
       repository.createIndependent(request),
       throwsA(
         isA<SchoolAccountException>().having((e) => e.fields, 'fields', {
-          'email',
+          'school_email',
         }),
       ),
     );
@@ -178,11 +178,11 @@ void main() {
     [],
     {
       ...result(),
-      'director': {'id': 50, 'email': 'other@example.org'},
+      'account': {'id': 50, 'email': 'other@example.org', 'role': 'school_identity'},
     },
     {
       ...result(),
-      'director': {'id': 0, 'email': 'school@example.org'},
+      'account': {'id': 0, 'email': 'school@example.org', 'role': 'school_identity'},
     },
     result(organizationId: 4),
     {
