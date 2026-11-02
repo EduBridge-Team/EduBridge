@@ -19,6 +19,15 @@ class SchoolAccountReceipt extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(account.accountId == null ? (arabic ? 'تم إنشاء المدرسة. الحساب الرسمي ينتظر التحقق من البريد وتعيين كلمة المرور.' : 'School created. Official account setup awaits email verification and password setup.') : account.invitationPending ? (arabic ? 'تم إنشاء المدرسة ودعوة المدير؛ التكليف بانتظار القبول.' : 'School created and director invited; appointment awaits acceptance.') : l.schoolAccountSuccess, key: const ValueKey('school-account-success')),
+          if (account.accountId == null) ...[
+            const SizedBox(height: 8),
+            Text(
+              account.emailDelivery == 'sent'
+                ? (arabic ? 'تم تمرير رابط التفعيل إلى خدمة البريد. افحص بريد المدرسة.' : 'Activation link submitted to the mail transport. Check the school mailbox.')
+                : (arabic ? 'لم يُؤكّد إرسال رابط التفعيل. اطلب رابطًا جديدًا من صفحة التفعيل على الويب.' : 'Activation mail submission is not confirmed. Request a new link from the web setup page.'),
+              key: const ValueKey('school-account-email-delivery'),
+            ),
+          ],
           const SizedBox(height: 12),
           Text(
             account.accountId == null ? (arabic ? 'يمكن تعيين مدير المدرسة الآن أو لاحقًا من شاشة إدارة المديرين. لن يتاح دخول حساب المدرسة قبل إكمال التفعيل.' : 'You can appoint a director now or later. The school account cannot sign in until activation is implemented.') : account.invitationPending ? (arabic ? 'على المدعو التسجيل بنفس البريد وتأكيد البريد والهوية ثم فتح رابط الدعوة.' : 'The invitee must register with the same email, verify email and identity, then open the invitation link.') : arabic
