@@ -10,9 +10,7 @@ import 'curriculum_ui_support.dart';
 
 class _Gateway implements SchoolDirectorAppointmentGateway {
   int writes = 0;
-  bool uncertain = false;
-  bool missingReadback = false;
-  PersonalSchoolDirector? director;
+
   @override
   Future<List<DirectorSchool>> schools() async => const [
         DirectorSchool(
@@ -22,95 +20,38 @@ class _Gateway implements SchoolDirectorAppointmentGateway {
           organizationSlug: 'org',
         ),
       ];
+
   @override
-  Future<PersonalSchoolDirector?> current(DirectorSchool school) async =>
-      director;
+  Future<PersonalSchoolDirector?> current(DirectorSchool school) async => null;
+
   @override
   Future<int> appoint(DirectorSchool school, String email) async {
     writes++;
-    if (uncertain) throw const DirectorApiException(DirectorFailure.uncertain);
-    if (!missingReadback)
-      director = PersonalSchoolDirector(8, 'Personal Director', email);
-    return 8;
+    throw const DirectorApiException(DirectorFailure.forbidden);
   }
 }
 
 void main() {
   for (final language in ['ar', 'en']) {
     for (final width in [320.0, 720.0, 1280.0]) {
-      testWidgets('personal appointment $language width $width large text', (
-        tester,
-      ) async {
+      testWidgets('director identity requires invitation $language width $width', (tester) async {
         tester.view.physicalSize = Size(width, 1200);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
         final gateway = _Gateway();
-        await tester.pumpWidget(
-          curriculumHost(
-            SchoolDirectorAppointmentScreen(gateway: gateway),
-            language,
-          ),
-        );
+        await tester.pumpWidget(curriculumHost(SchoolDirectorAppointmentScreen(gateway: gateway), language));
         await tester.pumpAndSettle();
         expect(find.byType(BrandAppBar), findsOneWidget);
-        await tester.ensureVisible(find.byType(TextFormField));
-        await tester.enterText(
-          find.byType(TextFormField),
-          'person@example.org',
+        expect(find.byType(TextFormField), findsNothing);
+        expect(find.byType(FilledButton), findsOneWidget);
+        expect(
+          find.text(language == 'ar' ? 'إدارة دعوات المدير' : 'Manage director invitations'),
+          findsOneWidget,
         );
-        FocusManager.instance.primaryFocus?.unfocus();
-        await tester.pumpAndSettle();
-        await tester.ensureVisible(find.byType(FilledButton));
-        await tester.tap(find.byType(FilledButton));
-        await tester.pumpAndSettle();
         expect(gateway.writes, 0);
-        final confirm = find.descendant(
-          of: find.byType(AlertDialog),
-          matching: find.byType(FilledButton),
-        );
-        await tester.ensureVisible(confirm);
-        await tester.tap(confirm);
-        await tester.pumpAndSettle();
-        expect(gateway.writes, 1);
-        expect(find.textContaining('Personal Director'), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
     }
-  }
-  for (final missingReadback in [false, true]) {
-    testWidgets(
-        'uncertain appointment requires reload before another write $missingReadback',
-        (
-      tester,
-    ) async {
-      final gateway = _Gateway()
-        ..uncertain = !missingReadback
-        ..missingReadback = missingReadback;
-      await tester.pumpWidget(
-        curriculumHost(SchoolDirectorAppointmentScreen(gateway: gateway), 'en'),
-      );
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.byType(TextFormField));
-      await tester.enterText(find.byType(TextFormField), 'person@example.org');
-      FocusManager.instance.primaryFocus?.unfocus();
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.byType(FilledButton));
-      await tester.tap(find.byType(FilledButton));
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.descendant(
-          of: find.byType(AlertDialog),
-          matching: find.byType(FilledButton),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(gateway.writes, 1);
-      expect(
-        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
-        isNull,
-      );
-      expect(tester.takeException(), isNull);
-    });
   }
 }
