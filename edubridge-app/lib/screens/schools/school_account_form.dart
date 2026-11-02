@@ -23,6 +23,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   var _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
+  final _directorEmail = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
   late SchoolAccountRepository _repository;
@@ -49,7 +50,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       _inviteDirector = false;
       _createdAccount = null;
       _error = null;
-      for (final controller in [_name, _email, _phone, _address]) {
+      for (final controller in [_name, _email, _directorEmail, _phone, _address]) {
         controller.clear();
       }
     }
@@ -60,6 +61,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     for (final controller in [
       _name,
       _email,
+      _directorEmail,
       _phone,
       _address,
     ]) {
@@ -76,7 +78,8 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final request = SchoolAccountRequest(
       name: _name.text,
       email: _email.text,
-      inviteDirector: _inviteDirector,
+      directorEmail: _directorEmail.text,
+      inviteDirector: _inviteDirector && _directorEmail.text.trim().isNotEmpty,
       phone: _phone.text,
       address: _address.text,
     );
@@ -180,7 +183,7 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 : null,
                           ),
                           _field(
-                            'director_email',
+                            'email',
                             l10n.schoolAccountEmail,
                             _email,
                             maxLength: 190,
@@ -192,11 +195,86 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
                                 ? null
                                 : l10n.schoolAccountEmailInvalid,
                           ),
-                          CheckboxListTile(value: _inviteDirector,
+                          _field(
+                            'director_email',
+                            Localizations.localeOf(context).languageCode == 'en'
+                                ? 'Director personal email (optional)'
+                                : 'البريد الشخصي للمدير (اختياري)',
+                            _directorEmail,
+                            maxLength: 190,
+                            keyboard: TextInputType.emailAddress,
+                            validator: (v) {
+                              final email = (v ?? '').trim().toLowerCase();
+                              if (email.isEmpty) {
+                                return _inviteDirector
+                                    ? l10n.schoolAccountEmailInvalid
+                                    : null;
+                              }
+                              if (!RegExp(r'^[^\\s@]+@[^\\s@]+\\.[^\\s@]+
+                          _field(
+                            'phone',
+                            l10n.schoolAccountPhone,
+                            _phone,
+                            maxLength: 30,
+                            keyboard: TextInputType.phone,
+                          ),
+                          _field(
+                            'address',
+                            l10n.schoolAccountAddress,
+                            _address,
+                            maxLength: 255,
+                          ),
+                          if (_error != null) ...[
+                            Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                schoolAccountFailureMessage(
+                                  l10n,
+                                  _error!.failure,
+                                ),
+                                key: const ValueKey('school-account-error'),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          FilledButton(
+                            key: const ValueKey('school-account-submit'),
+                            onPressed: _submitting ? null : _submit,
+                            child: Text(
+                              _submitting
+                                  ? l10n.schoolAccountSubmitting
+                                  : l10n.schoolAccountSubmit,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    ));
+  }
+}
+)
+                                      .hasMatch(email) ||
+                                  email.endsWith('.edubridge') ||
+                                  email == _email.text.trim().toLowerCase()) {
+                                return l10n.schoolAccountEmailInvalid;
+                              }
+                              return null;
+                            },
+                          ),
+                          CheckboxListTile(
+                            value: _inviteDirector,
                             onChanged: _submitting ? null : (value) => setState(() => _inviteDirector = value == true),
                             title: Text(Localizations.localeOf(context).languageCode == 'en'
-                              ? 'Invite a new director; appointment requires email/identity verification and acceptance.'
-                              : 'دعوة مدير جديد؛ التكليف يتطلب تأكيد البريد والهوية وقبول الدعوة.')),
+                                ? 'Invite director separately using their personal email'
+                                : 'دعوة المدير بشكل منفصل باستخدام بريده الشخصي'),
+                          ),
                           _field(
                             'phone',
                             l10n.schoolAccountPhone,
