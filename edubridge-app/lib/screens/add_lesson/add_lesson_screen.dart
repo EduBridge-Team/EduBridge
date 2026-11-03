@@ -9,6 +9,10 @@ import '../../widgets/teacher_navigation_bar.dart';
 class AddLessonScreen extends StatefulWidget {
   final List types;
   final bool forParents;
+  /// Specialist parent-only authoring: the lesson audience cannot be switched.
+  final bool parentsOnly;
+  /// Teacher authoring: parent audience is excluded.
+  final bool studentsOnly;
   final int? initialChildId;
   final String? initialChildName;
   final bool showBottomNavigation;
@@ -17,10 +21,13 @@ class AddLessonScreen extends StatefulWidget {
     super.key,
     required this.types,
     this.forParents = false,
+    this.parentsOnly = false,
+    this.studentsOnly = false,
     this.initialChildId,
     this.initialChildName,
     this.showBottomNavigation = false,
-  });
+  }) : assert(!parentsOnly || !studentsOnly),
+       assert(!parentsOnly || initialChildId == null);
 
   @override
   State<AddLessonScreen> createState() => _AddLessonScreenState();
@@ -143,6 +150,8 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                     types: widget.types,
                     fullScreen: true,
                     forParents: widget.forParents,
+                    parentsOnly: widget.parentsOnly,
+                    studentsOnly: widget.studentsOnly,
                     initialChildId: widget.initialChildId,
                     initialChildName: widget.initialChildName,
                     onClose: () => Navigator.pop(context),

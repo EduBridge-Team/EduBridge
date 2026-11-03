@@ -11,10 +11,6 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
 
     return SliverMainAxisGroup(
       slivers: [
-        const SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 10, 12, 0),
-          sliver: SliverToBoxAdapter(child: StarterLessonLibraryEntry()),
-        ),
         SliverToBoxAdapter(
           child: SizedBox(
             height: 65,
@@ -238,7 +234,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                 ],
               ),
               const SizedBox(height: 7),
-              Padding(
+              if (targetType != 'parents') Padding(
                 padding: const EdgeInsets.only(right: 60, left: 63),
                 child: SizedBox(
                   width: double.infinity,

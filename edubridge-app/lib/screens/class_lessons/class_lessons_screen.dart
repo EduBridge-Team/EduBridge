@@ -10,10 +10,14 @@ import 'class_lesson_results.dart';
 import 'class_assignment_screen.dart';
 import '../../model/class_lessons/class_lesson_result.dart';
 import '../class_lesson_results/class_result_screen.dart';
+import '../add_lesson/add_lesson_screen.dart';
+import '../interactive_lesson/interactive_lesson_starter_library.dart';
 
 class ClassLessonsScreen extends StatefulWidget {
-  const ClassLessonsScreen({super.key, this.gateway});
+  const ClassLessonsScreen({super.key, this.gateway, this.types = const []});
   final ClassLessonGateway? gateway;
+  /// Existing teacher lesson form accepts disability labels already loaded by the dashboard.
+  final List types;
   @override
   State<ClassLessonsScreen> createState() => _ClassLessonsScreenState();
 }
@@ -41,6 +45,28 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
   }
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _state.dispose(); super.dispose(); }
+  Future<void> _createOrdinaryLesson() async {
+    final lesson = await Navigator.of(context).push<Map>(
+      MaterialPageRoute<Map>(builder: (_) => AddLessonScreen(
+        types: widget.types, studentsOnly: true)),
+    );
+    if (!mounted || lesson == null) return;
+    final english = Localizations.localeOf(context).languageCode == 'en';
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(english
+        ? 'Lesson saved. Class assignment is a separate step.'
+        : 'تم حفظ الدرس. إسناده للشعبة خطوة مستقلة.'),
+    ));
+    await _state.reload();
+  }
+
+  Future<void> _openInteractiveTemplates() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(builder: (_) =>
+          const InteractiveLessonStarterLibrary()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: _state, builder: (context, _) {
     final state = _state, data = state.snapshot;
@@ -67,6 +93,27 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
                     !sections.any((s) => s.id == id)) return;
                 setState(() => _sectionId = id);
               }),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+                OutlinedButton.icon(
+                  key: const ValueKey('class-lesson-create-ordinary'),
+                  icon: const Icon(Icons.note_add_outlined),
+                  label: Text(label('إضافة درس عادي', 'Add regular lesson')),
+                  onPressed: _createOrdinaryLesson,
+                ),
+                OutlinedButton.icon(
+                  key: const ValueKey('class-lesson-interactive-templates'),
+                  icon: const Icon(Icons.auto_stories_outlined),
+                  label: Text(label('القوالب التفاعلية', 'Interactive templates')),
+                  onPressed: _openInteractiveTemplates,
+                ),
+              ]),
+              const SizedBox(height: 8),
+              Text(
+                label('إنشاء الدرس لا يعني إسناده تلقائيًا للشعبة.',
+                  'Creating a lesson does not automatically assign it to the class.'),
+                style: TextStyle(color: JisrColors.of(context).muted, fontSize: 12),
+              ),
+              const SizedBox(height: 8),
             if (selected.length == 1) ...[
               OutlinedButton.icon(key: const ValueKey('class-lesson-assign'), icon: const Icon(Icons.playlist_add),
                 label: Text(label('إسناد درس للشعبة', 'Assign class lesson')),

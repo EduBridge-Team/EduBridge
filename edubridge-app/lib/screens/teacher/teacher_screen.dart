@@ -2,7 +2,6 @@ import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/teacher/teacher_screen.dart
 import 'package:flutter/material.dart';
-import '../interactive_lesson/starter_lesson_library_entry.dart';
 import '../class_lessons/class_lessons_screen.dart';
 import '../teacher_sections/teacher_sections_tab.dart';
 import '../../services/teacher_sections_repository.dart';
@@ -15,7 +14,6 @@ import '../../widgets/dashboard_profile_identity.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
-import '../add_lesson/add_lesson_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../chats_screen.dart';
 import '../child_progress_screen.dart';
@@ -146,7 +144,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
     }
     return _buildLessonsTab(context, c, _lessons, _types, _query,
         (v) => setState(() => _query = v),
-        (lesson) => _setViewingLesson(lesson));
+        (lesson) => _setViewingLesson(lesson), _refreshData);
   }
 
   @override
@@ -211,25 +209,16 @@ class _TeacherScreenState extends State<TeacherScreen> {
       floatingActionButton: _tabIndex == 1
           ? FloatingActionButton.extended(
               onPressed: () async {
-                final lesson = await Navigator.push<Map>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddLessonScreen(types: _types),
-                  ),
-                );
-                if (!mounted || !context.mounted || lesson == null) return;
-                setState(() => _lessons = [lesson, ..._lessons]);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.lessonAdded),
-                    backgroundColor: AppColors.green,
-                  ),
-                );
+                await Navigator.of(context).push<void>(MaterialPageRoute<void>(
+                  builder: (_) => ClassLessonsScreen(types: _types),
+                ));
+                if (mounted) await _refreshData();
               },
               icon: const Icon(AppIcons.add),
               label: Text(
-                context.l10n.addLesson,
-                style: TextStyle(fontWeight: FontWeight.w800),
+                Localizations.localeOf(context).languageCode == 'en'
+                    ? 'Class lessons' : 'دروس الشُّعب',
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             )
           : null,

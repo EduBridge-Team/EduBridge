@@ -109,10 +109,10 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
       appBar: JisrAppBar(
         title: context.l10n.lessonParentTitle,
         actions: [
-          if (['teacher', 'specialist'].contains(_role)) IconButton(
+          if (_role == 'specialist') IconButton(
             tooltip: context.l10n.lessonParentAdd, icon: const Icon(Icons.add),
             onPressed: () async {
-              final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddLessonScreen(types: [], forParents: true)));
+              final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddLessonScreen(types: [], forParents: true, parentsOnly: true)));
               if (result != null && mounted) await _load();
             },
           ),

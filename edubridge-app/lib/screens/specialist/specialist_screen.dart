@@ -5,7 +5,6 @@ import '../../utils/presentation_text.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import '../interactive_lesson/starter_lesson_library_entry.dart';
 
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
@@ -116,7 +115,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => AddLessonScreen(types: _types)),
+      MaterialPageRoute(builder: (_) => AddLessonScreen(
+          types: _types, forParents: true, parentsOnly: true)),
     );
     if (result != null && mounted) await _load();
   }
@@ -331,8 +331,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               },
               icon: const Icon(AppIcons.add),
               label: Text(
-                context.l10n.suggestLesson,
-                style: TextStyle(fontWeight: FontWeight.w800),
+                Localizations.localeOf(context).languageCode == 'en'
+                    ? 'Add parent lesson' : 'إضافة درس لأولياء الأمور',
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             )
           : null,

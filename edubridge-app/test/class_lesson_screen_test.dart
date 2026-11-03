@@ -21,6 +21,9 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('طالب 1'), findsNothing);
         await chooseSection(tester, 'School 1 / 2026/2027 / A');
+        expect(find.byKey(const ValueKey('class-lesson-create-ordinary')), findsOneWidget);
+        expect(find.byKey(const ValueKey('class-lesson-interactive-templates')), findsOneWidget);
+        expect(find.byKey(const ValueKey('class-lesson-assign')), findsOneWidget);
         expect(find.text('طالب 1'), findsOneWidget);
         expect(find.textContaining('0 / 10'), findsOneWidget);
         expect(find.textContaining('هدف الطالب 1'), findsOneWidget);
@@ -34,10 +37,29 @@ void main() {
       });
     }
   }
+  testWidgets('existing regular lesson creation stays reachable when class API is absent', (tester) async {
+    final failing = ClassLessonFixture()..status = 404;
+    await tester.pumpWidget(curriculumHost(
+      ClassLessonsScreen(gateway: failing.repository), 'ar'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('class-lesson-create-ordinary')), findsOneWidget);
+    expect(find.byKey(const ValueKey('class-lesson-interactive-templates')), findsOneWidget);
+    expect(find.byKey(const ValueKey('class-lesson-assign')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('source replacement drops selected class and cached students', (tester) async {
     final old = ClassLessonFixture(), next = ClassLessonFixture()..status = 404;
     await tester.pumpWidget(curriculumHost(ClassLessonsScreen(gateway: old.repository), 'en'));
     await tester.pumpAndSettle(); await chooseSection(tester, 'School 1 / 2026/2027 / A');
+    // The additional lesson entry actions can move the results card below
+    // the viewport on shorter screens. Scroll to inspect the real student row.
+    await tester.scrollUntilVisible(
+      find.text('طالب 1'),
+      140,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     expect(find.text('طالب 1'), findsOneWidget);
     await tester.pumpWidget(curriculumHost(ClassLessonsScreen(gateway: next.repository), 'en'));
     await tester.pumpAndSettle(); expect(find.text('طالب 1'), findsNothing);
