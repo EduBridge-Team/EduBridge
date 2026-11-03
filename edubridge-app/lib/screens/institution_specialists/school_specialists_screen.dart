@@ -6,6 +6,7 @@ import '../../theme.dart';
 import '../enrollment/enrollment_labels.dart';
 import 'school_specialists_controller.dart';
 import 'school_specialists_labels.dart';
+import '../specialist_schools/independent_specialist_employment_screen.dart';
 
 class SchoolSpecialistsScreen extends StatelessWidget {
   const SchoolSpecialistsScreen({super.key, required this.gateway});
@@ -78,6 +79,16 @@ class _SchoolSpecialistsBodyState extends State<_SchoolSpecialistsBody> with Wid
             if (_state.error != null) Text(enrollmentFailureMessage(context.l10n, _state.error!)),
             if (data != null) ...[
               SelectableText(data.schoolName, style: Theme.of(context).textTheme.titleLarge),
+              if (independent) OutlinedButton.icon(
+                key: const ValueKey('school-specialist-open-employments'),
+                onPressed: _state.busy ? null : () async {
+                  await Navigator.push(context, MaterialPageRoute<void>(
+                    builder: (_) => SchoolSpecialistEmploymentScreen(schoolId: data.schoolId)));
+                  if (mounted) await _state.reload();
+                },
+                icon: const Icon(Icons.badge_outlined),
+                label: Text(SchoolSpecialistsLabels(context).employment),
+              ),
               if (data.canAssign) OutlinedButton.icon(key: const ValueKey('specialist-add'),
                 onPressed: data.eligible.keys.any(data.canAdd) ? () => _add(data) : null,
                 icon: const Icon(Icons.person_add_alt), label: Text(l.add)),
