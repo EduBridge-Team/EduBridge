@@ -22,11 +22,13 @@ class IepVersionScreen extends StatelessWidget {
     required this.version,
     this.evaluationGateway,
     this.evidenceGateway,
+    this.readOnly = false,
   });
   final IepPlan plan;
   final IepVersion version;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepGoalEvidenceGateway? evidenceGateway;
+  final bool readOnly;
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -54,7 +56,7 @@ class IepVersionScreen extends StatelessWidget {
                 Text('${l10n.iepVersionNumber}: ${version.number}'),
                 Text(iepStatusLabel(l10n, version.status)),
                 if (plan.closed) Text(l10n.iepClosed),
-                if (!plan.closed) OutlinedButton.icon(
+                if (!readOnly && !plan.closed) OutlinedButton.icon(
                   key: const ValueKey('iep-open-review'),
                   icon: const Icon(Icons.fact_check_outlined),
                   label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Review actions' : 'إجراءات المراجعة'),
