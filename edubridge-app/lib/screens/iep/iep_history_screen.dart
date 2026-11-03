@@ -23,12 +23,14 @@ class IepHistoryScreen extends StatefulWidget {
     this.gateway,
     this.evaluationGateway,
     this.saveGateway,
+    this.readOnly = false,
   });
   final int childId;
   final String childName;
   final IepHistoryGateway? gateway;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepDraftGateway? saveGateway;
+  final bool readOnly;
   @override
   State<IepHistoryScreen> createState() => _IepHistoryScreenState();
 }
@@ -109,7 +111,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
-                    if (_state.error != EnrollmentFailure.session &&
+                    if (!widget.readOnly && _state.error != EnrollmentFailure.session &&
                         _state.error != EnrollmentFailure.forbidden)
                       OutlinedButton.icon(
                         key: const ValueKey('iep-prepare-draft'),
@@ -157,6 +159,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                               builder: (_) => IepVersionScreen(
                                 plan: plan,
                                 version: version,
+                                readOnly: widget.readOnly,
                                 evaluationGateway: widget.evaluationGateway,
                               ),
                             ),
@@ -164,7 +167,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                             if (mounted && done == true && identical(state, _state)) await state.reload();
                           },
                         ),
-                        if (!plan.closed)
+                        if (!widget.readOnly && !plan.closed)
                           for (final version in plan.versions.where((v) => v.status == IepVersionStatus.draft && v.goals.isNotEmpty))
                             TextButton.icon(
                               key: ValueKey('iep-edit-copy-${version.id}'),
