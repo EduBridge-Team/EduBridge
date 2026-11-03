@@ -79,6 +79,8 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   void initState() {
     super.initState();
     _forParents = widget.parentsOnly || (!widget.studentsOnly && widget.forParents);
+    // Student authoring must not publish to everyone by default.
+    if (widget.studentsOnly) _target = LessonTarget.specificChildren;
     if (widget.initialChildId != null) {
       _target = LessonTarget.specificChildren;
       _selectedChildIds.add(widget.initialChildId!);
