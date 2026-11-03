@@ -353,8 +353,8 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                       Text(
                         widget.editSource == null ? l.iepComposeNotice
                           : (Localizations.localeOf(context).languageCode == 'en'
-                            ? 'Editing a temporary copy. Updating the saved version requires service support and confirmed saving. Leaving discards these changes.'
-                            : 'تعديل نسخة مؤقتة. تحديث النسخة المحفوظة يتطلب دعم الخدمة وتأكيد الحفظ. مغادرة المحرر تلغي هذه التعديلات.'),
+                            ? 'Edit the saved draft, then choose Save as draft or Done. Leaving without saving discards changes.'
+                            : 'عدّل المسودة المحفوظة، ثم اختر حفظ كمسودة أو تم. مغادرة المحرر دون حفظ تلغي التغييرات.'),
                         key: const ValueKey('iep-unsaved-notice'),
                       ),
                       const SizedBox(height: 16),
