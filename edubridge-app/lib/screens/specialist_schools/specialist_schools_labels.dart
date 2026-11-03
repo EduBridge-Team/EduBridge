@@ -4,6 +4,7 @@ class SpecialistSchoolsLabels {
   SpecialistSchoolsLabels(BuildContext context) : english = Localizations.localeOf(context).languageCode == 'en';
   final bool english;
   String pick(String ar, String en) => english ? en : ar;
+  String get employmentOffers => pick('عروض العمل في المدارس', 'School employment offers');
   String get schools => pick('مدارسي', 'My schools');
   String get students => pick('طلاب المدرسة', 'School students');
   String get noSchools => pick('لا توجد مدارس مكلّف بها حاليًا.', 'You have no current school assignments.');
