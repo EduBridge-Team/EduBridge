@@ -11,6 +11,10 @@ permission checks still need backend implementation; do not claim live acceptanc
 No backend changes. The reviewed institution routes do not implement this API.
 Existing child care-team endpoints authorize different roles and must not be
 reused as an institution permission bypass.
+For independent schools with no parent institution, use the separate Flutter
+employment and assignment contract documented in
+INDEPENDENT_SCHOOL_SPECIALIST_FLUTTER_API_CONTRACT.md; never reuse a
+nonexistent institution slug or infer institution privileges.
 
 ## Read and capabilities
 
