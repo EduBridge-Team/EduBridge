@@ -43,8 +43,12 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
     final gateway = widget.gateway ?? IepHistoryRepository(childId: childId);
     _state = EnrollmentState(() async {
       final data = await gateway.load();
-      if (data.childId != childId)
+      if (data.childId != childId ||
+          (widget.readOnly && data.plans.any((plan) =>
+            plan.versions.isEmpty || plan.versions.any((version) =>
+              version.status != IepVersionStatus.completed)))) {
         throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+      }
       return data;
     });
     _state.reload();
@@ -61,7 +65,8 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
   void didUpdateWidget(covariant IepHistoryScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.childId != oldWidget.childId ||
-        widget.gateway != oldWidget.gateway) {
+        widget.gateway != oldWidget.gateway ||
+        widget.readOnly != oldWidget.readOnly) {
       _state.dispose();
       _createState();
     }
