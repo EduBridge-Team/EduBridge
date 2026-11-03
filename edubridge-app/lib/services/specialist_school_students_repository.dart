@@ -71,7 +71,8 @@ class SpecialistSchoolStudentsRepository implements SpecialistSchoolStudentsGate
     final followupId = _parse(() {
       if (enrollmentId(receipt['specialist_id']) != expected.specialistId ||
           enrollmentId(receipt['school_id']) != expected.school.id ||
-          enrollmentId(receipt['organization_id']) != expected.school.organizationId ||
+          !receipt.containsKey('organization_id') ||
+          (receipt['organization_id'] == null ? null : enrollmentId(receipt['organization_id'])) != expected.school.organizationId ||
           enrollmentId(receipt['assignment_id']) != expected.school.assignmentId ||
           enrollmentId(receipt['child_id']) != student.id ||
           enrollmentId(receipt['enrollment_id']) != student.enrollmentId) {

@@ -14,6 +14,11 @@ class SchoolSpecialistsLabels {
   String get ended => pick('تكليف منتهٍ', 'Ended assignment');
   String get empty => pick('لا توجد تكليفات أخصائيين لهذه المدرسة.', 'No specialist assignments for this school.');
   String get noEligible => pick('لا يوجد أخصائيون متاحون للتكليف.', 'No specialists are eligible for assignment.');
+  String get independentNoEligible => pick('لا يوجد مختصون موظفون ونشطون في هذه المدرسة ومؤهلون للتكليف.',
+      'No active, employed specialists at this school are eligible for assignment.');
+  String get employment => pick('المختصون الموظفون وعروض العمل', 'Staff specialists and employment offers');
+  String get independentScope => pick('يمكن تكليف المختص إذا كان موظفًا نشطًا في هذه المدرسة فقط. تحدد الخدمة القائمة المؤهلة وتتحقق منها عند الحفظ.',
+      'Only active specialists employed by this school may be assigned. The server determines and rechecks eligibility.');
   String get scope => pick('التكليف للمدرسة كاملة. يختار الأخصائي لاحقًا الطلاب الذين سيتابعهم من المدرسة؛ لا يضيف هذا الإجراء طلابًا إلى متابعته تلقائيًا.',
       'This assignment is for the whole school. The specialist later chooses students from that school to follow; this action does not automatically add students to their caseload.');
   String get endEffect => pick('ينتهي الوصول الناتج عن هذا التكليف حسب سياسة الخدمة، مع حفظ سجل المتابعة السابق.',
