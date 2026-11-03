@@ -195,7 +195,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                               },
                               icon: const Icon(Icons.edit_outlined),
                               label: Text(Localizations.localeOf(context).languageCode == 'en'
-                                ? 'Edit a temporary copy' : 'تعديل نسخة مؤقتة'),
+                                ? 'Edit draft or complete' : 'تعديل المسودة أو إتمامها'),
                             ),
                       ],
                   ],
