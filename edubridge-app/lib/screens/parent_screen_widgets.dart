@@ -208,12 +208,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                         color: action.$3, onTap: action.$4)),
                   ]);
                 }),
-                const SizedBox(height: 12),
-                SizedBox(width: double.infinity, child: _secondaryAction(
-                  icon: AppIcons.parent,
-                  label: context.l10n.parentLessons,
-                  onTap: _openParentLessons,
-                )),
                 const SizedBox(height: 8),
                 LayoutBuilder(builder: (context, constraints) {
                   final scale = MediaQuery.textScalerOf(context).scale(1);
