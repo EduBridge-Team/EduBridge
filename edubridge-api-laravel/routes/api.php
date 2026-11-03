@@ -101,6 +101,17 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
         ->middleware('throttle:10,1');
     Route::delete('/school/deputies/{assignment}', [\App\Http\Controllers\SchoolDeputyManagementController::class, 'revoke'])
         ->whereNumber('assignment')->middleware('throttle:10,1');
+    // Standalone schools: a verified specialist accepts an employment offer
+    // before the school director can assign them to the school.
+    Route::get('/school/specialist-employments', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'employments'])->middleware('throttle:60,1');
+    Route::post('/school/specialist-employments', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'invite'])->middleware('throttle:10,1');
+    Route::post('/school/specialist-employments/{employment}/end', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'endEmployment'])->whereNumber('employment')->middleware('throttle:10,1');
+    Route::get('/specialists/me/school-employments', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'myOffers'])->middleware('throttle:60,1');
+    Route::post('/specialists/me/school-employments/{employment}/accept', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'accept'])->whereNumber('employment')->middleware('throttle:10,1');
+    Route::get('/school/specialist-assignments', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'assignments'])->middleware('throttle:60,1');
+    Route::post('/school/specialist-assignments', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'assign'])->middleware('throttle:10,1');
+    Route::post('/school/specialist-assignments/{assignment}/end', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'endAssignment'])->whereNumber('assignment')->middleware('throttle:10,1');
+    Route::get('/specialists/me/schools', [\App\Http\Controllers\IndependentSchoolSpecialistController::class, 'mySchools'])->middleware('throttle:60,1');
     Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
         ->middleware('throttle:120,1');
     Route::get('/school/academic', [\App\Http\Controllers\SchoolAcademicController::class, 'index'])
