@@ -147,7 +147,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
           'evaluation_id': result['id'],
           'title': 'تقييم جديد للطفل',
           'body':
-              'رفع المختص تقييماً للطفل "${widget.child['name']}" — راجع الخطة وابدأ التنفيذ',
+              'رفع المختص تقييماً للطفل "${widget.child['name']}". ستظهر الخطة التعليمية بعد إتمامها.',
           'type': 'evaluation_created',
         });
       } catch (_) {
@@ -161,9 +161,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
       icon: AppIcons.check,
       iconColor: AppColors.brandTealDeep,
       title: context.l10n.evaluationCompleted,
-      message: _selectedTeacherId != null
-          ? context.l10n.evaluationSentToTeacher
-          : context.l10n.evaluationSavedAssignLater,
+      message: Localizations.localeOf(context).languageCode == 'en'
+          ? 'Assessment saved. The educational plan becomes visible only after Done.'
+          : 'تم حفظ التقييم. تظهر الخطة التعليمية للمعلم فقط بعد الضغط على «تم».',
     );
 
     if (mounted) Navigator.pop(context, true);
