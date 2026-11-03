@@ -28,7 +28,9 @@ class SchoolSpecialistAssignments {
       this.effectiveOn, this.canAssign, Map<int, String> eligible,
       List<SchoolSpecialistAssignment> assignments)
       : eligible = Map.unmodifiable(eligible), assignments = List.unmodifiable(assignments);
-  final int organizationId, schoolId;
+  /// Null when the specialist is employed directly by an independent school.
+  final int? organizationId;
+  final int schoolId;
   final String revision, schoolName;
   final DateTime effectiveOn;
   final bool canAssign;
@@ -36,10 +38,18 @@ class SchoolSpecialistAssignments {
   final List<SchoolSpecialistAssignment> assignments;
   bool canAdd(int specialistId) => canAssign && eligible.containsKey(specialistId) &&
       !assignments.any((a) => a.active && a.specialistId == specialistId);
-  factory SchoolSpecialistAssignments.fromJson(int organizationId, int schoolId, Map<String, dynamic> data) {
+  factory SchoolSpecialistAssignments.fromJson(int organizationId, int schoolId, Map<String, dynamic> data) =>
+      SchoolSpecialistAssignments._fromScope(organizationId, schoolId, data, employmentRequired: false);
+
+  factory SchoolSpecialistAssignments.fromIndependentSchoolJson(int schoolId, Map<String, dynamic> data) =>
+      SchoolSpecialistAssignments._fromScope(null, schoolId, data, employmentRequired: true);
+
+  static SchoolSpecialistAssignments _fromScope(int? organizationId, int schoolId,
+      Map<String, dynamic> data, {required bool employmentRequired}) {
     final capabilities = enrollmentMap(data['capabilities']);
     if (data['contract_version'] != 1 || data['complete'] != true ||
-        enrollmentId(data['organization_id']) != organizationId ||
+        !data.containsKey('organization_id') ||
+        (data['organization_id'] == null ? null : enrollmentId(data['organization_id'])) != organizationId ||
         enrollmentId(data['school_id']) != schoolId || capabilities['can_assign'] is! bool) {
       throw const FormatException('Invalid specialist school scope');
     }
@@ -48,6 +58,13 @@ class SchoolSpecialistAssignments {
     for (final item in enrollmentList(data['eligible_specialists'])) {
       final row = enrollmentMap(item), id = enrollmentId(enrollmentMap(item)['id']);
       if (eligible.containsKey(id)) throw const FormatException('Duplicate specialist');
+      // A director cannot select anyone outside the verified active staff roster.
+      if (employmentRequired && (row['role'] != 'specialist' ||
+          row['employment_active'] != true ||
+          enrollmentId(row['employment_school_id']) != schoolId ||
+          enrollmentId(row['employment_id']) < 1)) {
+        throw const FormatException('Specialist is not active school staff');
+      }
       eligible[id] = enrollmentText(row['name']);
     }
     final assignments = enrollmentList(data['assignments']).map((a) =>
