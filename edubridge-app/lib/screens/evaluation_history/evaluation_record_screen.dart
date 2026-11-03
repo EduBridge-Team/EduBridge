@@ -6,8 +6,10 @@ import '../../theme.dart';
 import 'evaluation_history_labels.dart';
 
 class EvaluationRecordScreen extends StatelessWidget {
-  const EvaluationRecordScreen({super.key, required this.record});
+  const EvaluationRecordScreen({super.key, required this.record, this.showEmbeddedPlan = true});
   final EvaluationRecord record;
+  /// Legacy embedded plan text has no publication state; hide it from teachers.
+  final bool showEmbeddedPlan;
   Widget _field(String label, String? value, String id) =>
       value == null || value.trim().isEmpty
       ? const SizedBox.shrink()
@@ -58,7 +60,7 @@ class EvaluationRecordScreen extends StatelessWidget {
                   record.recommendations,
                   'recommendations',
                 ),
-                _field(l10n.educationalPlan, record.plan, 'plan'),
+                if (showEmbeddedPlan) _field(l10n.educationalPlan, record.plan, 'plan'),
                 for (
                   var index = 0;
                   index < record.teachingMethods.length;

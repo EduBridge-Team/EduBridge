@@ -23,12 +23,14 @@ class IepHistoryScreen extends StatefulWidget {
     this.gateway,
     this.evaluationGateway,
     this.saveGateway,
+    this.readOnly = false,
   });
   final int childId;
   final String childName;
   final IepHistoryGateway? gateway;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepDraftGateway? saveGateway;
+  final bool readOnly;
   @override
   State<IepHistoryScreen> createState() => _IepHistoryScreenState();
 }
@@ -41,8 +43,12 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
     final gateway = widget.gateway ?? IepHistoryRepository(childId: childId);
     _state = EnrollmentState(() async {
       final data = await gateway.load();
-      if (data.childId != childId)
+      if (data.childId != childId ||
+          (widget.readOnly && data.plans.any((plan) =>
+            plan.versions.isEmpty || plan.versions.any((version) =>
+              version.status != IepVersionStatus.completed)))) {
         throw const EnrollmentApiException(EnrollmentFailure.invalidResponse);
+      }
       return data;
     });
     _state.reload();
@@ -59,7 +65,8 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
   void didUpdateWidget(covariant IepHistoryScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.childId != oldWidget.childId ||
-        widget.gateway != oldWidget.gateway) {
+        widget.gateway != oldWidget.gateway ||
+        widget.readOnly != oldWidget.readOnly) {
       _state.dispose();
       _createState();
     }
@@ -109,7 +116,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
-                    if (_state.error != EnrollmentFailure.session &&
+                    if (!widget.readOnly && _state.error != EnrollmentFailure.session &&
                         _state.error != EnrollmentFailure.forbidden)
                       OutlinedButton.icon(
                         key: const ValueKey('iep-prepare-draft'),
@@ -157,6 +164,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                               builder: (_) => IepVersionScreen(
                                 plan: plan,
                                 version: version,
+                                readOnly: widget.readOnly,
                                 evaluationGateway: widget.evaluationGateway,
                               ),
                             ),
@@ -164,7 +172,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                             if (mounted && done == true && identical(state, _state)) await state.reload();
                           },
                         ),
-                        if (!plan.closed)
+                        if (!widget.readOnly && !plan.closed)
                           for (final version in plan.versions.where((v) => v.status == IepVersionStatus.draft && v.goals.isNotEmpty))
                             TextButton.icon(
                               key: ValueKey('iep-edit-copy-${version.id}'),
@@ -187,7 +195,7 @@ class _IepHistoryScreenState extends State<IepHistoryScreen>
                               },
                               icon: const Icon(Icons.edit_outlined),
                               label: Text(Localizations.localeOf(context).languageCode == 'en'
-                                ? 'Edit a temporary copy' : 'تعديل نسخة مؤقتة'),
+                                ? 'Edit draft or complete' : 'تعديل المسودة أو إتمامها'),
                             ),
                       ],
                   ],

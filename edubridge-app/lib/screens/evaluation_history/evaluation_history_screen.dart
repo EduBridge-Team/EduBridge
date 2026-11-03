@@ -8,6 +8,7 @@ import '../../theme.dart';
 import '../enrollment/enrollment_state.dart';
 import '../iep/iep_history_screen.dart';
 import '../../services/iep/iep_history_repository.dart';
+import '../../services/iep/teacher_completed_iep_history_repository.dart';
 import 'evaluation_history_card.dart';
 import 'evaluation_history_labels.dart';
 import 'evaluation_record_screen.dart';
@@ -19,11 +20,14 @@ class EvaluationHistoryScreen extends StatefulWidget {
     this.childName = '',
     this.gateway,
     this.iepGateway,
+    this.readOnly = false,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? gateway;
   final IepHistoryGateway? iepGateway;
+  /// Teacher view reuses evaluation cards and opens only completed plans.
+  final bool readOnly;
   @override
   State<EvaluationHistoryScreen> createState() =>
       _EvaluationHistoryScreenState();
@@ -109,7 +113,10 @@ class _EvaluationHistoryScreenState extends State<EvaluationHistoryScreen>
                           builder: (_) => IepHistoryScreen(
                             childId: widget.childId,
                             childName: widget.childName,
-                            gateway: widget.iepGateway,
+                            gateway: widget.iepGateway ?? (widget.readOnly
+                              ? TeacherCompletedIepHistoryRepository(childId: widget.childId)
+                              : null),
+                            readOnly: widget.readOnly,
                             evaluationGateway: widget.gateway,
                           ),
                         ),
@@ -144,7 +151,8 @@ class _EvaluationHistoryScreenState extends State<EvaluationHistoryScreen>
                           onOpen: () => Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (_) =>
-                                  EvaluationRecordScreen(record: record),
+                                  EvaluationRecordScreen(record: record,
+                                    showEmbeddedPlan: !widget.readOnly),
                             ),
                           ),
                         ),

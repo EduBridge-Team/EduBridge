@@ -2,6 +2,7 @@ import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
+import '../evaluation_history/evaluation_history_screen.dart';
 import '../../features/students/data/student_profile_repository.dart';
 import '../../features/students/domain/student_profile.dart';
 import '../../features/students/presentation/student_profile_labels.dart';
@@ -65,7 +66,6 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
     final specialNeeds = child.specialNeeds;
     final preferredStyle = child.preferredStyle;
     final notes = child.notes;
-    final educationalPlan = child.educationalPlan;
     final strengths = StudentProfileLabels.teacherList(child.strengths);
     final challenges = StudentProfileLabels.teacherList(child.challenges);
     final guardianNames = child.guardianNames;
@@ -185,8 +185,20 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
                   _row(c, context.l10n.specialists, specialistNames, AppIcons.specialist),
                 if (organizationName.isNotEmpty)
                   _row(c, context.l10n.institutionRole, organizationName, Icons.business_outlined),
-                if (educationalPlan.isNotEmpty)
-                  _row(c, context.l10n.educationalPlan, educationalPlan, AppIcons.lesson),
+                OutlinedButton.icon(
+                  key: const ValueKey('teacher-profile-evaluation'),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) =>
+                      EvaluationHistoryScreen(
+                        childId: _childId,
+                        childName: _childName,
+                        readOnly: true,
+                      )),
+                  ),
+                  icon: const Icon(Icons.fact_check_outlined),
+                  label: Text(Localizations.localeOf(context).languageCode == 'en'
+                    ? 'Evaluation and educational plans' : 'التقييم والخطط التعليمية'),
+                ),
                 if (status.isNotEmpty)
                   _row(c, context.l10n.status, StudentProfileLabels.teacherStatus(child, strings: context.l10n), Icons.info_outline),
                 if (notes.isNotEmpty)

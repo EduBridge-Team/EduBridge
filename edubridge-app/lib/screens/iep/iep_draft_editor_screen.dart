@@ -6,6 +6,7 @@ import '../../model/iep/iep_draft.dart';
 import '../../model/iep/iep_edit_source.dart';
 import '../../model/iep/iep_draft_save.dart';
 import '../../services/iep/iep_draft_repository.dart';
+import '../../services/iep/iep_completion_repository.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
 import '../../theme.dart';
@@ -14,6 +15,7 @@ import '../enrollment/enrollment_state.dart';
 import '../evaluation_history/evaluation_history_labels.dart';
 import 'iep_draft_field.dart';
 import 'iep_draft_save_screen.dart';
+import 'iep_completion_screen.dart';
 import 'iep_draft_update_screen.dart';
 import 'iep_draft_preview_screen.dart';
 import 'iep_evaluation_reference.dart';
@@ -28,20 +30,23 @@ class IepDraftEditorScreen extends StatelessWidget {
     this.childName = '',
     this.evaluationGateway,
     this.saveGateway,
+    this.completionGateway,
     this.editSource,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepDraftGateway? saveGateway;
+  final IepCompletionGateway? completionGateway;
   final IepEditSource? editSource;
   @override
   Widget build(BuildContext context) => _IepDraftEditorBody(
-    key: ValueKey((childId, evaluationGateway, saveGateway, editSource)),
+    key: ValueKey((childId, evaluationGateway, saveGateway, completionGateway, editSource)),
     childId: childId,
     childName: childName,
     evaluationGateway: evaluationGateway,
     saveGateway: saveGateway,
+    completionGateway: completionGateway,
     editSource: editSource,
   );
 }
@@ -53,12 +58,14 @@ class _IepDraftEditorBody extends StatefulWidget {
     required this.childName,
     this.evaluationGateway,
     this.saveGateway,
+    this.completionGateway,
     this.editSource,
   });
   final int childId;
   final String childName;
   final EvaluationHistoryGateway? evaluationGateway;
   final IepDraftGateway? saveGateway;
+  final IepCompletionGateway? completionGateway;
   final IepEditSource? editSource;
   @override
   State<_IepDraftEditorBody> createState() => _IepDraftEditorScreenState();
@@ -68,6 +75,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     with WidgetsBindingObserver {
   final _form = GlobalKey<FormState>();
   final _saveRequestKey = newIepDraftRequestKey();
+  final _completionRequestKey = newIepDraftRequestKey();
   final Map<String, String> _values = {};
   final List<IepDraftGoal> _goals = [];
   late EnrollmentState<EvaluationHistory> _evaluations;
@@ -263,6 +271,26 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     });
   }
 
+  Future<void> _completePlan(IepPlanDraft draft) async {
+    if (!identical(_checked, draft)) return;
+    final completed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => IepCompletionScreen(
+          draft: draft,
+          source: widget.editSource,
+          childName: widget.childName,
+          gateway: widget.completionGateway,
+          requestKey: _completionRequestKey,
+        ),
+      ),
+    );
+    if (!mounted || completed != true) return;
+    setState(() { _dirty = false; _leaving = true; });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.pop(context, true);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -325,8 +353,8 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                       Text(
                         widget.editSource == null ? l.iepComposeNotice
                           : (Localizations.localeOf(context).languageCode == 'en'
-                            ? 'Editing a temporary copy. Updating the saved version requires service support and confirmed saving. Leaving discards these changes.'
-                            : 'تعديل نسخة مؤقتة. تحديث النسخة المحفوظة يتطلب دعم الخدمة وتأكيد الحفظ. مغادرة المحرر تلغي هذه التعديلات.'),
+                            ? 'Edit the saved draft, then choose Save as draft or Done. Leaving without saving discards changes.'
+                            : 'عدّل المسودة المحفوظة، ثم اختر حفظ كمسودة أو تم. مغادرة المحرر دون حفظ تلغي التغييرات.'),
                         key: const ValueKey('iep-unsaved-notice'),
                       ),
                       const SizedBox(height: 16),
@@ -464,8 +492,16 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                         OutlinedButton.icon(
                           key: const ValueKey('iep-open-server-save'),
                           onPressed: () => _saveDraft(checked),
-                          icon: const Icon(Icons.cloud_upload_outlined),
-                          label: Text(l.iepSaveTitle),
+                          icon: const Icon(Icons.save_outlined),
+                          label: Text(Localizations.localeOf(context).languageCode == 'en'
+                              ? 'Save as draft' : 'حفظ كمسودة'),
+                        ),
+                        FilledButton.icon(
+                          key: const ValueKey('iep-complete-plan'),
+                          onPressed: () => _completePlan(checked),
+                          icon: const Icon(Icons.check_circle_outline),
+                          label: Text(Localizations.localeOf(context).languageCode == 'en'
+                              ? 'Done' : 'تم'),
                         ),
                         Semantics(
                           liveRegion: true,

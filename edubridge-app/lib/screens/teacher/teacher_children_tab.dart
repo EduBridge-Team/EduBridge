@@ -143,69 +143,16 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
     await onReload();
   }
 
-  Future<void> _openApprovedPlan(BuildContext context, Map child) async {
-    Map<String, dynamic>? plan;
-    try {
-      plan = await ApprovalService.getApprovedPlanForChild(child['id']);
-      if (plan == null) {
-        final serverPlans = await ApiService.getAllApprovals(status: 'approved');
-        for (final p in serverPlans) {
-          if (p['child_id'] == child['id']) {
-            plan = Map<String, dynamic>.from(p);
-            break;
-          }
-        }
-      }
-    } catch (_) {}
-
-    if (!context.mounted) return;
-
-    if (plan == null) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Row(
-            children: [
-              Icon(AppIcons.clock, color: AppColors.brandBlue, size: 32),
-              SizedBox(width: 8),
-              Expanded(child: Text(context.l10n.planUnderReview)),
-            ],
-          ),
-          content: Text(
-            context.l10n.planPendingForChild((child['name'] ?? '').toString()),
-            style: const TextStyle(fontSize: 15, height: 1.6),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(context.l10n.close),
-            ),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTeal),
-              icon: const Icon(AppIcons.lesson),
-              label: Text(context.l10n.preliminaryPlan),
-              onPressed: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => EducationalPlanSheet(child: child),
-                );
-              },
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _ApprovedPlanSheet(plan: plan!),
-    );
+  Future<void> _openEvaluationAndPlans(BuildContext context) async {
+    final id = child['id'];
+    if (id is! int || id < 1) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => EvaluationHistoryScreen(
+        childId: id, childName: (child['name'] ?? '').toString(),
+        readOnly: true,
+      ),
+    ));
+    if (context.mounted) await onReload();
   }
+
 }

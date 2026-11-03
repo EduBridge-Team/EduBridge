@@ -1,6 +1,5 @@
 import '../../utils/locale_form_validation.dart';
 import '../../model/evaluations/evaluation_save_receipt.dart';
-import '../../model/evaluations/ministry_submission_receipt.dart';
 import '../../l10n/l10n.dart';
 // lib/screens/evaluation/evaluation_sheet.dart
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../../utils/safe_bottom.dart';
 
-part 'evaluation_ministry_toggle.dart';
 part 'evaluation_fields.dart';
 
 class EvaluationSheet extends StatefulWidget {
@@ -40,7 +38,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
   final _emotionalCtrl = TextEditingController();
   final _socialCtrl = TextEditingController();
   final _recommendationsCtrl = TextEditingController();
-  final _educationalPlanCtrl = TextEditingController();
   final _teachingMethodsCtrl = TextEditingController();
 
   String _evaluationType = 'initial';
@@ -49,7 +46,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
   Object? _error;
   Map<String, dynamic>? _savedEvaluation;
 
-  bool _sendToMinistry = false;
 
   @override
   void dispose() {
@@ -58,7 +54,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
     _emotionalCtrl.dispose();
     _socialCtrl.dispose();
     _recommendationsCtrl.dispose();
-    _educationalPlanCtrl.dispose();
     _teachingMethodsCtrl.dispose();
     super.dispose();
   }
@@ -89,7 +84,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         socialAssessment: _socialCtrl.text.trim(),
         recommendations: _recommendationsCtrl.text.trim(),
         assignedTeacherId: _selectedTeacherId,
-        educationalPlan: _educationalPlanCtrl.text.trim(),
+        // Plans are now authored and completed separately; an evaluation
+        // must never publish an unfinished plan through this legacy endpoint.
+        educationalPlan: '',
         teachingMethods: teachingMethods,
       );
 
@@ -113,33 +110,8 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         return;
       }
 
-      // Reuse only a verified save receipt if ministry submission needs a retry.
+      // A legacy evaluation write cannot publish a plan or submit to Ministry.
       _savedEvaluation = result;
-      if (_sendToMinistry) {
-        final submitted = await ApiService.submitForMinistryApproval(
-          childId: widget.child['id'],
-          evaluationId: result['id'],
-          educationalPlan: _educationalPlanCtrl.text.trim(),
-          cognitiveAssessment: _cognitiveCtrl.text.trim(),
-          motorAssessment: _motorCtrl.text.trim(),
-          emotionalAssessment: _emotionalCtrl.text.trim(),
-          socialAssessment: _socialCtrl.text.trim(),
-          recommendations: _recommendationsCtrl.text.trim(),
-          teachingMethods: teachingMethods,
-          teacherId: _selectedTeacherId,
-        );
-        if (!mounted) return;
-        if (submitted == null ||
-            !ministrySubmissionReceiptMatches(submitted,
-              childId: widget.child['id'] as int,
-              evaluationId: result['id'] as int)) {
-          setState(() {
-            _error = SharedUiMessage.changesSaveFailed;
-            _loading = false;
-          });
-          return;
-        }
-      }
 
       // Do not mutate the input map; publish changes only after server confirmation.
       final updatedChild = Map<String, dynamic>.from(widget.child);
@@ -154,17 +126,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
       }
       widget.onSaved(updatedChild);
 
-      if (_sendToMinistry) {
-        await _showSuccessDialog(
-          icon: AppIcons.upload,
-          iconColor: AppColors.orange,
-          title: context.l10n.evaluationSentToMinistry,
-          message: context.l10n.ministryEvaluationSuccessDetails,
-        );
-        if (mounted) Navigator.pop(context, true);
-      } else {
-        await _handleDirectToTeacherFlow(result);
-      }
+      await _handleDirectToTeacherFlow(result);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -185,7 +147,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
           'evaluation_id': result['id'],
           'title': 'تقييم جديد للطفل',
           'body':
-              'رفع المختص تقييماً للطفل "${widget.child['name']}" — راجع الخطة وابدأ التنفيذ',
+              'رفع المختص تقييماً للطفل "${widget.child['name']}". ستظهر الخطة التعليمية بعد إتمامها.',
           'type': 'evaluation_created',
         });
       } catch (_) {
@@ -199,9 +161,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
       icon: AppIcons.check,
       iconColor: AppColors.brandTealDeep,
       title: context.l10n.evaluationCompleted,
-      message: _selectedTeacherId != null
-          ? context.l10n.evaluationSentToTeacher
-          : context.l10n.evaluationSavedAssignLater,
+      message: Localizations.localeOf(context).languageCode == 'en'
+          ? 'Assessment saved. The educational plan becomes visible only after Done.'
+          : 'تم حفظ التقييم. تظهر الخطة التعليمية للمعلم فقط بعد الضغط على «تم».',
     );
 
     if (mounted) Navigator.pop(context, true);
@@ -305,7 +267,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
                 const SizedBox(height: 16),
                 _buildRecommendationsField(),
                 const SizedBox(height: 16),
-                _buildEducationalPlanField(),
+                Text(
+                  Localizations.localeOf(context).languageCode == 'en'
+                    ? 'Educational plans are saved separately. Create a draft or complete the plan from the child’s evaluation history.'
+                    : 'الخطة التعليمية تُحفظ بشكل مستقل. يمكنك إنشاء مسودة أو إنهاء الخطة من سجل تقييمات الطفل.',
+                  key: const ValueKey('evaluation-plan-separate-notice'),
+                ),
                 const SizedBox(height: 16),
                 _buildTeachingMethodsField(),
                 const SizedBox(height: 16),
@@ -313,12 +280,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
                 const SizedBox(height: 8),
                 _buildTeacherHint(c),
                 const SizedBox(height: 16),
-                buildMinistryToggleCard(
-                  context: context,
-                  c: c,
-                  active: _sendToMinistry,
-                  onChanged: (v) => setState(() => _sendToMinistry = v),
-                ),
                 if (_error != null) _buildErrorBox(),
                 const SizedBox(height: 20),
                 _buildActions(),

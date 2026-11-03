@@ -74,7 +74,7 @@ Future<void> _evaluationRoute(WidgetTester tester, String language,
       teachers: const [{'id': 9, 'name': 'معلم', 'email': 'teacher@example.org'}], onSaved: saved)),
   child: const Text('Open')))), language);
 Future<void> _fillEvaluation(WidgetTester tester) async {
-  for (var i = 0; i < 6; i++) {
+  for (var i = 0; i < 5; i++) {
     await tester.enterText(find.byType(TextFormField).at(i), 'نص المختص الأصلي $i');
   }
 }
@@ -86,22 +86,18 @@ void main() {
   });
   for (final language in ['ar', 'en']) {
     for (final scale in [1.0, 2.0]) {
-      for (final ministry in [false, true]) {
-        testWidgets('$language evaluation ministry=$ministry scale=$scale localizes required fields', (tester) async {
-          await _narrow(tester);
-          final s = await AppLocalizations.delegate.load(Locale(language));
-          await _mount(tester, Scaffold(body: EvaluationSheet(
-            child: const {'id': 8, 'name': 'محمود'}, teachers: const [], onSaved: (_) {})), language, scale: scale);
-          if (ministry) {
-            await _tap(tester, find.byType(Switch));
-            expect(find.text(s.rejectionReturnsPlan), findsOneWidget);
-          }
-          await _tap(tester, find.text(ministry ? s.sendToMinistry : s.sendToTeachers));
-          expect(find.text(s.fieldRequired), findsNWidgets(6));
-          expect(find.text(s.evaluationForChild('محمود')), findsOneWidget);
-          await tester.pumpWidget(const SizedBox.shrink());
-        });
-      }
+      testWidgets('$language assessment has no ministry route scale=$scale', (tester) async {
+        await _narrow(tester);
+        final s = await AppLocalizations.delegate.load(Locale(language));
+        await _mount(tester, Scaffold(body: EvaluationSheet(
+          child: const {'id': 8, 'name': 'محمود'}, teachers: const [], onSaved: (_) {})), language, scale: scale);
+        expect(find.byType(Switch), findsNothing);
+        expect(find.text(s.sendToMinistry), findsNothing);
+        await _tap(tester, find.byKey(const ValueKey('evaluation-save-only')));
+        expect(find.text(s.fieldRequired), findsNWidgets(5));
+        expect(find.text(s.evaluationForChild('محمود')), findsOneWidget);
+        await tester.pumpWidget(const SizedBox.shrink());
+      });
       testWidgets('$language plan evaluation scale=$scale fits translated choices', (tester) async {
         await _narrow(tester);
         final s = await AppLocalizations.delegate.load(Locale(language));
@@ -154,10 +150,10 @@ void main() {
           tester.widget<DropdownButtonFormField<int?>>(find.byType(DropdownButtonFormField<int?>)).onChanged!(9);
         }
         await tester.pumpAndSettle();
-        await _tap(tester, find.text('Send to teachers'));
+        await _tap(tester, find.byKey(const ValueKey('evaluation-save-only')));
         expect(posts.first['evaluation_type'], 'follow_up');
         expect(posts.first['cognitive_assessment'], 'نص المختص الأصلي 0');
-        expect(posts.first['educational_plan'], 'نص المختص الأصلي 5');
+        expect(posts.first['educational_plan'], '');
         expect(posts.first['teaching_methods'], ['عام']);
         expect(posts.first['assigned_teacher_id'], teacher ? 9 : null);
         expect(saved!['status'], teacher ? 'assigned' : 'evaluated');
@@ -180,32 +176,24 @@ void main() {
     });
   }
 
-  testWidgets('ministry submission preserves evaluation content and approval routing', (tester) async {
+  testWidgets('assessment never posts to ministry and does not publish a plan', (tester) async {
     final paths = <String>[];
-    Map<String, dynamic>? approval;
     await http.runWithClient(() async {
       await _evaluationRoute(tester, 'en', (_) {});
       await _tap(tester, find.text('Open'));
       await _fillEvaluation(tester);
-      await _tap(tester, find.byType(Switch));
-      await _tap(tester, find.text('Send to ministry'));
-      expect(paths, ['/evaluations/child/8', '/ministry/approvals']);
-      expect(approval!['child_id'], 8);
-      expect(approval!['evaluation_id'], 77);
-      expect(approval!['educational_plan'], 'نص المختص الأصلي 5');
-      expect(approval!['teaching_methods'], ['عام']);
-      expect(find.text('Sent to the ministry'), findsOneWidget);
+      expect(find.byType(Switch), findsNothing);
+      await _tap(tester, find.byKey(const ValueKey('evaluation-save-only')));
+      expect(paths, hasLength(1));
+      expect(paths.single, endsWith('/evaluations/child/8'));
+      expect(find.text('Evaluation completed'), findsOneWidget);
       await _tap(tester, find.text('OK'));
-      expect(find.byType(EvaluationSheet), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
     }, () => _client(post: (request) async {
-      final path = request.url.path;
-      if (path.endsWith('/ministry/approvals')) {
-        paths.add('/ministry/approvals');
-        approval = Map<String, dynamic>.from(jsonDecode(request.body) as Map);
-        return _response({'approval': {'id': 88, 'child_id': 8, 'evaluation_id': 77, 'status': 'pending'}}, 201);
-      }
-      paths.add('/evaluations/child/8');
+      paths.add(request.url.path);
+      expect(request.url.path.endsWith('/evaluations/child/8'), isTrue);
+      final body = Map<String, dynamic>.from(jsonDecode(request.body) as Map);
+      expect(body['educational_plan'], '');
       return _response({'evaluation': {'id': 77}}, 201);
     }));
   });
@@ -216,7 +204,7 @@ void main() {
       await _evaluationRoute(tester, 'en', (_) => saved = true);
       await _tap(tester, find.text('Open'));
       await _fillEvaluation(tester);
-      await _tap(tester, find.text('Send to teachers'));
+      await _tap(tester, find.byKey(const ValueKey('evaluation-save-only')));
       expect(saved, isFalse);
       expect(find.byType(EvaluationSheet), findsOneWidget);
       expect(tester.widget<TextFormField>(find.byType(TextFormField).first).controller!.text, 'نص المختص الأصلي 0');
@@ -277,11 +265,11 @@ void main() {
     await tester.enterText(find.byType(TextFormField).first, 'تقييم أصلي');
     final ar = await AppLocalizations.delegate.load(const Locale('ar'));
     final en = await AppLocalizations.delegate.load(const Locale('en'));
-    await _tap(tester, find.text(ar.sendToTeachers));
-    expect(find.text(ar.fieldRequired), findsNWidgets(5));
+    await _tap(tester, find.byKey(const ValueKey('evaluation-save-only')));
+    expect(find.text(ar.fieldRequired), findsNWidgets(4));
     language.value = 'en';
     await tester.pumpAndSettle();
-    expect(find.text(en.fieldRequired), findsNWidgets(5));
+    expect(find.text(en.fieldRequired), findsNWidgets(4));
     expect(find.text(ar.fieldRequired), findsNothing);
     expect(tester.widget<TextFormField>(find.byType(TextFormField).first).controller!.text, 'تقييم أصلي');
     await tester.pumpWidget(const SizedBox.shrink());
