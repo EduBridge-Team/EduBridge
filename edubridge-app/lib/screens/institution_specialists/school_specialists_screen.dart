@@ -61,6 +61,8 @@ class _SchoolSpecialistsBodyState extends State<_SchoolSpecialistsBody> with Wid
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: _state, builder: (context, _) {
     final l = SchoolSpecialistsLabels(context), dates = MaterialLocalizations.of(context);
+    final independent = widget.gateway is SchoolSpecialistAssignmentsRepository &&
+        (widget.gateway as SchoolSpecialistAssignmentsRepository).organizationId == null;
     final data = _state.loading || _state.busy ? null : _state.snapshot;
     return PopScope(canPop: !_state.busy, child: Scaffold(
       appBar: BrandAppBar(leading: const BackButton(), title: Text(l.title, softWrap: true),
@@ -69,7 +71,8 @@ class _SchoolSpecialistsBodyState extends State<_SchoolSpecialistsBody> with Wid
       body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 840),
         child: RefreshIndicator(onRefresh: _state.reload, child: ListView(
           physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
-            Text(l.scope),
+            Text(independent ? l.independentScope : l.scope),
+            if (independent) Text(l.scope),
             if (_state.loading || _state.busy) const LinearProgressIndicator(),
             if (_state.saved) Text(context.l10n.enrollmentSaved),
             if (_state.error != null) Text(enrollmentFailureMessage(context.l10n, _state.error!)),
@@ -78,7 +81,8 @@ class _SchoolSpecialistsBodyState extends State<_SchoolSpecialistsBody> with Wid
               if (data.canAssign) OutlinedButton.icon(key: const ValueKey('specialist-add'),
                 onPressed: data.eligible.keys.any(data.canAdd) ? () => _add(data) : null,
                 icon: const Icon(Icons.person_add_alt), label: Text(l.add)),
-              if (data.canAssign && !data.eligible.keys.any(data.canAdd)) Text(l.noEligible),
+              if (data.canAssign && !data.eligible.keys.any(data.canAdd))
+                Text(independent ? l.independentNoEligible : l.noEligible),
               if (data.assignments.isEmpty) Text(l.empty),
               for (final assignment in data.assignments) Card(key: ValueKey('specialist-assignment-${assignment.id}'),
                 child: Padding(padding: const EdgeInsets.all(16),
