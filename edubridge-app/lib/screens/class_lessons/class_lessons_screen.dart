@@ -93,8 +93,7 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
                     !sections.any((s) => s.id == id)) return;
                 setState(() => _sectionId = id);
               }),
-            if (selected.length == 1) ...[
-              Wrap(spacing: 8, runSpacing: 8, children: [
+            Wrap(spacing: 8, runSpacing: 8, children: [
                 OutlinedButton.icon(
                   key: const ValueKey('class-lesson-create-ordinary'),
                   icon: const Icon(Icons.note_add_outlined),
@@ -115,6 +114,7 @@ class _ClassLessonsScreenState extends State<ClassLessonsScreen> with WidgetsBin
                 style: TextStyle(color: JisrColors.of(context).muted, fontSize: 12),
               ),
               const SizedBox(height: 8),
+            if (selected.length == 1) ...[
               OutlinedButton.icon(key: const ValueKey('class-lesson-assign'), icon: const Icon(Icons.playlist_add),
                 label: Text(label('إسناد درس للشعبة', 'Assign class lesson')),
                 onPressed: () async {
