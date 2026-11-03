@@ -194,7 +194,7 @@ class _EmploymentBoardState extends State<_EmploymentBoard> with WidgetsBindingO
             Text(_t('لا توجد عروض أو علاقات وظيفية حاليًا.', 'No current employment offers.')),
           if (_records != null)
             for (final record in _records!) Card(
-              key: ValueKey('specialist-employment-\${record.id}'),
+              key: ValueKey('specialist-employment-${record.id}'),
               child: ListTile(
                 leading: const Icon(Icons.medical_services_outlined),
                 title: Text(isDirector ? record.specialistName : record.schoolName),
@@ -205,14 +205,14 @@ class _EmploymentBoardState extends State<_EmploymentBoard> with WidgetsBindingO
                   ? null
                   : isDirector
                     ? TextButton(
-                      key: ValueKey('specialist-employment-end-\${record.id}'),
+                      key: ValueKey('specialist-employment-end-${record.id}'),
                       onPressed: () => _end(record),
                       child: Text(_t('إنهاء', 'End')),
                     )
                     : record.accepted
                       ? const Icon(Icons.check_circle_outline)
                       : FilledButton(
-                        key: ValueKey('specialist-employment-accept-\${record.id}'),
+                        key: ValueKey('specialist-employment-accept-${record.id}'),
                         onPressed: () => _accept(record),
                         child: Text(_t('قبول', 'Accept')),
                       ),
