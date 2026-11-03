@@ -9,6 +9,7 @@ import '../enrollment/school_dashboard_screen.dart';
 import '../school_internal_accounts_screen.dart';
 import '../../services/school_specialist_assignments_repository.dart';
 import '../institution_specialists/school_specialists_screen.dart';
+import '../specialist_schools/independent_specialist_employment_screen.dart';
 import 'school_identity_settings_screen.dart';
 import 'school_operations_screen.dart';
 
@@ -78,6 +79,8 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
         entries.add((label: t('الحسابات الداخلية', 'Internal accounts'), icon: Icons.manage_accounts_outlined,
           open: () => _open(SchoolInternalAccountsScreen(repository: scoped))));
         if (_independent) {
+          entries.add((label: t('الكادر الوظيفي للمختصين', 'Specialist employment'), icon: Icons.person_add_alt_1_outlined,
+            open: () => _open(SchoolSpecialistEmploymentScreen(schoolId: schoolId))));
           entries.add((label: t('أخصائيو المدرسة', 'School specialists'), icon: Icons.medical_services_outlined,
             open: () => _open(SchoolSpecialistsScreen(gateway:
               SchoolSpecialistAssignmentsRepository.independent(schoolId: schoolId, client: _repository.client)))));
