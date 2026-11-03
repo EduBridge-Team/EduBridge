@@ -7,6 +7,7 @@ import '../enrollment/enrollment_labels.dart';
 import '../enrollment/enrollment_state.dart';
 import 'specialist_schools_labels.dart';
 import 'specialist_school_students_screen.dart';
+import 'independent_specialist_employment_screen.dart';
 
 class SpecialistSchoolsScreen extends StatelessWidget {
   const SpecialistSchoolsScreen({super.key, this.gateway});
@@ -50,7 +51,18 @@ class _SchoolsBodyState extends State<_SchoolsBody> with WidgetsBindingObserver 
     final l = SpecialistSchoolsLabels(context);
     final data = _state.loading ? null : _state.snapshot;
     return Scaffold(appBar: BrandAppBar(leading: const BackButton(), title: Text(l.schools),
-      actions: [IconButton(tooltip: context.l10n.enrollmentReload,
+      actions: [
+        IconButton(
+          key: const ValueKey('specialist-school-employment-offers'),
+          tooltip: l.employmentOffers,
+          icon: const Icon(Icons.mark_email_unread_outlined),
+          onPressed: () async {
+            await Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const SpecialistEmploymentOffersScreen()));
+            if (mounted) await _state.reload();
+          },
+        ),
+        IconButton(tooltip: context.l10n.enrollmentReload,
         onPressed: _state.loading ? null : _state.reload, icon: const Icon(Icons.refresh))]),
       body: SafeArea(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 840),
         child: RefreshIndicator(onRefresh: _state.reload, child: ListView(
