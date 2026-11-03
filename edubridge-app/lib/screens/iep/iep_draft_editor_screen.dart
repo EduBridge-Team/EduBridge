@@ -41,7 +41,7 @@ class IepDraftEditorScreen extends StatelessWidget {
   final IepEditSource? editSource;
   @override
   Widget build(BuildContext context) => _IepDraftEditorBody(
-    key: ValueKey((childId, evaluationGateway, saveGateway, editSource)),
+    key: ValueKey((childId, evaluationGateway, saveGateway, completionGateway, editSource)),
     childId: childId,
     childName: childName,
     evaluationGateway: evaluationGateway,
