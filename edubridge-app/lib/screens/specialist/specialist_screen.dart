@@ -38,6 +38,7 @@ import 'specialist_bottom_navigation.dart';
 import 'specialist_child_search_dialog.dart';
 import 'specialist_dashboard_body.dart';
 import 'specialist_dashboard_navigation.dart';
+import 'specialist_school_grouped_list.dart';
 import 'specialist_verification_dialog.dart';
 import '../specialist_schools/specialist_schools_screen.dart';
 
