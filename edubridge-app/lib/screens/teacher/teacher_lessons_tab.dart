@@ -51,7 +51,6 @@ Widget _buildLessonsTab(
                   if (context.mounted) await reload();
                 },
               ),
-              const StarterLessonLibraryEntry(),
               const SizedBox(height: 12),
               TextField(
                 style: const TextStyle(fontSize: 16),
