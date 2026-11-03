@@ -37,6 +37,17 @@ void main() {
       });
     }
   }
+  testWidgets('existing regular lesson creation stays reachable when class API is absent', (tester) async {
+    final failing = ClassLessonFixture()..status = 404;
+    await tester.pumpWidget(curriculumHost(
+      ClassLessonsScreen(gateway: failing.repository), 'ar'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('class-lesson-create-ordinary')), findsOneWidget);
+    expect(find.byKey(const ValueKey('class-lesson-interactive-templates')), findsOneWidget);
+    expect(find.byKey(const ValueKey('class-lesson-assign')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('source replacement drops selected class and cached students', (tester) async {
     final old = ClassLessonFixture(), next = ClassLessonFixture()..status = 404;
     await tester.pumpWidget(curriculumHost(ClassLessonsScreen(gateway: old.repository), 'en'));
