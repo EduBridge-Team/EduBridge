@@ -22,6 +22,7 @@ import '../chats_screen.dart';
 import '../child_progress_screen.dart';
 import '../create_homework_screen.dart';
 import '../educational_plan_sheet.dart';
+import '../evaluation_history/evaluation_history_screen.dart';
 import '../notifications_screen.dart';
 import '../support_sheet.dart';
 import '../teacher_child_details/teacher_child_details_screen.dart' show TeacherChildDetailsScreen;
