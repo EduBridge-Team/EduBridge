@@ -115,6 +115,39 @@ void main() {
         }, () => _client());
       });
     }
+    testWidgets('$language specialist parents-only lesson cannot switch to students', (tester) async {
+      final writes = <http.Request>[];
+      await http.runWithClient(() async {
+        await _mount(tester, Scaffold(body: AddLessonSheet(
+          types: const [], fullScreen: true, parentsOnly: true,
+          onClose: () {}, onCreated: (_) {},
+        )), language, 1);
+        expect(find.byKey(const ValueKey('parents-only-audience')), findsOneWidget);
+        expect(find.byType(SwitchListTile), findsNothing);
+        expect(find.byType(RadioListTile), findsNothing);
+        await tester.enterText(find.byType(TextField).first, 'توعية أولياء الأمور');
+        await _tap(tester, find.text((await AppLocalizations.delegate.load(Locale(language))).lessonSave));
+        expect(writes, hasLength(1));
+        final content = utf8.decode(writes.single.bodyBytes);
+        expect(content, contains('parents'));
+        expect(content, contains('توعية أولياء الأمور'));
+        expect(content, isNot(contains('target_child_ids')));
+      }, () => _client(writes: writes));
+    });
+
+    testWidgets('$language student-only lesson defaults to explicit child targeting', (tester) async {
+      await http.runWithClient(() async {
+        await _mount(tester, Scaffold(body: AddLessonSheet(
+          types: const [], fullScreen: true, studentsOnly: true,
+          onClose: () {}, onCreated: (_) {},
+        )), language, 1);
+        expect(find.byKey(const ValueKey('students-only-audience')), findsOneWidget);
+        expect(find.byType(SwitchListTile), findsNothing);
+        expect(find.text('محمود'), findsOneWidget);
+        expect(find.byType(CheckboxListTile), findsOneWidget);
+      }, () => _client());
+    });
+
     testWidgets('$language parent audience does not retain a student-only target', (tester) async {
       final strings = await AppLocalizations.delegate.load(Locale(language));
       final writes = <http.Request>[];
