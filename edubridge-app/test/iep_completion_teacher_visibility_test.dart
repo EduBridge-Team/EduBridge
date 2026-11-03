@@ -9,7 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
 import 'iep_draft_save_fixture.dart';
-import 'iep_http_fixture.dart';
 
 const _headers = {'content-type': 'application/json; charset=utf-8'};
 http.Response _json(Object value, [int status = 200]) =>
