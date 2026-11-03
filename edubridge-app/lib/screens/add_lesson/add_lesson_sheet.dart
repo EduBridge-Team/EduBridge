@@ -24,6 +24,8 @@ class AddLessonSheet extends StatefulWidget {
   final void Function(Map lesson) onCreated;
   final bool fullScreen;
   final bool forParents;
+  final bool parentsOnly;
+  final bool studentsOnly;
   final int? initialChildId;
   final String? initialChildName;
 
@@ -34,9 +36,12 @@ class AddLessonSheet extends StatefulWidget {
     required this.onCreated,
     this.fullScreen = false,
     this.forParents = false,
+    this.parentsOnly = false,
+    this.studentsOnly = false,
     this.initialChildId,
     this.initialChildName,
-  });
+  }) : assert(!parentsOnly || !studentsOnly),
+       assert(!parentsOnly || initialChildId == null);
 
   @override
   State<AddLessonSheet> createState() => _AddLessonSheetState();
@@ -73,13 +78,13 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   @override
   void initState() {
     super.initState();
-    _forParents = widget.forParents;
+    _forParents = widget.parentsOnly || (!widget.studentsOnly && widget.forParents);
     if (widget.initialChildId != null) {
       _target = LessonTarget.specificChildren;
       _selectedChildIds.add(widget.initialChildId!);
       _forParents = false;
     }
-    _loadChildren();
+    if (!widget.parentsOnly) _loadChildren();
   }
 
   @override
@@ -166,7 +171,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     });
 
     try {
-      final targetType = _forParents ? 'parents' : _target.name;
+      final targetType = widget.parentsOnly
+          ? 'parents'
+          : widget.studentsOnly ? _target.name : (_forParents ? 'parents' : _target.name);
 
       final result = await ApiService.createLessonWithMedia(
         title: _titleCtrl.text.trim(),
@@ -183,7 +190,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ? null
             : _audioDescriptionCtrl.text.trim(),
         targetType: targetType,
-        targetChildIds: !_forParents && _target == LessonTarget.specificChildren
+        targetChildIds: !widget.parentsOnly && !_forParents && _target == LessonTarget.specificChildren
             ? _selectedChildIds.toList()
             : null,
       );
@@ -286,7 +293,16 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
               ),
               const SizedBox(height: 16),
             ] else ...[
-              _buildForParentsToggle(c),
+              if (widget.parentsOnly)
+                Text(context.l10n.lessonParentsOnlyHint,
+                  key: const ValueKey('parents-only-audience'),
+                  style: TextStyle(color: c.muted, fontSize: 13))
+              else if (widget.studentsOnly)
+                Text(context.l10n.lessonAudience,
+                  key: const ValueKey('students-only-audience'),
+                  style: TextStyle(color: c.muted, fontSize: 13))
+              else
+                _buildForParentsToggle(c),
               const SizedBox(height: 16),
               if (!_forParents) ...[
                 buildTargetSelector(
