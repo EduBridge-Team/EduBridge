@@ -9,6 +9,7 @@ Widget _buildLessonsTab(
   String query,
   ValueChanged<String> onQueryChanged,
   void Function(Map) onViewLesson,
+  Future<void> Function() reload,
 ) {
   final q = query.trim();
   final filtered = q.isEmpty
@@ -44,7 +45,11 @@ Widget _buildLessonsTab(
                 key: const ValueKey('teacher-class-lessons'),
                 icon: const Icon(Icons.groups_outlined),
                 label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Class lessons' : 'دروس الشُّعب'),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ClassLessonsScreen())),
+                onPressed: () async {
+                  await Navigator.of(context).push<void>(MaterialPageRoute<void>(
+                    builder: (_) => ClassLessonsScreen(types: types)));
+                  if (context.mounted) await reload();
+                },
               ),
               const StarterLessonLibraryEntry(),
               const SizedBox(height: 12),
