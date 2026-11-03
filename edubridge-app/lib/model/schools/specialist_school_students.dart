@@ -2,11 +2,19 @@ import '../enrollment/enrollment_models.dart';
 
 class SpecialistSchool {
   const SpecialistSchool._(this.id, this.organizationId, this.assignmentId, this.name);
-  final int id, organizationId, assignmentId;
+  final int id, assignmentId;
+  /// Null for independent schools without an owning institution.
+  final int? organizationId;
   final String name;
-  factory SpecialistSchool.fromJson(Map<String, dynamic> data) => SpecialistSchool._(
-    enrollmentId(data['school_id']), enrollmentId(data['organization_id']),
-    enrollmentId(data['assignment_id']), enrollmentText(data['school_name']));
+  factory SpecialistSchool.fromJson(Map<String, dynamic> data) {
+    if (!data.containsKey('organization_id')) {
+      throw const FormatException('School organization scope missing');
+    }
+    return SpecialistSchool._(
+      enrollmentId(data['school_id']),
+      data['organization_id'] == null ? null : enrollmentId(data['organization_id']),
+      enrollmentId(data['assignment_id']), enrollmentText(data['school_name']));
+  }
   bool sameScope(SpecialistSchool other) => id == other.id &&
       organizationId == other.organizationId && assignmentId == other.assignmentId;
 }
@@ -73,7 +81,8 @@ class SpecialistSchoolRoster {
     if (data['contract_version'] != 1 || data['complete'] != true ||
         enrollmentId(data['specialist_id']) != expected ||
         enrollmentId(data['school_id']) != school.id ||
-        enrollmentId(data['organization_id']) != school.organizationId ||
+        !data.containsKey('organization_id') ||
+        (data['organization_id'] == null ? null : enrollmentId(data['organization_id'])) != school.organizationId ||
         enrollmentId(data['assignment_id']) != school.assignmentId) {
       throw const FormatException('Invalid school roster scope');
     }
