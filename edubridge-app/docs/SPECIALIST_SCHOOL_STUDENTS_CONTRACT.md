@@ -1,7 +1,10 @@
 # Specialist school directory and explicit student selection - Flutter proposal v1
 
-Second stage after INSTITUTION_SPECIALIST_ASSIGNMENTS.md. Institution assigns a
-specialist to a school; the specialist chooses students explicitly. No automatic
+Second stage after INSTITUTION_SPECIALIST_ASSIGNMENTS.md or
+INDEPENDENT_SCHOOL_SPECIALIST_FLUTTER_API_CONTRACT.md. For institution schools,
+the institution assigns a specialist; for independent schools, the director
+may assign only after an existing verified specialist accepts school employment.
+The specialist then chooses students explicitly. No automatic
 whole-school caseload, no client-created child care-team memberships, and no
 fallback to global /children or legacy available-child responses in this flow.
 Backend is unchanged and these proposed endpoints require implementation.
