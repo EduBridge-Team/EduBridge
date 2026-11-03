@@ -7,6 +7,8 @@ import '../enrollment/enrollment_labels.dart';
 import '../enrollment/school_annual_promotion_screen.dart';
 import '../enrollment/school_dashboard_screen.dart';
 import '../school_internal_accounts_screen.dart';
+import '../../services/school_specialist_assignments_repository.dart';
+import '../institution_specialists/school_specialists_screen.dart';
 import 'school_identity_settings_screen.dart';
 import 'school_operations_screen.dart';
 
@@ -24,6 +26,7 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
   EnrollmentFailure? _failure;
   int _version = 0;
   bool _loading = false;
+  bool _independent = false;
   @override
   void initState() { super.initState(); _repository = widget.repository ?? SchoolManagementRepository(); WidgetsBinding.instance.addObserver(this); _load(); }
   @override
@@ -37,10 +40,19 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
   void dispose() { ++_version; WidgetsBinding.instance.removeObserver(this); super.dispose(); }
   Future<void> _load() async {
     final version = ++_version;
-    setState(() { _loading = true; _data = null; _failure = null; });
+    setState(() { _loading = true; _data = null; _failure = null; _independent = false; });
     try {
       final data = await _repository.context();
-      if (mounted && version == _version) setState(() => _data = data);
+      var independent = false;
+      if (data['role'] == 'director') {
+        try {
+          final identity = await _repository.client.get('/school/context');
+          final bound = identity['school'];
+          independent = bound is Map && bound['id'] == (data['school'] as Map)['id'] &&
+              bound.containsKey('organization_id') && bound['organization_id'] == null;
+        } on EnrollmentApiException { /* Fail closed, retain other school operations. */ }
+      }
+      if (mounted && version == _version) setState(() { _data = data; _independent = independent; });
     } on EnrollmentApiException catch (error) {
       if (mounted && version == _version) setState(() => _failure = error.failure);
     } catch (_) { if (mounted && version == _version) setState(() => _failure = EnrollmentFailure.network); }
@@ -65,6 +77,11 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
           open: () => _open(SchoolIdentitySettingsScreen(repository: scoped))));
         entries.add((label: t('الحسابات الداخلية', 'Internal accounts'), icon: Icons.manage_accounts_outlined,
           open: () => _open(SchoolInternalAccountsScreen(repository: scoped))));
+        if (_independent) {
+          entries.add((label: t('أخصائيو المدرسة', 'School specialists'), icon: Icons.medical_services_outlined,
+            open: () => _open(SchoolSpecialistsScreen(gateway:
+              SchoolSpecialistAssignmentsRepository.independent(schoolId: schoolId, client: _repository.client)))));
+        }
       }
       const operationIcons = <String, IconData>{
         'academic': Icons.school_outlined,
