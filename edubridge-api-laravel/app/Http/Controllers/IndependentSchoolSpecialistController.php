@@ -281,7 +281,7 @@ class IndependentSchoolSpecialistController extends Controller
             ->where('a.specialist_id', $specialist->id)->whereNull('a.ended_on')
             ->where('e.specialist_id', $specialist->id)
             ->whereNotNull('e.accepted_at')->whereNull('e.ended_at')
-            ->where('e.school_id', DB::raw('a.school_id'))
+            ->whereColumn('e.school_id', 'a.school_id')
             ->where('s.is_active', true)->whereNull('s.organization_id')
             ->orderBy('s.id')->get(['s.id as school_id', 's.name as school_name', 'a.id as assignment_id']);
         return response()->json(['contract_version' => 1, 'complete' => true,
