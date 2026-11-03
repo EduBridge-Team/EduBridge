@@ -2,7 +2,7 @@ import '../enrollment/enrollment_models.dart';
 import 'iep_fields.dart';
 import 'iep_goal.dart';
 
-enum IepVersionStatus { draft, submitted, returned, approved }
+enum IepVersionStatus { draft, submitted, returned, approved, completed }
 
 class IepReviewComment {
   IepReviewComment._(
@@ -59,6 +59,7 @@ class IepVersion {
       'submitted' => IepVersionStatus.submitted,
       'returned' => IepVersionStatus.returned,
       'approved' => IepVersionStatus.approved,
+      'completed' => IepVersionStatus.completed,
       _ => throw const FormatException('Unknown IEP status'),
     };
     final start = iepDate(data['starts_on']), end = iepDate(data['ends_on']);
