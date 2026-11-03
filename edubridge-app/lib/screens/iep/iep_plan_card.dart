@@ -20,7 +20,9 @@ class IepPlanCard extends StatelessWidget {
           children: [
             Text(plan.title, style: Theme.of(context).textTheme.titleLarge),
             if (plan.closed) Text(l10n.iepClosed),
-            if (plan.currentApprovedId == null) Text(l10n.iepNoApproved),
+            if (plan.currentApprovedId == null &&
+                !plan.versions.any((v) => v.status == IepVersionStatus.completed))
+              Text(l10n.iepNoApproved),
             if (plan.versions.isEmpty) Text(l10n.iepNoVersions),
             for (final version in plan.versions)
               OutlinedButton(
