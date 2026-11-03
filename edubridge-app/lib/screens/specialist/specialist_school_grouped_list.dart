@@ -86,6 +86,13 @@ class SpecialistSchoolGroupedSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final groups = groupSpecialistChildrenBySchool(rows);
+    // Older /children responses carry no school scope. Until the backend
+    // supplies it, preserve the current cards with no guessed school label.
+    if (groups.length == 1 && !groups.first.hasSchool) {
+      return SliverList.list(children: [
+        for (final row in rows) childBuilder(context, row),
+      ]);
+    }
     final c = JisrColors.of(context);
     final english = Localizations.localeOf(context).languageCode == 'en';
     return SliverList.list(children: [
