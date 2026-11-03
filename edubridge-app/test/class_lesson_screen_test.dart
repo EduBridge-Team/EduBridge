@@ -21,6 +21,9 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('طالب 1'), findsNothing);
         await chooseSection(tester, 'School 1 / 2026/2027 / A');
+        expect(find.byKey(const ValueKey('class-lesson-create-ordinary')), findsOneWidget);
+        expect(find.byKey(const ValueKey('class-lesson-interactive-templates')), findsOneWidget);
+        expect(find.byKey(const ValueKey('class-lesson-assign')), findsOneWidget);
         expect(find.text('طالب 1'), findsOneWidget);
         expect(find.textContaining('0 / 10'), findsOneWidget);
         expect(find.textContaining('هدف الطالب 1'), findsOneWidget);
