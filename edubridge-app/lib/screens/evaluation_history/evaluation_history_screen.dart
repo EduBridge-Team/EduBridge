@@ -151,7 +151,8 @@ class _EvaluationHistoryScreenState extends State<EvaluationHistoryScreen>
                           onOpen: () => Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (_) =>
-                                  EvaluationRecordScreen(record: record),
+                                  EvaluationRecordScreen(record: record,
+                                    showEmbeddedPlan: !widget.readOnly),
                             ),
                           ),
                         ),
