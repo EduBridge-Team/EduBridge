@@ -11,13 +11,15 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
   }
 
   Future<void> _loadStars() async {
-    final stars = await RewardService.instance.getStars(widget.childId);
-    if (!mounted) return;
+    final childId = widget.childId;
+    final stars = await RewardService.instance.getStars(childId);
+    if (!mounted || widget.childId != childId) return;
     _updateChildLessonsState(() => _stars = stars);
   }
 
   Future<void> _loadEmergencyContacts() async {
-    final careTeam = await ApiService.getCareTeam(widget.childId);
+    final childId = widget.childId;
+    final careTeam = await ApiService.getCareTeam(childId);
     final members = careTeam?['members'];
     String? specialistPhone;
 
@@ -32,13 +34,15 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
       }
     }
 
-    if (!mounted) return;
+    if (!mounted || widget.childId != childId) return;
     _updateChildLessonsState(() => _specialistPhone = specialistPhone);
   }
 
   Future<void> _refreshLessons() => _loadLessons(showLoader: false);
 
   Future<void> _loadLessons({bool showLoader = true}) async {
+    final childId = widget.childId;
+    final generation = ++_lessonLoadGeneration;
     if (showLoader) {
       _updateChildLessonsState(() {
         _loading = true;
@@ -48,13 +52,17 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
       _updateChildLessonsState(() => _error = null);
     }
 
-    final result = await _lessonsRepository.load(widget.childId);
-    if (!mounted) return;
+    final result = await _lessonsRepository.load(childId);
+    if (!mounted || widget.childId != childId ||
+        generation != _lessonLoadGeneration) return;
     _updateChildLessonsState(() {
+      _doneLessonIds
+        ..clear();
+      _lessons = [];
+      _progressAvailable = false;
       if (result.error == null) {
-        _doneLessonIds
-          ..clear()
-          ..addAll(result.doneLessonIds);
+        _doneLessonIds.addAll(result.doneLessonIds);
+        _progressAvailable = result.progressAvailable;
         _lessons = result.lessons;
       } else {
         _error = result.error;
