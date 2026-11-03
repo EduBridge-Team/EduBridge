@@ -89,15 +89,23 @@ class SpecialistSchoolGroupedSliver extends StatelessWidget {
     // Older /children responses carry no school scope. Until the backend
     // supplies it, preserve the current cards with no guessed school label.
     if (groups.length == 1 && !groups.first.hasSchool) {
-      return SliverList.list(children: [
-        for (final row in rows) childBuilder(context, row),
-      ]);
+      return SliverList.builder(
+        itemCount: rows.length,
+        itemBuilder: (context, i) => childBuilder(context, rows[i]),
+      );
     }
     final c = JisrColors.of(context);
     final english = Localizations.localeOf(context).languageCode == 'en';
-    return SliverList.list(children: [
-      for (final group in groups) ...[
-        Padding(
+    final entries = <Object>[
+      for (final group in groups) ...[group, ...group.rows],
+    ];
+    return SliverList.builder(
+      itemCount: entries.length,
+      itemBuilder: (context, index) {
+        final item = entries[index];
+        if (item is Map<String, dynamic>) return childBuilder(context, item);
+        final group = item as SpecialistChildSchoolGroup;
+        return Padding(
           key: ValueKey('specialist-school-group-${group.schoolId ?? 'unknown'}'),
           padding: const EdgeInsets.fromLTRB(4, 8, 4, 12),
           child: Container(
@@ -138,9 +146,8 @@ class SpecialistSchoolGroupedSliver extends StatelessWidget {
               ),
             ]),
           ),
-        ),
-        for (final row in group.rows) childBuilder(context, row),
-      ],
-    ]);
+        );
+      },
+    );
   }
 }
