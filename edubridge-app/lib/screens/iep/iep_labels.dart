@@ -8,6 +8,7 @@ String iepStatusLabel(AppLocalizations l10n, IepVersionStatus status) =>
       IepVersionStatus.submitted => l10n.iepSubmitted,
       IepVersionStatus.returned => l10n.iepReturned,
       IepVersionStatus.approved => l10n.iepApproved,
+      IepVersionStatus.completed => 'تم',
     };
 String iepError(AppLocalizations l10n, EnrollmentFailure failure) =>
     switch (failure) {
