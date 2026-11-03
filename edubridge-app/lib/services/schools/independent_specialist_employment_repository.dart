@@ -10,6 +10,7 @@ class IndependentSpecialistEmployment {
     required this.specialistName,
     required this.email,
     required this.accepted,
+    required this.ended,
   });
 
   final int id;
@@ -18,7 +19,7 @@ class IndependentSpecialistEmployment {
   final int specialistId;
   final String specialistName;
   final String email;
-  final bool accepted;
+  final bool accepted, ended;
 }
 
 abstract interface class IndependentSpecialistEmploymentGateway {
@@ -101,7 +102,8 @@ class IndependentSpecialistEmploymentRepository
           specialistId: enrollmentId(row['specialist_id']),
           specialistName: enrollmentText(row['specialist_name']),
           email: enrollmentText(row['specialist_email']),
-          accepted: row['accepted_at'] != null && row['ended_at'] == null,
+          accepted: row['accepted_at'] != null,
+          ended: row['ended_at'] != null,
         );
       }));
     });
@@ -176,6 +178,7 @@ class IndependentSpecialistEmploymentRepository
           specialistName: '',
           email: '',
           accepted: row['accepted_at'] != null,
+          ended: false,
         );
       }));
     });
