@@ -33,8 +33,9 @@ void main() {
         await tester.pumpAndSettle();
         final l10n = await AppLocalizations.delegate.load(Locale(locale));
 
-        // No standalone parent-lessons dashboard action, including on child cards.
-        expect(find.text(l10n.parentLessons), findsNothing);
+        // Preserve the parent-lessons action already present on each child card.
+        // The agreed change forbids adding a NEW lessons button, not removing old ones.
+        expect(find.text(l10n.parentLessons), findsWidgets);
         expect(find.text('Child Six'), findsOneWidget);
         expect(find.text('Child Seven'), findsOneWidget);
 

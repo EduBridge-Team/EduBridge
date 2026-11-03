@@ -24,6 +24,7 @@ import 'weekly_report_screen.dart';
 import 'care_team_screen.dart';
 import 'create_learning_support_request_screen.dart';
 import 'chats_screen.dart';
+import 'parent_lessons_screen.dart';
 import 'login_screen.dart';
 import 'enrollment/parent_enrollment_screen.dart';
 
@@ -184,6 +185,13 @@ class _ParentScreenState extends State<ParentScreen> {
     if (result == true) _loadData();
   }
 
+  void _openParentLessons() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ParentLessonsScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdaptiveWrapper(
@@ -240,6 +248,12 @@ class _ParentScreenState extends State<ParentScreen> {
                     builder: (_) => const NotificationsScreen(),
                   ),
                 ),
+              ),
+              DashboardMenuAction(
+                id: 'parent_lessons',
+                label: context.l10n.parentLessons,
+                icon: AppIcons.parent,
+                onSelected: _openParentLessons,
               ),
               DashboardMenuAction(
                 id: 'support',
