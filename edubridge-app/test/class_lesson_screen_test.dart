@@ -52,6 +52,14 @@ void main() {
     final old = ClassLessonFixture(), next = ClassLessonFixture()..status = 404;
     await tester.pumpWidget(curriculumHost(ClassLessonsScreen(gateway: old.repository), 'en'));
     await tester.pumpAndSettle(); await chooseSection(tester, 'School 1 / 2026/2027 / A');
+    // The additional lesson entry actions can move the results card below
+    // the viewport on shorter screens. Scroll to inspect the real student row.
+    await tester.scrollUntilVisible(
+      find.text('طالب 1'),
+      140,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     expect(find.text('طالب 1'), findsOneWidget);
     await tester.pumpWidget(curriculumHost(ClassLessonsScreen(gateway: next.repository), 'en'));
     await tester.pumpAndSettle(); expect(find.text('طالب 1'), findsNothing);
