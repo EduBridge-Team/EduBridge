@@ -77,7 +77,7 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         parent::tearDown();
     }
 
-    private function call(string $method, string $path, string $handler,
+    private function requestAs(string $method, string $path, string $handler,
         int $actor = 1, string $role = 'school_director', array $body = [],
         ?int $routeId = null): \Illuminate\Http\JsonResponse
     {
@@ -90,19 +90,19 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
 
     private function offer(string $email = 'specialist@example.test', int $actor = 1): \Illuminate\Http\JsonResponse
     {
-        return $this->call('POST', '/api/school/specialist-employments',
+        return $this->requestAs('POST', '/api/school/specialist-employments',
             'invite', $actor, 'school_director',
             ['expected_school_id' => $actor === 6 ? 11 : 10, 'email' => $email]);
     }
 
     private function snapshot(): array
     {
-        return $this->call('GET', '/api/school/specialist-assignments', 'assignments')->getData(true);
+        return $this->requestAs('GET', '/api/school/specialist-assignments', 'assignments')->getData(true);
     }
 
     private function assign(int $specialist, string $revision, string $key = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'): \Illuminate\Http\JsonResponse
     {
-        return $this->call('POST', '/api/school/specialist-assignments', 'assign', 1, 'school_director', [
+        return $this->requestAs('POST', '/api/school/specialist-assignments', 'assign', 1, 'school_director', [
             'expected_school_id' => 10, 'specialist_id' => $specialist,
             'expected_revision' => $revision, 'effective_on' => now()->toDateString(),
             'idempotency_key' => $key,
@@ -118,9 +118,9 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $this->assertSame([], $before['eligible_specialists']);
         $this->assertSame(422, $this->assign(2, $before['revision'])->getStatusCode());
 
-        $pending = $this->call('GET', '/api/specialists/me/school-employments', 'myOffers', 2, 'specialist');
+        $pending = $this->requestAs('GET', '/api/specialists/me/school-employments', 'myOffers', 2, 'specialist');
         $this->assertSame(1, count($pending->getData(true)['employments']));
-        $this->assertSame(200, $this->call('POST', '/api/specialists/me/school-employments/1/accept',
+        $this->assertSame(200, $this->requestAs('POST', '/api/specialists/me/school-employments/1/accept',
             'accept', 2, 'specialist', [], $employment)->getStatusCode());
 
         $active = $this->snapshot();
@@ -132,12 +132,12 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $this->assertSame(2, $assignment['specialist_id']);
         $this->assertSame(409, $this->assign(2, $active['revision'], 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')->getStatusCode());
 
-        $directory = $this->call('GET', '/api/specialists/me/schools', 'mySchools', 2, 'specialist');
+        $directory = $this->requestAs('GET', '/api/specialists/me/schools', 'mySchools', 2, 'specialist');
         $this->assertSame([10], array_column($directory->getData(true)['schools'], 'school_id'));
         $this->assertSame(1, DB::table('school_specialist_assignments')->count());
-        $this->assertSame(200, $this->call('POST', '/api/school/specialist-employments/1/end',
+        $this->assertSame(200, $this->requestAs('POST', '/api/school/specialist-employments/1/end',
             'endEmployment', 1, 'school_director', ['expected_school_id' => 10], $employment)->getStatusCode());
-        $this->assertSame([], $this->call('GET', '/api/specialists/me/schools',
+        $this->assertSame([], $this->requestAs('GET', '/api/specialists/me/schools',
             'mySchools', 2, 'specialist')->getData(true)['schools']);
         $this->assertSame(0, DB::table('school_specialist_assignments')->whereNull('ended_on')->count());
         $this->assertSame(1, DB::table('school_specialist_assignments')->count());
@@ -153,22 +153,22 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $offer = $this->offer();
         $id = $offer->getData(true)['employment_id'];
         $this->assertSame(409, $this->offer()->getStatusCode());
-        $this->assertSame(404, $this->call('POST', '/api/specialists/me/school-employments/1/accept',
+        $this->assertSame(404, $this->requestAs('POST', '/api/specialists/me/school-employments/1/accept',
             'accept', 3, 'specialist', [], $id)->getStatusCode());
-        $this->assertSame(404, $this->call('POST', '/api/school/specialist-employments/1/end',
+        $this->assertSame(404, $this->requestAs('POST', '/api/school/specialist-employments/1/end',
             'endEmployment', 6, 'school_director', ['expected_school_id' => 11], $id)->getStatusCode());
         $this->assertNull(DB::table('school_specialist_employments')->where('id', $id)->value('ended_at'));
 
         DB::table('school_management_assignments')->where('user_id', 1)->update(['school_id' => 12]);
         $this->assertSame(403, $this->offer()->getStatusCode());
-        $this->assertSame(403, $this->call('GET', '/api/school/specialist-assignments',
+        $this->assertSame(403, $this->requestAs('GET', '/api/school/specialist-assignments',
             'assignments')->getStatusCode());
     }
 
     public function test_assignment_can_end_without_deleting_history_and_replay_is_idempotent(): void
     {
         $id = $this->offer()->getData(true)['employment_id'];
-        $this->call('POST', '/api/specialists/me/school-employments/1/accept',
+        $this->requestAs('POST', '/api/specialists/me/school-employments/1/accept',
             'accept', 2, 'specialist', [], $id);
         $state = $this->snapshot();
         $receipt = $this->assign(2, $state['revision']);
@@ -176,7 +176,7 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $assignment = (int) $receipt->getData(true)['assignment']['id'];
         $this->assertSame($assignment, $this->assign(2, $state['revision'])->getData(true)['assignment']['id']);
         $revision = $this->snapshot()['revision'];
-        $ending = $this->call('POST', '/api/school/specialist-assignments/'.$assignment.'/end',
+        $ending = $this->requestAs('POST', '/api/school/specialist-assignments/'.$assignment.'/end',
             'endAssignment', 1, 'school_director', [
                 'expected_school_id' => 10, 'expected_specialist_id' => 2,
                 'expected_revision' => $revision, 'effective_on' => now()->toDateString(),
@@ -185,7 +185,7 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $this->assertSame(200, $ending->getStatusCode());
         $this->assertFalse($ending->getData(true)['assignment']['can_end']);
         $this->assertSame(1, DB::table('school_specialist_assignments')->count());
-        $this->assertSame([], $this->call('GET', '/api/specialists/me/schools',
+        $this->assertSame([], $this->requestAs('GET', '/api/specialists/me/schools',
             'mySchools', 2, 'specialist')->getData(true)['schools']);
     }
 
@@ -194,12 +194,12 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $id = $this->offer()->getData(true)['employment_id'];
         DB::table('school_specialist_employments')->where('id', $id)
             ->update(['offered_at' => now()->subDays(8)]);
-        $this->assertSame(410, $this->call('POST', '/api/specialists/me/school-employments/1/accept',
+        $this->assertSame(410, $this->requestAs('POST', '/api/specialists/me/school-employments/1/accept',
             'accept', 2, 'specialist', [], $id)->getStatusCode());
         DB::table('schools')->where('id', 10)->update(['is_active' => false]);
-        $this->assertSame(403, $this->call('POST', '/api/specialists/me/school-employments/1/accept',
+        $this->assertSame(403, $this->requestAs('POST', '/api/specialists/me/school-employments/1/accept',
             'accept', 2, 'specialist', [], $id)->getStatusCode());
-        $this->assertSame(403, $this->call('GET', '/api/school/specialist-assignments',
+        $this->assertSame(403, $this->requestAs('GET', '/api/school/specialist-assignments',
             'assignments')->getStatusCode());
     }
 }
