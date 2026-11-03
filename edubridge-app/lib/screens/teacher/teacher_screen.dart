@@ -2,7 +2,6 @@ import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/teacher/teacher_screen.dart
 import 'package:flutter/material.dart';
-import '../interactive_lesson/starter_lesson_library_entry.dart';
 import '../class_lessons/class_lessons_screen.dart';
 import '../teacher_sections/teacher_sections_tab.dart';
 import '../../services/teacher_sections_repository.dart';
