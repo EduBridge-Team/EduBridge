@@ -141,6 +141,40 @@ void main() {
     }
   });
 
+  test('edited saved draft can become Done without changing prior versions', () async {
+    final original = newSavedPlan();
+    final before = IepPlan.fromJson(original);
+    final source = IepEditSource.capture(before, before.versions.single);
+    var completed = false;
+    final afterPlan = newSavedPlan();
+    (afterPlan['versions'] as List).single['status'] = 'completed';
+    final payloads = <Map<String, dynamic>>[];
+    final gateway = IepCompletionRepository(childId: 8,
+      client: EnrollmentApiClient(get: (path) async {
+        if (path.endsWith('iep-completion-options')) return _json({
+          'contract_version': 1, 'child_id': 8, 'revision': 'rev-1',
+          'can_complete': true, 'evaluation_ids': [11],
+        });
+        if (path == '/children/8/iep-plans') return _json({
+          'child_id': 8, 'plans': [completed ? afterPlan : original],
+        });
+        throw StateError('Unexpected GET $path');
+      }, post: (path, body) async {
+        expect(path, '/children/8/iep-plans/10/versions/103/complete');
+        payloads.add(Map<String, dynamic>.from(body));
+        completed = true;
+        return _json({
+          'child_id': 8, 'plan_id': 10, 'version_id': 103,
+          'request_key': body['request_key'],
+          'status': 'completed', 'plan': afterPlan,
+        }, 201);
+      }));
+    await gateway.completeExisting(source, saveDraft(), await gateway.options(), 'b' * 32);
+    expect(payloads, hasLength(1));
+    expect(payloads.single['expected_revision'], 'rev-1');
+    expect(completed, isTrue);
+  });
+
   test('existing saved plan remains an independent editable draft', () {
     final plan = IepPlan.fromJson(newSavedPlan());
     expect(IepEditSource.capture(plan, plan.versions.single).versionId, 103);
