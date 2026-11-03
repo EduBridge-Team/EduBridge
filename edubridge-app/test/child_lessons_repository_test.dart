@@ -28,6 +28,7 @@ void main() {
     final result = await pending;
     expect(result.error, isNull);
     expect(result.doneLessonIds, {7});
+    expect(result.progressAvailable, isTrue);
     expect(result.lessons.single['caption_url'], 'captions');
     expect(result.lessons.single['sign_language_url'], 'sign');
     expect(result.lessons.single['audio_description'], 'وصف');
@@ -41,6 +42,7 @@ void main() {
     expect(result.error, isNull);
     expect(result.lessons, hasLength(1));
     expect(result.doneLessonIds, isEmpty);
+    expect(result.progressAvailable, isFalse);
   });
 
   test('lesson permission failure preserves the server message', () async {
@@ -60,12 +62,24 @@ void main() {
     expect(result.error, isNull);
     expect(result.lessons, isEmpty);
     expect(result.doneLessonIds, isEmpty);
+    expect(result.progressAvailable, isFalse);
   });
 
   test('invalid successful progress preserves the network error message', () async {
     final repository = ChildLessonsRepository(get: (path) async =>
       http.Response(path.contains('/lessons') ? '{"lessons":[]}' : 'invalid', 200));
     expect((await repository.load(1)).error, 'تعذّر الاتصال بالسيرفر');
+  });
+
+  test('verified zero progress differs from unavailable progress', () async {
+    final repository = ChildLessonsRepository(get: (path) async =>
+      http.Response(path.contains('/lessons')
+          ? '{"lessons":[{"id":1}]}'
+          : '{"progress":[]}', 200));
+    final result = await repository.load(12);
+    expect(result.error, isNull);
+    expect(result.progressAvailable, isTrue);
+    expect(result.doneLessonIds, isEmpty);
   });
 
   test('network exception preserves the existing message', () async {

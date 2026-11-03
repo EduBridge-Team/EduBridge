@@ -74,6 +74,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   final Set<int> _doneLessonIds = {};
   int? _savingLessonId;
   bool _canMarkDone = false;
+  bool _progressAvailable = false;
+  int _lessonLoadGeneration = 0;
   bool _isSpecialist = false;
 
   int _timerCycle = 0;
@@ -96,6 +98,25 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     _loadEmergencyContacts();
 
 
+  }
+
+  @override
+  void didUpdateWidget(covariant ChildLessonsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.childId != widget.childId) {
+      // Never display the previous child's lessons or private context.
+      _lessonLoadGeneration++;
+      _lessons = [];
+      _doneLessonIds.clear();
+      _progressAvailable = false;
+      _error = null;
+      _loading = true;
+      _stars = 0;
+      _specialistPhone = null;
+      _loadLessons();
+      _loadStars();
+      _loadEmergencyContacts();
+    }
   }
 
   @override
@@ -218,12 +239,37 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     );
   }
 
-  Widget _catalogHeader() => buildAdaptiveHeader(
-    context: context, childId: widget.childId, childName: widget.childName,
-    parentPhone: widget.parentPhone, specialistPhone: _specialistPhone,
-    canMarkDone: _canMarkDone, timerCycle: _timerCycle, onOpenGames: _openGames,
-    onTimerFinished: () => setState(() => _timerCycle++),
-  );
+  Widget _catalogHeader() {
+    final visibleIds = <int>{
+      for (final lesson in _lessons)
+        if (lesson is Map && lesson['id'] is int) lesson['id'] as int,
+    };
+    final completed = visibleIds.intersection(_doneLessonIds).length;
+    final english = Localizations.localeOf(context).languageCode == 'en';
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      buildAdaptiveHeader(
+        context: context, childId: widget.childId, childName: widget.childName,
+        parentPhone: widget.parentPhone, specialistPhone: _specialistPhone,
+        canMarkDone: _canMarkDone, timerCycle: _timerCycle, onOpenGames: _openGames,
+        onTimerFinished: () => setState(() => _timerCycle++),
+      ),
+      if (_progressAvailable && visibleIds.isNotEmpty)
+        Padding(
+          key: const ValueKey('child-lessons-verified-progress'),
+          padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing),
+          child: Semantics(
+            liveRegion: true,
+            child: AdaptiveText(
+              english
+                  ? '$completed of ${visibleIds.length} lessons completed'
+                  : 'الدروس المكتملة: $completed من ${visibleIds.length}',
+              type: AdaptiveTextType.caption,
+              color: JisrColors.of(context).muted,
+            ),
+          ),
+        ),
+    ]);
+  }
 
   Widget _catalogCard(Map lesson) => buildLessonCard(
     context: context, lesson: lesson, doneLessonIds: _doneLessonIds,

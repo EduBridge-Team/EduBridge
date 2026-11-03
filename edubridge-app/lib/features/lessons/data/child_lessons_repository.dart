@@ -26,17 +26,24 @@ class ChildLessonsRepository {
       }
 
       final doneIds = <int>{};
+      var progressAvailable = false;
       if (progressResponse.statusCode == 200) {
-        final progress = jsonDecode(progressResponse.body)['progress'] ?? [];
-        for (final record in progress) {
-          if (record['status'] == 'done' && record['lesson_id'] is int) {
-            doneIds.add(record['lesson_id'] as int);
+        final progress = jsonDecode(progressResponse.body)['progress'];
+        if (progress is List) {
+          progressAvailable = true;
+          for (final record in progress) {
+            if (record is Map &&
+                record['status'] == 'done' &&
+                record['lesson_id'] is int) {
+              doneIds.add(record['lesson_id'] as int);
+            }
           }
         }
       }
       return ChildLessonsResult(
         lessons: lessonsData['lessons'] ?? [],
         doneLessonIds: doneIds,
+        progressAvailable: progressAvailable,
       );
     } catch (_) {
       return const ChildLessonsResult(error: 'تعذّر الاتصال بالسيرفر');
