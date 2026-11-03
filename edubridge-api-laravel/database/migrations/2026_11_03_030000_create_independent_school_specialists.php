@@ -29,6 +29,8 @@ return new class extends Migration
             $table->foreignId('assigned_by')->constrained('users')->restrictOnDelete();
             $table->date('starts_on');
             $table->date('ended_on')->nullable();
+            $table->string('idempotency_key', 32)->unique();
+            $table->string('end_idempotency_key', 32)->nullable()->unique();
             $table->timestamps();
             $table->index(['school_id', 'ended_on']);
             $table->index(['specialist_id', 'ended_on']);
