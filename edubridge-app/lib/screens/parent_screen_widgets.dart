@@ -209,11 +209,27 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                   ]);
                 }),
                 const SizedBox(height: 12),
-                SizedBox(width: double.infinity, child: _secondaryAction(
-                  icon: AppIcons.parent,
-                  label: context.l10n.parentLessons,
-                  onTap: _openParentLessons,
-                )),
+                LayoutBuilder(builder: (context, constraints) {
+                  final scale = MediaQuery.textScalerOf(context).scale(1);
+                  final hasChildId = child['id'] is int && (child['id'] as int) > 0;
+                  final paired = hasChildId && constraints.maxWidth >= 360 * scale;
+                  final width = paired
+                      ? (constraints.maxWidth - 8) / 2
+                      : constraints.maxWidth;
+                  return Wrap(spacing: 8, runSpacing: 8, children: [
+                    if (hasChildId)
+                      SizedBox(width: width, child: _secondaryAction(
+                        icon: AppIcons.lesson,
+                        label: context.l10n.childLessonsFor(name),
+                        onTap: () => _openChildDetails(child),
+                      )),
+                    SizedBox(width: width, child: _secondaryAction(
+                      icon: AppIcons.parent,
+                      label: context.l10n.parentLessons,
+                      onTap: _openParentLessons,
+                    )),
+                  ]);
+                }),
                 const SizedBox(height: 8),
                 LayoutBuilder(builder: (context, constraints) {
                   final scale = MediaQuery.textScalerOf(context).scale(1);
