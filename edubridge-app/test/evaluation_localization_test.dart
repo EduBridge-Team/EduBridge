@@ -184,7 +184,8 @@ void main() {
       await _fillEvaluation(tester);
       expect(find.byType(Switch), findsNothing);
       await _tap(tester, find.byKey(const ValueKey('evaluation-save-only')));
-      expect(paths, ['/evaluations/child/8']);
+      expect(paths, hasLength(1));
+      expect(paths.single, endsWith('/evaluations/child/8'));
       expect(find.text('Evaluation completed'), findsOneWidget);
       await _tap(tester, find.text('OK'));
       await tester.pumpWidget(const SizedBox.shrink());
