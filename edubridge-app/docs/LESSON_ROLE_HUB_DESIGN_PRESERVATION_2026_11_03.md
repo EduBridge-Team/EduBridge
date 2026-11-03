@@ -15,6 +15,10 @@ are modified in this batch.
   and the same existing screens rather than a replacement UI.
 - Do not rename or recreate persisted lessons, section assignments, lesson
   drafts, goal evidence, media attachments or child reports.
+- During visual acceptance, compare the existing teacher and specialist headers,
+  lesson cards, right-to-left navigation, text scale and keyboard behavior
+  against the approved Figma baseline. Any differences require explicit review;
+  this batch adds navigation actions only, not new visual primitives.
 
 ## Teacher flow (first integration batch)
 
