@@ -30,7 +30,9 @@ void main() {
           ));
           await Future<void>.delayed(Duration.zero);
         });
-        await tester.pumpAndSettle();
+        // Avoid waiting for unrelated repeating dashboard animations.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
         final l10n = await AppLocalizations.delegate.load(Locale(locale));
 
         // Preserve the parent-lessons action already present on each child card.
@@ -39,10 +41,16 @@ void main() {
         expect(find.text('Child Six'), findsOneWidget);
         expect(find.text('Child Seven'), findsOneWidget);
 
-        // The child ID, not a student login or a global lesson list, selects the lesson scope.
-        await tester.tap(find.text('Child Six'));
+        // The child ID, not a student login or a global lesson list, selects
+        // the lesson scope. Scroll before tapping to avoid off-screen hit tests.
+        final childLabel = find.text('Child Six');
+        await Scrollable.ensureVisible(tester.element(childLabel), alignment: 0.2);
         await tester.pump();
-        final screen = tester.widget<ChildLessonsScreen>(find.byType(ChildLessonsScreen));
+        await tester.tap(childLabel.hitTestable());
+        await tester.pump();
+        final childScreen = find.byType(ChildLessonsScreen);
+        expect(childScreen, findsOneWidget);
+        final screen = tester.widget<ChildLessonsScreen>(childScreen);
         expect(screen.childId, 6);
         expect(screen.childName, 'Child Six');
         await tester.pumpWidget(const SizedBox.shrink());
