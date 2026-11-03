@@ -1,5 +1,6 @@
 import '../../model/enrollment/enrollment_models.dart';
 import '../../model/iep/iep_draft.dart';
+import '../../model/iep/iep_edit_source.dart';
 import '../../model/iep/iep_draft_save.dart';
 import '../../model/iep/iep_plan_history.dart';
 import '../../model/iep/iep_snapshot.dart';
@@ -31,6 +32,8 @@ abstract interface class IepCompletionGateway {
   Future<IepCompletionOptions> options();
   /// Atomically create and complete a new educational plan, not a ministry review.
   Future<void> complete(IepPlanDraft draft, IepCompletionOptions expected, String key);
+  Future<void> completeExisting(IepEditSource source, IepPlanDraft draft,
+      IepCompletionOptions expected, String key);
 }
 
 /// Proposed API: missing completion options never grant publication.
@@ -53,12 +56,9 @@ class IepCompletionRepository implements IepCompletionGateway {
     }
   }
 
-  bool _matches(IepPlan plan, IepPlanDraft draft) {
-    if (plan.childId != draft.childId || plan.closed ||
-        plan.currentApprovedId != null || plan.title != draft.title ||
-        plan.versions.length != 1) return false;
-    final v = plan.versions.single;
-    if (v.status != IepVersionStatus.completed || v.number != 1 ||
+  bool _matchesFields(IepPlan plan, IepVersion v, IepPlanDraft draft) {
+    if (plan.childId != draft.childId || plan.title != draft.title ||
+        v.status != IepVersionStatus.completed ||
         v.evaluationId != draft.evaluationId ||
         (v.summary ?? '') != draft.summary || v.returnReason != null ||
         iepDraftDay(v.start) != iepDraftDay(draft.start) ||
@@ -80,6 +80,11 @@ class IepCompletionRepository implements IepCompletionGateway {
     }
     return true;
   }
+
+  bool _matches(IepPlan plan, IepPlanDraft draft) =>
+      !plan.closed && plan.currentApprovedId == null &&
+      plan.versions.length == 1 && plan.versions.single.number == 1 &&
+      _matchesFields(plan, plan.versions.single, draft);
 
   @override
   Future<void> complete(IepPlanDraft draft, IepCompletionOptions expected, String key) async {
@@ -138,4 +143,86 @@ class IepCompletionRepository implements IepCompletionGateway {
       throw const EnrollmentApiException(EnrollmentFailure.uncertain);
     }
   }
+  @override
+  Future<void> completeExisting(IepEditSource source, IepPlanDraft draft,
+      IepCompletionOptions expected, String key) async {
+    if (source.draft.childId != childId || draft.childId != childId ||
+        expected.childId != childId ||
+        !RegExp(r'^[a-f0-9]{32}$').hasMatch(key)) {
+      throw const EnrollmentApiException(EnrollmentFailure.validation);
+    }
+    final current = await options();
+    if (current.revision != expected.revision ||
+        !current.evaluationIds.contains(draft.evaluationId)) {
+      throw const EnrollmentApiException(EnrollmentFailure.conflict);
+    }
+    if (!current.canComplete) throw const EnrollmentApiException(EnrollmentFailure.forbidden);
+    final history = IepHistoryRepository(childId: childId, client: _client);
+    final before = await history.load();
+    final matches = before.plans.where((p) => p.id == source.planId).toList();
+    if (matches.length != 1 || matches.single.closed ||
+        !matches.single.versions.any((v) => v.id == source.versionId &&
+            source.matches(matches.single, v))) {
+      throw const EnrollmentApiException(EnrollmentFailure.conflict);
+    }
+    final beforeOther = {
+      for (final plan in before.plans.where((p) => p.id != source.planId))
+        plan.id: iepSnapshotFingerprint(iepPlanSnapshot(plan)),
+    };
+    var mayHaveWritten = false;
+    try {
+      mayHaveWritten = true;
+      final data = await _client.post(
+          '/children/$childId/iep-plans/${source.planId}/versions/${source.versionId}/complete',
+          {...iepDraftPayload(draft), 'request_key': key,
+           'expected_revision': current.revision});
+      if (enrollmentId(data['child_id']) != childId ||
+          enrollmentId(data['plan_id']) != source.planId ||
+          enrollmentId(data['version_id']) != source.versionId ||
+          data['request_key'] != key || data['status'] != 'completed') {
+        throw const FormatException('Unmatched version completion receipt');
+      }
+      final result = IepPlan.fromJson(enrollmentMap(data['plan']));
+      final versions = result.versions.where((v) => v.id == source.versionId).toList();
+      if (result.id != source.planId || result.closed ||
+          result.currentApprovedId != matches.single.currentApprovedId ||
+          versions.length != 1 || !_matchesFields(result, versions.single, draft) ||
+          result.versions.where((v) => v.id != source.versionId).length !=
+              matches.single.versions.where((v) => v.id != source.versionId).length) {
+        throw const FormatException('Changed version content or authorization');
+      }
+      final beforeVersions = matches.single.versions.where((v) => v.id != source.versionId)
+          .map(iepVersionSnapshot).map(iepSnapshotFingerprint).toSet();
+      final afterVersions = result.versions.where((v) => v.id != source.versionId)
+          .map(iepVersionSnapshot).map(iepSnapshotFingerprint).toSet();
+      if (beforeVersions.length != afterVersions.length ||
+          !beforeVersions.containsAll(afterVersions)) {
+        throw const FormatException('Historical versions changed');
+      }
+      final after = await history.load();
+      final others = {for (final plan in after.plans.where((p) => p.id != source.planId))
+        plan.id: iepSnapshotFingerprint(iepPlanSnapshot(plan))};
+      if (others.length != beforeOther.length ||
+          beforeOther.keys.any((id) => others[id] != beforeOther[id])) {
+        throw const FormatException('Unrelated plans were modified');
+      }
+      final confirmed = after.plans.where((p) => p.id == result.id).toList();
+      if (confirmed.length != 1 ||
+          iepSnapshotFingerprint(iepPlanSnapshot(confirmed.single)) !=
+            iepSnapshotFingerprint(iepPlanSnapshot(result))) {
+        throw const FormatException('Completed version not confirmed');
+      }
+    } on EnrollmentApiException catch (e) {
+      if (mayHaveWritten && !const {EnrollmentFailure.forbidden,
+          EnrollmentFailure.validation, EnrollmentFailure.conflict,
+          EnrollmentFailure.session, EnrollmentFailure.unavailable,
+          EnrollmentFailure.rateLimited}.contains(e.failure)) {
+        throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+      }
+      rethrow;
+    } on Object {
+      throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+    }
+  }
+
 }
