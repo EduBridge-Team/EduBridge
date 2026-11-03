@@ -86,13 +86,14 @@ class _ParentScreenState extends State<ParentScreen> {
   }
 
   Future<void> _openChildDetails(Map child) async {
-    if (!mounted) return;
+    final childId = child['id'];
+    if (!mounted || childId is! int || childId <= 0) return;
 
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChildLessonsScreen(
-          childId: child['id'],
+          childId: childId,
           childName: (child['name'] ?? '').toString(),
           age: child['age'] is int ? child['age'] as int : 8,
           disabilityType: child['disability_type']?.toString(),
