@@ -155,9 +155,8 @@ class IndependentSchoolSpecialistEmploymentTest extends TestCase
         $this->assertSame(409, $this->offer()->getStatusCode());
         $this->assertSame(404, $this->call('POST', '/api/specialists/me/school-employments/1/accept',
             'accept', 3, 'specialist', [], $id)->getStatusCode());
-        $this->assertSame(403, $this->call('POST', '/api/school/specialist-employments/1/end',
-            'endEmployment', 6, 'school_director', ['expected_school_id' => 11], $id)->getStatusCode() === 403
-                ? 403 : 404);
+        $this->assertSame(404, $this->call('POST', '/api/school/specialist-employments/1/end',
+            'endEmployment', 6, 'school_director', ['expected_school_id' => 11], $id)->getStatusCode());
         $this->assertNull(DB::table('school_specialist_employments')->where('id', $id)->value('ended_at'));
 
         DB::table('school_management_assignments')->where('user_id', 1)->update(['school_id' => 12]);
