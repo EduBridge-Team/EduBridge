@@ -143,6 +143,18 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
     await onReload();
   }
 
+  Future<void> _openEvaluationAndPlans(BuildContext context) async {
+    final id = child['id'];
+    if (id is! int || id < 1) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => EvaluationHistoryScreen(
+        childId: id, childName: (child['name'] ?? '').toString(),
+        readOnly: true,
+      ),
+    ));
+    if (context.mounted) await onReload();
+  }
+
   Future<void> _openApprovedPlan(BuildContext context, Map child) async {
     Map<String, dynamic>? plan;
     try {
