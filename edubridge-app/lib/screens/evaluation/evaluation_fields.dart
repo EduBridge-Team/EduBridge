@@ -38,7 +38,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              context.l10n.evaluationRoutingNotice,
+              Localizations.localeOf(context).languageCode == 'en' ? 'Save the assessment here. Educational plans are drafted and completed separately, without Ministry submission.' : 'يُحفظ التقييم هنا، وتُنشأ الخطط التعليمية وتُستكمل بشكل مستقل دون إرسال للوزارة.',
               style: TextStyle(
                 fontSize: 12.5,
                 color: c.onTint,
@@ -139,20 +139,6 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     );
   }
 
-  Widget _buildEducationalPlanField() {
-    return TextFormField(
-      controller: _educationalPlanCtrl,
-      maxLines: 3,
-      decoration: InputDecoration(
-        labelText: context.l10n.requiredFieldLabel(context.l10n.educationalPlan),
-        prefixIcon: Icon(AppIcons.plan),
-        hintText: context.l10n.educationalPlanHint,
-      ),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
-    );
-  }
-
   Widget _buildTeachingMethodsField() {
     return TextFormField(
       controller: _teachingMethodsCtrl,
@@ -186,9 +172,9 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
 
   Widget _buildTeacherHint(JisrColors c) {
     return Text(
-      _sendToMinistry
-          ? context.l10n.teacherNotifiedAfterApproval
-          : context.l10n.teacherNotifiedImmediately,
+      Localizations.localeOf(context).languageCode == 'en'
+          ? 'The teacher receives the saved assessment; unpublished educational plans remain private.'
+          : 'يصل التقييم المحفوظ إلى المعلم، ولا تظهر له الخطط التعليمية غير المكتملة.',
       style: TextStyle(fontSize: 12, color: c.muted),
     );
   }
@@ -215,10 +201,8 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size(0, 48),
-            ),
+            onPressed: _loading ? null : () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
             child: Text(context.l10n.cancel),
           ),
         ),
@@ -226,33 +210,20 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
         Expanded(
           flex: 2,
           child: ElevatedButton.icon(
+            key: const ValueKey('evaluation-save-only'),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  _sendToMinistry ? AppColors.blue : AppColors.brandTealDeep,
+              backgroundColor: AppColors.brandTealDeep,
               foregroundColor: Colors.white,
               minimumSize: const Size(0, 48),
             ),
             icon: _loading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Icon(_sendToMinistry ? AppIcons.upload : AppIcons.send),
-            label: Text(
-              _loading
-                  ? context.l10n.sendingAlt
-                  : _sendToMinistry
-                      ? context.l10n.sendToMinistry
-                      : context.l10n.sendToTeachers,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+                ? const SizedBox(width: 20, height: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : const Icon(Icons.save_outlined),
+            label: Text(_loading
+                ? context.l10n.sendingAlt
+                : (Localizations.localeOf(context).languageCode == 'en' ? 'Save assessment' : 'حفظ التقييم'),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
             onPressed: _loading ? null : _submit,
           ),
         ),
