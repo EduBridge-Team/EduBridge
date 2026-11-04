@@ -73,6 +73,25 @@ extension _HomeScreenView on HomeScreen {
                               );
                             },
                           ),
+                        if (schoolManagementPage != null)
+                          _MenuTile(
+                            key: const ValueKey('director-school-management'),
+                            icon: Icons.school_outlined,
+                            tint: isDark
+                                ? const Color(0xFF183B26)
+                                : AppColors.tintGreen,
+                            title: Localizations.localeOf(context).languageCode == 'en'
+                                ? 'School administration'
+                                : 'إدارة المدرسة',
+                            subtitle: Localizations.localeOf(context).languageCode == 'en'
+                                ? 'Manage staff, students, attendance and timetable'
+                                : 'إدارة الكادر والطلاب والحضور والجدول',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => schoolManagementPage!(),
+                              ),
+                            ),
+                          ),
                         _MenuTile(
                           icon: AppIcons.child,
                           tint: isDark
