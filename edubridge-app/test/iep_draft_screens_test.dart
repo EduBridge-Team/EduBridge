@@ -161,7 +161,12 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('iep-discard-confirm')));
         await tester.pumpAndSettle();
         expect(find.byType(IepDraftEditorScreen), findsNothing);
-        expect(evaluations.paths, ['/evaluations/child/8']);
+        // Initial load plus a refresh after each of the two preview returns.
+        expect(evaluations.paths, [
+          '/evaluations/child/8',
+          '/evaluations/child/8',
+          '/evaluations/child/8',
+        ]);
         expect(history.reads, ['/children/8/iep-plans']);
         expect(tester.takeException(), isNull);
       });
@@ -196,7 +201,8 @@ void main() {
       expect(find.byType(IepDraftGoalCard), findsOneWidget);
       expect(tester.widget<FilledButton>(done).onPressed, isNull);
       expect(find.text(strings.iepComposeNoEvaluations), findsOneWidget);
-      expect(evaluations.reads, 3);
+      // Initial read, manual retry, preview return, then app resume.
+      expect(evaluations.reads, 4);
       // Reusing the widget for another child must clear the previous draft.
       await tester.pumpWidget(
         curriculumHost(
