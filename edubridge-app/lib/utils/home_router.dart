@@ -25,8 +25,10 @@ Future<Widget> homeScreenForRole() async {
 
   if (role != 'school' && await ApiService.getToken() != null) {
     try {
-      await SchoolManagementRepository().context().timeout(const Duration(seconds: 3));
-      return SchoolManagementScreen(personalHome: () => personalHomeForRole(role));
+      final schoolContext = await SchoolManagementRepository()
+          .context()
+          .timeout(const Duration(seconds: 3));
+      return homeForSchoolContext(role, schoolContext);
     } on Exception { /* An assignment never replaces the global personal role. */ }
   }
   return personalHomeForRole(role);
@@ -49,4 +51,17 @@ Widget personalHomeForRole(String? role) {
     default:
       return const HomeScreen();
   }
+}
+
+/// A director starts in their personal dashboard, with school tools one tap away.
+/// Other assigned school personnel retain their current management landing page.
+Widget homeForSchoolContext(String? role, Map<String, dynamic> schoolContext) {
+  if (schoolContext['role'] == 'director') {
+    return HomeScreen(
+      schoolManagementPage: () => const SchoolManagementScreen(),
+    );
+  }
+  return SchoolManagementScreen(
+    personalHome: () => personalHomeForRole(role),
+  );
 }
