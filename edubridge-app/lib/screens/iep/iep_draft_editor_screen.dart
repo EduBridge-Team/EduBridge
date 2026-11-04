@@ -16,7 +16,6 @@ import '../enrollment/enrollment_state.dart';
 import '../enrollment/enrollment_labels.dart';
 import '../evaluation_history/evaluation_history_labels.dart';
 import 'iep_draft_field.dart';
-import 'iep_draft_preview_screen.dart';
 import 'iep_evaluation_reference.dart';
 import 'iep_draft_goal_card.dart';
 import 'iep_goal_editor_screen.dart';
@@ -80,7 +79,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   late EnrollmentState<EvaluationHistory> _evaluations;
   int? _evaluationId;
   IepPlanDraft? _checked;
-  String? _goalError;
   bool _dirty = false, _leaving = false, _asking = false;
   bool _busy = false, _writeLocked = false;
   EnrollmentFailure? _writeError;
@@ -136,7 +134,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   void _changed() => setState(() {
     _dirty = true;
     _checked = null;
-    _goalError = null;
     if (!_writeLocked) _writeError = null;
   });
   Future<void> _back() async {
@@ -164,7 +161,10 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     final end = parseIepDraftDate(_values['end'] ?? '');
     if (start == null || end == null || !end.isAfter(start)) {
       _form.currentState!.validate();
-      setState(() => _goalError = context.l10n.iepComposePlanDates);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        key: const ValueKey('iep-goal-validation-snackbar'),
+        content: Text(context.l10n.iepComposePlanDates),
+      ));
       return;
     }
     final goal = await Navigator.of(context).push<IepDraftGoal>(
@@ -209,7 +209,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
         _goals.every((g) => !g.start.isBefore(start) && !g.end.isAfter(end));
     setState(() {
       _checked = null;
-      _goalError = validGoals ? null : context.l10n.iepComposeGoalsRequired;
       if (validFields &&
           validGoals &&
           !_evaluations.loading &&
@@ -232,23 +231,13 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
         );
       }
     });
+    if (!validGoals) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        key: const ValueKey('iep-goal-validation-snackbar'),
+        content: Text(context.l10n.iepComposeGoalsRequired),
+      ));
+    }
     return _checked;
-  }
-
-  Future<void> _preview(IepPlanDraft draft) async {
-    if (!identical(_checked, draft)) return;
-    final childName = widget.childName;
-    final gateway = widget.evaluationGateway;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => IepDraftPreviewScreen(
-          draft: draft,
-          childName: childName,
-          evaluationGateway: gateway,
-        ),
-      ),
-    );
-    if (mounted) await _evaluations.reload();
   }
 
   /// The two visible actions share the same validation and submit exactly once.
@@ -324,12 +313,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     }
   }
 
-  Future<void> _previewCurrent() async {
-    if (_busy || _evaluations.loading || _evaluations.error != null) return;
-    final draft = _verify();
-    if (draft != null) await _preview(draft);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -364,16 +347,31 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     final doneButton = FilledButton.icon(
       key: const ValueKey('iep-complete-plan'),
       onPressed: canSubmit ? () => _submit(complete: true) : null,
-      icon: const Icon(Icons.check_circle_outline),
-      label: Text(Localizations.localeOf(context).languageCode == 'en'
-          ? 'Done' : 'تم'),
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(0, 56),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      ),
+      icon: const Icon(Icons.check_circle_outline, size: 20),
+      label: Text(
+        Localizations.localeOf(context).languageCode == 'en' ? 'Done' : 'تم',
+        maxLines: 2, textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
     final draftButton = OutlinedButton.icon(
       key: const ValueKey('iep-open-server-save'),
       onPressed: canSubmit ? () => _submit(complete: false) : null,
-      icon: const Icon(Icons.save_outlined),
-      label: Text(Localizations.localeOf(context).languageCode == 'en'
-          ? 'Save as draft' : 'حفظ كمسودة'),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 56),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      ),
+      icon: const Icon(Icons.save_outlined, size: 20),
+      label: Text(
+        Localizations.localeOf(context).languageCode == 'en'
+            ? 'Save as draft' : 'حفظ كمسودة',
+        maxLines: 2, textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
     return PopScope(
       canPop: _leaving,
@@ -389,12 +387,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
             overflow: TextOverflow.visible,
           ),
           actions: [
-            IconButton(
-              key: const ValueKey('iep-preview-draft'),
-              onPressed: canSubmit ? _previewCurrent : null,
-              tooltip: l.iepComposePreview,
-              icon: const Icon(Icons.preview_outlined),
-            ),
             IconButton(
               key: const ValueKey('iep-reload-evaluations'),
               onPressed: _busy || _evaluations.loading
@@ -537,14 +529,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                         icon: const Icon(Icons.add),
                         label: Text(l.iepComposeGoal),
                       ),
-                      if (_goalError != null)
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            _goalError!,
-                            key: const ValueKey('iep-draft-goals-error'),
-                          ),
-                        ),
                       if (_busy) const LinearProgressIndicator(),
                       if (_writeError != null)
                         Semantics(
@@ -559,21 +543,13 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                           ),
                         ),
                       const SizedBox(height: 12),
-                      LayoutBuilder(builder: (context, constraints) {
-                        final narrow = constraints.maxWidth < 450;
-                        return Flex(
-                          direction: narrow ? Axis.vertical : Axis.horizontal,
-                          crossAxisAlignment: narrow
-                              ? CrossAxisAlignment.stretch
-                              : CrossAxisAlignment.center,
-                          children: [
-                            narrow ? doneButton : Expanded(child: doneButton),
-                            SizedBox(height: narrow ? 10 : 0,
-                                width: narrow ? 0 : 12),
-                            narrow ? draftButton : Expanded(child: draftButton),
-                          ],
-                        );
-                      }),
+                      Row(
+                        children: [
+                          Expanded(child: doneButton),
+                          const SizedBox(width: 8),
+                          Expanded(child: draftButton),
+                        ],
+                      ),
                     ],
                   ),
                   ),
