@@ -47,7 +47,7 @@ void main() {
             ),
           );
           await tester.pumpAndSettle();
-          expect(find.byKey(const ValueKey('iep-preview-draft')), findsNothing);
+          expect(find.byKey(const ValueKey('iep-preview-draft')), findsOneWidget);
           expect(
             find.byKey(const ValueKey('iep-evaluation-reference')),
             findsNothing,
@@ -60,7 +60,6 @@ void main() {
             ' وقت إضافي \n\nتعليم بصري',
           );
           await addDraftGoal(tester);
-          await tapDraft(tester, 'iep-verify-draft');
           await tapDraft(tester, 'iep-preview-draft');
           expect(find.byType(IepDraftPreviewScreen), findsOneWidget);
           expect(find.byType(BrandAppBar), findsOneWidget);
@@ -108,9 +107,8 @@ void main() {
           expect(find.byType(AlertDialog), findsNothing);
           expect(find.byType(IepDraftGoalCard), findsOneWidget);
           await inputDraft(tester, 'title', 'عنوان معدل');
-          expect(find.byKey(const ValueKey('iep-preview-draft')), findsNothing);
+          expect(find.byKey(const ValueKey('iep-preview-draft')), findsOneWidget);
           expect(preview.draft.title, 'خطة محمود الأصلية');
-          await tapDraft(tester, 'iep-verify-draft');
           await tapDraft(tester, 'iep-preview-draft');
           expect(find.text('عنوان معدل'), findsOneWidget);
           expect(fixture.paths, [
@@ -197,7 +195,6 @@ void main() {
       await tester.pumpAndSettle();
       await fillPlan(tester);
       await addDraftGoal(tester);
-      await tapDraft(tester, 'iep-verify-draft');
       await tapDraft(tester, 'iep-preview-draft');
       fixture.records = [];
       await tapDraft(tester, 'iep-evaluation-reference');
@@ -209,7 +206,7 @@ void main() {
       await tapDraft(tester, 'iep-return-to-editor');
       expect(find.byType(IepDraftGoalCard), findsOneWidget);
       expect(find.text(strings.iepComposeNoEvaluations), findsOneWidget);
-      expect(find.byKey(const ValueKey('iep-preview-draft')), findsNothing);
+      expect(find.byKey(const ValueKey('iep-preview-draft')), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
