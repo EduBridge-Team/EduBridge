@@ -131,11 +131,15 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     super.dispose();
   }
 
-  void _changed() => setState(() {
-    _dirty = true;
-    _checked = null;
-    if (!_writeLocked) _writeError = null;
-  });
+  void _changed() {
+    // An old transient validation message must not obscure goal edit controls.
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    setState(() {
+      _dirty = true;
+      _checked = null;
+      if (!_writeLocked) _writeError = null;
+    });
+  }
   Future<void> _back() async {
     if (_asking || _busy || _leaving) return;
     _asking = true;
@@ -543,12 +547,16 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                           ),
                         ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(child: doneButton),
-                          const SizedBox(width: 8),
-                          Expanded(child: draftButton),
-                        ],
+                      SizedBox(
+                        height: 72,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: doneButton),
+                            const SizedBox(width: 8),
+                            Expanded(child: draftButton),
+                          ],
+                        ),
                       ),
                     ],
                   ),
