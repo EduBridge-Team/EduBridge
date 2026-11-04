@@ -255,7 +255,9 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   /// A confirmed server readback (not a local optimistic flag) is required.
   Future<void> _submit({required bool complete}) async {
     if (_busy || _writeLocked || _leaving || _evaluations.loading ||
-        _evaluations.error != null || _evaluations.snapshot == null) return;
+        _evaluations.error != null || _evaluations.snapshot == null) {
+      return;
+    }
     final draft = _verify();
     if (draft == null) return;
     setState(() { _busy = true; _writeError = null; });
