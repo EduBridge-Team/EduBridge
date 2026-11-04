@@ -561,7 +561,9 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                         final narrow = constraints.maxWidth < 450;
                         return Flex(
                           direction: narrow ? Axis.vertical : Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: narrow
+                              ? CrossAxisAlignment.stretch
+                              : CrossAxisAlignment.center,
                           children: [
                             narrow ? doneButton : Expanded(child: doneButton),
                             SizedBox(height: narrow ? 10 : 0,
