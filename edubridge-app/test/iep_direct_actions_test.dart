@@ -56,7 +56,41 @@ void main() {
     expect(find.byKey(const ValueKey('iep-verify-draft')), findsNothing);
     expect(find.byKey(const ValueKey('iep-complete-plan')), findsOneWidget);
     expect(find.byKey(const ValueKey('iep-open-server-save')), findsOneWidget);
+    expect(find.byKey(const ValueKey('iep-preview-draft')), findsNothing);
+    expect(find.byKey(const ValueKey('iep-draft-goals-error')), findsNothing);
   });
+
+  for (final language in ['ar', 'en']) {
+    for (final width in [320.0, 720.0, 1280.0]) {
+      testWidgets('Done and Save as draft share a row at $width in $language',
+          (tester) async {
+        tester.view.physicalSize = Size(width, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final evaluations = EvaluationHistoryHttpFixture();
+        await tester.pumpWidget(curriculumHost(
+          IepDraftEditorScreen(
+            childId: 8, evaluationGateway: evaluations.repository,
+          ),
+          language,
+        ));
+        await tester.pumpAndSettle();
+        final done = find.byKey(const ValueKey('iep-complete-plan'));
+        final save = find.byKey(const ValueKey('iep-open-server-save'));
+        await tester.ensureVisible(done);
+        await tester.pumpAndSettle();
+        expect(find.byKey(const ValueKey('iep-preview-draft')), findsNothing);
+        expect(tester.getTopLeft(done).dy,
+            closeTo(tester.getTopLeft(save).dy, 1));
+        expect(tester.getTopLeft(done).dx,
+            isNot(tester.getTopLeft(save).dx));
+        expect(find.byKey(const ValueKey('iep-draft-goals-error')),
+            findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
 
   testWidgets('invalid Done and draft do not call either write service', (tester) async {
     final evaluations = EvaluationHistoryHttpFixture();
@@ -72,7 +106,9 @@ void main() {
     await tapDraft(tester, 'iep-open-server-save');
     expect(drafts.posts, isEmpty);
     expect(drafts.paths, isEmpty);
-    expect(find.byKey(const ValueKey('iep-draft-goals-error')), findsOneWidget);
+    expect(find.byKey(const ValueKey('iep-goal-validation-snackbar')),
+        findsOneWidget);
+    expect(find.byKey(const ValueKey('iep-draft-goals-error')), findsNothing);
   });
 
   testWidgets('Done validates and completes without a second confirmation page',
