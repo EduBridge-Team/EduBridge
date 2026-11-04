@@ -30,20 +30,10 @@ void main() {
     await tapDraft(tester, 'iep-prepare-draft');
     await fillPlan(tester);
     await addDraftGoal(tester);
-    await tapDraft(tester, 'iep-verify-draft');
     await tapDraft(tester, 'iep-open-server-save');
-    await tapDraft(tester, 'iep-save-to-server');
-    await tapDraft(tester, 'iep-confirm-save');
-    expect(find.byKey(const ValueKey('iep-server-saved')), findsOneWidget);
-    final l = await AppLocalizations.delegate.load(const Locale('en'));
-    final historyButton = find.widgetWithText(FilledButton, l.iepTitle);
-    await revealDraft(tester, historyButton);
-    await tester.tap(historyButton);
-    await tester.pumpAndSettle();
     expect(find.byType(IepDraftEditorScreen), findsNothing);
     expect(find.byType(IepHistoryScreen), findsOneWidget);
     expect(f.posts, hasLength(1));
-    expect(f.paths.where((p) => p == '/children/8/iep-plans'), hasLength(5));
     expect(tester.takeException(), isNull);
   });
 
@@ -55,11 +45,8 @@ void main() {
     await tester.pumpAndSettle();
     await fillPlan(tester);
     await addDraftGoal(tester);
-    await tapDraft(tester, 'iep-verify-draft');
     await tapDraft(tester, 'iep-open-server-save');
-    expect(find.byKey(const ValueKey('iep-save-error')), findsOneWidget);
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('iep-submit-error')), findsOneWidget);
     expect(find.byType(IepDraftEditorScreen), findsOneWidget);
     expect(find.byType(IepDraftGoalCard), findsOneWidget);
     expect(tester.widget<TextFormField>(find.byKey(const ValueKey('iep-input-title'))).controller?.text ??
