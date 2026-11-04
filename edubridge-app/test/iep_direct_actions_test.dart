@@ -103,6 +103,10 @@ void main() {
     await tester.pumpAndSettle();
     await tapDraft(tester, 'iep-complete-plan');
     expect(completed.optionReads, 0);
+    // Wait for the transient validation notice so it cannot cover the
+    // second action in the same widget test.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
     await tapDraft(tester, 'iep-open-server-save');
     expect(drafts.posts, isEmpty);
     expect(drafts.paths, isEmpty);
