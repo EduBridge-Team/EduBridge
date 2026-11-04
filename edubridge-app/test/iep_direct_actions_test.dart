@@ -82,9 +82,9 @@ void main() {
     await tester.pumpWidget(curriculumHost(Builder(builder: (context) {
       return Scaffold(body: TextButton(
         key: const ValueKey('open-editor'),
-        onPressed: () => Navigator.push<void>(
+        onPressed: () => Navigator.push<bool>(
           context,
-          MaterialPageRoute<void>(builder: (_) => IepDraftEditorScreen(
+          MaterialPageRoute<bool>(builder: (_) => IepDraftEditorScreen(
             childId: 8,
             evaluationGateway: evaluations.repository,
             completionGateway: completed,
