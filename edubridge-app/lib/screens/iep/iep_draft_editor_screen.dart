@@ -6,17 +6,16 @@ import '../../model/iep/iep_draft.dart';
 import '../../model/iep/iep_edit_source.dart';
 import '../../model/iep/iep_draft_save.dart';
 import '../../services/iep/iep_draft_repository.dart';
+import '../../services/iep/iep_draft_update_repository.dart';
 import '../../services/iep/iep_completion_repository.dart';
 import '../../services/enrollment/enrollment_api_client.dart';
 import '../../services/evaluations/evaluation_history_repository.dart';
 import '../../theme.dart';
 import '../academics/academic_choice_field.dart';
 import '../enrollment/enrollment_state.dart';
+import '../enrollment/enrollment_labels.dart';
 import '../evaluation_history/evaluation_history_labels.dart';
 import 'iep_draft_field.dart';
-import 'iep_draft_save_screen.dart';
-import 'iep_completion_screen.dart';
-import 'iep_draft_update_screen.dart';
 import 'iep_draft_preview_screen.dart';
 import 'iep_evaluation_reference.dart';
 import 'iep_draft_goal_card.dart';
@@ -83,6 +82,8 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
   IepPlanDraft? _checked;
   String? _goalError;
   bool _dirty = false, _leaving = false, _asking = false;
+  bool _busy = false, _writeLocked = false;
+  EnrollmentFailure? _writeError;
 
   @override
   void initState() {
@@ -136,9 +137,10 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     _dirty = true;
     _checked = null;
     _goalError = null;
+    if (!_writeLocked) _writeError = null;
   });
   Future<void> _back() async {
-    if (_asking) return;
+    if (_asking || _busy || _leaving) return;
     _asking = true;
     final l = context.l10n;
     final leave =
@@ -196,7 +198,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     _changed();
   }
 
-  void _verify() {
+  IepPlanDraft? _verify() {
     final validFields = _form.currentState!.validate();
     final start = parseIepDraftDate(_values['start'] ?? '');
     final end = parseIepDraftDate(_values['end'] ?? '');
@@ -230,6 +232,7 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
         );
       }
     });
+    return _checked;
   }
 
   Future<void> _preview(IepPlanDraft draft) async {
@@ -248,53 +251,91 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
     if (mounted) await _evaluations.reload();
   }
 
-  Future<void> _saveDraft(IepPlanDraft draft) async {
-    if (!identical(_checked, draft)) return;
-    if (widget.editSource != null) {
-      final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(
-        builder: (_) => IepDraftUpdateScreen(source: widget.editSource!, draft: draft),
-      ));
-      if (!mounted || saved != true) return;
-      setState(() { _dirty = false; _leaving = true; });
+  /// The two visible actions share the same validation and submit exactly once.
+  /// A confirmed server readback (not a local optimistic flag) is required.
+  Future<void> _submit({required bool complete}) async {
+    if (_busy || _writeLocked || _leaving || _evaluations.loading ||
+        _evaluations.error != null || _evaluations.snapshot == null) {
+      return;
+    }
+    final draft = _verify();
+    if (draft == null) return;
+    setState(() { _busy = true; _writeError = null; });
+    try {
+      if (complete) {
+        final gateway = widget.completionGateway ??
+            IepCompletionRepository(childId: widget.childId);
+        final options = await gateway.options();
+        if (options.childId != widget.childId ||
+            !options.evaluationIds.contains(draft.evaluationId)) {
+          throw const EnrollmentApiException(EnrollmentFailure.conflict);
+        }
+        if (!options.canComplete) {
+          throw const EnrollmentApiException(EnrollmentFailure.forbidden);
+        }
+        if (widget.editSource == null) {
+          await gateway.complete(draft, options, _completionRequestKey);
+        } else {
+          await gateway.completeExisting(
+              widget.editSource!, draft, options, _completionRequestKey);
+        }
+      } else if (widget.editSource != null) {
+        final gateway = IepDraftUpdateRepository(source: widget.editSource!);
+        final options = await gateway.load();
+        if (!options.evaluationIds.contains(draft.evaluationId)) {
+          throw const EnrollmentApiException(EnrollmentFailure.conflict);
+        }
+        await gateway.update(draft, options, _saveRequestKey);
+      } else {
+        final gateway = widget.saveGateway ??
+            IepDraftRepository(childId: widget.childId);
+        final options = await gateway.options();
+        if (options.childId != widget.childId ||
+            !options.evaluationIds.contains(draft.evaluationId)) {
+          throw const EnrollmentApiException(EnrollmentFailure.conflict);
+        }
+        if (!options.canCreate) {
+          throw const EnrollmentApiException(EnrollmentFailure.forbidden);
+        }
+        final receipt = await gateway.create(draft, _saveRequestKey);
+        if (!receipt.matches(draft)) {
+          throw const EnrollmentApiException(EnrollmentFailure.uncertain);
+        }
+      }
+      if (!mounted) return;
+      setState(() { _dirty = false; _leaving = true; _writeError = null; });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) Navigator.pop(context, true);
       });
-      return;
+    } on EnrollmentApiException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _writeError = error.failure;
+        _writeLocked = error.failure == EnrollmentFailure.uncertain;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _writeError = EnrollmentFailure.uncertain;
+        _writeLocked = true;
+      });
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
-    final saved = await Navigator.of(context).push<IepSavedDraft>(MaterialPageRoute(
-      builder: (_) => IepDraftSaveScreen(draft: draft, childName: widget.childName, gateway: widget.saveGateway, requestKey: _saveRequestKey),
-    ));
-    if (!mounted || saved == null || !saved.matches(draft)) return;
-    setState(() { _dirty = false; _leaving = true; });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) Navigator.pop(context, true);
-    });
   }
 
-  Future<void> _completePlan(IepPlanDraft draft) async {
-    if (!identical(_checked, draft)) return;
-    final completed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => IepCompletionScreen(
-          draft: draft,
-          source: widget.editSource,
-          childName: widget.childName,
-          gateway: widget.completionGateway,
-          requestKey: _completionRequestKey,
-        ),
-      ),
-    );
-    if (!mounted || completed != true) return;
-    setState(() { _dirty = false; _leaving = true; });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) Navigator.pop(context, true);
-    });
+  Future<void> _previewCurrent() async {
+    if (_busy || _evaluations.loading || _evaluations.error != null) return;
+    final draft = _verify();
+    if (draft != null) await _preview(draft);
   }
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final checked = _checked;
+    final canSubmit = !_busy && !_writeLocked && !_evaluations.loading &&
+        _evaluations.error == null && _evaluations.snapshot != null &&
+        _evaluations.snapshot!.records.isNotEmpty;
     String? requiredText(String? v) =>
         v == null || v.trim().isEmpty ? l.academicRequired : null;
     String? date(String? v) =>
@@ -320,6 +361,20 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
         r.id:
             '${evaluationRecordTitle(l, r)} — ${r.createdAt.toIso8601String().substring(0, 10)} (#${r.id})',
     };
+    final doneButton = FilledButton.icon(
+      key: const ValueKey('iep-complete-plan'),
+      onPressed: canSubmit ? () => _submit(complete: true) : null,
+      icon: const Icon(Icons.check_circle_outline),
+      label: Text(Localizations.localeOf(context).languageCode == 'en'
+          ? 'Done' : 'تم'),
+    );
+    final draftButton = OutlinedButton.icon(
+      key: const ValueKey('iep-open-server-save'),
+      onPressed: canSubmit ? () => _submit(complete: false) : null,
+      icon: const Icon(Icons.save_outlined),
+      label: Text(Localizations.localeOf(context).languageCode == 'en'
+          ? 'Save as draft' : 'حفظ كمسودة'),
+    );
     return PopScope(
       canPop: _leaving,
       onPopInvokedWithResult: (didPop, _) {
@@ -333,6 +388,21 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
             softWrap: true,
             overflow: TextOverflow.visible,
           ),
+          actions: [
+            IconButton(
+              key: const ValueKey('iep-preview-draft'),
+              onPressed: canSubmit ? _previewCurrent : null,
+              tooltip: l.iepComposePreview,
+              icon: const Icon(Icons.preview_outlined),
+            ),
+            IconButton(
+              key: const ValueKey('iep-reload-evaluations'),
+              onPressed: _busy || _evaluations.loading
+                  ? null : _evaluations.reload,
+              tooltip: l.enrollmentReload,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
         ),
         body: SafeArea(
           child: Center(
@@ -340,9 +410,11 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
               constraints: const BoxConstraints(maxWidth: 840),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _form,
-                  child: Column(
+                child: AbsorbPointer(
+                  absorbing: _busy,
+                  child: Form(
+                    key: _form,
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (widget.childName.trim().isNotEmpty)
@@ -370,14 +442,6 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                           _evaluations.error == null &&
                           records.isEmpty)
                         Text(l.iepComposeNoEvaluations),
-                      OutlinedButton.icon(
-                        key: const ValueKey('iep-reload-evaluations'),
-                        onPressed: _evaluations.loading
-                            ? null
-                            : _evaluations.reload,
-                        icon: const Icon(Icons.refresh),
-                        label: Text(l.enrollmentReload),
-                      ),
                       AcademicChoiceField(
                         key: const ValueKey('iep-choose-evaluation'),
                         label: l.iepComposeEvaluation,
@@ -481,43 +545,37 @@ class _IepDraftEditorScreenState extends State<_IepDraftEditorBody>
                             key: const ValueKey('iep-draft-goals-error'),
                           ),
                         ),
-                      FilledButton(
-                        key: const ValueKey('iep-verify-draft'),
-                        onPressed: _evaluations.loading || records.isEmpty
-                            ? null
-                            : _verify,
-                        child: Text(l.iepComposeVerify),
-                      ),
-                      if (checked != null) ...[
-                        OutlinedButton.icon(
-                          key: const ValueKey('iep-open-server-save'),
-                          onPressed: () => _saveDraft(checked),
-                          icon: const Icon(Icons.save_outlined),
-                          label: Text(Localizations.localeOf(context).languageCode == 'en'
-                              ? 'Save as draft' : 'حفظ كمسودة'),
-                        ),
-                        FilledButton.icon(
-                          key: const ValueKey('iep-complete-plan'),
-                          onPressed: () => _completePlan(checked),
-                          icon: const Icon(Icons.check_circle_outline),
-                          label: Text(Localizations.localeOf(context).languageCode == 'en'
-                              ? 'Done' : 'تم'),
-                        ),
+                      if (_busy) const LinearProgressIndicator(),
+                      if (_writeError != null)
                         Semantics(
                           liveRegion: true,
                           child: Text(
-                            l.iepComposeChecked,
-                            key: const ValueKey('iep-draft-checked'),
+                            _writeLocked
+                                ? (Localizations.localeOf(context).languageCode == 'en'
+                                    ? 'Save status is uncertain. Check the child plan history before trying again.'
+                                    : 'حالة الحفظ غير مؤكدة. راجع سجل خطط الطفل قبل إعادة المحاولة.')
+                                : enrollmentFailureMessage(l, _writeError!),
+                            key: const ValueKey('iep-submit-error'),
                           ),
                         ),
-                        OutlinedButton.icon(
-                          key: const ValueKey('iep-preview-draft'),
-                          onPressed: () => _preview(checked),
-                          icon: const Icon(Icons.preview_outlined),
-                          label: Text(l.iepComposePreview),
-                        ),
-                      ],
+                      const SizedBox(height: 12),
+                      LayoutBuilder(builder: (context, constraints) {
+                        final narrow = constraints.maxWidth < 450;
+                        return Flex(
+                          direction: narrow ? Axis.vertical : Axis.horizontal,
+                          crossAxisAlignment: narrow
+                              ? CrossAxisAlignment.stretch
+                              : CrossAxisAlignment.center,
+                          children: [
+                            narrow ? doneButton : Expanded(child: doneButton),
+                            SizedBox(height: narrow ? 10 : 0,
+                                width: narrow ? 0 : 12),
+                            narrow ? draftButton : Expanded(child: draftButton),
+                          ],
+                        );
+                      }),
                     ],
+                  ),
                   ),
                 ),
               ),

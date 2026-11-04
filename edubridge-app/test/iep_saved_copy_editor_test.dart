@@ -25,7 +25,8 @@ void main() {
         await tester.pumpAndSettle();
         final title = tester.widget<TextFormField>(find.byKey(const ValueKey('iep-input-title')));
         expect(title.initialValue, source.draft.title);
-        expect(find.byKey(const ValueKey('iep-open-server-save')), findsNothing);
+        expect(find.byKey(const ValueKey('iep-open-server-save')), findsOneWidget);
+        expect(find.byKey(const ValueKey('iep-complete-plan')), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
     }
