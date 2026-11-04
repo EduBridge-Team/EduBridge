@@ -1,4 +1,3 @@
-import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/iep/iep_draft_editor_screen.dart';
 import 'package:edubridge_app/screens/iep/iep_draft_goal_card.dart';
 import 'package:edubridge_app/screens/iep/iep_history_screen.dart';
@@ -8,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'curriculum_ui_support.dart' show curriculumHost;
 import 'evaluation_history_fixture.dart';
 import 'iep_draft_save_fixture.dart';
-import 'iep_draft_screens_test.dart' show fillPlan, addDraftGoal, tapDraft, revealDraft;
+import 'iep_draft_screens_test.dart' show fillPlan, addDraftGoal, tapDraft;
 
 void main() {
   testWidgets('confirmed draft returns to fresh saved history without another create', (tester) async {
