@@ -4,16 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> childRow(int id, String name, {int? schoolId,
-    String? schoolName, bool includeScope = true}) => {
+    String? schoolName, bool includeScope = true,
+    String? schoolMembershipStatus}) => {
   'child': {
     'id': id,
     'name': name,
     if (includeScope) 'school_id': schoolId,
     if (includeScope) 'school_name': schoolName,
+    if (schoolMembershipStatus != null)
+      'school_membership_status': schoolMembershipStatus,
   },
 };
 
-Widget host(List<Map<String, dynamic>> rows, String language) => MaterialApp(
+Widget host(List<Map<String, dynamic>> rows, String language,
+    {bool isMyChildren = false}) => MaterialApp(
   locale: Locale(language),
   supportedLocales: AppLocalizations.supportedLocales,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -21,6 +25,7 @@ Widget host(List<Map<String, dynamic>> rows, String language) => MaterialApp(
     body: CustomScrollView(slivers: [
       SpecialistSchoolGroupedSliver(
         rows: rows,
+        isMyChildren: isMyChildren,
         childBuilder: (_, row) => Card(child: ListTile(
           title: Text((row['child'] as Map)['name'] as String))),
       ),
@@ -77,6 +82,73 @@ void main() {
     expect(groups.single.rows.map((row) => (row['child'] as Map)['id']),
       containsAll([1, 2, 3, 4]));
   });
+
+  test('confirmed outside-school follow-up is separate from unknown metadata', () {
+    final groups = groupSpecialistChildrenBySchool([
+      childRow(1, 'مدرسة أ', schoolId: 2, schoolName: 'مدرسة الأمل'),
+      childRow(2, 'متابعة فردية', schoolMembershipStatus: 'not_enrolled'),
+      childRow(3, 'بيانات ناقصة', includeScope: false),
+      childRow(4, 'بيانات ملتبسة', schoolId: 7),
+      childRow(5, 'خارج مدرسة آخر', schoolMembershipStatus: 'none'),
+    ]);
+    expect(groups.map((group) => group.kind), [
+      SpecialistSchoolGroupKind.school,
+      SpecialistSchoolGroupKind.outsideSchools,
+      SpecialistSchoolGroupKind.unspecified,
+    ]);
+    expect(groups[1].rows.map((row) => (row['child'] as Map)['id']), [2, 5]);
+    expect(groups[2].rows.map((row) => (row['child'] as Map)['id']), [3, 4]);
+    expect(groups[1].schoolId, isNull);
+    expect(() => groups[1].rows.clear(), throwsUnsupportedError);
+  });
+
+  test('server contradiction cannot misclassify enrolled child as outside', () {
+    final groups = groupSpecialistChildrenBySchool([
+      childRow(1, 'تعارض', schoolId: 3, schoolName: 'مدرسة',
+          schoolMembershipStatus: 'not_enrolled'),
+      childRow(2, 'حالة فقط', includeScope: false,
+          schoolMembershipStatus: 'not_enrolled'),
+      childRow(3, 'مدرسة غير معروفة'),
+    ]);
+    expect(groups, hasLength(1));
+    expect(groups.single.kind, SpecialistSchoolGroupKind.unspecified);
+    expect(groups.single.rows, hasLength(3));
+  });
+
+  for (final language in ['ar', 'en']) {
+    testWidgets('followed non-enrolled child is named correctly in $language',
+        (tester) async {
+      final rows = [
+        childRow(1, 'طفل مدرسة', schoolId: 2, schoolName: 'مدرسة الأمل'),
+        childRow(2, 'طفل بلا مدرسة', schoolMembershipStatus: 'not_enrolled'),
+        childRow(3, 'طفل بلا بيانات', includeScope: false),
+      ];
+      await tester.pumpWidget(host(rows, language, isMyChildren: true));
+      await tester.pump();
+      expect(find.text(language == 'ar'
+          ? 'أطفال تحت المتابعة خارج المدارس'
+          : 'Children followed outside schools'), findsOneWidget);
+      expect(find.text(language == 'ar'
+          ? 'المدرسة غير محددة' : 'School not specified'), findsOneWidget);
+      expect(find.byKey(const ValueKey('specialist-school-count-outside')),
+          findsOneWidget);
+      expect(find.text('طفل بلا مدرسة'), findsOneWidget);
+      expect(find.text('طفل بلا بيانات'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('waiting child has neutral non-follow-up wording in $language',
+        (tester) async {
+      await tester.pumpWidget(host([
+        childRow(5, 'انتظار', schoolMembershipStatus: 'not_enrolled'),
+      ], language));
+      await tester.pump();
+      expect(find.text(language == 'ar'
+          ? 'أطفال خارج المدارس' : 'Children outside schools'), findsOneWidget);
+      expect(find.byKey(const ValueKey('specialist-school-group-outside')),
+          findsOneWidget);
+    });
+  }
 
   for (final language in ['ar', 'en']) {
     for (final width in [360.0, 720.0]) {

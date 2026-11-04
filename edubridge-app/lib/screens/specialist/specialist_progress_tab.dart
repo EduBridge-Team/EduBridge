@@ -64,6 +64,7 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
       sliver: SpecialistSchoolGroupedSliver(
         rows: displayChildren.cast<Map<String, dynamic>>(),
+        isMyChildren: _showOnlyMine,
         childBuilder: (context, row) => _showOnlyMine
             ? buildMyChildCard(row, c)
             : buildAvailableChildCard(row, c),
