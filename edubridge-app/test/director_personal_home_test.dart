@@ -50,7 +50,7 @@ void main() {
     await tester.tap(schoolCard);
     await tester.pumpAndSettle();
     expect(find.text('School administration opened'), findsOneWidget);
-    await tester.pageBack();
+    Navigator.of(tester.element(find.text('School administration opened'))).pop();
     await tester.pumpAndSettle();
     expect(schoolCard, findsOneWidget);
     expect(tester.takeException(), isNull);
