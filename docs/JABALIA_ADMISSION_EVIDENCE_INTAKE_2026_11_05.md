@@ -30,3 +30,7 @@ The Jabalia Docker Compose API service receives the new **`edubridge-jabalia-pri
 5. Gather institution templates and privacy retention/erasure sign-off before pilot on anonymized data.
 
 **Status:** Backend evidence intake only. Migration, actual deployment, counselor review and institution acceptance are pending.
+
+## Additional authorization regression
+
+Tests now also verify immediate deputy revocation, all-five-category completeness without automatic acceptance, and anonymous HTTP denials for each new endpoint. These are code/CI checks; clinical and institutional review remain separate.

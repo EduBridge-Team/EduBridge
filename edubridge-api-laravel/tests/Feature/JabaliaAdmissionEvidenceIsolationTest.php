@@ -145,4 +145,33 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
             $this->actor(50, 'parent'), 20, 200, $document['id']
         )->status());
     }
+
+    public function test_revoked_deputy_immediately_loses_evidence_access(): void
+    {
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        $this->assertSame(201, $controller->store($this->uploadRequest(), 10, 100)->status());
+        $this->assertSame(200, $controller->schoolIndex($this->actor(62, 'teacher'), 100)->status());
+        DB::table('school_management_assignments')->where('user_id', 62)
+            ->update(['ends_at' => now()]);
+        $this->assertSame(404, $controller->schoolIndex($this->actor(62, 'teacher'), 100)->status());
+    }
+
+    public function test_all_required_document_categories_are_not_a_counselor_approval(): void
+    {
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        foreach ([
+            'audiology_report', 'birth_certificate', 'medical_report',
+            'child_photo', 'father_identity',
+        ] as $type) {
+            $this->assertSame(201,
+                $controller->store($this->uploadRequest(40, $type), 10, 100)->status());
+        }
+        $result = $controller->parentIndex($this->actor(40, 'parent'), 10, 100)->getData(true);
+        $this->assertTrue($result['evidence_complete']);
+        $this->assertFalse($result['admissions_approved']);
+        $this->assertSame('pending',
+            DB::table('school_enrollment_requests')->where('id', 100)->value('status'));
+        $this->assertDatabaseCount('jabalia_admission_documents', 5);
+    }
+
 }
