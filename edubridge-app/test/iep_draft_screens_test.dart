@@ -1,7 +1,6 @@
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/iep/iep_draft_editor_screen.dart';
 import 'package:edubridge_app/screens/iep/iep_draft_goal_card.dart';
-import 'package:edubridge_app/screens/iep/iep_draft_preview_screen.dart';
 import 'package:edubridge_app/screens/iep/iep_goal_editor_screen.dart';
 import 'package:edubridge_app/screens/iep/iep_history_screen.dart';
 import 'package:edubridge_app/theme.dart';
@@ -30,13 +29,6 @@ Future<void> tapDraft(WidgetTester tester, String key) async {
   expect(finder.hitTestable(), findsOneWidget);
   await tester.tap(finder);
   await tester.pumpAndSettle();
-}
-
-Future<void> previewThenReturn(WidgetTester tester) async {
-  await tapDraft(tester, 'iep-preview-draft');
-  expect(find.byType(IepDraftPreviewScreen), findsOneWidget);
-  await tapDraft(tester, 'iep-return-to-editor');
-  expect(find.byType(IepDraftPreviewScreen), findsNothing);
 }
 
 Future<void> inputDraft(WidgetTester tester, String name, String text) async {
@@ -123,12 +115,11 @@ void main() {
             .goal;
         expect(goal.baseline, 8);
         expect(goal.target, 2.5);
-        await previewThenReturn(tester);
-        expect(find.byKey(const ValueKey('iep-draft-goals-error')), findsNothing);
         await inputDraft(tester, 'end', '2027-05-01');
         expect(find.byKey(const ValueKey('iep-draft-checked')), findsNothing);
-        await tapDraft(tester, 'iep-preview-draft');
-        expect(find.byType(IepDraftPreviewScreen), findsNothing);
+        await tapDraft(tester, 'iep-complete-plan');
+        expect(find.byKey(const ValueKey('iep-goal-validation-snackbar')),
+            findsOneWidget);
         expect(find.text(strings.iepComposeGoalsRequired), findsOneWidget);
         await inputDraft(tester, 'end', '2027-06-01');
         // Edit preserves the goal fields and returns to the same unsaved plan.
@@ -148,8 +139,6 @@ void main() {
               .target,
           2,
         );
-        await previewThenReturn(tester);
-        expect(find.byKey(const ValueKey('iep-draft-goals-error')), findsNothing);
         await tester.tap(find.byType(BackButton));
         await tester.pumpAndSettle();
         expect(find.text(strings.iepComposeDiscardNotice), findsOneWidget);
@@ -161,12 +150,8 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('iep-discard-confirm')));
         await tester.pumpAndSettle();
         expect(find.byType(IepDraftEditorScreen), findsNothing);
-        // Initial load plus a refresh after each of the two preview returns.
-        expect(evaluations.paths, [
-          '/evaluations/child/8',
-          '/evaluations/child/8',
-          '/evaluations/child/8',
-        ]);
+        // No redundant reloads when editing or validating without saving.
+        expect(evaluations.paths, ['/evaluations/child/8']);
         expect(history.reads, ['/children/8/iep-plans']);
         expect(tester.takeException(), isNull);
       });
@@ -193,16 +178,14 @@ void main() {
       await tapDraft(tester, 'iep-reload-evaluations');
       await fillPlan(tester);
       await addDraftGoal(tester);
-      await previewThenReturn(tester);
-      expect(find.byKey(const ValueKey('iep-draft-goals-error')), findsNothing);
       evaluations.records = [];
       await resumeCurriculum(tester);
       expect(find.byKey(const ValueKey('iep-draft-checked')), findsNothing);
       expect(find.byType(IepDraftGoalCard), findsOneWidget);
       expect(tester.widget<FilledButton>(done).onPressed, isNull);
       expect(find.text(strings.iepComposeNoEvaluations), findsOneWidget);
-      // Initial read, manual retry, preview return, then app resume.
-      expect(evaluations.reads, 4);
+      // Initial read, manual retry, then app resume.
+      expect(evaluations.reads, 3);
       // Reusing the widget for another child must clear the previous draft.
       await tester.pumpWidget(
         curriculumHost(
@@ -240,7 +223,6 @@ void main() {
       await tester.pumpAndSettle();
       await fillPlan(tester);
       await addDraftGoal(tester);
-      await previewThenReturn(tester);
       final remove = find.descendant(
         of: find.byType(IepDraftGoalCard),
         matching: find.text(strings.delete),
@@ -258,8 +240,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(IepDraftGoalCard), findsNothing);
       expect(find.byKey(const ValueKey('iep-draft-checked')), findsNothing);
-      await tapDraft(tester, 'iep-preview-draft');
-      expect(find.byType(IepDraftPreviewScreen), findsNothing);
+      await tapDraft(tester, 'iep-complete-plan');
+      expect(find.byKey(const ValueKey('iep-goal-validation-snackbar')),
+          findsOneWidget);
       expect(find.text(strings.iepComposeGoalsRequired), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
