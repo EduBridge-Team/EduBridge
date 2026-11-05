@@ -315,3 +315,19 @@ export function deleteJabaliaSchoolClosureDay(slug, schoolId, closureId) {
     method: 'DELETE',
   })
 }
+
+export function fetchJabaliaSupervisorVisits(slug, schoolId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/supervisor-visits?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaSupervisorVisit(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/supervisor-visits'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function updateJabaliaSupervisorVisit(slug, schoolId, visitId, payload) {
+  return request(schoolPath(slug, schoolId, `/supervisor-visits/${encodeURIComponent(visitId)}`), {
+    method: 'PATCH', body: JSON.stringify(payload),
+  })
+}

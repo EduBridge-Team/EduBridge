@@ -66,6 +66,10 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
         Route::get('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'index'])->whereNumber('school');
         Route::put('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'update'])->whereNumber('school');
+        // Jabalia-only supervision: institution membership enforced by this route group.
+        Route::get('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'index'])->whereNumber('school');
+        Route::post('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
+        Route::patch('/schools/{school}/supervisor-visits/{visit}', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'updateStatus'])->whereNumber('school')->whereNumber('visit')->middleware('throttle:20,1');
         Route::get('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'index'])->whereNumber('school');
         Route::post('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::delete('/schools/{school}/closure-days/{closure}', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'destroy'])->whereNumber('school')->whereNumber('closure');

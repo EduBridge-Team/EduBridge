@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchInstitutionManagementReport } from '../../api'
+import JabaliaSupervisorVisitsPanel from '../../components/Institution/JabaliaSupervisorVisitsPanel'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -76,6 +77,7 @@ export default function InstitutionReportsPage() {
           </div>}
         </section>
       </>}
+      {slug === 'jabalia' && !loading && data && <JabaliaSupervisorVisitsPanel slug={slug} schools={schools} />}
     </main>
   </div>
 }
