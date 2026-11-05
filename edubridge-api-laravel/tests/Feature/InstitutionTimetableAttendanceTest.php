@@ -30,6 +30,12 @@ class InstitutionTimetableAttendanceTest extends TestCase
         Schema::create('notifications', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title')->nullable(); $t->string('message'); $t->string('type')->nullable(); $t->boolean('is_read')->default(false); $t->timestamp('created_at')->nullable(); });
         Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id')->nullable(); $t->unsignedBigInteger('teacher_id')->nullable(); $t->date('attendance_date'); $t->unsignedTinyInteger('period_number')->nullable(); $t->string('status')->default('open'); $t->text('notes')->nullable(); $t->timestamps(); });
         Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); $t->text('note')->nullable(); $t->unsignedBigInteger('marked_by')->nullable(); $t->timestamp('marked_at')->nullable(); $t->timestamps(); });
+        Schema::create('jabalia_attendance_change_events', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id');
+            $t->string('previous_status')->nullable(); $t->string('new_status');
+            $t->unsignedBigInteger('actor_id')->nullable(); $t->timestamp('created_at');
+        });
         Schema::create('jabalia_school_closure_days', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('organization_id');
             $t->unsignedBigInteger('school_id'); $t->date('closed_on');
@@ -54,7 +60,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
+        foreach (['jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -297,6 +303,116 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(201, $controller->store($request(), '', 5)->getStatusCode());
         $this->assertSame(409, $controller->store($request(), '', 5)->getStatusCode());
         $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_only_fourth_not_fifth_or_sixth_school_absence_notifies_guardian(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        foreach (['2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-11'] as $index => $date) {
+            $id = DB::table('attendance_sessions')->insertGetId([
+                'section_id'=>1, 'attendance_date'=>$date, 'period_number'=>null,
+                'status'=>'open', 'created_at'=>now(), 'updated_at'=>now(),
+            ]);
+            DB::table('attendance_records')->insert([
+                'attendance_session_id'=>$id, 'child_id'=>1, 'status'=>'present',
+                'created_at'=>now(), 'updated_at'=>now(),
+            ]);
+            $this->assertSame(200, $controller->mark($this->tenantRequest([
+                'records'=>[['child_id'=>1, 'status'=>'absent']],
+            ]), 'jabalia', 1, $id)->status());
+            $this->assertSame($index >= 3 ? 1 : 0,
+                DB::table('notifications')->where('type','school_attendance_consecutive')->count(),
+                "Unexpected notification on day index {$index}");
+        }
+        $this->assertSame(6, DB::table('jabalia_attendance_change_events')->count());
+    }
+
+    public function test_attendance_change_history_is_append_only_and_repeat_saves_are_idempotent(): void
+    {
+        $sessionId = DB::table('attendance_sessions')->insertGetId([
+            'section_id'=>1,'attendance_date'=>'2026-10-07','period_number'=>null,
+            'status'=>'open','created_at'=>now()->subDay(),'updated_at'=>now()->subDay(),
+        ]);
+        $created = now()->subDay();
+        DB::table('attendance_records')->insert([
+            'attendance_session_id'=>$sessionId, 'child_id'=>1,
+            'status'=>'present', 'note'=>null, 'created_at'=>$created, 'updated_at'=>$created,
+        ]);
+        $controller = app(InstitutionAttendanceController::class);
+        $save = fn ($status, $close = false) => $controller->mark(
+            $this->tenantRequest(['records'=>[['child_id'=>1,'status'=>$status]],'close_session'=>$close]),
+            'jabalia', 1, $sessionId
+        );
+        $this->assertSame(200, $save('absent')->status());
+        $this->assertSame(200, $save('absent')->status());
+        $this->assertSame(200, $save('present')->status());
+        $this->assertSame(200, $save('present', true)->status());
+        $this->assertSame(409, $save('absent')->status());
+        $this->assertSame(2, DB::table('jabalia_attendance_change_events')->count());
+        $history = DB::table('jabalia_attendance_change_events')->orderBy('id')->get();
+        $this->assertSame(['present','absent'], $history->pluck('previous_status')->all());
+        $this->assertSame(['absent','present'], $history->pluck('new_status')->all());
+        $this->assertSame([30,30], $history->pluck('actor_id')->all());
+        $this->assertSame((string) $created->toDateTimeString(),
+            (string) \Carbon\Carbon::parse(DB::table('attendance_records')->value('created_at'))->toDateTimeString());
+        $view = $this->tenantRequest([]);
+        $view->attributes->set('jwt_user', (object)['id'=>30,'role'=>'institution']);
+        $result = $controller->changeHistory($view, 'jabalia', 1, $sessionId)->getData(true);
+        $this->assertCount(2, $result['events']['data']);
+        $this->assertArrayNotHasKey('child_name', $result['events']['data'][0]);
+        $this->assertArrayNotHasKey('note', $result['events']['data'][0]);
+    }
+
+    public function test_attendance_history_does_not_cross_schools_or_roles(): void
+    {
+        $sessionId = DB::table('attendance_sessions')->insertGetId([
+            'section_id'=>1,'attendance_date'=>'2026-10-07','period_number'=>null,
+            'status'=>'open','created_at'=>now(),'updated_at'=>now(),
+        ]);
+        DB::table('attendance_records')->insert([
+            'attendance_session_id'=>$sessionId, 'child_id'=>1,
+            'status'=>'present', 'created_at'=>now(),'updated_at'=>now(),
+        ]);
+        $controller = app(InstitutionAttendanceController::class);
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records'=>[['child_id'=>1,'status'=>'absent']],
+        ]), 'jabalia', 1, $sessionId)->status());
+        $view = $this->tenantRequest([]);
+        $view->attributes->set('jwt_user', (object)['id'=>30,'role'=>'institution']);
+        $this->assertSame(404, $controller->changeHistory($view, 'jabalia', 2, $sessionId)->status());
+        $view->attributes->set('jwt_user', (object)['id'=>20,'role'=>'parent']);
+        $this->assertSame(404, $controller->changeHistory($view, 'jabalia', 1, $sessionId)->status());
+        $view->attributes->set('organization', (object)['id'=>2,'slug'=>'other']);
+        $this->assertSame(404, $controller->changeHistory($view, 'other', 1, $sessionId)->status());
+    }
+
+    public function test_daily_only_attendance_controls_streak_alerts(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        foreach (['2026-10-04','2026-10-05','2026-10-06'] as $date) {
+            $id = DB::table('attendance_sessions')->insertGetId([
+                'section_id'=>1,'attendance_date'=>$date,'period_number'=>null,
+                'status'=>'open','created_at'=>now(),'updated_at'=>now(),
+            ]);
+            DB::table('attendance_records')->insert([
+                'attendance_session_id'=>$id,'child_id'=>1,'status'=>'present',
+                'created_at'=>now(),'updated_at'=>now(),
+            ]);
+            $controller->mark($this->tenantRequest(['records'=>[['child_id'=>1,'status'=>'absent']]]),
+                'jabalia', 1, $id);
+        }
+        $period = DB::table('attendance_sessions')->insertGetId([
+            'section_id'=>1,'attendance_date'=>'2026-10-07','period_number'=>2,
+            'status'=>'open','created_at'=>now(),'updated_at'=>now(),
+        ]);
+        DB::table('attendance_records')->insert([
+            'attendance_session_id'=>$period,'child_id'=>1,'status'=>'present',
+            'created_at'=>now(),'updated_at'=>now(),
+        ]);
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records'=>[['child_id'=>1,'status'=>'absent']],
+        ]),'jabalia',1,$period)->status());
+        $this->assertSame(0, DB::table('notifications')->where('type','school_attendance_consecutive')->count());
     }
 
     private function tenantRequest(array $payload): Request

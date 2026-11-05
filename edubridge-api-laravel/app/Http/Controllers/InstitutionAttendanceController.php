@@ -205,6 +205,25 @@ class InstitutionAttendanceController extends Controller
         return response()->json(['attendance_session' => $session, 'records' => $records]);
     }
 
+    public function changeHistory(Request $request, string $organizationSlug, int $school, int $attendanceSession): JsonResponse
+    {
+        $organization = $request->attributes->get('organization');
+        $actor = $request->attributes->get('jwt_user');
+        if ($organizationSlug !== 'jabalia' || ($organization->slug ?? null) !== 'jabalia'
+            || ($actor->role ?? null) !== 'institution'
+            || !$this->schoolWithinTenant($request, $school)
+            || !$this->sessionWithinSchool($school, $attendanceSession)) {
+            return response()->json(['error' => 'سجل الحضور غير موجود'], 404);
+        }
+        $events = DB::table('jabalia_attendance_change_events')
+            ->where('organization_id', $organization->id)->where('school_id', $school)
+            ->where('attendance_session_id', $attendanceSession)
+            ->orderByDesc('id')
+            ->select(['id', 'child_id', 'previous_status', 'new_status', 'actor_id', 'created_at'])
+            ->paginate(30);
+        return response()->json(['events' => $events]);
+    }
+
     public function mark(Request $request, string $organizationSlug, int $school, int $attendanceSession): JsonResponse
     {
         if (!$this->schoolWithinTenant($request, $school) || !$this->sessionWithinSchool($school, $attendanceSession)) {
@@ -213,18 +232,15 @@ class InstitutionAttendanceController extends Controller
 
         $data = $request->validate([
             'records' => ['required', 'array', 'min:1', 'max:500'],
-            'records.*.child_id' => ['required', 'integer'],
+            'records.*.child_id' => ['required', 'integer', 'distinct'],
             'records.*.status' => ['required', Rule::in(['present', 'absent', 'late', 'excused'])],
             'records.*.note' => ['nullable', 'string', 'max:1000'],
             'close_session' => ['nullable', 'boolean'],
         ]);
 
         $actor = $request->attributes->get('jwt_user');
-        $session = $this->sessionWithinSchool($school, $attendanceSession);
-        if ($session->status === 'closed') {
-            return response()->json(['error' => 'سجل الحضور مغلق ولا يمكن تعديله'], 409);
-        }
         $organization = $request->attributes->get('organization');
+        $session = $this->sessionWithinSchool($school, $attendanceSession);
         $validChildren = DB::table('student_enrollments as e')
             ->join('children as c', 'c.id', '=', 'e.child_id')
             ->where('e.section_id', $session->section_id)
@@ -240,40 +256,75 @@ class InstitutionAttendanceController extends Controller
             }
         }
 
-        DB::transaction(function () use ($data, $attendanceSession, $actor, $session, $request) {
+        $jabalia = ($organization->slug ?? null) === 'jabalia';
+        // Do not silently mutate student attendance without the required audit table.
+        if ($jabalia && !Schema::hasTable('jabalia_attendance_change_events')) {
+            return response()->json(['error' => 'سجل تدقيق الحضور غير جاهز'], 503);
+        }
+
+        $result = DB::transaction(function () use ($data, $attendanceSession, $actor, $session, $school, $organization, $jabalia) {
+            DB::table('schools')->where('id', $school)->lockForUpdate()->first();
+            $live = DB::table('attendance_sessions')->where('id', $attendanceSession)
+                ->lockForUpdate()->first();
+            if (!$live || $live->status === 'closed') {
+                return response()->json(['error' => 'سجل الحضور مغلق ولا يمكن تعديله'], 409);
+            }
             foreach ($data['records'] as $record) {
-                $previous = DB::table('attendance_records')
+                $previousRow = DB::table('attendance_records')
                     ->where('attendance_session_id', $attendanceSession)
-                    ->where('child_id', $record['child_id'])
-                    ->value('status');
-
-                DB::table('attendance_records')->updateOrInsert(
-                    ['attendance_session_id' => $attendanceSession, 'child_id' => $record['child_id']],
-                    [
-                        'status' => $record['status'],
-                        'note' => $record['note'] ?? null,
-                        'marked_by' => $actor->id ?? null,
-                        'marked_at' => now(),
-                        'updated_at' => now(),
+                    ->where('child_id', $record['child_id'])->lockForUpdate()->first();
+                $previous = $previousRow?->status;
+                $note = $record['note'] ?? null;
+                // A repeated save cannot rewrite the original created_at or produce a new event.
+                if ($previous === $record['status'] && ($previousRow?->note ?? null) === $note) continue;
+                $values = [
+                    'status' => $record['status'],
+                    'note' => $note,
+                    'marked_by' => $actor?->id,
+                    'marked_at' => now(),
+                    'updated_at' => now(),
+                ];
+                if ($previousRow) {
+                    DB::table('attendance_records')->where('id', $previousRow->id)->update($values);
+                } else {
+                    DB::table('attendance_records')->insert([
+                        'attendance_session_id' => $attendanceSession,
+                        'child_id' => $record['child_id'],
+                        ...$values,
                         'created_at' => now(),
-                    ]
-                );
+                    ]);
+                }
 
+                if ($jabalia && $previous !== $record['status']) {
+                    DB::table('jabalia_attendance_change_events')->insert([
+                        'organization_id' => $organization->id,
+                        'school_id' => $school,
+                        'attendance_session_id' => $attendanceSession,
+                        'child_id' => $record['child_id'],
+                        'previous_status' => $previous,
+                        'new_status' => $record['status'],
+                        'actor_id' => $actor?->id,
+                        'created_at' => now(),
+                    ]);
+                }
                 if (in_array($record['status'], ['absent', 'late'], true) && $previous !== $record['status']) {
-                    if (($request->attributes->get('organization')->slug ?? null) !== 'jabalia' || $record['status'] === 'late') {
+                    if (!$jabalia || $record['status'] === 'late') {
                         $this->notifyParents((int) $record['child_id'], $record['status'], $session);
-                    } elseif ($record['status'] === 'absent') {
+                    } else {
                         $this->notifyJabaliaConsecutiveAbsence((int) $record['child_id'], $session);
                     }
                 }
             }
 
             if ($data['close_session'] ?? false) {
-                DB::table('attendance_sessions')->where('id', $attendanceSession)->update(['status' => 'closed', 'updated_at' => now()]);
+                DB::table('attendance_sessions')->where('id', $attendanceSession)
+                    ->update(['status' => 'closed', 'updated_at' => now()]);
             }
+            return null;
         });
 
-        return response()->json(['message' => 'تم حفظ الحضور بنجاح']);
+        return $result instanceof JsonResponse
+            ? $result : response()->json(['message' => 'تم حفظ الحضور بنجاح']);
     }
 
     /**
@@ -283,6 +334,8 @@ class InstitutionAttendanceController extends Controller
      */
     private function notifyJabaliaConsecutiveAbsence(int $childId, object $session): void
     {
+        // Lesson-by-lesson absences never count as a daily attendance event.
+        if ($session->period_number !== null) return;
         $dates = DB::table('attendance_records as r')
             ->join('attendance_sessions as a', 'a.id', '=', 'r.attendance_session_id')
             ->where('r.child_id', $childId)
@@ -322,17 +375,22 @@ class InstitutionAttendanceController extends Controller
         $examinedDays = 0;
         // Closed days and weekly rest days are not school days.
         // A missing roll on an OPEN working day still breaks the streak.
-        while ($count < 4 && $examinedDays < 370) {
+        while ($count < 5 && $examinedDays < 370) {
             $date = $day->toDateString();
             if (in_array($day->dayOfWeekIso, $weekdays, true)
                 && !isset($closedDays[$date])) {
-                if (($perDay[$date] ?? null) !== 'absent') return;
+                // The fifth absent school day must NOT generate a new alert.
+                // A present/missing previous day establishes the start of the streak.
+                if (($perDay[$date] ?? null) !== 'absent') {
+                    if ($count < 4) return;
+                    break;
+                }
                 $count++;
             }
             $day = $day->subDay();
             $examinedDays++;
         }
-        // Fail closed for unusually long school closures or missing history.
+        // Alert only on EXACTLY the fourth absent school day, not the fifth and later.
         if ($count !== 4) return;
         $childName = DB::table('children')->where('id', $childId)->value('name') ?? 'الطالب';
         $message = "تجاوز {$childName} ثلاثة أيام غياب دراسي متتالية حتى {$session->attendance_date}";

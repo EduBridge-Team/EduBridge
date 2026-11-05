@@ -115,6 +115,7 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::get('/report', [InstitutionAttendanceController::class, 'report']);
             Route::post('/', [InstitutionAttendanceController::class, 'store']);
             Route::get('/{attendanceSession}', [InstitutionAttendanceController::class, 'show'])->whereNumber('attendanceSession');
+            Route::get('/{attendanceSession}/change-history', [InstitutionAttendanceController::class, 'changeHistory'])->whereNumber('attendanceSession');
             Route::put('/{attendanceSession}/records', [InstitutionAttendanceController::class, 'mark'])->whereNumber('attendanceSession');
         });
 

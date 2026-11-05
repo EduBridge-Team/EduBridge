@@ -6,6 +6,7 @@ import {
   fetchInstitutionAttendanceSession, fetchInstitutionSchools, markInstitutionAttendance,
 } from '../../api'
 import { fetchJabaliaSchoolClosureDays, createJabaliaSchoolClosureDay, deleteJabaliaSchoolClosureDay } from '../../api/institutions'
+import JabaliaAttendanceChangeHistoryPanel from '../../components/Institution/JabaliaAttendanceChangeHistoryPanel'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -294,6 +295,10 @@ export default function InstitutionAttendancePage() {
                 </div>)}
               </div>
             )}
+            {slug === 'jabalia' && <JabaliaAttendanceChangeHistoryPanel
+              key={`${schoolId}-${session.id}`}
+              slug={slug} schoolId={schoolId} sessionId={session.id} students={records}
+            />}
             {session.status === 'closed' ? <p>هذا السجل مغلق للعرض فقط.</p> : (
               <div className="role-hero-actions">
                 <button className="btn" disabled={saving || loading || !records.length} onClick={() => saveRecords(false)}>حفظ الحضور</button>
