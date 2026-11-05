@@ -45,6 +45,7 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
     {
         $request = Request::create('/api/institutions/'.$slug.'/schools/1/teachers/11/documents', 'GET');
         $request->attributes->set('organization', (object) ['id' => $organizationId, 'slug' => $slug]);
+        $request->attributes->set('jwt_user', (object) ['id' => 99, 'role' => 'institution']);
         return $request;
     }
 
@@ -126,6 +127,60 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         $this->assertSame(404, $controller->download($request, 'jabalia', 2, 11, 1)->status());
         $this->assertSame(404, $controller->upload($request, 'jabalia', 1, 22, 1)->status());
         $this->assertSame(404, $controller->download($request, 'jabalia', 1, 11, 999)->status());
+    }
+
+    public function test_signed_contract_file_survives_deletion_attempt(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $path = 'jabalia-teacher-documents/signed-v1.pdf';
+        \Illuminate\Support\Facades\Storage::disk('local')->put($path, "%PDF-1.4\n%%EOF");
+        DB::table('jabalia_teacher_documents')->insert([
+            'id' => 2, 'organization_id' => 1, 'school_id' => 1,
+            'teacher_id' => 11, 'type' => 'contract', 'title' => 'Signed project contract',
+            'storage_path' => $path, 'original_filename' => 'signed-v1.pdf',
+        ]);
+
+        $response = app(JabaliaTeacherDocumentController::class)
+            ->destroy($this->request(1, 'jabalia'), 'jabalia', 1, 11, 2);
+
+        $this->assertSame(409, $response->status());
+        $this->assertDatabaseHas('jabalia_teacher_documents', [
+            'id' => 2, 'type' => 'contract', 'storage_path' => $path,
+        ]);
+        \Illuminate\Support\Facades\Storage::disk('local')->assertExists($path);
+    }
+
+    public function test_uploaded_contract_cannot_be_overwritten_and_new_contract_entry_is_allowed(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $path = 'jabalia-teacher-documents/signed-v1.pdf';
+        \Illuminate\Support\Facades\Storage::disk('local')->put($path, "%PDF-1.4\n%%EOF");
+        DB::table('jabalia_teacher_documents')->insert([
+            'id' => 2, 'organization_id' => 1, 'school_id' => 1,
+            'teacher_id' => 11, 'type' => 'contract', 'title' => 'Signed project contract',
+            'storage_path' => $path, 'original_filename' => 'signed-v1.pdf',
+        ]);
+
+        $request = $this->request(1, 'jabalia');
+        $request->files->set('file', \Illuminate\Http\UploadedFile::fake()
+            ->createWithContent('replacement.pdf', "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"));
+
+        $result = app(JabaliaTeacherDocumentController::class)
+            ->upload($request, 'jabalia', 1, 11, 2);
+        $this->assertSame(409, $result->status());
+        $this->assertDatabaseHas('jabalia_teacher_documents', [
+            'id' => 2, 'storage_path' => $path, 'original_filename' => 'signed-v1.pdf',
+        ]);
+        \Illuminate\Support\Facades\Storage::disk('local')->assertExists($path);
+
+        $new = $this->request(1, 'jabalia');
+        $new->replace(['type' => 'contract', 'title' => 'Renewed project contract']);
+        $response = app(JabaliaTeacherDocumentController::class)
+            ->store($new, 'jabalia', 1, 11);
+        $this->assertSame(201, $response->status());
+        $this->assertNotSame(2, $response->getData(true)['document']['id']);
+        $this->assertSame(99, $response->getData(true)['document']['recorded_by']);
+        $this->assertSame(3, DB::table('jabalia_teacher_documents')->count());
     }
 
     public function test_cross_tenant_document_id_cannot_be_deleted(): void
