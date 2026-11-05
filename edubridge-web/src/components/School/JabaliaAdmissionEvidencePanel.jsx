@@ -3,6 +3,7 @@ import { BASE_URL, getUser } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 import { useSchoolResource } from './useSchoolResource'
 import { JABALIA_DOCUMENT_LABELS, JABALIA_DOCUMENT_TYPES, safeJabaliaEvidence } from './jabaliaAdmissionEvidence'
+import JabaliaAdmissionEvidenceAccessPanel from './JabaliaAdmissionEvidenceAccessPanel'
 
 // The binary endpoint must only be called after an explicit user action.
 // No file URLs or private storage paths are rendered in the page/DOM.
@@ -85,6 +86,7 @@ export default function JabaliaAdmissionEvidencePanel({ requestId }) {
               ? t('مرفق', 'Received') : t('غير مرفق', 'Missing')}
           </li>)}
         </ul>
+        <JabaliaAdmissionEvidenceAccessPanel key={requestId} requestId={requestId} />
         {evidence.documents.length > 0 && <ul>
           {evidence.documents.map(item => <li key={item.id}>
             {JABALIA_DOCUMENT_LABELS[item.type][en ? 1 : 0]}
