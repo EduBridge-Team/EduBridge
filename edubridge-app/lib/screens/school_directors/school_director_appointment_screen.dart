@@ -6,6 +6,8 @@ import '../../services/schools/director_api_client.dart';
 import '../../services/schools/school_director_appointment_repository.dart';
 import '../../theme.dart';
 import 'director_failure_message.dart';
+import 'school_directors_screen.dart';
+import '../../services/schools/school_director_repository.dart';
 import '../school_management/school_director_management_screen.dart';
 
 class SchoolDirectorAppointmentScreen extends StatefulWidget {
@@ -180,6 +182,25 @@ class _SchoolDirectorAppointmentScreenState
                             ),
                           ),
                           child: Text(_tr('إدارة دعوات المدير', 'Manage director invitations')),
+                        ),
+                      ),
+                    if (_school != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: OutlinedButton.icon(
+                          key: const ValueKey('director-profile-documents'),
+                          onPressed: _loading ? null : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => SchoolDirectorsScreen(
+                                gateway: SchoolDirectorRepository(),
+                              ),
+                            ),
+                          ),
+                          icon: const Icon(Icons.folder_outlined),
+                          label: Text(_tr(
+                            'ملفات المديرين الإدارية',
+                            'Director administrative profiles',
+                          )),
                         ),
                       ),
                   ],
