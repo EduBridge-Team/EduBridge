@@ -19,7 +19,7 @@ class SchoolEnrollmentInboxTest extends TestCase
             $t->string('role'); $t->timestamp('ends_at')->nullable();
         });
         Schema::create('organizations', function (Blueprint $t) {
-            $t->id(); $t->boolean('is_active');
+            $t->id(); $t->boolean('is_active'); $t->string('slug')->nullable();
         });
         Schema::create('schools', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id')->nullable();
@@ -72,6 +72,27 @@ class SchoolEnrollmentInboxTest extends TestCase
         $this->assertCount(1, $data['requests']);
         $this->assertSame(11, $data['requests'][0]['id']);
         $this->assertSame('First', $data['requests'][0]['child_name']);
+    }
+
+    public function test_inbox_marks_jabalia_approval_as_requiring_counselor_review(): void
+    {
+        DB::table('organizations')->insert(['id' => 3, 'is_active' => true, 'slug' => 'jabalia']);
+        DB::table('schools')->where('id', 1)->update(['organization_id' => 3]);
+        $response = $this->inbox(7);
+        $this->assertSame(200, $response->status());
+        $data = $response->getData(true);
+        $this->assertTrue($data['requires_counselor_review']);
+        $this->assertSame(1, $data['school_id']);
+        $this->assertSame([11], array_column($data['requests'], 'id'));
+        $this->assertArrayNotHasKey('documents', $data['requests'][0]);
+    }
+
+    public function test_non_jabalia_inbox_does_not_disable_existing_approval(): void
+    {
+        $this->assertFalse($this->inbox(7)->getData(true)['requires_counselor_review']);
+        DB::table('organizations')->insert(['id' => 4, 'is_active' => true, 'slug' => 'another']);
+        DB::table('schools')->where('id', 1)->update(['organization_id' => 4]);
+        $this->assertFalse($this->inbox(7)->getData(true)['requires_counselor_review']);
     }
 
     public function test_non_school_and_unlinked_users_are_denied(): void
