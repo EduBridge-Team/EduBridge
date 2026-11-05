@@ -139,8 +139,17 @@ class JabaliaSchoolCalendarTest extends TestCase
     public function test_short_or_invalid_reason_never_creates_calendar_record(): void
     {
         $controller = app(JabaliaSchoolCalendarController::class);
+        try {
+            $controller->store($this->request([
+                'closed_on' => '2026-11-15', 'reason' => '   ',
+            ]), 'jabalia', 1);
+            $this->fail('Whitespace-only reason should fail validation.');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            $this->assertArrayHasKey('reason', $exception->errors());
+        }
+
         $response = $controller->store($this->request([
-            'closed_on' => '2026-11-15', 'reason' => '   ',
+            'closed_on' => '2026-11-15', 'reason' => '  X   ',
         ]), 'jabalia', 1);
         $this->assertSame(422, $response->status());
         $this->assertSame(0, DB::table('jabalia_school_closure_days')->count());
