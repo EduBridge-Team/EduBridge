@@ -1,30 +1,25 @@
 # Contributing to EduBridge
 
-> Last verified: 2026-10-05
+> Last verified: 2026-11-05
 
 Thank you for contributing to EduBridge. This repository uses protected branches and CI to keep `main` deployable and production-safe.
 
 ## Branch model
 
-- `main` — production-ready code.
-- `develop` — integration branch for normal development.
-- `feature/*` — new functionality -> `develop`.
-- `fix/*` — non-emergency bug fixes -> `develop`.
-- `chore/*` — maintenance/tooling/configuration -> `develop`.
-- `refactor/*` — internal refactors -> `develop`.
-- `docs/*` — documentation-only work -> `develop`.
-- `hotfix/*` — urgent production fixes; may target `main` directly.
+- `main` — the single protected integration and production branch.
+- `feature/*`, `fix/*`, `chore/*`, `refactor/*`, `docs/*`, `test/*` and `hotfix/*` — short-lived branches created from current `main`, targeting `main` via PR.
+- The retired `develop` branch is not a PR target. Inspect ancestry and squash-merged equivalents before deleting historical branches.
 
 Normal flow:
 
 ```text
-feature/*  ─┐
-fix/*      ─┤
-chore/*    ─┼──> develop ──> main
-refactor/* ─┤
-docs/*     ─┘
-
-hotfix/* ────────────────> main
+feature/* ─┐
+fix/*     ─┤
+chore/*   ─┤
+refactor/*├──> main (protected; review + CI) ──> release
+docs/*    ┤
+test/*    ┤
+hotfix/* ─┘
 ```
 
 ## Pull requests
@@ -90,7 +85,7 @@ For an urgent production issue:
 4. wait for required CI checks;
 5. merge after review/validation;
 6. deploy and run the relevant smoke tests;
-7. reflect the hotfix back into `develop` if the branches have diverged.
+7. remove the temporary hotfix branch after verifying the merge; no backport branch is used.
 
 ## Merge strategy
 
@@ -108,8 +103,8 @@ Never commit `.env` files, signing keys, certificates/private keys, service-acco
 
 يستخدم المشروع فروعًا محمية وCI للحفاظ على `main` جاهزًا للإنتاج.
 
-- التطوير العادي (`feature/*` و`fix/*` و`chore/*` و`refactor/*` و`docs/*`) يتجه إلى `develop`.
-- الإصلاحات العاجلة فقط تستخدم `hotfix/*` ويمكنها استهداف `main` مباشرة.
+- جميع طلبات الدمج من فروع العمل القصيرة (بما فيها `hotfix/*`) تستهدف `main` مباشرة.
+- `develop` فرع متقاعد، ولا يُستخدم في تطوير أو دمج التغييرات الجديدة.
 - أي تغيير في البنية، النشر، Cloudflare، Caddy، الجدار الناري، الصلاحيات، قاعدة البيانات أو الأمن يجب أن يحدّث التوثيق في نفس الـPR.
 - شغّل الاختبارات المناسبة وانتظر CI قبل الدمج.
 - بعد تغييرات الأمان/النشر شغّل `deploy/security-smoke.sh`، ومع تغييرات Cloudflare/origin شغّل أيضًا `deploy/cloudflare-proxy-smoke.sh` من جهاز خارج الخادم.
