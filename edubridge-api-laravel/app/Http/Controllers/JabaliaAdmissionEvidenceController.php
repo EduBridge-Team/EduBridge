@@ -82,6 +82,8 @@ class JabaliaAdmissionEvidenceController extends Controller
             'evidence_complete' => count(array_unique($rows->pluck('type')->all())) >= count(self::TYPES)
                 && count(array_diff(self::TYPES, $rows->pluck('type')->all())) === 0,
             'admissions_approved' => false,
+            // The server-side operational gate remains disabled by default.
+            'uploads_enabled' => config('services.jabalia_admissions.upload_enabled') === true,
             'note' => 'Evidence completeness is not a counselor or school admission approval.',
         ]);
     }
