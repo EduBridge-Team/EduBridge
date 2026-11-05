@@ -7,6 +7,8 @@ import '../enrollment/enrollment_labels.dart';
 import '../enrollment/school_annual_promotion_screen.dart';
 import '../enrollment/school_dashboard_screen.dart';
 import '../school_internal_accounts_screen.dart';
+import '../school_transfers/school_transfers_screen.dart';
+import '../../services/transfers/school_transfer_repository.dart';
 import '../../services/school_specialist_assignments_repository.dart';
 import '../institution_specialists/school_specialists_screen.dart';
 import '../specialist_schools/independent_specialist_employment_screen.dart';
@@ -99,6 +101,8 @@ class _SchoolManagementScreenState extends State<SchoolManagementScreen> with Wi
           open: () => _open(SchoolOperationsScreen(repository: scoped, category: permission, schoolId: schoolId))));
       }
       if (permissions.contains('enrollment')) {
+        entries.add((label: t('النقل بين المدارس', 'School transfers'), icon: Icons.swap_horiz_outlined,
+          open: () => _open(SchoolTransfersScreen(gateway: SchoolTransferRepository(schoolId: schoolId, repository: scoped)))));
         entries.add((label: t('طلبات التسجيل', 'Enrollment requests'), icon: Icons.assignment_outlined,
           open: () => _open(const SchoolDashboardScreen())));
         entries.add((label: t('الترفيع السنوي', 'Annual progression'), icon: Icons.trending_up_outlined,
