@@ -192,7 +192,7 @@ Use `deploy/oracle-backup.sh` and the included systemd timer for verified Postgr
 
 ## CI and contribution workflow
 
-The repository uses protected branch workflows. Normal development targets `develop`; urgent production fixes may use `hotfix/*` into `main`.
+The repository uses a protected `main` branch as its single integration and production branch. All feature, fix, test, docs and hotfix pull requests target `main`; the previous `develop` branch has been retired.
 
 CI covers areas such as:
 

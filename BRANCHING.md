@@ -1,130 +1,68 @@
 # EduBridge — Branching Strategy
 
-> Last verified: 2026-10-05
+> Verified: 2026-11-05. Single protected trunk: `main`.
 
-EduBridge is a monorepo containing Laravel API, React web, Flutter mobile, deployment/security configuration and documentation.
+EduBridge is a monorepo containing Laravel API, React web, Flutter, deployment/security configuration and documentation.
 
-## Long-lived branches
+## Branches and pull requests
 
-| Branch | Purpose | Rules |
-|---|---|---|
-| `main` | Production-ready code | Protected. Normal releases come from `develop`; urgent production fixes may come from `hotfix/*`. |
-| `develop` | Integration branch | Protected. Normal feature/fix/chore/refactor/docs work targets this branch. |
+- `main`: the **only permanent integration and production branch**; protected from direct pushes.
+- Start every change from the latest `main` in a short-lived `feature/*`, `fix/*`, `chore/*`, `refactor/*`, `docs/*`, `test/*` or `hotfix/*` branch.
+- Open the PR directly against `main`; wait for branch guard, required quality/security CI and review.
+- Do not merge around failing security checks without a separately approved and recorded emergency exception.
+- Merge to `main` before deployment, then delete the short-lived branch once the change and follow-up references are verified.
+- `develop` was retired after an ancestry audit found zero commits unique to it relative to `main`. Historical PRs and tags remain in GitHub; do not recreate `develop` for new work.
+- A closed PR does **not** prove its branch content is merged. Before deleting old branches, compare against `main` and review squash-merged equivalents.
 
-## Short-lived branches
+Recommended branch naming: `feature/web-consultation-form`, `fix/app-notification-navigation`, `chore/deploy-ci-pipeline`, `docs/security-runbook`, `hotfix/security-csp-header`.
 
-Use one branch per focused unit of work.
-
-| Prefix | Use | Normal target |
-|---|---|---|
-| `feature/` | New product functionality | `develop` |
-| `fix/` | Non-emergency bug fix | `develop` |
-| `chore/` | Tooling, dependencies, config, docs | `develop` |
-| `refactor/` | Internal code restructuring | `develop` |
-| `docs/` | Documentation-only change | `develop` |
-| `hotfix/` | Urgent production/security fix | `main` |
-
-Recommended naming:
-
-```text
-<type>/<component>-<short-description>
-```
-
-Components commonly include `api`, `web`, `app`, `deploy`, `security`, `docs`.
-
-Examples:
-
-```text
-feature/web-consultation-form
-fix/app-notification-navigation
-chore/deploy-ci-pipeline
-docs/security-runbook
-hotfix/security-csp-header
-```
-
-## Normal workflow
+## Normal development workflow
 
 ```bash
-git checkout develop
-git pull --ff-only origin develop
-git checkout -b feature/web-example
-# work, test, commit
+git fetch origin
+git switch main
+git pull --ff-only origin main
+git switch -c feature/web-example
+# edit, test, commit
 git push -u origin feature/web-example
+# Open a PR: feature/web-example -> main
 ```
-
-Open the Pull Request into `develop`, wait for CI/review, merge, and delete the short-lived branch.
 
 ## Release workflow
 
-When `develop` is ready for production:
-
-1. open `develop -> main`;
-2. wait for required CI and review;
-3. merge;
-4. deploy `main` using the documented Oracle procedure;
-5. run production smoke/security checks;
-6. tag a release when appropriate.
-
-Example tag:
+1. Review and merge the approved PR to `main` after required checks and review.
+2. Deploy **only from `main`** via the documented Oracle release procedure, with backup and rollback controls.
+3. Perform the appropriate production smoke/security checks.
+4. Tag the reviewed release if needed.
 
 ```bash
-git checkout main
+git switch main
 git pull --ff-only origin main
 git tag -a v1.10.0 -m "Release v1.10.0"
 git push origin v1.10.0
 ```
 
-## Hotfix workflow
+## Hotfixes
 
-Urgent production issues may branch from `main` and target `main` directly:
+Use `hotfix/*` based on the latest `main`. Open a narrowly scoped PR to `main`, pass required security checks (or obtain a documented emergency authorization), merge, deploy and validate. There is no second long-lived integration branch to backport to.
 
-```bash
-git checkout main
-git pull --ff-only origin main
-git checkout -b hotfix/security-example
-# make the smallest safe change
-git push -u origin hotfix/security-example
-```
+## Production/security configuration
 
-A hotfix still requires the relevant CI/security checks. After merge/deploy, reflect the change in `develop` if the branches have diverged.
-
-## Production/security configuration changes
-
-Changes to any of the following should use a narrowly scoped branch and update documentation in the same PR:
-
-- Cloudflare rules/DNS assumptions;
-- Caddy configuration;
-- trusted proxy/real-IP behavior;
-- firewall/origin exposure;
-- API authentication or rate limits;
-- upload/body limits;
-- Docker port publishing;
-- production backup/restore behavior.
-
-After deploy, run `deploy/security-smoke.sh`. For edge/origin changes also run `deploy/cloudflare-proxy-smoke.sh` from outside the VPS.
+Changes to Cloudflare, DNS, Caddy, trusted proxy/real IP, firewall, authentication/rate limits, request body limits, Docker ports, and backup/restore processes must update relevant documentation in the **same PR**. After deploy run `deploy/security-smoke.sh`; for edge/origin changes run `deploy/cloudflare-proxy-smoke.sh` from outside the VPS.
 
 ## Commit messages
 
-Use short descriptive messages; Conventional Commit-style prefixes are encouraged:
-
-```text
-feat(web): add consultation request form
-fix(api): enforce child ownership
-chore(deploy): update Caddy template
-docs: refresh production security runbook
-```
+Use focused Conventional Commit-style messages, e.g. `fix(api): enforce child ownership` or `docs: refresh production security runbook`.
 
 ---
 
 # EduBridge — استراتيجية الفروع
 
-> آخر مراجعة: 2026-10-05
+> آخر مراجعة: 2026-11-05
 
-- `main`: فرع الإنتاج؛ التغييرات العادية تصل إليه من `develop`، والإصلاحات العاجلة فقط من `hotfix/*`.
-- `develop`: فرع دمج التطوير العادي.
-- `feature/*` و`fix/*` و`chore/*` و`refactor/*` و`docs/*`: تستهدف `develop`.
-- `hotfix/*`: إصلاح إنتاج عاجل ويمكنه استهداف `main` مباشرة.
-
-بعد أي Hotfix أمني/تشغيلي: انتظر CI، ادمج، حدّث الخادم، شغّل فحوصات الـsmoke، ثم أعد نفس الإصلاح إلى `develop` إذا كان الفرعان قد تباعدا.
-
-أي تغيير في Cloudflare أو Caddy أو الجدار الناري أو trusted proxies أو rate limits أو منافذ Docker يجب أن يحدّث التوثيق في نفس Pull Request.
+- **`main` هو فرع التطوير والتجميع والإنتاج الوحيد**، وهو محمي ولا يُدفع إليه مباشرة.
+- أنشئ فرعًا قصير العمر من أحدث `main` باسم `feature/*` أو `fix/*` أو `chore/*` أو `refactor/*` أو `docs/*` أو `test/*` أو `hotfix/*`.
+- افتح طلب الدمج إلى **`main` مباشرة**؛ انتظر المراجعة وفحوص CI المطلوبة.
+- فرع `develop` متقاعد؛ لم تكن له Commits إضافية خارج `main` عند التدقيق. لا تُعِد إنشاءه.
+- بعد الدمج والتحقق من عدم الحاجة للفرع، احذف الفرع المؤقت. لا تفترض أن إغلاق PR يساوي الدمج.
+- قبل النشر افحص النسخ الاحتياطية والتغييرات؛ انشر من `main`، ثم نفّذ فحوص الصحة والأمان. لا تتجاوز فشل فحص أمني دون موافقة طوارئ موثقة.
