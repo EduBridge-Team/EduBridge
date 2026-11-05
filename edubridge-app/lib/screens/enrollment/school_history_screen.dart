@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
 import '../../model/enrollment/school_history.dart';
+import '../../services/enrollment/enrollment_api_client.dart' show EnrollmentFailure;
 import '../../services/enrollment/school_history_repository.dart';
 import '../../theme.dart';
 import 'enrollment_labels.dart';
