@@ -13,10 +13,38 @@ class JabaliaTeacherDocumentController extends Controller
     private function tenant(Request $request, string $slug, int $school, int $teacher): ?object
     {
         $org = $request->attributes->get('organization');
-        if (!$org || $slug !== 'jabalia' || $org->slug !== 'jabalia') return null;
+        $actor = $request->attributes->get('jwt_user');
+        if (!$org || $slug !== 'jabalia' || $org->slug !== 'jabalia'
+            || ($actor->role ?? null) !== 'institution') return null;
         if (!DB::table('schools')->where('id', $school)->where('organization_id', $org->id)->exists()) return null;
         if (!DB::table('organization_user')->where('organization_id', $org->id)->where('user_id', $teacher)->where('role', 'teacher')->exists()) return null;
         return $org;
+    }
+
+    private function recordAccess(Request $request, object $org, int $school, int $teacher, ?int $document, string $action): void
+    {
+        DB::table('jabalia_teacher_document_access_events')->insert([
+            'organization_id' => $org->id,
+            'school_id' => $school,
+            'teacher_id' => $teacher,
+            'document_id' => $document,
+            'action' => $action,
+            'actor_id' => $request->attributes->get('jwt_user')->id,
+            'created_at' => now(),
+        ]);
+    }
+
+    public function accessEvents(Request $request, string $organizationSlug, int $school, int $teacher): JsonResponse
+    {
+        $org = $this->tenant($request, $organizationSlug, $school, $teacher);
+        if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
+        // Audit readership is itself audited. No filenames, file paths or binaries in responses.
+        $this->recordAccess($request, $org, $school, $teacher, null, 'audit_viewed');
+        $rows = DB::table('jabalia_teacher_document_access_events')
+            ->where('organization_id', $org->id)->where('school_id', $school)
+            ->where('teacher_id', $teacher)->orderByDesc('id')
+            ->select(['id', 'document_id', 'action', 'actor_id', 'created_at'])->paginate(30);
+        return response()->json(['events' => $rows]);
     }
 
     public function index(Request $request, string $organizationSlug, int $school, int $teacher): JsonResponse
@@ -26,6 +54,7 @@ class JabaliaTeacherDocumentController extends Controller
         $rows = DB::table('jabalia_teacher_documents')
             ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)
             ->orderByDesc('id')->paginate(30);
+        $this->recordAccess($request, $org, $school, $teacher, null, 'listed');
         return response()->json(['documents' => $rows]);
     }
 
@@ -115,6 +144,8 @@ class JabaliaTeacherDocumentController extends Controller
         if (!$row || !$row->storage_path || !Storage::disk('local')->exists($row->storage_path)) {
             return response()->json(['error' => 'الملف غير موجود'], 404);
         }
+        // Fail closed if audit persistence fails; event means download was issued, not completed.
+        $this->recordAccess($request, $org, $school, $teacher, $document, 'download_issued');
         return Storage::disk('local')->download($row->storage_path, $row->original_filename ?: 'document', [
             'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',
