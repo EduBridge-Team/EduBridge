@@ -1,16 +1,16 @@
 # EduBridge Git Workflow Commands
 
-> آخر مراجعة: 2026-10-05
+> آخر مراجعة: 2026-11-05
 
 هذا الملف يختصر أوامر Git المعتمدة للعمل والنشر في EduBridge.
 
 ## شغل عادي
 
-ابدأ من `develop`:
+ابدأ من `main`:
 
 ```bash
-git checkout develop
-git pull --ff-only origin develop
+git switch main
+git pull --ff-only origin main
 ```
 
 أنشئ فرعًا مناسبًا:
@@ -36,17 +36,11 @@ git commit -m "fix(api): describe the change"
 git push -u origin <branch-name>
 ```
 
-افتح Pull Request إلى `develop` وانتظر نجاح الـCI والمراجعة.
+افتح Pull Request إلى `main` مباشرة وانتظر نجاح الـCI والمراجعة.
 
 ## Release إلى الإنتاج
 
-افتح Pull Request:
-
-```text
-develop -> main
-```
-
-بعد الدمج، على خادم Oracle استخدم سكربت النشر المخصص، وليس `docker compose` مباشرة من جذر المستودع:
+بعد دمج طلب التغيير في `main`، على خادم Oracle استخدم سكربت النشر المخصص، وليس `docker compose` مباشرة من جذر المستودع:
 
 ```bash
 cd ~/EduBridge
@@ -102,7 +96,7 @@ git push -u origin hotfix/security-example
 EDUBRIDGE_ORIGIN_IP=<ORACLE_PUBLIC_IP> ./deploy/cloudflare-proxy-smoke.sh
 ```
 
-بعد ذلك أعد نفس الإصلاح إلى `develop` إذا كان الفرعان قد تباعدا.
+بعد نجاح الدمج والفحوصات، يمكن حذف فرع `hotfix/*` المؤقت، ولا حاجة لإعادة الدمج في فرع آخر.
 
 ## التعامل مع تعديلات محلية على خادم الإنتاج
 
@@ -127,11 +121,11 @@ git pull --ff-only origin main
 ```text
 feature/*  ─┐
 fix/*      ─┤
-chore/*    ─┼──> develop ──> main
+chore/*    ─┼──────────────> main (PR + CI)
 refactor/* ─┤
-docs/*     ─┘
-
-hotfix/* ────────────────> main
+docs/*     ┤
+test/*     ┤
+hotfix/*   ┘
 ```
 
 ممنوع الدفع المباشر إلى `main`، ولا يتم تجاوز CI الفاشل بدون إجراء طارئ مصرح ومبرر.
