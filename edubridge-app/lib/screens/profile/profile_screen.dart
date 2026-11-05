@@ -312,7 +312,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final specialist = _profile?['role'] == 'specialist';
     return Scaffold(
       appBar: widget.inParentTabs
-          ? BrandAppBar(title: Text(context.l10n.profile))
+          ? BrandAppBar(
+              titleSpacing: 16,
+              title: Text(context.l10n.profile),
+            )
           : null,
       bottomNavigationBar: widget.inParentTabs
           ? null
