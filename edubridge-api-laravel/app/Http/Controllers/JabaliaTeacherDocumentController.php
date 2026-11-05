@@ -45,7 +45,7 @@ class JabaliaTeacherDocumentController extends Controller
         ]);
         $id = DB::table('jabalia_teacher_documents')->insertGetId([
             'organization_id' => $org->id, 'school_id' => $school, 'teacher_id' => $teacher,
-            ...$data, 'recorded_by' => $request->user()?->id,
+            ...$data, 'recorded_by' => $request->attributes->get('jwt_user')?->id ?? $request->user()?->id,
             'created_at' => now(), 'updated_at' => now(),
         ]);
         return response()->json(['document' => DB::table('jabalia_teacher_documents')->where('id', $id)->first()], 201);
@@ -76,6 +76,9 @@ class JabaliaTeacherDocumentController extends Controller
                     ->where('organization_id', $org->id)->where('school_id', $school)
                     ->where('teacher_id', $teacher)->lockForUpdate()->first();
                 if (!$current) return false;
+                // A signed contract copy is an immutable legal record once attached.
+                // A renewal or correction creates a NEW contract record, retaining this copy.
+                if ($current->type === 'contract' && $current->storage_path) return 'contract_locked';
                 DB::table('jabalia_teacher_documents')->where('id', $document)
                     ->where('organization_id', $org->id)->where('school_id', $school)
                     ->where('teacher_id', $teacher)->update([
@@ -94,6 +97,10 @@ class JabaliaTeacherDocumentController extends Controller
         if ($previousPath === false) {
             Storage::disk('local')->delete($path);
             return response()->json(['error' => 'السجل غير موجود'], 404);
+        }
+        if ($previousPath === 'contract_locked') {
+            Storage::disk('local')->delete($path);
+            return response()->json(['error' => 'نسخة العقد المرفوعة محفوظة؛ أضف سجل عقد جديد للتجديد أو التصحيح'], 409);
         }
         if ($previousPath && $previousPath !== $path) Storage::disk('local')->delete($previousPath);
         return response()->json(['uploaded' => true]);
@@ -123,12 +130,16 @@ class JabaliaTeacherDocumentController extends Controller
                 ->where('organization_id', $org->id)->where('school_id', $school)
                 ->where('teacher_id', $teacher)->lockForUpdate()->first();
             if (!$row) return false;
+            if ($row->type === 'contract' && $row->storage_path) return 'contract_locked';
             DB::table('jabalia_teacher_documents')->where('id', $document)
                 ->where('organization_id', $org->id)->where('school_id', $school)
                 ->where('teacher_id', $teacher)->delete();
             return $row->storage_path;
         });
         if ($previousPath === false) return response()->json(['error' => 'السجل غير موجود'], 404);
+        if ($previousPath === 'contract_locked') {
+            return response()->json(['error' => 'يُمنع حذف نسخة العقد الموقعة؛ أضف سجل عقد جديد بدلًا من الاستبدال'], 409);
+        }
         if ($previousPath) Storage::disk('local')->delete($previousPath);
         return response()->json(['removed' => true]);
     }
