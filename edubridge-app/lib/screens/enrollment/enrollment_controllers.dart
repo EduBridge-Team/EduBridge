@@ -16,6 +16,7 @@ class SchoolEnrollmentController
         request.status != EnrollmentStatus.pending) {
       return;
     }
+    if (decision.approve && snapshot!.requiresCounselorReview) return;
     if (decision.approve
         ? !snapshot!.sections.any((s) => s.id == decision.sectionId)
         : decision.reason.trim().isEmpty) {

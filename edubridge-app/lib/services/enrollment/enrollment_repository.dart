@@ -76,10 +76,17 @@ class SchoolEnrollmentRepository implements SchoolEnrollmentGateway {
       if (sections.map((s) => s.id).toSet().length != sections.length) {
         throw const FormatException('Duplicate sections');
       }
+      // A missing flag preserves backward compatibility with older APIs.
+      // Any non-boolean value is malformed, never silently treated as approval.
+      final rawReview = results[0]['requires_counselor_review'];
+      if (rawReview != null && rawReview is! bool) {
+        throw const FormatException('Invalid counselor review flag');
+      }
       return SchoolEnrollmentInbox(
         identity: identity,
         requests: requests,
         sections: sections,
+        requiresCounselorReview: rawReview == true,
       );
     });
   }
