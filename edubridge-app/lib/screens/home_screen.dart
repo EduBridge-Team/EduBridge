@@ -15,7 +15,10 @@ import 'lessons_screen.dart';
 part 'home_screen_view.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.schoolManagementPage});
+
+  /// Shown only for a verified school director assignment.
+  final Widget Function()? schoolManagementPage;
 
   static Map<String, String> _roleNames(BuildContext context) => {
     'parent': context.l10n.parentRole,
@@ -52,6 +55,7 @@ class _MenuTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const _MenuTile({
+    super.key,
     required this.icon,
     required this.tint,
     required this.title,
