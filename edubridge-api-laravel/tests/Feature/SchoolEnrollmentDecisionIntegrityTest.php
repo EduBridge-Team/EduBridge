@@ -14,7 +14,9 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Schema::create('organizations', fn (Blueprint $t) => $this->idActive($t));
+        Schema::create('organizations', function (Blueprint $t) {
+            $this->idActive($t); $t->string('slug')->nullable();
+        });
         Schema::create('schools', function (Blueprint $t) {
             $this->idActive($t); $t->string('name'); $t->unsignedBigInteger('organization_id')->nullable();
         });
@@ -100,8 +102,7 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
     public function test_jabalia_approval_is_blocked_until_separate_counselor_review_is_implemented(): void
     {
         DB::table('organizations')->insert(['id' => 1, 'is_active' => true]);
-        // Isolate the Jabalia slug in this otherwise generic enrollment fixture.
-        Schema::table('organizations', fn (Blueprint $t) => $t->string('slug')->nullable());
+        // Exercise the fail-closed policy on a school belonging to Jabalia.
         DB::table('organizations')->where('id', 1)->update(['slug' => 'jabalia']);
         DB::table('schools')->where('id', 1)->update(['organization_id' => 1]);
 
