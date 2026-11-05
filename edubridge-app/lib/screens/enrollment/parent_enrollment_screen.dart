@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../../theme.dart';
 import 'school_history_screen.dart';
-import 'guardian_transfer_panel.dart';
 import '../../model/enrollment/enrollment_models.dart';
 import '../../services/enrollment/enrollment_repository.dart';
 import 'enrollment_controllers.dart';
@@ -166,28 +165,28 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                             Text(
                               '${l10n.enrollmentActive}: ${data.activeEnrollment!.schoolName}',
                             ),
-                          if (!data.canRequest)
-                            Text(l10n.enrollmentPendingNotice),
                           TextField(
                             key: const ValueKey('enrollment-school-query'),
                             controller: _query,
                             textAlign: TextAlign.center,
                             enabled: !_controller.busy,
                             maxLength: 100,
+                            textInputAction: TextInputAction.search,
                             onChanged: (_) => _controller.clearSearch(),
                             onSubmitted: _controller.search,
                             decoration: InputDecoration(
                               labelText: l10n.enrollmentSearch,
                               hintText: l10n.enrollmentSearchHint,
                               border: const OutlineInputBorder(),
+                              prefixIcon: IconButton(
+                                key: const ValueKey('enrollment-school-search'),
+                                tooltip: l10n.enrollmentSearchAction,
+                                onPressed: _controller.busy
+                                    ? null
+                                    : () => _controller.search(_query.text),
+                                icon: const Icon(Icons.search),
+                              ),
                             ),
-                          ),
-                          FilledButton(
-                            key: const ValueKey('enrollment-school-search'),
-                            onPressed: _controller.busy
-                                ? null
-                                : () => _controller.search(_query.text),
-                            child: Text(l10n.enrollmentSearchAction),
                           ),
                           if (_controller.searching)
                             const LinearProgressIndicator(),
@@ -227,8 +226,6 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                                 ),
                               ),
                             ),
-                          const SizedBox(height: 16),
-                          GuardianTransferPanel(key: ValueKey('guardian-transfer-${widget.childId}'), childId: widget.childId),
                           const SizedBox(height: 16),
                           Text(
                             l10n.enrollmentHistory,

@@ -43,6 +43,7 @@ void main() {
         await tester.pumpWidget(curriculumHost(SchoolDirectorAppointmentScreen(gateway: gateway), language));
         await tester.pumpAndSettle();
         expect(find.byType(BrandAppBar), findsOneWidget);
+        expect(find.byKey(const ValueKey('director-profile-documents')), findsOneWidget);
         expect(find.byType(TextFormField), findsNothing);
         expect(find.byType(FilledButton), findsOneWidget);
         expect(

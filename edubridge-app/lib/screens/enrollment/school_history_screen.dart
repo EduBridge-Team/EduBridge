@@ -6,6 +6,7 @@ import '../../services/enrollment/school_history_repository.dart';
 import '../../theme.dart';
 import 'enrollment_labels.dart';
 import 'enrollment_state.dart';
+import 'guardian_transfer_panel.dart';
 
 class SchoolHistoryScreen extends StatefulWidget {
   const SchoolHistoryScreen({
@@ -69,6 +70,12 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(l10n.schoolHistoryHint),
+                const SizedBox(height: 16),
+                GuardianTransferPanel(
+                  key: ValueKey('guardian-transfer-${widget.childId}'),
+                  childId: widget.childId,
+                ),
+                const SizedBox(height: 16),
                 if (_state.loading) const LinearProgressIndicator(),
                 if (_state.error != null)
                   Semantics(
