@@ -69,7 +69,6 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                Text(l10n.schoolHistoryHint),
                 const SizedBox(height: 16),
                 GuardianTransferPanel(
                   key: ValueKey('guardian-transfer-${widget.childId}'),
@@ -77,7 +76,8 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (_state.loading) const LinearProgressIndicator(),
-                if (_state.error != null)
+                if (_state.error != null &&
+                    _state.error != EnrollmentFailure.unavailable)
                   Semantics(
                     liveRegion: true,
                     child: Text(enrollmentFailureMessage(l10n, _state.error!)),
