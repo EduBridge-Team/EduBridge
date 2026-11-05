@@ -27,6 +27,19 @@ class SchoolEnrollmentInboxController extends Controller
                 'r.reason', 'r.created_at')
             ->orderBy('r.created_at')->orderBy('r.id')->limit(200)->get();
 
-        return response()->json(['school_id' => $schoolId, 'requests' => $requests]);
+        // Return a server-derived workflow flag. Jabalia's generic approval route
+        // deliberately refuses final approval until counselor clearance exists;
+        // the UI must never imply the generic action will complete enrollment.
+        $requiresCounselorReview = DB::table('schools as s')
+            ->join('organizations as o', 'o.id', '=', 's.organization_id')
+            ->where('s.id', $schoolId)
+            ->where('o.slug', 'jabalia')
+            ->exists();
+
+        return response()->json([
+            'school_id' => $schoolId,
+            'requests' => $requests,
+            'requires_counselor_review' => $requiresCounselorReview,
+        ]);
     }
 }
