@@ -27,6 +27,16 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
             $t->string('storage_path')->nullable(); $t->string('original_filename')->nullable();
             $t->timestamps();
         });
+        Schema::create('jabalia_teacher_document_access_events', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('organization_id');
+            $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('teacher_id');
+            $t->unsignedBigInteger('document_id')->nullable();
+            $t->string('action');
+            $t->unsignedBigInteger('actor_id')->nullable();
+            $t->timestamp('created_at');
+        });
         DB::table('schools')->insert([['id' => 1, 'organization_id' => 1], ['id' => 2, 'organization_id' => 2]]);
         DB::table('organization_user')->insert([['organization_id' => 1, 'user_id' => 11, 'role' => 'teacher'],
             ['organization_id' => 2, 'user_id' => 22, 'role' => 'teacher']]);
@@ -37,7 +47,7 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['jabalia_teacher_documents', 'organization_user', 'schools'] as $table) Schema::dropIfExists($table);
+        foreach (['jabalia_teacher_document_access_events', 'jabalia_teacher_documents', 'organization_user', 'schools'] as $table) Schema::dropIfExists($table);
         parent::tearDown();
     }
 
@@ -189,4 +199,58 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         $this->assertSame(404, $response->status());
         $this->assertDatabaseHas('jabalia_teacher_documents', ['id' => 1]);
     }
+
+    public function test_private_download_creates_a_scoped_audit_event_without_file_path(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $path = 'jabalia-teacher-documents/private-test.pdf';
+        \Illuminate\Support\Facades\Storage::disk('local')->put($path, "%PDF-1.4\n%%EOF");
+        DB::table('jabalia_teacher_documents')->where('id', 1)->update([
+            'storage_path' => $path, 'original_filename' => 'private-test.pdf',
+        ]);
+
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $result = $controller->download($this->request(1, 'jabalia'), 'jabalia', 1, 11, 1);
+        $this->assertSame(200, $result->getStatusCode());
+        $this->assertDatabaseHas('jabalia_teacher_document_access_events', [
+            'organization_id' => 1, 'school_id' => 1, 'teacher_id' => 11,
+            'document_id' => 1, 'action' => 'download_issued', 'actor_id' => 99,
+        ]);
+        $events = $controller->accessEvents($this->request(1, 'jabalia'), 'jabalia', 1, 11)
+            ->getData(true)['events']['data'];
+        $this->assertCount(2, $events);
+        $this->assertSame('audit_viewed', $events[0]['action']);
+        $this->assertArrayNotHasKey('storage_path', $events[1]);
+        $this->assertArrayNotHasKey('original_filename', $events[1]);
+    }
+
+    public function test_document_listing_is_audited_and_denied_roles_are_not_logged_as_success(): void
+    {
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $this->assertSame(200, $controller->index(
+            $this->request(1, 'jabalia'), 'jabalia', 1, 11
+        )->status());
+        $this->assertDatabaseHas('jabalia_teacher_document_access_events', [
+            'action' => 'listed', 'document_id' => null, 'actor_id' => 99,
+        ]);
+
+        $wrongRole = $this->request(1, 'jabalia');
+        $wrongRole->attributes->set('jwt_user', (object)['id' => 100, 'role' => 'parent']);
+        $this->assertSame(404, $controller->index($wrongRole, 'jabalia', 1, 11)->status());
+        $this->assertSame(404, $controller->accessEvents($wrongRole, 'jabalia', 1, 11)->status());
+        $this->assertSame(404, $controller->accessEvents(
+            $this->request(2, 'other'), 'other', 1, 11
+        )->status());
+        $this->assertSame(1, DB::table('jabalia_teacher_document_access_events')->count());
+    }
+
+    public function test_missing_file_is_not_recorded_as_issued_download(): void
+    {
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $this->assertSame(404, $controller->download(
+            $this->request(1, 'jabalia'), 'jabalia', 1, 11, 1
+        )->status());
+        $this->assertSame(0, DB::table('jabalia_teacher_document_access_events')->count());
+    }
+
 }
