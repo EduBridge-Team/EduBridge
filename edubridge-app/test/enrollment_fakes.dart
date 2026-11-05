@@ -56,6 +56,7 @@ Map<String, dynamic> activeEnrollmentJson() => {
 class FakeSchoolEnrollment implements SchoolEnrollmentGateway {
   List<EnrollmentRequest> requests = [enrollmentRequest()];
   List<EnrollmentSection> sections = [enrollmentSection];
+  bool requiresCounselorReview = false;
   EnrollmentFailure? loadFailure;
   EnrollmentFailure? writeFailure;
   bool failRefresh = false;
@@ -76,6 +77,7 @@ class FakeSchoolEnrollment implements SchoolEnrollmentGateway {
       ),
       requests: requests,
       sections: sections,
+      requiresCounselorReview: requiresCounselorReview,
     );
   }
 

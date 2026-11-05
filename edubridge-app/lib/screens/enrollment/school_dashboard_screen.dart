@@ -69,7 +69,8 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
 
   Future<void> _decide(EnrollmentRequest request, bool approve) async {
     final controller = _controller, expected = _controller.snapshot;
-    if (!controller.canWrite || expected == null) return;
+    if (!controller.canWrite || expected == null ||
+        (approve && expected.requiresCounselorReview)) return;
     final decision = await showDialog<EnrollmentDecision>(
       context: context,
       builder: (_) => SchoolEnrollmentDecisionDialog(
@@ -214,6 +215,19 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
                     l10n.enrollmentRequests,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
+                  if (data.requiresCounselorReview)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          Localizations.localeOf(context).languageCode == 'en'
+                            ? 'Jabalia approvals require counselor review and school administration sign-off. Uploaded files alone do not approve enrollment.'
+                            : 'اعتماد تسجيل طلبة جباليا يتطلب مراجعة المرشد وموافقة إدارة المدرسة. رفع المرفقات وحده لا يعني القبول.',
+                          key: const ValueKey('jabalia-counselor-review-notice'),
+                        ),
+                      ),
+                    ),
                   if (data.requests.isEmpty) Text(l10n.enrollmentNoRequests),
                   if (data.sections.isEmpty) Text(l10n.enrollmentNoSections),
                   for (final request in data.requests)
@@ -221,7 +235,7 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen>
                       request: request,
                       actions: [
                         if (request.status == EnrollmentStatus.pending) ...[
-                          FilledButton(
+                          if (!data.requiresCounselorReview) FilledButton(
                             key: ValueKey('enrollment-approve-${request.id}'),
                             onPressed:
                                 _controller.canWrite && data.sections.isNotEmpty
