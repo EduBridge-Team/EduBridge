@@ -133,6 +133,10 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::get('/parent/children/{child}/enrollment-requests/{enrollmentRequest}/jabalia-documents/{document}/file',
         [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'parentDownload'])
         ->whereNumber('child')->whereNumber('enrollmentRequest')->whereNumber('document')->middleware(['role:parent', 'throttle:30,1']);
+    // Only the same authorized director/enrollment deputy may inspect confidential access events.
+    Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-document-access-events',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolAccessEvents'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
     Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-documents',
         [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolIndex'])
         ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
