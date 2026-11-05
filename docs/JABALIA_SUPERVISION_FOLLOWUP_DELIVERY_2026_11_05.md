@@ -18,3 +18,7 @@ This batch adds an operational **pilot log**, not the association's signed super
 - Remaining V2 gaps: counselor-controlled admissions, medical document private volume activation, contract lifecycle, success-story reports, Noor/PSL approval and signed institutional acceptance.
 
 Reference: docs/JABALIA_V2_UNIFIED_REQUIREMENTS_AR.md. No changes to production were performed by this PR.
+
+## Follow-up note isolation — 6 November 2026
+
+The React panel now holds a separate editable note for each visit ID, displays the note field beside that visit, and clears only that visit's note after a successful transition. Switching schools clears drafts to prevent accidental cross-school submission. Server-side expected-status locking and append-only audit remain unchanged. A regression check protects this UI invariant. This is **not** acceptance of the association's official visit form or live production testing.
