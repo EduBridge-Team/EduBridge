@@ -30,6 +30,11 @@ class InstitutionTimetableAttendanceTest extends TestCase
         Schema::create('notifications', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title')->nullable(); $t->string('message'); $t->string('type')->nullable(); $t->boolean('is_read')->default(false); $t->timestamp('created_at')->nullable(); });
         Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id')->nullable(); $t->unsignedBigInteger('teacher_id')->nullable(); $t->date('attendance_date'); $t->unsignedTinyInteger('period_number')->nullable(); $t->string('status')->default('open'); $t->text('notes')->nullable(); $t->timestamps(); });
         Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); $t->text('note')->nullable(); $t->unsignedBigInteger('marked_by')->nullable(); $t->timestamp('marked_at')->nullable(); $t->timestamps(); });
+        Schema::create('jabalia_school_closure_days', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('organization_id');
+            $t->unsignedBigInteger('school_id'); $t->date('closed_on');
+            $t->string('reason'); $t->timestamps();
+        });
         Schema::create('teacher_assignments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id'); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('academic_year_id'); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedTinyInteger('weekday'); $t->unsignedTinyInteger('period_number'); $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable(); $t->string('room')->nullable(); $t->timestamps(); });
 
@@ -49,7 +54,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
+        foreach (['jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -115,6 +120,48 @@ class InstitutionTimetableAttendanceTest extends TestCase
             'records'=>[['child_id'=>1,'status'=>'absent']],
         ]),'jabalia',1,$lastSession)->getStatusCode());
         $this->assertSame(1, DB::table('notifications')->where('type','school_attendance_consecutive')->count());
+    }
+
+    public function test_recorded_school_closure_does_not_break_four_open_day_absence_streak(): void
+    {
+        // The association's Tuesday closure is configured, not inferred.
+        DB::table('jabalia_school_closure_days')->insert([
+            'organization_id' => 1, 'school_id' => 1,
+            'closed_on' => '2026-10-06', 'reason' => 'Confirmed closure',
+        ]);
+        $controller = app(InstitutionAttendanceController::class);
+        foreach (['2026-10-04', '2026-10-05', '2026-10-07', '2026-10-08'] as $index => $date) {
+            $sessionId = DB::table('attendance_sessions')->insertGetId([
+                'section_id' => 1, 'attendance_date' => $date,
+                'period_number' => null, 'status' => 'open',
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+            DB::table('attendance_records')->insert([
+                'attendance_session_id' => $sessionId, 'child_id' => 1,
+                'status' => 'present', 'created_at' => now(), 'updated_at' => now(),
+            ]);
+            $this->assertSame(200, $controller->mark($this->tenantRequest([
+                'records' => [['child_id' => 1, 'status' => 'absent']],
+            ]), 'jabalia', 1, $sessionId)->status());
+            $this->assertSame($index === 3 ? 1 : 0,
+                DB::table('notifications')->where('type', 'school_attendance_consecutive')->count());
+        }
+    }
+
+    public function test_closed_day_rejects_attendance_session_without_adding_child_records(): void
+    {
+        DB::table('jabalia_school_closure_days')->insert([
+            'organization_id' => 1, 'school_id' => 1,
+            'closed_on' => '2026-11-12', 'reason' => 'Approved closure',
+        ]);
+        $response = app(InstitutionAttendanceController::class)->store(
+            $this->tenantRequest([
+                'section_id' => 1, 'attendance_date' => '2026-11-12',
+            ]), 'jabalia', 1
+        );
+        $this->assertSame(409, $response->status());
+        $this->assertSame(0, DB::table('attendance_sessions')->count());
+        $this->assertSame(0, DB::table('attendance_records')->count());
     }
 
     public function test_missing_daily_roll_breaks_absence_streak(): void

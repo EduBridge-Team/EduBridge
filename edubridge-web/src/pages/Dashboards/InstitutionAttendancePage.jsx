@@ -5,6 +5,7 @@ import {
   fetchInstitutionAttendance, fetchInstitutionAttendanceReport,
   fetchInstitutionAttendanceSession, fetchInstitutionSchools, markInstitutionAttendance,
 } from '../../api'
+import { fetchJabaliaSchoolClosureDays, createJabaliaSchoolClosureDay, deleteJabaliaSchoolClosureDay } from '../../api/institutions'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -33,6 +34,14 @@ export default function InstitutionAttendancePage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [closureDays, setClosureDays] = useState([])
+  const [closureEvents, setClosureEvents] = useState([])
+  const [closureDate, setClosureDate] = useState(TODAY)
+  const [closureReason, setClosureReason] = useState('')
+  const [closureLoading, setClosureLoading] = useState(false)
+  const [closureSaving, setClosureSaving] = useState(false)
+  const [closureError, setClosureError] = useState('')
+  const [closureMessage, setClosureMessage] = useState('')
 
   useEffect(() => {
     if (!slug) return
@@ -64,6 +73,63 @@ export default function InstitutionAttendancePage() {
     return () => { active = false }
   }, [slug, schoolId])
 
+
+  useEffect(() => {
+    if (slug !== 'jabalia' || !schoolId) {
+      setClosureDays([])
+      setClosureEvents([])
+      setClosureError('')
+      return
+    }
+    let active = true
+    setClosureDays([])
+    setClosureEvents([])
+    setClosureLoading(true)
+    setClosureError('')
+    fetchJabaliaSchoolClosureDays(slug, schoolId)
+      .then((data) => {
+        if (!active) return
+        setClosureDays(data.days || [])
+        setClosureEvents(data.recent_changes || [])
+      })
+      .catch((error) => { if (active) setClosureError(error.message) })
+      .finally(() => { if (active) setClosureLoading(false) })
+    return () => { active = false }
+  }, [slug, schoolId])
+
+  async function refreshClosureDays() {
+    const data = await fetchJabaliaSchoolClosureDays(slug, schoolId)
+    setClosureDays(data.days || [])
+    setClosureEvents(data.recent_changes || [])
+  }
+
+  async function addClosureDay(event) {
+    event.preventDefault()
+    if (closureSaving || !closureDate || !closureReason.trim() || slug !== 'jabalia') return
+    setClosureSaving(true); setClosureError(''); setClosureMessage('')
+    try {
+      await createJabaliaSchoolClosureDay(slug, schoolId, {
+        closed_on: closureDate, reason: closureReason.trim(),
+      })
+      await refreshClosureDays()
+      setClosureReason('')
+      setClosureMessage('تم تسجيل يوم الإغلاق، ولن يُحتسب ضمن أيام الغياب المتصل.')
+    } catch (error) { setClosureError(error.message) }
+    finally { setClosureSaving(false) }
+  }
+
+  async function removeClosureDay(item) {
+    if (closureSaving || slug !== 'jabalia') return
+    if (!window.confirm('إلغاء إغلاق يوم ' + item.closed_on + '؟ يُمنع ذلك إذا سُجل حضور في هذا اليوم.')) return
+    setClosureSaving(true); setClosureError(''); setClosureMessage('')
+    try {
+      await deleteJabaliaSchoolClosureDay(slug, schoolId, item.id)
+      await refreshClosureDays()
+      setClosureMessage('أُلغي الإغلاق وسُجّل الإجراء في سجل التعديلات.')
+    } catch (error) { setClosureError(error.message) }
+    finally { setClosureSaving(false) }
+  }
+
   async function refreshSessions() {
     const data = await fetchInstitutionAttendance(slug, schoolId)
     setSessions(data.attendance_sessions || [])
@@ -84,6 +150,10 @@ export default function InstitutionAttendancePage() {
   async function createSession(e) {
     e.preventDefault()
     if (!sectionId || saving) return
+    if (slug === 'jabalia' && closureDays.some((item) => item.closed_on === date)) {
+      setError('هذا اليوم مغلق في تقويم المدرسة ولا يُسمح بإنشاء سجل حضور.')
+      return
+    }
     setSaving(true); setError(''); setMessage('')
     try {
       const data = await createInstitutionAttendanceSession(slug, schoolId, {
@@ -149,6 +219,43 @@ export default function InstitutionAttendancePage() {
         {loading && <div className="state">جارِ التحميل…</div>}
       </section>
       {!!schoolId && <>
+
+        {slug === 'jabalia' && <section className="institution-panel">
+          <h2>تقويم الإغلاق المدرسي</h2>
+          <p>أضف أيام العطل والإغلاقات المؤكدة للمدرسة. تُستثنى من حساب أربعة أيام الغياب المتصلة، ولا يمكن إنشاء حضور في يوم مغلق أو إغلاق يوم لديه سجلات حضور.</p>
+          {closureError && <p className="state error" role="alert">{closureError}</p>}
+          {closureMessage && <p className="state success" role="status">{closureMessage}</p>}
+          {closureLoading && <p role="status">جارِ تحميل تقويم المدرسة…</p>}
+          <form className="institution-school-form" onSubmit={addClosureDay}>
+            <label>يوم الإغلاق
+              <input type="date" required value={closureDate} onChange={(e) => setClosureDate(e.target.value)} />
+            </label>
+            <label>سبب الإغلاق المعتمد
+              <input required minLength={3} maxLength={250} value={closureReason}
+                onChange={(e) => setClosureReason(e.target.value)} />
+            </label>
+            <button className="btn" type="submit"
+              disabled={closureSaving || closureLoading || !closureDate || closureReason.trim().length < 3}>
+              {closureSaving ? 'جارِ الحفظ…' : 'تسجيل يوم إغلاق'}
+            </button>
+          </form>
+          {closureDays.length === 0 && !closureLoading
+            ? <p>لا توجد أيام إغلاق مسجلة لهذه المدرسة.</p>
+            : <ul>{closureDays.map((item) => <li key={item.id}>
+                <b>{item.closed_on}</b> — {item.reason}
+                <button className="btn outline" type="button"
+                  disabled={closureSaving} onClick={() => removeClosureDay(item)}>
+                  إلغاء الإغلاق
+                </button>
+              </li>)}</ul>}
+          {closureEvents.length > 0 && <details>
+            <summary>سجل تعديلات تقويم المدرسة</summary>
+            <ul>{closureEvents.map((entry) => <li key={entry.id}>
+              {entry.closed_on} — {entry.action === 'created' ? 'إغلاق' : 'إلغاء إغلاق'}
+              {entry.actor_id ? ' — بواسطة المستخدم ' + entry.actor_id : ''}
+            </li>)}</ul>
+          </details>}
+        </section>}
         <section className="institution-panel">
           <h2>إنشاء سجل حضور</h2>
           <p>تُنشأ السجلات للطلاب المسجلين فعليًا في الشعبة. الحالة الأولية حاضر ويمكن تعديلها قبل الحفظ.</p>

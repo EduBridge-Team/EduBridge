@@ -66,6 +66,9 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
         Route::get('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'index'])->whereNumber('school');
         Route::put('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'update'])->whereNumber('school');
+        Route::get('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'index'])->whereNumber('school');
+        Route::post('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
+        Route::delete('/schools/{school}/closure-days/{closure}', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'destroy'])->whereNumber('school')->whereNumber('closure');
         Route::get('/schools/{school}/timetable-settings', [\App\Http\Controllers\JabaliaTimetableSettingsController::class, 'show'])->whereNumber('school');
         Route::put('/schools/{school}/timetable-settings', [\App\Http\Controllers\JabaliaTimetableSettingsController::class, 'update'])->whereNumber('school');
         Route::get('/schools/{school}/participants', [InstitutionParticipantController::class, 'index'])->whereNumber('school');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class InstitutionAttendanceController extends Controller
@@ -126,51 +127,63 @@ class InstitutionAttendanceController extends Controller
             return response()->json(['error' => 'المادة لا تتبع هذه المدرسة'], 422);
         }
 
-        $duplicate = DB::table('attendance_sessions')
-            ->where('section_id', $data['section_id'])
-            ->where('attendance_date', $data['attendance_date'])
-            ->where('period_number', $data['period_number'] ?? null)
-            ->exists();
+        return DB::transaction(function () use ($request, $school, $data) {
+            // Serialize calendar edits and attendance writes on the same school row.
+            DB::table('schools')->where('id', $school)->lockForUpdate()->first();
 
-        if ($duplicate) {
-            return response()->json(['error' => 'جلسة الحضور لهذه الحصة موجودة مسبقاً'], 409);
-        }
+            if (($request->attributes->get('organization')->slug ?? null) === 'jabalia'
+                && Schema::hasTable('jabalia_school_closure_days')
+                && DB::table('jabalia_school_closure_days')->where('school_id', $school)
+                    ->whereDate('closed_on', $data['attendance_date'])->exists()) {
+                return response()->json(['error' => 'لا يمكن إنشاء سجل حضور في يوم إغلاق معتمد'], 409);
+            }
 
-        $id = DB::table('attendance_sessions')->insertGetId([
-            'section_id' => $data['section_id'],
-            'subject_id' => $data['subject_id'] ?? null,
-            'teacher_id' => $data['teacher_id'] ?? null,
-            'attendance_date' => $data['attendance_date'],
-            'period_number' => $data['period_number'] ?? null,
-            'status' => 'open',
-            'notes' => $data['notes'] ?? null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            $duplicate = DB::table('attendance_sessions')
+                ->where('section_id', $data['section_id'])
+                ->where('attendance_date', $data['attendance_date'])
+                ->where('period_number', $data['period_number'] ?? null)
+                ->exists();
 
-        $organization = $request->attributes->get('organization');
-        $students = DB::table('student_enrollments as e')
-            ->join('children as c', 'c.id', '=', 'e.child_id')
-            ->where('c.organization_id', $organization->id)
-            ->where('e.section_id', $data['section_id'])
-            ->where('e.status', 'active')
-            ->pluck('e.child_id');
+            if ($duplicate) {
+                return response()->json(['error' => 'جلسة الحضور لهذه الحصة موجودة مسبقاً'], 409);
+            }
 
-        if ($students->isNotEmpty()) {
-            $rows = $students->map(fn ($childId) => [
-                'attendance_session_id' => $id,
-                'child_id' => $childId,
-                'status' => 'present',
+            $id = DB::table('attendance_sessions')->insertGetId([
+                'section_id' => $data['section_id'],
+                'subject_id' => $data['subject_id'] ?? null,
+                'teacher_id' => $data['teacher_id'] ?? null,
+                'attendance_date' => $data['attendance_date'],
+                'period_number' => $data['period_number'] ?? null,
+                'status' => 'open',
+                'notes' => $data['notes'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ])->all();
-            DB::table('attendance_records')->insert($rows);
-        }
+            ]);
 
-        return response()->json([
-            'attendance_session' => DB::table('attendance_sessions')->find($id),
-            'students_initialized' => $students->count(),
-        ], 201);
+            $organization = $request->attributes->get('organization');
+            $students = DB::table('student_enrollments as e')
+                ->join('children as c', 'c.id', '=', 'e.child_id')
+                ->where('c.organization_id', $organization->id)
+                ->where('e.section_id', $data['section_id'])
+                ->where('e.status', 'active')
+                ->pluck('e.child_id');
+
+            if ($students->isNotEmpty()) {
+                $rows = $students->map(fn ($childId) => [
+                    'attendance_session_id' => $id,
+                    'child_id' => $childId,
+                    'status' => 'present',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])->all();
+                DB::table('attendance_records')->insert($rows);
+            }
+
+            return response()->json([
+                'attendance_session' => DB::table('attendance_sessions')->find($id),
+                'students_initialized' => $students->count(),
+            ], 201);
+        });
     }
 
     public function show(Request $request, string $organizationSlug, int $school, int $attendanceSession): JsonResponse
@@ -291,15 +304,36 @@ class InstitutionAttendanceController extends Controller
             ->where('s.id', $session->section_id)->value('g.school_id');
         $weekdays = JabaliaTimetableSettingsController::forSchool((int) $school)['weekdays'];
         $day = \Carbon\CarbonImmutable::parse($session->attendance_date);
+        $closedDays = [];
+        if (Schema::hasTable('jabalia_school_closure_days')) {
+            $closedDays = array_fill_keys(
+                DB::table('jabalia_school_closure_days')->where('school_id', (int) $school)
+                    ->whereDate('closed_on', '>=', $day->subDays(370)->toDateString())
+                    ->whereDate('closed_on', '<=', $day->toDateString())
+                    ->pluck('closed_on')
+                    ->map(fn ($date) => substr((string) $date, 0, 10))
+                    ->all(),
+                true
+            );
+        }
+        // Never alert for an absence recorded on a recognized closure day.
+        if (isset($closedDays[$day->toDateString()])) return;
         $count = 0;
-        // Only registered school days count; a missing daily roll breaks the streak.
-        while ($count < 4) {
-            if (in_array($day->dayOfWeekIso, $weekdays, true)) {
-                if (($perDay[$day->toDateString()] ?? null) !== 'absent') return;
+        $examinedDays = 0;
+        // Closed days and weekly rest days are not school days.
+        // A missing roll on an OPEN working day still breaks the streak.
+        while ($count < 4 && $examinedDays < 370) {
+            $date = $day->toDateString();
+            if (in_array($day->dayOfWeekIso, $weekdays, true)
+                && !isset($closedDays[$date])) {
+                if (($perDay[$date] ?? null) !== 'absent') return;
                 $count++;
             }
             $day = $day->subDay();
+            $examinedDays++;
         }
+        // Fail closed for unusually long school closures or missing history.
+        if ($count !== 4) return;
         $childName = DB::table('children')->where('id', $childId)->value('name') ?? 'الطالب';
         $message = "تجاوز {$childName} ثلاثة أيام غياب دراسي متتالية حتى {$session->attendance_date}";
         foreach (DB::table('child_parent')->where('child_id', $childId)->pluck('parent_id') as $parentId) {
