@@ -43,6 +43,13 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
             $t->unsignedBigInteger('file_size'); $t->unsignedBigInteger('uploaded_by');
             $t->timestamps();
         });
+        Schema::create('jabalia_admission_evidence_access_events', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('enrollment_request_id');
+            $t->unsignedBigInteger('document_id')->nullable();
+            $t->string('action'); $t->unsignedBigInteger('actor_id')->nullable();
+            $t->string('actor_role'); $t->timestamp('created_at');
+        });
         DB::table('organizations')->insert([
             ['id' => 1, 'slug' => 'jabalia', 'is_active' => true],
             ['id' => 2, 'slug' => 'other', 'is_active' => true],
@@ -70,7 +77,7 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['jabalia_admission_documents', 'school_enrollment_requests',
+        foreach (['jabalia_admission_evidence_access_events', 'jabalia_admission_documents', 'school_enrollment_requests',
             'school_management_assignments', 'child_parent', 'children',
             'schools', 'organizations'] as $table) Schema::dropIfExists($table);
         parent::tearDown();
@@ -196,6 +203,86 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
         $response = $controller->store($this->uploadRequest(), 10, 100);
         $this->assertSame(503, $response->status());
         $this->assertDatabaseCount('jabalia_admission_documents', 0);
+    }
+
+
+    public function test_sensitive_admission_evidence_access_events_are_scoped_and_redacted(): void
+    {
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        $uploaded = $controller->store($this->uploadRequest(), 10, 100);
+        $this->assertSame(201, $uploaded->status());
+        $documentId = $uploaded->getData(true)['document']['id'];
+
+        $this->assertSame(200, $controller->parentIndex(
+            $this->actor(40, 'parent'), 10, 100
+        )->status());
+        $this->assertSame(200, $controller->schoolIndex(
+            $this->actor(60, 'teacher'), 100
+        )->status());
+        $this->assertSame(200, $controller->parentDownload(
+            $this->actor(40, 'parent'), 10, 100, $documentId
+        )->getStatusCode());
+        $this->assertSame(200, $controller->schoolDownload(
+            $this->actor(62, 'teacher'), 100, $documentId
+        )->getStatusCode());
+
+        $result = $controller->schoolAccessEvents(
+            $this->actor(60, 'teacher'), 100
+        );
+        $this->assertSame(200, $result->status());
+        $events = $result->getData(true)['events']['data'];
+        $this->assertCount(6, $events);
+        $this->assertSame('audit_viewed', $events[0]['action']);
+        $this->assertSame(2, collect($events)->where('action', 'download_issued')->count());
+        $this->assertSame(1, collect($events)->where('action', 'uploaded')->count());
+        foreach ($events as $entry) {
+            $this->assertArrayNotHasKey('storage_path', $entry);
+            $this->assertArrayNotHasKey('original_filename', $entry);
+            $this->assertArrayNotHasKey('mime_type', $entry);
+            $this->assertArrayNotHasKey('child_id', $entry);
+        }
+        $this->assertDatabaseHas('jabalia_admission_evidence_access_events', [
+            'school_id' => 1, 'child_id' => 10, 'enrollment_request_id' => 100,
+            'document_id' => $documentId, 'action' => 'uploaded',
+            'actor_id' => 40, 'actor_role' => 'parent',
+        ]);
+    }
+
+    public function test_unauthorized_attempts_or_missing_file_never_create_success_audit_events(): void
+    {
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        $this->assertSame(404, $controller->parentIndex(
+            $this->actor(50, 'parent'), 10, 100
+        )->status());
+        $this->assertSame(404, $controller->schoolAccessEvents(
+            $this->actor(61, 'teacher'), 100
+        )->status());
+        $this->assertSame(404, $controller->schoolAccessEvents(
+            $this->actor(70, 'teacher'), 100
+        )->status());
+        $this->assertSame(0, DB::table('jabalia_admission_evidence_access_events')->count());
+
+        $response = $controller->store($this->uploadRequest(), 10, 100);
+        $id = $response->getData(true)['document']['id'];
+        $row = DB::table('jabalia_admission_documents')->where('id', $id)->first();
+        Storage::disk('local')->delete($row->storage_path);
+        $this->assertSame(404, $controller->parentDownload(
+            $this->actor(40, 'parent'), 10, 100, $id
+        )->status());
+        $this->assertSame(1, DB::table('jabalia_admission_evidence_access_events')->count());
+        $this->assertSame('uploaded', DB::table('jabalia_admission_evidence_access_events')->value('action'));
+    }
+
+    public function test_listing_fails_closed_when_access_audit_schema_not_ready(): void
+    {
+        Schema::dropIfExists('jabalia_admission_evidence_access_events');
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        $this->assertSame(503, $controller->parentIndex(
+            $this->actor(40, 'parent'), 10, 100
+        )->status());
+        $this->assertSame(503, $controller->schoolIndex(
+            $this->actor(60, 'teacher'), 100
+        )->status());
     }
 
 }
