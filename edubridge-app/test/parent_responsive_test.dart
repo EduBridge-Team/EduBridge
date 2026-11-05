@@ -56,11 +56,15 @@ void main() {
           expect(find.byType(ParentChildProfileScreen), findsOneWidget);
           expect(find.text('${l10n.schoolAccountName}: Test School'), findsOneWidget);
           expect(find.text(l10n.childAgeYears('7')), findsOneWidget);
-          expect(find.widgetWithText(OutlinedButton, l10n.lessons), findsOneWidget);
-          expect(find.widgetWithText(OutlinedButton, l10n.gameCatalogTitle), findsOneWidget);
-          await tester.scrollUntilVisible(enrollment, 200);
-          expect(enrollment, findsOneWidget);
-          expect(support, findsOneWidget);
+          for (final action in [
+            find.widgetWithText(OutlinedButton, l10n.lessons),
+            find.widgetWithText(OutlinedButton, l10n.gameCatalogTitle),
+            support,
+            enrollment,
+          ]) {
+            await tester.scrollUntilVisible(action, 200);
+            expect(action.hitTestable(), findsOneWidget);
+          }
           expect(tester.takeException(), isNull);
           await tester.runAsync(() async {
             await tester.tap(enrollment);
