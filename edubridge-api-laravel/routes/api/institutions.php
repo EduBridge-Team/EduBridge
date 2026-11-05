@@ -70,6 +70,9 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::get('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'index'])->whereNumber('school');
         Route::post('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::patch('/schools/{school}/supervisor-visits/{visit}', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'updateStatus'])->whereNumber('school')->whereNumber('visit')->middleware('throttle:20,1');
+        // Internal, append-only Jabalia student progress stories. No guardian/public endpoints.
+        Route::get('/schools/{school}/success-stories', [\App\Http\Controllers\JabaliaSuccessStoryController::class, 'index'])->whereNumber('school');
+        Route::post('/schools/{school}/success-stories', [\App\Http\Controllers\JabaliaSuccessStoryController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::get('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'index'])->whereNumber('school');
         Route::post('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::delete('/schools/{school}/closure-days/{closure}', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'destroy'])->whereNumber('school')->whereNumber('closure');
