@@ -102,6 +102,12 @@ class JabaliaAdmissionEvidenceController extends Controller
 
     public function store(Request $request, int $child, int $enrollmentRequest): JsonResponse
     {
+        // This is intentionally disabled in every deployment by default.
+        // An administrator must verify volume persistence, encrypted backup and
+        // authorized processing before any medical/identity file is accepted.
+        if (config('services.jabalia_admissions.upload_enabled') !== true) {
+            return response()->json(['error' => 'Jabalia admission uploads are not activated'], 503);
+        }
         $enrollment = $this->parentRequest($request, $child, $enrollmentRequest, true);
         if (!$enrollment) return response()->json(['error' => 'Pending request not found'], 404);
 

@@ -17,6 +17,7 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
     {
         parent::setUp();
         Storage::fake('local');
+        config()->set('services.jabalia_admissions.upload_enabled', true);
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->string('slug'); $t->boolean('is_active')->default(true);
         });
@@ -172,6 +173,15 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
         $this->assertSame('pending',
             DB::table('school_enrollment_requests')->where('id', 100)->value('status'));
         $this->assertDatabaseCount('jabalia_admission_documents', 5);
+    }
+
+    public function test_upload_disabled_by_default_operational_gate(): void
+    {
+        config()->set('services.jabalia_admissions.upload_enabled', false);
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        $response = $controller->store($this->uploadRequest(), 10, 100);
+        $this->assertSame(503, $response->status());
+        $this->assertDatabaseCount('jabalia_admission_documents', 0);
     }
 
 }

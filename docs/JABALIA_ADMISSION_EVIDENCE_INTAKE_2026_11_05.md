@@ -34,3 +34,7 @@ The Jabalia Docker Compose API service receives the new **`edubridge-jabalia-pri
 ## Additional authorization regression
 
 Tests now also verify immediate deputy revocation, all-five-category completeness without automatic acceptance, and anonymous HTTP denials for each new endpoint. These are code/CI checks; clinical and institutional review remain separate.
+
+## Explicit fail-closed activation gate
+
+The admissions upload endpoint returns HTTP **503** by default and writes no file until the deployment operator explicitly sets `JABALIA_ADMISSION_UPLOADS_ENABLED=true`. The Jabalia Compose service defaults this to `false`, and the sample environment remains disabled. Before enabling, verify the private admissions Docker volume is mounted and persistent; run its backup preflight, approve a medical-data retention and counselor-access policy, and rehearse an isolated restore. This feature flag **does not itself provide counselor approval** or make the overall admission process compliant.

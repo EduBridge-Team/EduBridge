@@ -45,4 +45,9 @@ return [
         'secret' => env('JWT_SECRET'),
     ],
 
+    // Fail closed until Jabalia private admissions volume, backup and review policy are approved.
+    'jabalia_admissions' => [
+        'upload_enabled' => (bool) env('JABALIA_ADMISSION_UPLOADS_ENABLED', false),
+    ],
+
 ];

@@ -34,6 +34,8 @@ services:
       - ../edubridge-api-laravel/.env.jabalia
     environment:
       APP_ENV: production
+      # Sensitive admissions uploads are opt-in after private-volume/backup approval.
+      JABALIA_ADMISSION_UPLOADS_ENABLED: ${JABALIA_ADMISSION_UPLOADS_ENABLED:-false}
       APP_DEBUG: "false"
       APP_URL: https://jabalia.edubridge.win
       GIT_SHA: ${GIT_SHA:-unknown}
