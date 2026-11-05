@@ -342,3 +342,8 @@ export function createJabaliaSuccessStory(slug, schoolId, payload) {
     method: 'POST', body: JSON.stringify(payload),
   })
 }
+
+// Authenticated, organization-scoped audit trail. No binary or storage paths.
+export function fetchJabaliaTeacherDocumentAccessEvents(slug, schoolId, teacherId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/document-access-events?page=${encodeURIComponent(page)}`))
+}
