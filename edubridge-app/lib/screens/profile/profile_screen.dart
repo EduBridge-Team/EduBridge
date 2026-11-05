@@ -20,7 +20,9 @@ part 'profile_widgets.dart';
 part 'profile_specialist_s04.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.inParentTabs = false});
+
+  final bool inParentTabs;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -309,13 +311,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final specialist = _profile?['role'] == 'specialist';
     return Scaffold(
-      bottomNavigationBar: specialist
+      appBar: widget.inParentTabs
+          ? BrandAppBar(title: Text(context.l10n.profile))
+          : null,
+      bottomNavigationBar: widget.inParentTabs
+          ? null
+          : specialist
           ? _s04BottomNavigation(c)
           : const TeacherNavigationBar(),
       body: SafeArea(
         bottom: false,
         child: Column(children: [
-          _s04Header(c),
+          if (!widget.inParentTabs) _s04Header(c),
           Expanded(child: _loading
               ? const Center(child: CircularProgressIndicator())
               : _error != null ? _buildError() : _s04Content(c)),

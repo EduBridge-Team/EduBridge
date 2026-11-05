@@ -13,7 +13,7 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
       toolbarHeight: 116,
       titleSpacing: 4,
       centerTitle: false,
-      leading: IconButton(
+      leading: widget.inParentTabs ? null : IconButton(
         tooltip: context.l10n.back,
         onPressed: () => Navigator.maybePop(context),
         icon: CircleAvatar(
@@ -277,7 +277,8 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9FC),
       appBar: _s15AppBar(),
-      bottomNavigationBar: role == 'specialist' ? _s15Navigation(c)
+      bottomNavigationBar: widget.inParentTabs ? null
+          : role == 'specialist' ? _s15Navigation(c)
           : role == 'teacher' ? const TeacherNavigationBar() : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(

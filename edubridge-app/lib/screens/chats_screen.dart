@@ -17,7 +17,9 @@ part 'chats_screen_s15.dart';
 part 'chats_user_picker_s19.dart';
 
 class ChatsScreen extends StatefulWidget {
-  const ChatsScreen({super.key, this.repository});
+  const ChatsScreen({super.key, this.repository, this.inParentTabs = false});
+
+  final bool inParentTabs;
 
   final ConversationRepository? repository;
 
