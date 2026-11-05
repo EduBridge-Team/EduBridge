@@ -100,15 +100,9 @@ void main() {
             tester.widget<BrandAppBar>(find.byType(BrandAppBar)).centerTitle,
             isNot(true),
           );
-          for (final label in [
-            strings.schoolHistoryHint,
-            strings.enrollmentUnavailable,
-          ]) {
-            expect(
-              tester.renderObject<RenderParagraph>(find.text(label)).textAlign,
-              TextAlign.center,
-            );
-          }
+          expect(find.text(strings.schoolHistoryHint), findsNothing);
+          expect(find.text(strings.enrollmentUnavailable), findsNothing);
+          expect(find.text('عرض طلبات النقل / View transfers'), findsOneWidget);
           expect(tester.takeException(), isNull);
           await tester.pumpWidget(const SizedBox.shrink());
         },

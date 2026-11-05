@@ -165,6 +165,7 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                             Text(
                               '${l10n.enrollmentActive}: ${data.activeEnrollment!.schoolName}',
                             ),
+                          const SizedBox(height: 12),
                           TextField(
                             key: const ValueKey('enrollment-school-query'),
                             controller: _query,
@@ -232,6 +233,7 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                             textAlign: TextAlign.start,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
+                          const SizedBox(height: 12),
                           if (data.requests.isEmpty)
                             Text(l10n.enrollmentNoRequests),
                           for (final request in data.requests)
