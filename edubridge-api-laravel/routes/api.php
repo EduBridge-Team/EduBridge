@@ -123,6 +123,22 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
         ->whereNumber('child')->middleware(['role:parent', 'throttle:60,1']);
     Route::post('/parent/children/{child}/enrollment-requests/{request}/cancel', [\App\Http\Controllers\GuardianEnrollmentCancellationController::class, 'cancel'])
         ->whereNumber('child')->whereNumber('request')->middleware(['role:parent', 'throttle:10,1']);
+    // Confidential, Jabalia-only intake evidence; no admission decision or counselor privilege.
+    Route::get('/parent/children/{child}/enrollment-requests/{enrollmentRequest}/jabalia-documents',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'parentIndex'])
+        ->whereNumber('child')->whereNumber('enrollmentRequest')->middleware(['role:parent', 'throttle:30,1']);
+    Route::post('/parent/children/{child}/enrollment-requests/{enrollmentRequest}/jabalia-documents',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'store'])
+        ->whereNumber('child')->whereNumber('enrollmentRequest')->middleware(['role:parent', 'throttle:10,1']);
+    Route::get('/parent/children/{child}/enrollment-requests/{enrollmentRequest}/jabalia-documents/{document}/file',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'parentDownload'])
+        ->whereNumber('child')->whereNumber('enrollmentRequest')->whereNumber('document')->middleware(['role:parent', 'throttle:30,1']);
+    Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-documents',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolIndex'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
+    Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-documents/{document}/file',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolDownload'])
+        ->whereNumber('enrollmentRequest')->whereNumber('document')->middleware('throttle:30,1');
     Route::get('/school/enrollment-requests', [\App\Http\Controllers\SchoolEnrollmentInboxController::class, 'index'])
         ->middleware(['role:school', 'throttle:60,1']);
     Route::post('/school/enrollment-requests/{request}/decision', [\App\Http\Controllers\SchoolEnrollmentDecisionController::class, 'decide'])

@@ -14,7 +14,9 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Schema::create('organizations', fn (Blueprint $t) => $this->idActive($t));
+        Schema::create('organizations', function (Blueprint $t) {
+            $this->idActive($t); $t->string('slug')->nullable();
+        });
         Schema::create('schools', function (Blueprint $t) {
             $this->idActive($t); $t->string('name'); $t->unsignedBigInteger('organization_id')->nullable();
         });
@@ -95,6 +97,25 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
         $request = Request::create('/api/school/enrollment-requests/'.$requestId.'/decision','POST',$body);
         $request->attributes->set('jwt_user',(object)['id'=>7,'role'=>'school']);
         return app(SchoolEnrollmentDecisionController::class)->decide($request,$requestId);
+    }
+
+    public function test_jabalia_approval_is_blocked_until_separate_counselor_review_is_implemented(): void
+    {
+        DB::table('organizations')->insert(['id' => 1, 'is_active' => true]);
+        // Exercise the fail-closed policy on a school belonging to Jabalia.
+        DB::table('organizations')->where('id', 1)->update(['slug' => 'jabalia']);
+        DB::table('schools')->where('id', 1)->update(['organization_id' => 1]);
+
+        $result = $this->decide(100, [
+            'decision' => 'approved', 'expected_version' => 1, 'section_id' => 1,
+        ]);
+        $this->assertSame(409, $result->status());
+        $this->assertSame('JABALIA_ADMISSION_REVIEW_REQUIRED',
+            $result->getData(true)['code']);
+        $this->assertSame('pending', DB::table('school_enrollment_requests')
+            ->where('id', 100)->value('status'));
+        $this->assertDatabaseCount('student_enrollments', 0);
+        $this->assertDatabaseCount('notifications', 0);
     }
 
     public function test_approval_creates_one_enrollment_without_recreating_child(): void
