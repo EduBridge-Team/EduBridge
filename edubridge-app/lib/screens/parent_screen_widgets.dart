@@ -46,11 +46,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
             ),
           ],
         ),
-        const SizedBox(height: 5),
-        Text(
-          context.l10n.childQuickAccessDescription,
-          style: textTheme.bodySmall?.copyWith(color: c.muted),
-        ),
         const SizedBox(height: 16),
         ...List.generate(
           _children.length,
@@ -189,134 +184,13 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                         ],
                       ),
                     ),
+                    const Icon(Icons.arrow_forward_ios, size: 16),
                   ],
-                ),
-                const SizedBox(height: 16),
-                LayoutBuilder(builder: (context, constraints) {
-                  final scale = MediaQuery.textScalerOf(context).scale(1);
-                  final columns = constraints.maxWidth >= 400 * scale ? 4 : 2;
-                  final width = (constraints.maxWidth - (columns - 1) * 8) / columns;
-                  return Wrap(spacing: 8, runSpacing: 8, children: [
-                    for (final action in <(IconData, String, Color, VoidCallback)>[
-                      (AppIcons.homework, context.l10n.homework, AppColors.brandBlue, () => _openHomework(child)),
-                      (AppIcons.report, context.l10n.report, AppColors.brandTeal, () => _openWeeklyReport(child)),
-                      (AppIcons.users, context.l10n.team, AppColors.brandBlue, () => _openCareTeam(child)),
-                      (AppIcons.progress, context.l10n.progress, AppColors.brandTealDeep, () => _openChildProgress(child)),
-                    ])
-                      SizedBox(width: width, child: _quickAction(
-                        icon: action.$1, label: action.$2,
-                        color: action.$3, onTap: action.$4)),
-                  ]);
-                }),
-                const SizedBox(height: 12),
-                SizedBox(width: double.infinity, child: _secondaryAction(
-                  icon: AppIcons.parent,
-                  label: context.l10n.parentLessons,
-                  onTap: _openParentLessons,
-                )),
-                const SizedBox(height: 8),
-                LayoutBuilder(builder: (context, constraints) {
-                  final scale = MediaQuery.textScalerOf(context).scale(1);
-                  final paired = constraints.maxWidth >= 300 * scale;
-                  final width = paired ? (constraints.maxWidth - 8) / 2 : constraints.maxWidth;
-                  return Wrap(spacing: 8, runSpacing: 8, children: [
-                    SizedBox(width: width, child: _secondaryAction(
-                      icon: AppIcons.specialist,
-                      label: context.l10n.requestLearningSupport,
-                      onTap: () => _openLearningSupportRequest(child),
-                    )),
-                    SizedBox(width: width, child: _secondaryAction(
-                      icon: Icons.school_outlined,
-                      label: context.l10n.enrollmentParentTitle,
-                      onTap: () {
-                        final id = child['id'];
-                        if (id is! int || id <= 0) return;
-                        Navigator.of(context).push(MaterialPageRoute<void>(
-                          builder: (_) => ParentEnrollmentScreen(
-                            childId: id, childName: name)));
-                      },
-                    )),
-                  ]);
-                }),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: TextButton.icon(
-                    onPressed: () => _openEditChild(child),
-                    icon: const Icon(AppIcons.edit, size: 17),
-                    label: Text(
-                      context.l10n.editDetails,
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _quickAction({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    final c = JisrColors.of(context);
-    final textTheme = Theme.of(context).textTheme;
-
-    return Material(
-      color: color.withValues(alpha: .08),
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 11),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 21, color: color),
-              const SizedBox(height: 5),
-              Text(
-                label,
-                style: textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: c.heading,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _secondaryAction({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    final c = JisrColors.of(context);
-    final textTheme = Theme.of(context).textTheme;
-
-    return OutlinedButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 18),
-      label: Text(
-        label,
-        style: textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: c.infoText,
-        ),
-      ),
-      style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(48),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        side: BorderSide(color: c.line),
-        foregroundColor: c.infoText,
       ),
     );
   }

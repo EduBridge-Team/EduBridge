@@ -16,7 +16,9 @@ import '../widgets/accessibility/adaptive_video_player.dart';
 part 'parent_lessons_widgets.dart';
 
 class ParentLessonsScreen extends StatefulWidget {
-  const ParentLessonsScreen({super.key});
+  const ParentLessonsScreen({super.key, this.inParentTabs = false});
+
+  final bool inParentTabs;
 
   @override
   State<ParentLessonsScreen> createState() => _ParentLessonsScreenState();
@@ -123,7 +125,8 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const TeacherNavigationBar(),
+      bottomNavigationBar:
+          widget.inParentTabs ? null : const TeacherNavigationBar(),
       body: Column(
         children: [
           Container(

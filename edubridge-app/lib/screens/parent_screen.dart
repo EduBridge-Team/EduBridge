@@ -14,19 +14,14 @@ import '../widgets/dashboard_menu.dart';
 import '../widgets/dashboard_header_actions.dart';
 import '../widgets/dashboard_profile_identity.dart';
 import 'add_child/add_child_screen.dart';
-import 'child_homework/child_homework_screen.dart';
-import 'child_lessons/child_lessons_screen.dart';
 import 'notifications_screen.dart';
 import 'support_sheet.dart';
-import 'child_progress_screen.dart';
-import 'edit_child_screen.dart';
-import 'weekly_report_screen.dart';
-import 'care_team_screen.dart';
-import 'create_learning_support_request_screen.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart';
+import 'parent_child_profile_screen.dart';
+import 'parent_navigation_bar.dart';
+import 'profile/profile_screen.dart';
 import 'login_screen.dart';
-import 'enrollment/parent_enrollment_screen.dart';
 
 part 'parent_screen_widgets.dart';
 
@@ -39,6 +34,7 @@ class ParentScreen extends StatefulWidget {
 
 class _ParentScreenState extends State<ParentScreen> {
   List _children = [];
+  int _tabIndex = 0;
   bool _loading = true;
   bool _hasError = false;
 
@@ -86,95 +82,14 @@ class _ParentScreenState extends State<ParentScreen> {
   }
 
   Future<void> _openChildDetails(Map child) async {
-    if (!mounted) return;
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChildLessonsScreen(
-          childId: child['id'],
-          childName: (child['name'] ?? '').toString(),
-          age: child['age'] is int ? child['age'] as int : 8,
-          disabilityType: child['disability_type']?.toString(),
-          parentPhone: child['parent_phone']?.toString(),
-        ),
+    final id = child['id'];
+    if (id is! int || id <= 0) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => ParentChildProfileScreen(child: child, childId: id),
       ),
     );
-  }
-
-  void _openHomework(Map child) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChildHomeworkScreen(
-          childId: child['id'],
-          childName: (child['name'] ?? '').toString(),
-        ),
-      ),
-    );
-  }
-
-  void _openWeeklyReport(Map child) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => WeeklyReportScreen(
-          childId: child['id'],
-          childName: (child['name'] ?? '').toString(),
-        ),
-      ),
-    );
-  }
-
-  void _openCareTeam(Map child) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CareTeamScreen(
-          childId: child['id'],
-          childName: (child['name'] ?? '').toString(),
-        ),
-      ),
-    );
-  }
-
-  void _openChildProgress(Map child) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChildProgressScreen(
-          childId: child['id'],
-          childName: (child['name'] ?? '').toString(),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _openLearningSupportRequest(Map child) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreateLearningSupportRequestScreen(
-          childId: child['id'],
-          childName: (child['name'] ?? '').toString(),
-        ),
-      ),
-    );
-    if (result == true) _loadData();
-  }
-
-  Future<void> _openEditChild(Map child) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EditChildScreen(
-          child: child,
-          currentUserRole: 'parent',
-          currentUser: {},
-        ),
-      ),
-    );
-    if (result == true) _loadData();
+    if (mounted) await _refreshData();
   }
 
   Future<void> _openAddChild() async {
@@ -182,14 +97,7 @@ class _ParentScreenState extends State<ParentScreen> {
       context,
       MaterialPageRoute(builder: (_) => const AddChildScreen()),
     );
-    if (result == true) _loadData();
-  }
-
-  void _openParentLessons() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ParentLessonsScreen()),
-    );
+    if (mounted && result == true) _loadData();
   }
 
   @override
@@ -197,25 +105,27 @@ class _ParentScreenState extends State<ParentScreen> {
     return AdaptiveWrapper(
       screenTitle: context.l10n.parentDashboard,
       child: Scaffold(
-        appBar: _buildAppBar(),
-        body: Column(
-          children: [
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: _refreshData,
-                child: _buildBody(),
-              ),
-            ),
-          ],
+        appBar: _tabIndex == 0 ? _buildAppBar() : null,
+        body: switch (_tabIndex) {
+          1 => const ParentLessonsScreen(inParentTabs: true),
+          2 => const ChatsScreen(inParentTabs: true),
+          3 => const ProfileScreen(inParentTabs: true),
+          _ => RefreshIndicator(onRefresh: _refreshData, child: _buildBody()),
+        },
+        bottomNavigationBar: ParentNavigationBar(
+          selectedIndex: _tabIndex,
+          onSelected: (index) => setState(() => _tabIndex = index),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: _openAddChild,
-          icon: const Icon(AppIcons.add),
-          label: Text(
-            context.l10n.addChild,
-            style: TextStyle(fontWeight: FontWeight.w800),
-          ),
-        ),
+        floatingActionButton: _tabIndex == 0
+            ? FloatingActionButton.extended(
+                onPressed: _openAddChild,
+                icon: const Icon(AppIcons.add),
+                label: Text(
+                  context.l10n.addChild,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              )
+            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       ),
     );
@@ -250,25 +160,10 @@ class _ParentScreenState extends State<ParentScreen> {
                 ),
               ),
               DashboardMenuAction(
-                id: 'parent_lessons',
-                label: context.l10n.parentLessons,
-                icon: AppIcons.parent,
-                onSelected: _openParentLessons,
-              ),
-              DashboardMenuAction(
                 id: 'support',
                 label: context.l10n.technicalSupport,
                 icon: AppIcons.support,
                 onSelected: () => SupportSheet.show(context),
-              ),
-              DashboardMenuAction(
-                id: 'chats',
-                label: context.l10n.conversations,
-                icon: AppIcons.chat,
-                onSelected: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ChatsScreen()),
-                ),
               ),
               DashboardMenuAction(
                 id: 'legal',

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/enrollment/parent_enrollment_screen.dart';
 import 'package:edubridge_app/screens/parent_screen.dart';
+import 'package:edubridge_app/screens/parent_child_profile_screen.dart';
 import 'package:edubridge_app/screens/institution_statistics_screen.dart';
 import 'package:edubridge_app/theme.dart';
 import 'package:flutter/material.dart';
@@ -41,20 +42,28 @@ void main() {
           await tester.pumpAndSettle();
           final enrollment = find.widgetWithText(OutlinedButton, l10n.enrollmentParentTitle);
           final support = find.widgetWithText(OutlinedButton, l10n.requestLearningSupport);
-          await tester.scrollUntilVisible(enrollment, 200,
-            scrollable: find.descendant(of: find.byType(ListView),
-              matching: find.byType(Scrollable)).first);
-          await Scrollable.ensureVisible(tester.element(enrollment), alignment: 0.5);
+          expect(enrollment, findsNothing);
+          expect(support, findsNothing);
+          expect(find.text(l10n.parentLessons), findsOneWidget);
+          expect(find.text(l10n.conversations), findsOneWidget);
+          expect(find.text(l10n.profile), findsOneWidget);
+          await tester.runAsync(() async {
+            await tester.tap(find.text('Long child name اسم طفل طويل لاختبار الشاشة'));
+            await tester.pump();
+            await Future<void>.delayed(Duration.zero);
+          });
           await tester.pumpAndSettle();
-          expect(enrollment, findsOneWidget);
-          expect(support, findsOneWidget);
-          final e = tester.getRect(enrollment);
-          final s = tester.getRect(support);
-          if (width >= 720) {
-            expect((e.top - s.top).abs(), lessThan(1));
-            expect(e.overlaps(s), isFalse);
-          } else {
-            expect(e.top, greaterThan(s.top));
+          expect(find.byType(ParentChildProfileScreen), findsOneWidget);
+          expect(find.text('${l10n.schoolAccountName}: Test School'), findsOneWidget);
+          expect(find.text(l10n.childAgeYears('7')), findsOneWidget);
+          for (final action in [
+            find.widgetWithText(OutlinedButton, l10n.lessons),
+            find.widgetWithText(OutlinedButton, l10n.gameCatalogTitle),
+            support,
+            enrollment,
+          ]) {
+            await tester.scrollUntilVisible(action, 200);
+            expect(action.hitTestable(), findsOneWidget);
           }
           expect(tester.takeException(), isNull);
           await tester.runAsync(() async {
@@ -78,7 +87,11 @@ void main() {
           }
           if (request.url.path.endsWith('/enrollment-requests')) {
             return http.Response(jsonEncode({
-              'child_id': 6, 'requests': [], 'active_enrollment': null,
+              'child_id': 6, 'requests': [],
+              'active_enrollment': {
+                'id': 1, 'child_id': 6, 'school_id': 2,
+                'school_name': 'Test School', 'section_id': 3, 'status': 'active',
+              },
             }), 200);
           }
           return http.Response('{}', 200);
