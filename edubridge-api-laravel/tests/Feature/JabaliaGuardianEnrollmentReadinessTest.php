@@ -53,10 +53,10 @@ class JabaliaGuardianEnrollmentReadinessTest extends TestCase
         DB::table('children')->insert([['id'=>4,'name'=>'Own'],['id'=>5,'name'=>'Foreign']]);
         DB::table('child_parent')->insert(['child_id'=>4,'parent_id'=>2]);
         DB::table('school_enrollment_requests')->insert([
-            ['id'=>100,'child_id'=>4,'school_id'=>10,'status'=>'pending','version'=>1,'created_at'=>now(),'updated_at'=>now()],
+            ['id'=>100,'reason'=>null,'child_id'=>4,'school_id'=>10,'status'=>'pending','version'=>1,'created_at'=>now(),'updated_at'=>now()],
             ['id'=>101,'child_id'=>4,'school_id'=>20,'status'=>'rejected','version'=>2,'reason'=>'No room','created_at'=>now(),'updated_at'=>now()],
-            ['id'=>102,'child_id'=>4,'school_id'=>30,'status'=>'cancelled','version'=>2,'created_at'=>now(),'updated_at'=>now()],
-            ['id'=>103,'child_id'=>5,'school_id'=>10,'status'=>'pending','version'=>1,'created_at'=>now(),'updated_at'=>now()],
+            ['id'=>102,'reason'=>null,'child_id'=>4,'school_id'=>30,'status'=>'cancelled','version'=>2,'created_at'=>now(),'updated_at'=>now()],
+            ['id'=>103,'reason'=>null,'child_id'=>5,'school_id'=>10,'status'=>'pending','version'=>1,'created_at'=>now(),'updated_at'=>now()],
         ]);
     }
 
