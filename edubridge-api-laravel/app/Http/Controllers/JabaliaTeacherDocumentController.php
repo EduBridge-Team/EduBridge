@@ -34,7 +34,9 @@ class JabaliaTeacherDocumentController extends Controller
         $org = $this->tenant($request, $organizationSlug, $school, $teacher);
         if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
         $data = $request->validate([
-            'type' => ['required', 'in:contract,certificate'],
+            // Keep the legacy certificate type readable and writable for existing records.
+            // Each new document category is a private record, not a public media URL.
+            'type' => ['required', 'in:contract,certificate,university_degree,cv,experience_certificate,identity_document,achievement'],
             'title' => ['required', 'string', 'max:200'],
             'issuer' => ['nullable', 'string', 'max:200'],
             'issued_on' => ['nullable', 'date_format:Y-m-d'],

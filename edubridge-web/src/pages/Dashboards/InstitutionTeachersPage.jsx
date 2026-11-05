@@ -5,6 +5,16 @@ import { useInstitution } from '../../institutionContext'
 import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument, fetchJabaliaTeacherTransfers, transferJabaliaTeacher } from '../../api/institutions'
 import '../../styles/institution-operations.css'
 
+const TEACHER_DOCUMENT_TYPE_LABELS = Object.freeze({
+  university_degree: 'الشهادة الجامعية',
+  cv: 'السيرة الذاتية',
+  experience_certificate: 'شهادة خبرة',
+  identity_document: 'صورة الهوية',
+  contract: 'نسخة عقد مشروع مؤقت',
+  achievement: 'إنجاز مهني',
+  certificate: 'شهادة أخرى (سجل قديم)',
+})
+
 export default function InstitutionTeachersPage() {
   const { slug, loading: contextLoading } = useInstitution()
   const [transfers, setTransfers] = useState([])
@@ -13,7 +23,7 @@ export default function InstitutionTeachersPage() {
   const [documents, setDocuments] = useState([])
   const [documentPage, setDocumentPage] = useState({ current_page: 1, last_page: 1, total: 0 })
   const [uploadFiles, setUploadFiles] = useState({})
-  const [documentDraft, setDocumentDraft] = useState({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
+  const [documentDraft, setDocumentDraft] = useState({ type: 'university_degree', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
   const [documentSaving, setDocumentSaving] = useState(false)
   const [selectedHistoryTeacher, setSelectedHistoryTeacher] = useState('')
   const [teacherHistory, setTeacherHistory] = useState(null)
@@ -245,7 +255,7 @@ export default function InstitutionTeachersPage() {
       const updated = await fetchJabaliaTeacherDocuments(slug, schoolId, selectedHistoryTeacher, 1)
       setDocuments(updated.documents?.data || [])
       setDocumentPage(updated.documents || { current_page: 1, last_page: 1, total: 0 })
-      setDocumentDraft({ type: 'certificate', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
+      setDocumentDraft({ type: 'university_degree', title: '', issuer: '', issued_on: '', expires_on: '', notes: '' })
       setMessage('تم تسجيل بيانات الوثيقة.')
     } catch (err) { setError(err.message) }
     finally { setDocumentSaving(false) }
@@ -501,10 +511,10 @@ export default function InstitutionTeachersPage() {
                   </form>
                   <p>النقل يُنهي تكليفات المدرسة الحالية، ولا ينشئ تكليفات تلقائية في المدرسة الجديدة.</p>
                   {transfers.length > 0 && <ul>{transfers.map((transfer) => <li key={transfer.id}>{transfer.from_school_name} ← {transfer.to_school_name} — {transfer.effective_on}{transfer.reason ? ` — ${transfer.reason}` : ''}</li>)}</ul>}
-                  <h4>العقود والشهادات المهنية</h4>
-                  <p>يمكن إرفاق ملف PDF أو صورة JPEG أو PNG أو WebP بحد أقصى 5 ميجابايت لكل وثيقة.</p>
+                  <h4>الملف المهني والعقود والوثائق</h4>
+                  <p>ملفات المعلم الخاصة: الشهادة الجامعية، السيرة الذاتية، الخبرات، الهوية، عقد المشروع المؤقت، والإنجازات. يمكن إرفاق PDF أو JPEG أو PNG أو WebP حتى 5 ميجابايت لكل وثيقة. لا يُكتمل توثيق العقد إلا بعد رفع نسخته.</p>
                   <form className="institution-school-form" onSubmit={addTeacherDocument}>
-                    <label>نوع الوثيقة<select value={documentDraft.type} onChange={(event) => setDocumentDraft((p) => ({ ...p, type: event.target.value }))}><option value="certificate">شهادة</option><option value="contract">عقد</option></select></label>
+                    <label>نوع الوثيقة<select value={documentDraft.type} onChange={(event) => setDocumentDraft((p) => ({ ...p, type: event.target.value }))}>{Object.entries(TEACHER_DOCUMENT_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
                     <label>العنوان<input required maxLength="200" value={documentDraft.title} onChange={(event) => setDocumentDraft((p) => ({ ...p, title: event.target.value }))} /></label>
                     <label>الجهة المصدرة<input maxLength="200" value={documentDraft.issuer} onChange={(event) => setDocumentDraft((p) => ({ ...p, issuer: event.target.value }))} /></label>
                     <label>تاريخ الإصدار<input type="date" value={documentDraft.issued_on} onChange={(event) => setDocumentDraft((p) => ({ ...p, issued_on: event.target.value }))} /></label>
@@ -512,8 +522,8 @@ export default function InstitutionTeachersPage() {
                     <label>ملاحظات<textarea maxLength="5000" value={documentDraft.notes} onChange={(event) => setDocumentDraft((p) => ({ ...p, notes: event.target.value }))} /></label>
                     <button className="btn" type="submit" disabled={documentSaving}>{documentSaving ? 'جارِ الحفظ…' : 'إضافة وثيقة'}</button>
                   </form>
-                  {documents.length === 0 ? <p>لا توجد عقود أو شهادات مسجلة لهذا المعلم.</p> : <ul>
-                    {documents.map((item) => <li key={item.id}>{item.type === 'contract' ? 'عقد' : 'شهادة'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} {item.storage_path && <button type="button" className="btn outline" onClick={() => downloadTeacherFile(item)}>تنزيل {item.original_filename || 'المرفق'}</button>}
+                  {documents.length === 0 ? <p>لا توجد وثائق مهنية مسجلة لهذا المعلم.</p> : <ul>
+                    {documents.map((item) => <li key={item.id}>{TEACHER_DOCUMENT_TYPE_LABELS[item.type] || 'نوع وثيقة غير معروف'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} {!item.storage_path && <span role="status"> — لم يتم رفع المرفق بعد</span>}{item.storage_path && <button type="button" className="btn outline" onClick={() => downloadTeacherFile(item)}>تنزيل {item.original_filename || 'المرفق'}</button>}
                       <input type="file" aria-label={`إرفاق ملف للوثيقة ${item.title}`} accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => setUploadFiles((current) => ({ ...current, [item.id]: event.target.files?.[0] || null }))} />
                       <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id]} onClick={() => uploadTeacherFile(item)}>{item.storage_path ? 'استبدال الملف' : 'رفع الملف'}</button>
                       <button type="button" className="btn outline" disabled={documentSaving} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}

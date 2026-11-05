@@ -21,6 +21,9 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         Schema::create('jabalia_teacher_documents', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('school_id');
             $t->unsignedBigInteger('teacher_id'); $t->string('type'); $t->string('title');
+            $t->string('issuer')->nullable(); $t->date('issued_on')->nullable();
+            $t->date('expires_on')->nullable(); $t->text('notes')->nullable();
+            $t->unsignedBigInteger('recorded_by')->nullable();
             $t->string('storage_path')->nullable(); $t->string('original_filename')->nullable();
             $t->timestamps();
         });
@@ -43,6 +46,64 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         $request = Request::create('/api/institutions/'.$slug.'/schools/1/teachers/11/documents', 'GET');
         $request->attributes->set('organization', (object) ['id' => $organizationId, 'slug' => $slug]);
         return $request;
+    }
+
+    public function test_each_approved_teacher_document_category_can_be_stored_with_private_metadata(): void
+    {
+        $types = [
+            'contract', 'university_degree', 'cv', 'experience_certificate',
+            'identity_document', 'achievement', 'certificate',
+        ];
+        $controller = app(JabaliaTeacherDocumentController::class);
+
+        foreach ($types as $type) {
+            $request = $this->request(1, 'jabalia');
+            $request->replace([
+                'type' => $type,
+                'title' => 'Jabalia '.$type,
+                'notes' => 'Private personnel record',
+            ]);
+            $response = $controller->store($request, 'jabalia', 1, 11);
+            $this->assertSame(201, $response->status(), $type);
+            $record = $response->getData(true)['document'];
+            $this->assertSame($type, $record['type']);
+            $this->assertSame(1, $record['organization_id']);
+            $this->assertSame(1, $record['school_id']);
+            $this->assertSame(11, $record['teacher_id']);
+            $this->assertNull($record['storage_path']);
+        }
+
+        $this->assertSame(count($types) + 1, DB::table('jabalia_teacher_documents')->count());
+    }
+
+    public function test_unrecognized_document_category_is_rejected_before_insert(): void
+    {
+        $request = $this->request(1, 'jabalia');
+        $request->replace(['type' => 'medical_record', 'title' => 'Unsupported']);
+        try {
+            app(JabaliaTeacherDocumentController::class)->store($request, 'jabalia', 1, 11);
+            $this->fail('Unexpected document type was accepted');
+        } catch (\\Illuminate\\Validation\\ValidationException $exception) {
+            $this->assertArrayHasKey('type', $exception->errors());
+        }
+        $this->assertSame(1, DB::table('jabalia_teacher_documents')->count());
+    }
+
+    public function test_new_document_type_is_not_readable_from_another_school_or_tenant(): void
+    {
+        $request = $this->request(1, 'jabalia');
+        $request->replace(['type' => 'identity_document', 'title' => 'Private identity']);
+        $document = app(JabaliaTeacherDocumentController::class)
+            ->store($request, 'jabalia', 1, 11)->getData(true)['document'];
+        $id = $document['id'];
+
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $this->assertSame(404, $controller->download($this->request(2, 'other'), 'other', 1, 11, $id)->status());
+        $this->assertSame(404, $controller->download($this->request(1, 'jabalia'), 'jabalia', 2, 11, $id)->status());
+        $this->assertSame(404, $controller->download($this->request(1, 'jabalia'), 'jabalia', 1, 22, $id)->status());
+        $this->assertDatabaseHas('jabalia_teacher_documents', [
+            'id' => $id, 'type' => 'identity_document', 'organization_id' => 1,
+        ]);
     }
 
     public function test_jabalia_admin_can_list_only_own_teacher_documents(): void
