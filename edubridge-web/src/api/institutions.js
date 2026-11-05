@@ -342,3 +342,7 @@ export function createJabaliaSuccessStory(slug, schoolId, payload) {
     method: 'POST', body: JSON.stringify(payload),
   })
 }
+
+export function fetchJabaliaContractReadiness(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/contract-readiness'))
+}
