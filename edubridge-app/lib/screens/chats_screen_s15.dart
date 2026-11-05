@@ -11,7 +11,7 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
   PreferredSizeWidget _s15AppBar() {
     return BrandAppBar(
       toolbarHeight: 116,
-      titleSpacing: 4,
+      titleSpacing: widget.inParentTabs ? 16 : 4,
       centerTitle: false,
       leading: widget.inParentTabs ? null : IconButton(
         tooltip: context.l10n.back,
