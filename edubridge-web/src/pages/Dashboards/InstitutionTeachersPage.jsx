@@ -511,7 +511,7 @@ export default function InstitutionTeachersPage() {
                   </form>
                   <p>النقل يُنهي تكليفات المدرسة الحالية، ولا ينشئ تكليفات تلقائية في المدرسة الجديدة.</p>
                   {transfers.length > 0 && <ul>{transfers.map((transfer) => <li key={transfer.id}>{transfer.from_school_name} ← {transfer.to_school_name} — {transfer.effective_on}{transfer.reason ? ` — ${transfer.reason}` : ''}</li>)}</ul>}
-                  <h4>الملف المهني والعقود والوثائق</h4>
+                  <h4>الملف المهني والعقود والوثائق</h4><p>العقد الذي يحتوي على نسخة موقّعة لا يمكن استبدال ملفه أو حذفه. عند التجديد أو التصحيح، أضف سجل عقد جديدًا للحفاظ على النسخة السابقة.</p>
                   <p>ملفات المعلم الخاصة: الشهادة الجامعية، السيرة الذاتية، الخبرات، الهوية، عقد المشروع المؤقت، والإنجازات. يمكن إرفاق PDF أو JPEG أو PNG أو WebP حتى 5 ميجابايت لكل وثيقة. لا يُكتمل توثيق العقد إلا بعد رفع نسخته.</p>
                   <form className="institution-school-form" onSubmit={addTeacherDocument}>
                     <label>نوع الوثيقة<select value={documentDraft.type} onChange={(event) => setDocumentDraft((p) => ({ ...p, type: event.target.value }))}>{Object.entries(TEACHER_DOCUMENT_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
@@ -524,9 +524,9 @@ export default function InstitutionTeachersPage() {
                   </form>
                   {documents.length === 0 ? <p>لا توجد وثائق مهنية مسجلة لهذا المعلم.</p> : <ul>
                     {documents.map((item) => <li key={item.id}>{TEACHER_DOCUMENT_TYPE_LABELS[item.type] || 'نوع وثيقة غير معروف'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} {!item.storage_path && <span role="status"> — لم يتم رفع المرفق بعد</span>}{item.storage_path && <button type="button" className="btn outline" onClick={() => downloadTeacherFile(item)}>تنزيل {item.original_filename || 'المرفق'}</button>}
-                      <input type="file" aria-label={`إرفاق ملف للوثيقة ${item.title}`} accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => setUploadFiles((current) => ({ ...current, [item.id]: event.target.files?.[0] || null }))} />
-                      <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id]} onClick={() => uploadTeacherFile(item)}>{item.storage_path ? 'استبدال الملف' : 'رفع الملف'}</button>
-                      <button type="button" className="btn outline" disabled={documentSaving} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
+                      <input type="file" disabled={documentSaving || (item.type === 'contract' && !!item.storage_path)} aria-label={`إرفاق ملف للوثيقة ${item.title}`} accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => setUploadFiles((current) => ({ ...current, [item.id]: event.target.files?.[0] || null }))} />
+                      <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id] || (item.type === 'contract' && !!item.storage_path)} onClick={() => uploadTeacherFile(item)}>{item.storage_path ? 'استبدال الملف' : 'رفع الملف'}</button>
+                      <button type="button" className="btn outline" disabled={documentSaving || (item.type === 'contract' && !!item.storage_path)} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
                   </ul>}
                   {documentPage.last_page > 1 && <div className="institution-actions" aria-label="صفحات وثائق المعلم">
                     <button type="button" className="btn outline" disabled={documentSaving || documentPage.current_page <= 1} onClick={() => changeDocumentPage(documentPage.current_page - 1)}>السابق</button>
