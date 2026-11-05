@@ -165,6 +165,8 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                             Text(
                               '${l10n.enrollmentActive}: ${data.activeEnrollment!.schoolName}',
                             ),
+                          if (!data.canRequest)
+                            Text(l10n.enrollmentPendingNotice),
                           TextField(
                             key: const ValueKey('enrollment-school-query'),
                             controller: _query,
