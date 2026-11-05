@@ -154,7 +154,8 @@ void main() {
         })),
     ));
     await tester.pumpAndSettle();
-    expect(find.text('Enrollment is not available on the server yet.'), findsOneWidget);
+    expect(find.text('Enrollment is not available on the server yet.'), findsNothing);
+    expect(find.text('عرض طلبات النقل / View transfers'), findsOneWidget);
     expect(find.byType(Card), findsNothing);
     await tester.tap(find.byTooltip('Reload'));
     await tester.pumpAndSettle();
