@@ -74,6 +74,53 @@ class JabaliaSchoolTimetablePermissionsTest extends TestCase
         return app(SchoolOperationsController::class)->handle($request, $action);
     }
 
+    public function test_jabalia_defaults_match_approved_five_period_day_and_break(): void
+    {
+        $response = $this->operation(20, 'timetable-settings');
+        $this->assertSame(200, $response->status());
+        $config = $response->getData(true);
+
+        $this->assertSame([7, 1, 2, 3, 4], $config['weekdays']);
+        $this->assertSame([
+            ['starts_at' => '08:30', 'ends_at' => '09:10'],
+            ['starts_at' => '09:10', 'ends_at' => '09:50'],
+            ['starts_at' => '09:50', 'ends_at' => '10:30'],
+            ['starts_at' => '10:40', 'ends_at' => '11:20'],
+            ['starts_at' => '11:20', 'ends_at' => '12:00'],
+        ], $config['periods']);
+        $this->assertSame(25, count($config['weekdays']) * count($config['periods']));
+        $this->assertSame('10:30', $config['periods'][2]['ends_at']);
+        $this->assertSame('10:40', $config['periods'][3]['starts_at']);
+    }
+
+    public function test_subject_quotas_do_not_auto_fill_thirteen_unspecified_weekly_periods(): void
+    {
+        DB::table('subjects')->insert([
+            ['id' => 3, 'school_id' => 1],
+            ['id' => 4, 'school_id' => 1],
+            ['id' => 5, 'school_id' => 1],
+            ['id' => 6, 'school_id' => 1],
+        ]);
+        // Association counts: Arabic 4, mathematics 4, science 1,
+        // social studies 1 and English 2. Subject IDs here are fixtures,
+        // NOT default catalog mappings assigned to real school subjects.
+        foreach ([1 => 4, 3 => 4, 4 => 1, 5 => 1, 6 => 2] as $subject => $weekly) {
+            $response = $this->operation(20, 'subject-quotas-update', 'PUT', [
+                'expected_school_id' => 1,
+                'section_id' => 1,
+                'subject_id' => $subject,
+                'weekly_periods' => $weekly,
+            ]);
+            $this->assertSame(200, $response->status());
+        }
+
+        $quotas = $this->operation(20, 'subject-quotas')->getData(true)['quotas'];
+        $this->assertCount(5, $quotas);
+        $this->assertSame(12, array_sum(array_column($quotas, 'weekly_periods')));
+        $this->assertSame(13, 25 - array_sum(array_column($quotas, 'weekly_periods')));
+        $this->assertSame(0, DB::table('timetable_entries')->count());
+    }
+
     public function test_school_account_and_director_can_read_schedule_configuration(): void
     {
         $this->assertSame(200, $this->operation(10, 'timetable-settings')->getStatusCode());
