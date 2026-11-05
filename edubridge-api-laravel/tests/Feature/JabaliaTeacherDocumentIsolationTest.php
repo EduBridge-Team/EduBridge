@@ -83,7 +83,7 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         try {
             app(JabaliaTeacherDocumentController::class)->store($request, 'jabalia', 1, 11);
             $this->fail('Unexpected document type was accepted');
-        } catch (\\Illuminate\\Validation\\ValidationException $exception) {
+        } catch (\Illuminate\Validation\ValidationException $exception) {
             $this->assertArrayHasKey('type', $exception->errors());
         }
         $this->assertSame(1, DB::table('jabalia_teacher_documents')->count());
