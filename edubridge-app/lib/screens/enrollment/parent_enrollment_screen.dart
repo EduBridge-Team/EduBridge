@@ -174,20 +174,22 @@ class _ParentEnrollmentScreenState extends State<ParentEnrollmentScreen>
                             textAlign: TextAlign.center,
                             enabled: !_controller.busy,
                             maxLength: 100,
+                            textInputAction: TextInputAction.search,
                             onChanged: (_) => _controller.clearSearch(),
                             onSubmitted: _controller.search,
                             decoration: InputDecoration(
                               labelText: l10n.enrollmentSearch,
                               hintText: l10n.enrollmentSearchHint,
                               border: const OutlineInputBorder(),
+                              prefixIcon: IconButton(
+                                key: const ValueKey('enrollment-school-search'),
+                                tooltip: l10n.enrollmentSearchAction,
+                                onPressed: _controller.busy
+                                    ? null
+                                    : () => _controller.search(_query.text),
+                                icon: const Icon(Icons.search),
+                              ),
                             ),
-                          ),
-                          FilledButton(
-                            key: const ValueKey('enrollment-school-search'),
-                            onPressed: _controller.busy
-                                ? null
-                                : () => _controller.search(_query.text),
-                            child: Text(l10n.enrollmentSearchAction),
                           ),
                           if (_controller.searching)
                             const LinearProgressIndicator(),
