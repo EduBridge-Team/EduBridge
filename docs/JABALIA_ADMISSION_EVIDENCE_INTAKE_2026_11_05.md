@@ -38,3 +38,7 @@ Tests now also verify immediate deputy revocation, all-five-category completenes
 ## Explicit fail-closed activation gate
 
 The admissions upload endpoint returns HTTP **503** by default and writes no file until the deployment operator explicitly sets `JABALIA_ADMISSION_UPLOADS_ENABLED=true`. The Jabalia Compose service defaults this to `false`, and the sample environment remains disabled. Before enabling, verify the private admissions Docker volume is mounted and persistent; run its backup preflight, approve a medical-data retention and counselor-access policy, and rehearse an isolated restore. This feature flag **does not itself provide counselor approval** or make the overall admission process compliant.
+
+## Fail-closed Jabalia decision gate
+
+The shared generic `SchoolEnrollmentDecisionController` now refuses `approved` for a school belonging to the `jabalia` organization with HTTP 409 and `JABALIA_ADMISSION_REVIEW_REQUIRED`. It performs this check before creating student enrollments and notifications, even if the required document categories are present. Generic non-Jabalia school admissions remain unchanged; Jabalia rejection still follows existing institutional policy. This is a **temporary blocking safeguard**, not the final counselor review/approval implementation. Existing Jabalia enrolled students are not modified.
