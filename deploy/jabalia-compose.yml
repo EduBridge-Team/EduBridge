@@ -52,6 +52,8 @@ services:
       CACHE_STORE: file
     volumes:
       - edubridge-jabalia-private-uploads:/app/storage/app/private/jabalia-teacher-documents
+      # Separate private volume for child medical/audiology admission files.
+      - edubridge-jabalia-private-admissions:/app/storage/app/private/jabalia-admission-documents
     depends_on:
       postgres:
         condition: service_healthy
@@ -110,3 +112,4 @@ volumes:
   edubridge-jabalia-postgres-data:
     external: true
   edubridge-jabalia-private-uploads:
+  edubridge-jabalia-private-admissions:
