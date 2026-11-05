@@ -15,7 +15,7 @@ export default function JabaliaSupervisorVisitsPanel({ slug, schools = [] }) {
   const [events, setEvents] = useState([])
   const [pageInfo, setPageInfo] = useState({ current_page: 1, last_page: 1 })
   const [draft, setDraft] = useState(EMPTY)
-  const [note, setNote] = useState('')
+  const [notesByVisit, setNotesByVisit] = useState({})
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -24,7 +24,7 @@ export default function JabaliaSupervisorVisitsPanel({ slug, schools = [] }) {
   useEffect(() => {
     if (slug !== 'jabalia' || !schoolId) return
     let active = true
-    setLoading(true); setError(''); setVisits([]); setEvents([])
+    setLoading(true); setError(''); setVisits([]); setEvents([]); setNotesByVisit({})
     fetchJabaliaSupervisorVisits(slug, schoolId, 1)
       .then((data) => {
         if (!active) return
@@ -63,7 +63,8 @@ export default function JabaliaSupervisorVisitsPanel({ slug, schools = [] }) {
   }
 
   async function update(visit) {
-    if (busy || note.trim().length < 3) {
+    const note = (notesByVisit[visit.id] ?? '').trim()
+    if (busy || note.length < 3) {
       setError('اكتب ملاحظة متابعة من ثلاثة أحرف على الأقل.')
       return
     }
@@ -72,9 +73,10 @@ export default function JabaliaSupervisorVisitsPanel({ slug, schools = [] }) {
       await updateJabaliaSupervisorVisit(slug, schoolId, visit.id, {
         expected_status: visit.status,
         status: visit.status === 'open' ? 'completed' : 'open',
-        note: note.trim(),
+        note,
       })
-      setNote(''); setMessage('تم حفظ تغيير الحالة وتسجيل الحدث.')
+      setNotesByVisit((current) => ({ ...current, [visit.id]: '' }))
+      setMessage('تم حفظ تغيير الحالة وتسجيل الحدث.')
       await refresh(pageInfo.current_page || 1)
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
@@ -115,9 +117,6 @@ export default function JabaliaSupervisorVisitsPanel({ slug, schools = [] }) {
       </form>
       <h3>الزيارات المسجلة</h3>
       <p>كل إغلاق أو إعادة فتح يحتاج ملاحظة، ولا يحذف أحداث المتابعة السابقة.</p>
-      <label>ملاحظة تغيير الحالة
-        <textarea rows={2} maxLength={2000} value={note} onChange={(event) => setNote(event.target.value)} />
-      </label>
       {error && <p role="alert" className="state error">{error}</p>}
       {message && <p role="status" className="state">{message}</p>}
       {loading ? <p>جارِ تحميل السجلات…</p> : !visits.length ? <p>لا توجد زيارات مسجلة.</p> :
@@ -127,7 +126,11 @@ export default function JabaliaSupervisorVisitsPanel({ slug, schools = [] }) {
           <p>الإجراء: {visit.corrective_action}</p>
           {visit.due_on && <p>موعد المتابعة: {visit.due_on}</p>}
           <p>الحالة: {visit.status === 'completed' ? 'مكتمل' : 'مفتوح'}</p>
-          <button type="button" className="btn outline" disabled={busy || note.trim().length < 3}
+          <label>ملاحظة تغيير الحالة لهذه الزيارة
+            <textarea rows={2} maxLength={2000} value={notesByVisit[visit.id] ?? ''}
+              onChange={(event) => setNotesByVisit((current) => ({ ...current, [visit.id]: event.target.value }))} />
+          </label>
+          <button type="button" className="btn outline" disabled={busy || (notesByVisit[visit.id] ?? '').trim().length < 3}
             onClick={() => update(visit)}>
             {visit.status === 'completed' ? 'إعادة فتح المتابعة' : 'إغلاق المتابعة'}
           </button>
