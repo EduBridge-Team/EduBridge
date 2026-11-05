@@ -351,3 +351,8 @@ export function fetchJabaliaContractReadiness(slug, schoolId) {
 export function fetchJabaliaTeacherDocumentAccessEvents(slug, schoolId, teacherId, page = 1) {
   return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/document-access-events?page=${encodeURIComponent(page)}`))
 }
+
+// Jabalia-only institution attendance-change audit; no parent/public access.
+export function fetchJabaliaAttendanceChangeHistory(slug, schoolId, sessionId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/attendance/${encodeURIComponent(sessionId)}/change-history?page=${encodeURIComponent(page)}`))
+}
