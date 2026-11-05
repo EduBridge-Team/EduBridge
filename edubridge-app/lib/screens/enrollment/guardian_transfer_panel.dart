@@ -82,7 +82,6 @@ class _GuardianTransferPanelState extends State<GuardianTransferPanel> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const Text('طلبات نقل المدرسة / School transfer requests'),
       OutlinedButton.icon(onPressed: _busy ? null : _load, icon: Icon(_opened ? Icons.refresh : Icons.swap_horiz),
         label: Text(_opened ? 'تحديث / Refresh' : 'عرض طلبات النقل / View transfers')),
       if (_opened && _busy) const LinearProgressIndicator(),
