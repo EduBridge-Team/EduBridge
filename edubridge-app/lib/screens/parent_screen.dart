@@ -14,14 +14,12 @@ import '../widgets/dashboard_menu.dart';
 import '../widgets/dashboard_header_actions.dart';
 import '../widgets/dashboard_profile_identity.dart';
 import 'add_child/add_child_screen.dart';
-import 'notifications_screen.dart';
 import 'support_sheet.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart';
 import 'parent_child_profile_screen.dart';
 import 'parent_navigation_bar.dart';
 import 'profile/profile_screen.dart';
-import 'login_screen.dart';
 
 part 'parent_screen_widgets.dart';
 
@@ -149,17 +147,6 @@ class _ParentScreenState extends State<ParentScreen> {
             showMicrophoneToggle: true,
             actions: [
               DashboardMenuAction(
-                id: 'notifications',
-                label: context.l10n.notifications,
-                icon: AppIcons.notifications,
-                onSelected: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const NotificationsScreen(),
-                  ),
-                ),
-              ),
-              DashboardMenuAction(
                 id: 'support',
                 label: context.l10n.technicalSupport,
                 icon: AppIcons.support,
@@ -170,20 +157,6 @@ class _ParentScreenState extends State<ParentScreen> {
                 label: context.l10n.privacyAndAccount,
                 icon: AppIcons.privacy,
                 onSelected: () => const LegalLinksButton().show(context),
-              ),
-              DashboardMenuAction(
-                id: 'logout',
-                label: context.l10n.logout,
-                icon: AppIcons.logout,
-                destructive: true,
-                onSelected: () async {
-                  final navigator = Navigator.of(context);
-                  await ApiService.logout();
-                  navigator.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (_) => false,
-                  );
-                },
               ),
             ],
           ),
