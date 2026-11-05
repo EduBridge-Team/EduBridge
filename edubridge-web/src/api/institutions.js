@@ -331,3 +331,14 @@ export function updateJabaliaSupervisorVisit(slug, schoolId, visitId, payload) {
     method: 'PATCH', body: JSON.stringify(payload),
   })
 }
+
+// Confidential Jabalia student progress records; institution administration only.
+export function fetchJabaliaSuccessStories(slug, schoolId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/success-stories?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaSuccessStory(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/success-stories'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
