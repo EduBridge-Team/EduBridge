@@ -20,7 +20,7 @@ test('Jabalia supervision panel presents record and follow-up controls', async (
     assert.match(html, /الزيارات الإشرافية وإجراءات المتابعة/)
     assert.match(html, /تاريخ الزيارة/)
     assert.match(html, /الإجراء التصحيحي المطلوب/)
-    assert.match(html, /ملاحظة تغيير الحالة/)
+    assert.match(html, /كل إغلاق أو إعادة فتح يحتاج ملاحظة/)
     assert.match(html, /جباليا الاختبار/)
     assert.match(html, /ليس بديلًا عن نموذج الجمعية الرسمي/)
     const hidden = renderToStaticMarkup(createElement(Panel, {
@@ -31,4 +31,15 @@ test('Jabalia supervision panel presents record and follow-up controls', async (
   } finally {
     await server.close()
   }
+})
+
+// Regression: a follow-up note belongs to its visit, not to the selected school.
+// This prevents submitting a note intended for one visit against another.
+test('follow-up notes are stored and submitted per visit', async () => {
+  const { readFile } = await import('node:fs/promises')
+  const source = await readFile(new URL('../src/components/Institution/JabaliaSupervisorVisitsPanel.jsx', import.meta.url), 'utf8')
+  assert.match(source, /notesByVisit\[visit\.id\]/)
+  assert.match(source, /setNotesByVisit\(\(current\) => \(\{ \.\.\.current, \[visit\.id\]: event\.target\.value \}\)\)/)
+  assert.match(source, /setNotesByVisit\(\(current\) => \(\{ \.\.\.current, \[visit\.id\]: '' \}\)\)/)
+  assert.doesNotMatch(source, /const \[note, setNote\]/)
 })
