@@ -186,9 +186,12 @@ class JabaliaSupervisorVisitTest extends TestCase
 
         $payload = $this->payload();
         $payload['findings'] = '   ';
-        $this->assertSame(422, $controller->store(
-            $this->request($payload), 'jabalia', 1
-        )->status());
+        try {
+            $controller->store($this->request($payload), 'jabalia', 1);
+            $this->fail('Whitespace-only findings must be rejected by validation');
+        } catch (ValidationException $exception) {
+            $this->assertArrayHasKey('findings', $exception->errors());
+        }
         $this->assertSame(0, DB::table('jabalia_supervisor_visits')->count());
         $this->assertSame(0, DB::table('jabalia_supervisor_visit_events')->count());
     }
