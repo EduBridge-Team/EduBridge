@@ -297,3 +297,21 @@ export function updateJabaliaSubjectQuota(slug, schoolId, payload) {
     method: 'PUT', body: JSON.stringify(payload),
   })
 }
+
+// Jabalia-only institutional school closures; never infer public holidays.
+
+export function fetchJabaliaSchoolClosureDays(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/closure-days'))
+}
+
+export function createJabaliaSchoolClosureDay(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/closure-days'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function deleteJabaliaSchoolClosureDay(slug, schoolId, closureId) {
+  return request(schoolPath(slug, schoolId, '/closure-days/' + encodeURIComponent(closureId)), {
+    method: 'DELETE',
+  })
+}
