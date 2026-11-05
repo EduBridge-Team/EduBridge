@@ -140,7 +140,7 @@ class JabaliaSchoolCalendarTest extends TestCase
     {
         $controller = app(JabaliaSchoolCalendarController::class);
         $response = $controller->store($this->request([
-            'closed_on' => '2026-11-15', 'reason' => '  ',
+            'closed_on' => '2026-11-15', 'reason' => '   ',
         ]), 'jabalia', 1);
         $this->assertSame(422, $response->status());
         $this->assertSame(0, DB::table('jabalia_school_closure_days')->count());
