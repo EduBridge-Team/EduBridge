@@ -175,6 +175,20 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
         $this->assertDatabaseCount('jabalia_admission_documents', 5);
     }
 
+    public function test_evidence_listing_exposes_server_upload_gate_without_approving_admission(): void
+    {
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        config()->set('services.jabalia_admissions.upload_enabled', false);
+        $disabled = $controller->parentIndex($this->actor(40, 'parent'), 10, 100)->getData(true);
+        $this->assertFalse($disabled['uploads_enabled']);
+        $this->assertFalse($disabled['admissions_approved']);
+
+        config()->set('services.jabalia_admissions.upload_enabled', true);
+        $enabled = $controller->parentIndex($this->actor(40, 'parent'), 10, 100)->getData(true);
+        $this->assertTrue($enabled['uploads_enabled']);
+        $this->assertFalse($enabled['admissions_approved']);
+    }
+
     public function test_upload_disabled_by_default_operational_gate(): void
     {
         config()->set('services.jabalia_admissions.upload_enabled', false);

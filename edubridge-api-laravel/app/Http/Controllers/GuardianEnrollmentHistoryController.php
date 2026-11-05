@@ -21,12 +21,20 @@ class GuardianEnrollmentHistoryController extends Controller
 
         $requests = DB::table('school_enrollment_requests as r')
             ->join('schools as s', 's.id', '=', 'r.school_id')
+            ->leftJoin('organizations as o', 'o.id', '=', 's.organization_id')
             ->join('children as c', 'c.id', '=', 'r.child_id')
             ->where('r.child_id', $child)
             ->select('r.id', 'r.school_id', 's.name as school_name',
                 'r.child_id', 'c.name as child_name', 'r.status',
-                'r.version', 'r.reason', 'r.created_at')
-            ->orderByDesc('r.created_at')->orderByDesc('r.id')->get();
+                'r.version', 'r.reason', 'r.created_at', 'o.slug as tenant_slug')
+            ->orderByDesc('r.created_at')->orderByDesc('r.id')->get()
+            ->map(function ($row) {
+                // Explicit per-request flag for child-scoped Jabalia intake UI.
+                // Never expose the tenant slug or infer status from school names.
+                $row->requires_counselor_review = $row->tenant_slug === 'jabalia';
+                unset($row->tenant_slug);
+                return $row;
+            });
 
         $enrollment = DB::table('student_enrollments as e')
             ->join('sections as s', 's.id', '=', 'e.section_id')
