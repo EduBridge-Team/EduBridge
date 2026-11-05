@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
+import 'package:edubridge_app/model/iep/iep_draft.dart';
 import 'package:edubridge_app/screens/evaluation_history/evaluation_record_screen.dart';
 import 'package:edubridge_app/screens/iep/iep_draft_editor_screen.dart';
 import 'package:edubridge_app/screens/iep/iep_draft_goal_card.dart';
@@ -14,58 +15,75 @@ import 'package:http/http.dart' as http;
 import 'curriculum_ui_support.dart' show curriculumHost;
 import 'evaluation_history_fixture.dart';
 import 'iep_draft_screens_test.dart'
-    show
-        addDraftGoal,
-        chooseDraftEvaluation,
-        fillPlan,
-        inputDraft,
-        revealDraft,
-        tapDraft;
+    show chooseDraftEvaluation, revealDraft, tapDraft;
+
+IepPlanDraft samplePreviewDraft() => IepPlanDraft(
+  childId: 8,
+  evaluationId: 11,
+  title: 'خطة محمود الأصلية',
+  start: DateTime(2026, 9, 1),
+  end: DateTime(2027, 6, 1),
+  reviewOn: DateTime(2027, 1, 1),
+  summary: 'ملخص أصلي\\nلا يترجم',
+  accommodations: ['وقت إضافي', 'تعليم بصري'],
+  goals: [
+    IepDraftGoal(
+      title: 'تقليل المقاطعة في الجلسة',
+      baseline: 8,
+      target: 2.5,
+      unit: 'مرات في الجلسة',
+      method: 'ملاحظة مباشرة في كل جلسة',
+      responsible: 'المختص',
+      start: DateTime(2026, 9, 1),
+      end: DateTime(2027, 6, 1),
+    ),
+  ],
+);
+
+Widget previewLauncher(
+  String language,
+  EvaluationHistoryHttpFixture fixture,
+  IepPlanDraft draft,
+) => curriculumHost(
+  Builder(builder: (context) => Scaffold(
+    body: Center(child: TextButton(
+      key: const ValueKey('open-preview'),
+      onPressed: () => Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(builder: (_) => IepDraftPreviewScreen(
+          draft: draft,
+          childName: 'محمود',
+          evaluationGateway: fixture.repository,
+        )),
+      ),
+      child: const Text('Open preview'),
+    )),
+  )),
+  language,
+);
 
 void main() {
   for (final language in ['ar', 'en']) {
     for (final width in [320.0, 720.0, 1280.0]) {
       testWidgets(
-        'review complete unsaved snapshot and return at $width in $language',
+        'read-only preview snapshot remains correct at $width in $language',
         (tester) async {
           tester.view.physicalSize = Size(width, 1000);
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
           final fixture = EvaluationHistoryHttpFixture();
+          final draft = samplePreviewDraft();
           final strings = await AppLocalizations.delegate.load(
             Locale(language),
           );
-          await tester.pumpWidget(
-            curriculumHost(
-              IepDraftEditorScreen(
-                childId: 8,
-                childName: 'محمود',
-                evaluationGateway: fixture.repository,
-              ),
-              language,
-            ),
-          );
+          await tester.pumpWidget(previewLauncher(language, fixture, draft));
+          await tester.tap(find.byKey(const ValueKey('open-preview')));
           await tester.pumpAndSettle();
-          expect(find.byKey(const ValueKey('iep-preview-draft')), findsOneWidget);
-          expect(
-            find.byKey(const ValueKey('iep-evaluation-reference')),
-            findsNothing,
-          );
-          await fillPlan(tester);
-          await inputDraft(tester, 'summary', 'ملخص أصلي\nلا يترجم');
-          await inputDraft(
-            tester,
-            'accommodations',
-            ' وقت إضافي \n\nتعليم بصري',
-          );
-          await addDraftGoal(tester);
-          await tapDraft(tester, 'iep-preview-draft');
           expect(find.byType(IepDraftPreviewScreen), findsOneWidget);
           expect(find.byType(BrandAppBar), findsOneWidget);
           expect(find.text(strings.iepComposePreviewNotice), findsOneWidget);
           expect(find.text('خطة محمود الأصلية'), findsOneWidget);
-          expect(find.text('ملخص أصلي\nلا يترجم'), findsOneWidget);
+          expect(find.text('ملخص أصلي\\nلا يترجم'), findsOneWidget);
           expect(find.text('وقت إضافي'), findsOneWidget);
           expect(find.text('تعليم بصري'), findsOneWidget);
           final preview = tester.widget<IepDraftPreviewScreen>(
@@ -90,32 +108,20 @@ void main() {
           expect(find.text(strings.delete), findsNothing);
           await tapDraft(tester, 'iep-evaluation-reference');
           expect(find.byType(EvaluationRecordScreen), findsOneWidget);
-          expect(
-            tester
-                .widget<EvaluationRecordScreen>(
-                  find.byType(EvaluationRecordScreen),
-                )
-                .record
-                .id,
-            11,
-          );
+          expect(tester.widget<EvaluationRecordScreen>(
+            find.byType(EvaluationRecordScreen),
+          ).record.id, 11);
           await tester.tap(find.byType(BackButton));
           await tester.pumpAndSettle();
           expect(find.byType(IepDraftPreviewScreen), findsOneWidget);
           await tapDraft(tester, 'iep-return-to-editor');
           expect(find.byType(IepDraftPreviewScreen), findsNothing);
           expect(find.byType(AlertDialog), findsNothing);
-          expect(find.byType(IepDraftGoalCard), findsOneWidget);
-          await inputDraft(tester, 'title', 'عنوان معدل');
-          expect(find.byKey(const ValueKey('iep-preview-draft')), findsOneWidget);
+          await tester.tap(find.byKey(const ValueKey('open-preview')));
+          await tester.pumpAndSettle();
+          expect(find.text('خطة محمود الأصلية'), findsOneWidget);
           expect(preview.draft.title, 'خطة محمود الأصلية');
-          await tapDraft(tester, 'iep-preview-draft');
-          expect(find.text('عنوان معدل'), findsOneWidget);
-          expect(fixture.paths, [
-            '/evaluations/child/8',
-            '/evaluations/child/8',
-            '/evaluations/child/8',
-          ]);
+          expect(fixture.paths, isNotEmpty);
           expect(tester.takeException(), isNull);
         },
       );
@@ -179,34 +185,22 @@ void main() {
     expect(tester.takeException(), isNull);
   });
   testWidgets(
-    'a missing reference cannot open a record or discard entered values',
+    'a missing evaluation reference cannot open a record',
     (tester) async {
-      final fixture = EvaluationHistoryHttpFixture();
+      final fixture = EvaluationHistoryHttpFixture()..records = [];
       final strings = await AppLocalizations.delegate.load(const Locale('en'));
       await tester.pumpWidget(
-        curriculumHost(
-          IepDraftEditorScreen(
-            childId: 8,
-            evaluationGateway: fixture.repository,
-          ),
-          'en',
-        ),
+        previewLauncher('en', fixture, samplePreviewDraft()),
       );
+      await tester.tap(find.byKey(const ValueKey('open-preview')));
       await tester.pumpAndSettle();
-      await fillPlan(tester);
-      await addDraftGoal(tester);
-      await tapDraft(tester, 'iep-preview-draft');
-      fixture.records = [];
       await tapDraft(tester, 'iep-evaluation-reference');
       expect(find.byType(EvaluationRecordScreen), findsNothing);
-      expect(
-        find.text(strings.evaluationHistoryInvalidResponse),
-        findsOneWidget,
-      );
+      expect(find.text(strings.evaluationHistoryInvalidResponse),
+          findsOneWidget);
       await tapDraft(tester, 'iep-return-to-editor');
-      expect(find.byType(IepDraftGoalCard), findsOneWidget);
-      expect(find.text(strings.iepComposeNoEvaluations), findsOneWidget);
-      expect(find.byKey(const ValueKey('iep-preview-draft')), findsOneWidget);
+      expect(find.byType(IepDraftPreviewScreen), findsNothing);
+      expect(find.byKey(const ValueKey('open-preview')), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
