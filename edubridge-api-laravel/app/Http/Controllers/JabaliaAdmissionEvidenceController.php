@@ -6,6 +6,7 @@ use App\Support\SchoolScopedAccess;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -58,6 +59,42 @@ class JabaliaAdmissionEvidenceController extends Controller
             ->select('r.id', 'r.child_id', 'r.school_id', 'r.status')->first();
     }
 
+    private function audit(Request $request, object $enrollment, ?int $document, string $action): void
+    {
+        // Fail closed: evidence access must not silently bypass audit persistence.
+        DB::table('jabalia_admission_evidence_access_events')->insert([
+            'school_id' => $enrollment->school_id,
+            'child_id' => $enrollment->child_id,
+            'enrollment_request_id' => $enrollment->id,
+            'document_id' => $document,
+            'action' => $action,
+            'actor_id' => $request->attributes->get('jwt_user')->id,
+            'actor_role' => $request->attributes->get('jwt_user')->role,
+            'created_at' => now(),
+        ]);
+    }
+
+    private function auditReady(): bool
+    {
+        return Schema::hasTable('jabalia_admission_evidence_access_events');
+    }
+
+    public function schoolAccessEvents(Request $request, int $enrollmentRequest): JsonResponse
+    {
+        $enrollment = $this->schoolRequest($request, $enrollmentRequest);
+        if (!$enrollment) return response()->json(['error' => 'Not found'], 404);
+        if (!$this->auditReady()) return response()->json(['error' => 'Access audit unavailable'], 503);
+        $this->audit($request, $enrollment, null, 'audit_viewed');
+        $events = DB::table('jabalia_admission_evidence_access_events')
+            ->where('school_id', $enrollment->school_id)
+            ->where('child_id', $enrollment->child_id)
+            ->where('enrollment_request_id', $enrollment->id)
+            ->orderByDesc('id')->select([
+                'id', 'document_id', 'action', 'actor_id', 'actor_role', 'created_at',
+            ])->paginate(30);
+        return response()->json(['events' => $events]);
+    }
+
     private function metadata(object $record): array
     {
         return [
@@ -68,13 +105,14 @@ class JabaliaAdmissionEvidenceController extends Controller
         ];
     }
 
-    private function listFor(object $enrollment): JsonResponse
+    private function listFor(Request $request, object $enrollment): JsonResponse
     {
         $rows = DB::table('jabalia_admission_documents')
             ->where('enrollment_request_id', $enrollment->id)
             ->where('child_id', $enrollment->child_id)
             ->where('school_id', $enrollment->school_id)
             ->orderBy('id')->get();
+        $this->audit($request, $enrollment, null, 'listed');
         return response()->json([
             'request_id' => (int) $enrollment->id,
             'documents' => $rows->map(fn ($row) => $this->metadata($row))->all(),
@@ -92,14 +130,16 @@ class JabaliaAdmissionEvidenceController extends Controller
     {
         $enrollment = $this->parentRequest($request, $child, $enrollmentRequest);
         if (!$enrollment) return response()->json(['error' => 'Not found'], 404);
-        return $this->listFor($enrollment);
+        if (!$this->auditReady()) return response()->json(['error' => 'Access audit unavailable'], 503);
+        return $this->listFor($request, $enrollment);
     }
 
     public function schoolIndex(Request $request, int $enrollmentRequest): JsonResponse
     {
         $enrollment = $this->schoolRequest($request, $enrollmentRequest);
         if (!$enrollment) return response()->json(['error' => 'Not found'], 404);
-        return $this->listFor($enrollment);
+        if (!$this->auditReady()) return response()->json(['error' => 'Access audit unavailable'], 503);
+        return $this->listFor($request, $enrollment);
     }
 
     public function store(Request $request, int $child, int $enrollmentRequest): JsonResponse
@@ -152,6 +192,7 @@ class JabaliaAdmissionEvidenceController extends Controller
                     'uploaded_by' => $request->attributes->get('jwt_user')->id,
                     'created_at' => now(), 'updated_at' => now(),
                 ]);
+                $this->audit($request, $enrollment, $id, 'uploaded');
                 return DB::table('jabalia_admission_documents')->where('id', $id)->first();
             });
         } catch (\Throwable $error) {
@@ -165,7 +206,7 @@ class JabaliaAdmissionEvidenceController extends Controller
         return response()->json(['document' => $this->metadata($result)], 201);
     }
 
-    private function downloadFor(object $enrollment, int $document)
+    private function downloadFor(Request $request, object $enrollment, int $document)
     {
         $row = DB::table('jabalia_admission_documents')
             ->where('id', $document)
@@ -182,6 +223,9 @@ class JabaliaAdmissionEvidenceController extends Controller
             default => null,
         };
         if (!$extension) return response()->json(['error' => 'Unavailable'], 404);
+        if (!$this->auditReady()) return response()->json(['error' => 'Access audit unavailable'], 503);
+        // The event proves issuance of a response, not successful network delivery.
+        $this->audit($request, $enrollment, $document, 'download_issued');
         return Storage::disk('local')->download(
             $row->storage_path, 'admission-document-'.$row->id.'.'.$extension,
             ['Cache-Control' => 'private, no-store', 'X-Content-Type-Options' => 'nosniff']
@@ -192,13 +236,13 @@ class JabaliaAdmissionEvidenceController extends Controller
     {
         $enrollment = $this->parentRequest($request, $child, $enrollmentRequest);
         if (!$enrollment) return response()->json(['error' => 'Not found'], 404);
-        return $this->downloadFor($enrollment, $document);
+        return $this->downloadFor($request, $enrollment, $document);
     }
 
     public function schoolDownload(Request $request, int $enrollmentRequest, int $document)
     {
         $enrollment = $this->schoolRequest($request, $enrollmentRequest);
         if (!$enrollment) return response()->json(['error' => 'Not found'], 404);
-        return $this->downloadFor($enrollment, $document);
+        return $this->downloadFor($request, $enrollment, $document);
     }
 }
