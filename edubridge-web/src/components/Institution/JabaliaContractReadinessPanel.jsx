@@ -26,6 +26,14 @@ export default function JabaliaContractReadinessPanel({ slug, schools = [] }) {
       <span>العقود المنتهية حسب التاريخ: {data.records_expired_by_date}</span>
       <span>دون تاريخ انتهاء: {data.records_without_expiry_date}</span>
       <span>معلمون بعقود مسجلة: {data.teachers_with_contract_records}</span>
+      {data.contract_periods_available && <>
+        <span>فترات العقود المسجلة: {data.periods_recorded}</span>
+        <span>ضمن المدة المسجلة اليوم: {data.periods_current_by_date}</span>
+        <span>فترات انتهت حسب التاريخ: {data.periods_ended_by_date}</span>
+        <span>عقود تبدأ مستقبلًا: {data.periods_upcoming_by_date}</span>
+        <span>فترات تنتهي خلال 30 يومًا: {data.periods_ending_within_30_days}</span>
+        <span>تجديدات مرتبطة بعقود سابقة: {data.renewals_recorded}</span>
+      </>}
     </div>}
   </section>
 }

@@ -48,6 +48,7 @@ class JabaliaContractReadinessTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('jabalia_teacher_contract_periods');
         Schema::dropIfExists('jabalia_teacher_documents');
         Schema::dropIfExists('schools');
         Schema::dropIfExists('organizations');
@@ -88,6 +89,45 @@ class JabaliaContractReadinessTest extends TestCase
         $this->assertSame(404, $controller->index($this->request('parent'), 'jabalia', 1)->status());
         $this->assertSame(404, $controller->index($this->request('school'), 'jabalia', 1)->status());
         $this->assertSame(404, $controller->index($this->request('institution', 2, 'other'), 'other', 3)->status());
+    }
+
+    public function test_contract_period_counts_are_scoped_and_use_recorded_calendar_dates_only(): void
+    {
+        Schema::create('jabalia_teacher_contract_periods', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('school_id');
+            $t->unsignedBigInteger('teacher_id'); $t->unsignedBigInteger('previous_period_id')->nullable();
+            $t->date('starts_on'); $t->date('ends_on');
+        });
+        $today=now('Asia/Hebron')->toDateString();
+        DB::table('jabalia_teacher_contract_periods')->insert([
+            ['organization_id'=>1,'school_id'=>1,'teacher_id'=>10,'previous_period_id'=>null,
+                'starts_on'=>now('Asia/Hebron')->subMonths(2)->toDateString(),
+                'ends_on'=>now('Asia/Hebron')->subDay()->toDateString()],
+            ['organization_id'=>1,'school_id'=>1,'teacher_id'=>10,'previous_period_id'=>1,
+                'starts_on'=>$today,
+                'ends_on'=>now('Asia/Hebron')->addDays(12)->toDateString()],
+            ['organization_id'=>1,'school_id'=>1,'teacher_id'=>11,'previous_period_id'=>null,
+                'starts_on'=>now('Asia/Hebron')->addMonth()->toDateString(),
+                'ends_on'=>now('Asia/Hebron')->addMonths(3)->toDateString()],
+            ['organization_id'=>1,'school_id'=>2,'teacher_id'=>11,'previous_period_id'=>null,
+                'starts_on'=>$today,'ends_on'=>now('Asia/Hebron')->addDays(5)->toDateString()],
+            ['organization_id'=>2,'school_id'=>3,'teacher_id'=>12,'previous_period_id'=>null,
+                'starts_on'=>$today,'ends_on'=>now('Asia/Hebron')->addDays(4)->toDateString()],
+        ]);
+        $controller=app(JabaliaContractReadinessController::class);
+        $data=$controller->index($this->request(),'jabalia',1)->getData(true);
+        $this->assertTrue($data['contract_periods_available']);
+        $this->assertSame(3,$data['periods_recorded']);
+        $this->assertSame(1,$data['periods_current_by_date']);
+        $this->assertSame(1,$data['periods_ended_by_date']);
+        $this->assertSame(1,$data['periods_upcoming_by_date']);
+        $this->assertSame(1,$data['periods_ending_within_30_days']);
+        $this->assertSame(1,$data['renewals_recorded']);
+        $this->assertArrayNotHasKey('teacher_id',$data);
+        $this->assertArrayNotHasKey('project_name',$data);
+        $other=$controller->index($this->request(),'jabalia',2)->getData(true);
+        $this->assertSame(1,$other['periods_current_by_date']);
+        $this->assertSame(1,$other['periods_recorded']);
     }
 
     public function test_anonymous_http_report_cannot_be_read(): void
