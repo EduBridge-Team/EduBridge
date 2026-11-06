@@ -88,6 +88,12 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::patch('/schools/{school}/teachers/{teacher}/profile', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'updateProfile'])->whereNumber('school')->whereNumber('teacher');
         Route::get('/schools/{school}/teachers/{teacher}/transfers', [\App\Http\Controllers\JabaliaTeacherSchoolTransferController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::post('/schools/{school}/teachers/{teacher}/transfers', [\App\Http\Controllers\JabaliaTeacherSchoolTransferController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
+        // Jabalia contract employment periods: immutable metadata, attached to
+        // an existing private contract copy. Institution account only.
+        Route::get('/schools/{school}/teachers/{teacher}/contract-periods', [\App\Http\Controllers\JabaliaTeacherContractPeriodController::class, 'index'])
+            ->whereNumber('school')->whereNumber('teacher');
+        Route::post('/schools/{school}/teachers/{teacher}/contract-periods', [\App\Http\Controllers\JabaliaTeacherContractPeriodController::class, 'store'])
+            ->whereNumber('school')->whereNumber('teacher')->middleware('throttle:10,1');
         Route::get('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::get('/schools/{school}/teachers/{teacher}/document-access-events', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'accessEvents'])->whereNumber('school')->whereNumber('teacher');
         Route::post('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
