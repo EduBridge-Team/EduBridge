@@ -194,7 +194,8 @@ class JabaliaHomeroomAttendanceTest extends TestCase
         $this->assertCount(1, $show['records']);
         $this->assertTrue($show['can_mark']);
 
-        DB::table('attendance_records')->where('attendance_session_id',$session)\n            ->update(['note'=>'private administration note']);\n        $saved = $controller->mark($this->request([
+        DB::table('attendance_records')->where('attendance_session_id',$session)
+            ->update(['note'=>'private administration note']);\n        $saved = $controller->mark($this->request([
             'records'=>[['child_id'=>1,'status'=>'present']],
             'close_session'=>true, 'note'=>'not permitted',
         ]), 'jabalia', 21, $session);
