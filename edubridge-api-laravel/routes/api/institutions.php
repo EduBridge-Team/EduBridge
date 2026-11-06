@@ -147,12 +147,12 @@ Route::prefix('/institutions/{organizationSlug}/homeroom')
     ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
     ->middleware('organization.member:teacher')
     ->group(function () {
-        Route::get('/sections', [\\App\\Http\\Controllers\\JabaliaHomeroomAttendanceController::class, 'sections']);
-        Route::get('/sections/{section}/attendance', [\\App\\Http\\Controllers\\JabaliaHomeroomAttendanceController::class, 'show'])
+        Route::get('/sections', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'sections']);
+        Route::get('/sections/{section}/attendance', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'show'])
             ->whereNumber('section');
-        Route::post('/sections/{section}/attendance', [\\App\\Http\\Controllers\\JabaliaHomeroomAttendanceController::class, 'start'])
+        Route::post('/sections/{section}/attendance', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'start'])
             ->whereNumber('section')->middleware('throttle:10,1');
-        Route::put('/sections/{section}/attendance/{session}/records', [\\App\\Http\\Controllers\\JabaliaHomeroomAttendanceController::class, 'mark'])
+        Route::put('/sections/{section}/attendance/{session}/records', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'mark'])
             ->whereNumber('section')->whereNumber('session')->middleware('throttle:20,1');
     });
 
