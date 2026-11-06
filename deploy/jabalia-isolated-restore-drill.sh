@@ -40,7 +40,13 @@ python3 "$CHECKER" verify "$DB_ARCHIVE"
 python3 "$CHECKER" verify "$TEACHER_ARCHIVE"
 python3 "$CHECKER" verify "$ADMISSION_ARCHIVE"
 
-STAGE="$(mktemp -d "${TMPDIR:-/tmp}/jabalia-isolated-restore.XXXXXXXX")"
+# Recover sensitive files onto RAM-backed scratch by default. If insufficient,
+# use an approved encrypted staging filesystem via JABALIA_DRILL_STAGE_ROOT.
+STAGE_ROOT="${JABALIA_DRILL_STAGE_ROOT:-/dev/shm}"
+[[ -d "$STAGE_ROOT" && -w "$STAGE_ROOT" && ! -L "$STAGE_ROOT" ]] || {
+  echo "ERROR: secure staging directory unavailable" >&2; exit 2;
+}
+STAGE="$(mktemp -d "$STAGE_ROOT/jabalia-isolated-restore.XXXXXXXX")"
 chmod 700 "$STAGE"
 DRILL_CONTAINER="jabalia-restore-drill-$$"
 cleanup() {
