@@ -143,7 +143,10 @@ class JabaliaHomeroomAttendanceController extends Controller
             if (!$this->assignedSection($request, $organizationSlug, $section)) {
                 return response()->json(['error' => 'Not found'], 404);
             }
-            $request->replace([\n                'section_id' => $section, 'attendance_date' => $data['date'],\n                'teacher_id' => $request->attributes->get('jwt_user')->id,\n            ]);
+            $request->replace([
+                'section_id' => $section, 'attendance_date' => $data['date'],
+                'teacher_id' => $request->attributes->get('jwt_user')->id,
+            ]);
             return app(InstitutionAttendanceController::class)
                 ->store($request, $organizationSlug, (int) $row->school_id);
         });
