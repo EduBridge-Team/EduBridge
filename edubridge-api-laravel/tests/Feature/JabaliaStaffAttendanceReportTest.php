@@ -7,7 +7,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class JabaliaStaffAttendanceReportTest extends TestCase
@@ -118,7 +117,6 @@ class JabaliaStaffAttendanceReportTest extends TestCase
     public function test_denies_other_organization_school_role_and_unbounded_date_ranges(): void
     {
         $controller=app(JabaliaStaffAttendanceReportController::class);
-        $this->assertSame(404,$controller->index($this->request(), 'jabalia', 11)->status()===404 ? 404 : 200);
         // The same institution may access its second school, but only its own roster.
         $other=$controller->index($this->request(), 'jabalia', 11)->getData(true);
         $this->assertSame([22],array_column($other['staff']['data'],'user_id'));
@@ -127,13 +125,10 @@ class JabaliaStaffAttendanceReportTest extends TestCase
         foreach (['parent','school','teacher','specialist'] as $role) {
             $this->assertSame(404,$controller->index($this->request(1,'jabalia',$role), 'jabalia', 10)->status());
         }
-        try {
-            $controller->index($this->request(1,'jabalia','institution',
-                ['to'=>'2027-12-31']), 'jabalia', 10);
-            $this->fail('Unbounded date range should be denied');
-        } catch (ValidationException $ignored) {
-            // A malformed range is rejected by Laravel validation or bounded logic.
-        }
+        $this->assertSame(422, $controller->index(
+            $this->request(1,'jabalia','institution', ['to'=>'2027-12-31']),
+            'jabalia', 10
+        )->status());
     }
 
     public function test_unauthenticated_routes_are_protected(): void
