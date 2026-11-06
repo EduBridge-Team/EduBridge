@@ -71,6 +71,7 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::post('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::patch('/schools/{school}/supervisor-visits/{visit}', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'updateStatus'])->whereNumber('school')->whereNumber('visit')->middleware('throttle:20,1');
         // Internal educational activity reports, never HR compliance attestations.
+        Route::get('/schools/{school}/staff-attendance-summary', [\App\Http\Controllers\JabaliaStaffAttendanceReportController::class, 'index'])->whereNumber('school')->middleware('throttle:30,1');
         Route::get('/schools/{school}/teacher-activities', [\App\Http\Controllers\JabaliaTeacherActivityController::class, 'index'])->whereNumber('school');
         Route::post('/schools/{school}/teacher-activities', [\App\Http\Controllers\JabaliaTeacherActivityController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::get('/schools/{school}/contract-readiness', [\App\Http\Controllers\JabaliaContractReadinessController::class, 'index'])->whereNumber('school');
