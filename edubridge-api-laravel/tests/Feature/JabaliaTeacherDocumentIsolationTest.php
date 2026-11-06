@@ -81,7 +81,9 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
             $this->assertSame(1, $record['organization_id']);
             $this->assertSame(1, $record['school_id']);
             $this->assertSame(11, $record['teacher_id']);
-            $this->assertNull($record['storage_path']);
+            $this->assertSame(0, $record['has_file']);
+            $this->assertArrayNotHasKey('storage_path', $record);
+            $this->assertArrayNotHasKey('original_filename', $record);
         }
 
         $this->assertSame(count($types) + 1, DB::table('jabalia_teacher_documents')->count());
@@ -122,6 +124,29 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         $response = app(JabaliaTeacherDocumentController::class)->index($this->request(1, 'jabalia'), 'jabalia', 1, 11);
         $this->assertSame(200, $response->status());
         $this->assertCount(1, $response->getData(true)['documents']['data']);
+    }
+
+    public function test_list_returns_only_attachment_flag_without_private_paths_or_original_filename(): void
+    {
+        $confidentialPath = 'jabalia-teacher-documents/private-personnel-id-file.pdf';
+        DB::table('jabalia_teacher_documents')->where('id', 1)->update([
+            'storage_path' => $confidentialPath,
+            'original_filename' => 'teacher-national-identity.pdf',
+        ]);
+        $response = app(JabaliaTeacherDocumentController::class)
+            ->index($this->request(1, 'jabalia'), 'jabalia', 1, 11);
+        $this->assertSame(200, $response->status());
+        $entry = $response->getData(true)['documents']['data'][0];
+        $this->assertSame(1, $entry['has_file']);
+        foreach (['storage_path', 'original_filename', 'mime_type', 'file_size'] as $sensitiveKey) {
+            $this->assertArrayNotHasKey($sensitiveKey, $entry);
+        }
+        $encoded = $response->getContent();
+        $this->assertStringNotContainsString($confidentialPath, $encoded);
+        $this->assertStringNotContainsString('teacher-national-identity.pdf', $encoded);
+        $this->assertDatabaseHas('jabalia_teacher_document_access_events', [
+            'action' => 'listed', 'document_id' => null, 'actor_id' => 99,
+        ]);
     }
 
     public function test_other_organization_cannot_list_jabalia_documents(): void
