@@ -284,7 +284,7 @@ export default function InstitutionTeachersPage() {
 
   async function downloadTeacherFile(item) {
     setError('')
-    try { await downloadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, item.original_filename || 'document') }
+    try { await downloadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, null) }
     catch (err) { setError(err.message) }
   }
 
@@ -525,10 +525,10 @@ export default function InstitutionTeachersPage() {
                     <button className="btn" type="submit" disabled={documentSaving}>{documentSaving ? 'جارِ الحفظ…' : 'إضافة وثيقة'}</button>
                   </form>
                   {documents.length === 0 ? <p>لا توجد وثائق مهنية مسجلة لهذا المعلم.</p> : <ul>
-                    {documents.map((item) => <li key={item.id}>{TEACHER_DOCUMENT_TYPE_LABELS[item.type] || 'نوع وثيقة غير معروف'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} {!item.storage_path && <span role="status"> — لم يتم رفع المرفق بعد</span>}{item.storage_path && <button type="button" className="btn outline" onClick={() => downloadTeacherFile(item)}>تنزيل {item.original_filename || 'المرفق'}</button>}
-                      <input type="file" disabled={documentSaving || (item.type === 'contract' && !!item.storage_path)} aria-label={`إرفاق ملف للوثيقة ${item.title}`} accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => setUploadFiles((current) => ({ ...current, [item.id]: event.target.files?.[0] || null }))} />
-                      <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id] || (item.type === 'contract' && !!item.storage_path)} onClick={() => uploadTeacherFile(item)}>{item.storage_path ? 'استبدال الملف' : 'رفع الملف'}</button>
-                      <button type="button" className="btn outline" disabled={documentSaving || (item.type === 'contract' && !!item.storage_path)} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
+                    {documents.map((item) => <li key={item.id}>{TEACHER_DOCUMENT_TYPE_LABELS[item.type] || 'نوع وثيقة غير معروف'}: {item.title}{item.issuer ? ` — ${item.issuer}` : ''}{item.issued_on ? ` (تاريخ الإصدار: ${item.issued_on})` : ''} {!item.has_file && <span role="status"> — لم يتم رفع المرفق بعد</span>}{item.has_file && <button type="button" className="btn outline" onClick={() => downloadTeacherFile(item)}>تنزيل {item.original_filename || 'المرفق'}</button>}
+                      <input type="file" disabled={documentSaving || (item.type === 'contract' && !!item.has_file)} aria-label={`إرفاق ملف للوثيقة ${item.title}`} accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(event) => setUploadFiles((current) => ({ ...current, [item.id]: event.target.files?.[0] || null }))} />
+                      <button type="button" className="btn outline" disabled={documentSaving || !uploadFiles[item.id] || (item.type === 'contract' && !!item.has_file)} onClick={() => uploadTeacherFile(item)}>{item.has_file ? 'استبدال الملف' : 'رفع الملف'}</button>
+                      <button type="button" className="btn outline" disabled={documentSaving || (item.type === 'contract' && !!item.has_file)} onClick={() => removeTeacherDocument(item.id)}>حذف</button></li>)}
                   </ul>}
                   {documentPage.last_page > 1 && <div className="institution-actions" aria-label="صفحات وثائق المعلم">
                     <button type="button" className="btn outline" disabled={documentSaving || documentPage.current_page <= 1} onClick={() => changeDocumentPage(documentPage.current_page - 1)}>السابق</button>
