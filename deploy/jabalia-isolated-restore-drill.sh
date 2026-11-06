@@ -48,9 +48,13 @@ STAGE_ROOT="${JABALIA_DRILL_STAGE_ROOT:-/dev/shm}"
 }
 STAGE="$(mktemp -d "$STAGE_ROOT/jabalia-isolated-restore.XXXXXXXX")"
 chmod 700 "$STAGE"
-DRILL_CONTAINER="jabalia-restore-drill-$$"
+# Never delete a pre-existing container if docker run fails on a name collision.
+DRILL_CONTAINER="jabalia-restore-drill-$RANDOM-$BASHPID-$(date +%s)"
+DRILL_STARTED=0
 cleanup() {
-  docker rm -f "$DRILL_CONTAINER" >/dev/null 2>&1 || true
+  if [[ "$DRILL_STARTED" == 1 ]]; then
+    docker rm -f "$DRILL_CONTAINER" >/dev/null 2>&1 || true
+  fi
   # This directory contains confidential restored files and CSV references.
   if [[ -n "$STAGE" && -d "$STAGE" && "$STAGE" == *jabalia-isolated-restore.* ]]; then
     rm -rf -- "$STAGE"
@@ -77,6 +81,7 @@ docker run -d --rm --pull never --network none \
     echo "ERROR: isolated PostgreSQL did not start" >&2
     exit 3
   }
+DRILL_STARTED=1
 
 ready=0
 for _ in $(seq 1 60); do
