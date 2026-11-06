@@ -356,3 +356,14 @@ export function fetchJabaliaTeacherDocumentAccessEvents(slug, schoolId, teacherI
 export function fetchJabaliaAttendanceChangeHistory(slug, schoolId, sessionId, page = 1) {
   return request(schoolPath(slug, schoolId, `/attendance/${encodeURIComponent(sessionId)}/change-history?page=${encodeURIComponent(page)}`))
 }
+
+// Jabalia institution-only educational activity log, no private staff documents.
+export function fetchJabaliaTeacherActivities(slug, schoolId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teacher-activities?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaTeacherActivity(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/teacher-activities'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
