@@ -46,11 +46,11 @@ class JabaliaAdmissionReadinessTest extends TestCase
             ['id'=>12, 'organization_id'=>2,'is_active'=>true],
         ]);
         DB::table('school_management_assignments')->insert([
-            ['id'=>1,'school_id'=>10,'user_id'=>101,'role'=>'director','permissions'=>null],
-            ['id'=>2,'school_id'=>10,'user_id'=>102,'role'=>'deputy_director','permissions'=>json_encode(['enrollment'])],
-            ['id'=>3,'school_id'=>10,'user_id'=>103,'role'=>'deputy_director','permissions'=>json_encode(['attendance'])],
-            ['id'=>4,'school_id'=>12,'user_id'=>104,'role'=>'director','permissions'=>null],
-            ['id'=>5,'school_id'=>11,'user_id'=>105,'role'=>'director','permissions'=>null],
+            ['id'=>1,'school_id'=>10,'user_id'=>101,'role'=>'director','permissions'=>null,'ends_at'=>null],
+            ['id'=>2,'school_id'=>10,'user_id'=>102,'role'=>'deputy_director','permissions'=>json_encode(['enrollment']),'ends_at'=>null],
+            ['id'=>3,'school_id'=>10,'user_id'=>103,'role'=>'deputy_director','permissions'=>json_encode(['attendance']),'ends_at'=>null],
+            ['id'=>4,'school_id'=>12,'user_id'=>104,'role'=>'director','permissions'=>null,'ends_at'=>null],
+            ['id'=>5,'school_id'=>11,'user_id'=>105,'role'=>'director','permissions'=>null,'ends_at'=>null],
             ['id'=>6,'school_id'=>10,'user_id'=>106,'role'=>'director','permissions'=>null,'ends_at'=>now()],
         ]);
         DB::table('school_accounts')->insert(['school_id'=>10,'user_id'=>107]);
