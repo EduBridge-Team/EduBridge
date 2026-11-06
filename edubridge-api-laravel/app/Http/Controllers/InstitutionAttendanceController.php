@@ -283,7 +283,12 @@ class InstitutionAttendanceController extends Controller
                     ->where('attendance_session_id', $attendanceSession)
                     ->where('child_id', $record['child_id'])->lockForUpdate()->first();
                 $previous = $previousRow?->status;
-                $note = $record['note'] ?? null;
+                // A homeroom teacher cannot read or submit private attendance
+                // notes. Omission must not erase a note previously recorded by
+                // the institution's authorized attendance administrator.
+                $note = array_key_exists('note', $record)
+                    ? $record['note']
+                    : ($jabalia ? ($previousRow?->note) : null);
                 // A repeated save cannot rewrite the original created_at or produce a new event.
                 // Jabalia pre-fills each roll with an unverified 'present' placeholder.
                 // Explicitly saving the same status must still certify the child roll
