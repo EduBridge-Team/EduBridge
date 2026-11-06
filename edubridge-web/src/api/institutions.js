@@ -259,6 +259,17 @@ export async function downloadJabaliaTeacherDocument(slug, schoolId, teacherId, 
   window.setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
 
+// Jabalia institution-only immutable contract period metadata.
+export function fetchJabaliaTeacherContractPeriods(slug, schoolId, teacherId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/contract-periods?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaTeacherContractPeriod(slug, schoolId, teacherId, payload) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/contract-periods`), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
 export function fetchJabaliaTeacherTransfers(slug, schoolId, teacherId) {
   return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/transfers`))
 }
