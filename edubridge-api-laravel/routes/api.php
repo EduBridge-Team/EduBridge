@@ -143,6 +143,13 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-documents/{document}/file',
         [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolDownload'])
         ->whereNumber('enrollmentRequest')->whereNumber('document')->middleware('throttle:30,1');
+    // Administrative intake tracking only: no clinical review, approval or rejection.
+    Route::get('/school/jabalia/enrollment-requests/{enrollmentRequest}/intake-triage',
+        [\App\Http\Controllers\JabaliaAdmissionIntakeTriageController::class, 'show'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
+    Route::post('/school/jabalia/enrollment-requests/{enrollmentRequest}/intake-triage',
+        [\App\Http\Controllers\JabaliaAdmissionIntakeTriageController::class, 'store'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:10,1');
     // Jabalia admission readiness is management-only metadata. NEVER an approval.
     Route::get('/school/jabalia/admission-readiness',
         [\App\Http\Controllers\JabaliaAdmissionReadinessController::class, 'index'])
