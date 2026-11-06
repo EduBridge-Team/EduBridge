@@ -50,6 +50,12 @@ class JabaliaAdmissionIntakeTriageController extends Controller
 
     private function history(object $target): JsonResponse
     {
+        $latest = DB::table('jabalia_admission_intake_events')
+            ->where('organization_id', $target->organization_id)
+            ->where('school_id', $target->school_id)
+            ->where('child_id', $target->child_id)
+            ->where('enrollment_request_id', $target->id)
+            ->orderByDesc('id')->first(['id', 'state']);
         $events = DB::table('jabalia_admission_intake_events')
             ->where('organization_id', $target->organization_id)
             ->where('school_id', $target->school_id)
@@ -59,7 +65,6 @@ class JabaliaAdmissionIntakeTriageController extends Controller
             ->select(['id', 'state', 'request_version', 'actor_id',
                 'management_role', 'created_at'])
             ->paginate(20);
-        $latest = $events->items()[0] ?? null;
 
         return response()->json([
             'school_id' => (int) $target->school_id,
