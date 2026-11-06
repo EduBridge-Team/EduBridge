@@ -161,7 +161,7 @@ class JabaliaHomeroomAttendanceTest extends TestCase
     private function begin(int $section = 21): int
     {
         $response = app(JabaliaHomeroomAttendanceController::class)
-            ->start($this->request(['date'=>$this->today()]), 'jabalia', $section);
+            ->start($this->request(['date'=>$this->today(), 'teacher_id'=>102, 'period_number'=>3]), 'jabalia', $section);
         $this->assertSame(201, $response->status());
         return (int) $response->getData(true)['attendance_session']['id'];
     }
@@ -184,7 +184,7 @@ class JabaliaHomeroomAttendanceTest extends TestCase
         $row = DB::table('attendance_sessions')->find($session);
         $this->assertSame(21, (int) $row->section_id);
         $this->assertNull($row->period_number);
-        $this->assertNull($row->teacher_id);
+        $this->assertSame(101, (int) $row->teacher_id);
         $this->assertSame('present', DB::table('attendance_records')->value('status'));
         $this->assertNull(DB::table('attendance_records')->value('marked_at'));
 
@@ -194,7 +194,7 @@ class JabaliaHomeroomAttendanceTest extends TestCase
         $this->assertCount(1, $show['records']);
         $this->assertTrue($show['can_mark']);
 
-        $saved = $controller->mark($this->request([
+        DB::table('attendance_records')->where('attendance_session_id',$session)\n            ->update(['note'=>'private administration note']);\n        $saved = $controller->mark($this->request([
             'records'=>[['child_id'=>1,'status'=>'present']],
             'close_session'=>true, 'note'=>'not permitted',
         ]), 'jabalia', 21, $session);
@@ -203,6 +203,10 @@ class JabaliaHomeroomAttendanceTest extends TestCase
         $this->assertNotNull(DB::table('attendance_records')->value('marked_at'));
         $this->assertSame(101, (int) DB::table('attendance_records')->value('marked_by'));
         $this->assertSame(0, DB::table('jabalia_attendance_change_events')->count());
+        $this->assertSame('private administration note', DB::table('attendance_records')->value('note'));
+        $this->assertArrayNotHasKey('note', $controller->show(
+            $this->request(), 'jabalia', 21
+        )->getData(true)['records'][0]);
         $this->assertTrue($controller->show($this->request(), 'jabalia', 21)->getData(true)['records'][0]['confirmed']);
         $this->assertSame(409, $controller->start(
             $this->request(['date'=>$this->today()]), 'jabalia', 21
