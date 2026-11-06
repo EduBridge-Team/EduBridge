@@ -39,7 +39,6 @@ class JabaliaHomeroomAttendanceController extends Controller
             ->join('academic_years as y', 'y.id', '=', 's.academic_year_id')
             ->where('s.id', $section)
             ->where('s.homeroom_teacher_id', $scope->actor->id)
-            ->where('y.school_id', '!=', 0)
             ->whereColumn('y.school_id', 'g.school_id')
             ->where('y.is_current', true)
             ->where('sch.is_active', true)
