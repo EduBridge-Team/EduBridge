@@ -367,3 +367,9 @@ export function createJabaliaTeacherActivity(slug, schoolId, payload) {
     method: 'POST', body: JSON.stringify(payload),
   })
 }
+
+// Read-only Jabalia institution summary; only recorded staff days are counted.
+export function fetchJabaliaStaffAttendanceSummary(slug, schoolId, from, to, page = 1) {
+  const query = new URLSearchParams({ from, to, page: String(page) })
+  return request(schoolPath(slug, schoolId, `/staff-attendance-summary?${query}`))
+}
