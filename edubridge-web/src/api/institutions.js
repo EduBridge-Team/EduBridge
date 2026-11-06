@@ -252,7 +252,14 @@ export async function downloadJabaliaTeacherDocument(slug, schoolId, teacherId, 
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = filename || 'document'
+  const suffix = ({
+    'application/pdf': 'pdf',
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+  })[blob.type] || 'bin'
+  // Keep the original personnel filename private; use a generic extension.
+  link.download = filename || 'document.' + suffix
   document.body.appendChild(link)
   link.click()
   link.remove()
