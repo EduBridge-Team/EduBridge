@@ -415,6 +415,101 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(0, DB::table('notifications')->where('type','school_attendance_consecutive')->count());
     }
 
+    public function test_jabalia_report_counts_verified_daily_roll_only_and_never_implicit_present(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        // A newly opened daily register contains a default present placeholder,
+        // not a verified record. It must not be counted in a Jabalia report.
+        $daily = DB::table('attendance_sessions')->insertGetId([
+            'section_id' => 1, 'attendance_date' => '2026-10-04',
+            'period_number' => null, 'status' => 'open', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        DB::table('attendance_records')->insert([
+            'attendance_session_id' => $daily, 'child_id' => 1, 'status' => 'present',
+            'marked_at' => null, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $lesson = DB::table('attendance_sessions')->insertGetId([
+            'section_id' => 1, 'attendance_date' => '2026-10-04',
+            'period_number' => 2, 'status' => 'open', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        DB::table('attendance_records')->insert([
+            'attendance_session_id' => $lesson, 'child_id' => 1, 'status' => 'absent',
+            'marked_by' => 30, 'marked_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $absence = DB::table('attendance_sessions')->insertGetId([
+            'section_id' => 1, 'attendance_date' => '2026-10-05',
+            'period_number' => null, 'status' => 'open', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        DB::table('attendance_records')->insert([
+            'attendance_session_id' => $absence, 'child_id' => 1, 'status' => 'present',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records' => [['child_id' => 1, 'status' => 'absent']],
+        ]), 'jabalia', 1, $absence)->status());
+
+        $request = $this->tenantRequest(['from' => '2026-10-04', 'to' => '2026-10-05']);
+        $report = $controller->report($request, 'jabalia', 1)->getData(true);
+        $this->assertTrue($report['daily_recorded_only']);
+        $this->assertSame(['present' => 0, 'absent' => 1, 'late' => 0, 'excused' => 0], $report['summary']);
+        $this->assertCount(1, $report['students']);
+        $this->assertSame(1, (int) $report['students'][0]['total_sessions']);
+        $this->assertSame(0, (int) $report['students'][0]['present_count']);
+
+        // Explicitly save unchanged present placeholder: this certifies the roll.
+        $createdAt = DB::table('attendance_records')->where('attendance_session_id', $daily)->value('created_at');
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records' => [['child_id' => 1, 'status' => 'present']],
+        ]), 'jabalia', 1, $daily)->status());
+        $row = DB::table('attendance_records')->where('attendance_session_id', $daily)->first();
+        $this->assertNotNull($row->marked_at);
+        $this->assertSame(30, (int) $row->marked_by);
+        $this->assertSame($createdAt, $row->created_at);
+        $this->assertSame(1, DB::table('jabalia_attendance_change_events')->count());
+
+        $updated = $controller->report($request, 'jabalia', 1)->getData(true);
+        $this->assertSame(['present' => 1, 'absent' => 1, 'late' => 0, 'excused' => 0], $updated['summary']);
+        $this->assertSame(2, (int) $updated['students'][0]['total_sessions']);
+        $this->assertEquals(50, $updated['students'][0]['attendance_rate']);
+
+        // A second identical save is idempotent, including the audit trail.
+        $markedAt = $row->marked_at;
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records' => [['child_id' => 1, 'status' => 'present']],
+        ]), 'jabalia', 1, $daily)->status());
+        $this->assertSame($markedAt,
+            DB::table('attendance_records')->where('attendance_session_id', $daily)->value('marked_at'));
+        $this->assertSame(1, DB::table('jabalia_attendance_change_events')->count());
+    }
+
+    public function test_non_jabalia_reports_keep_existing_lesson_based_semantics(): void
+    {
+        DB::table('organizations')->insert(['id' => 2, 'slug' => 'other', 'is_active' => true]);
+        DB::table('schools')->where('id', 1)->update(['organization_id' => 2]);
+        DB::table('children')->where('id', 1)->update(['organization_id' => 2]);
+        $daily = DB::table('attendance_sessions')->insertGetId([
+            'section_id' => 1, 'attendance_date' => '2026-10-04',
+            'period_number' => null, 'status' => 'open', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $lesson = DB::table('attendance_sessions')->insertGetId([
+            'section_id' => 1, 'attendance_date' => '2026-10-04',
+            'period_number' => 1, 'status' => 'open', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        foreach ([$daily, $lesson] as $id) {
+            DB::table('attendance_records')->insert([
+                'attendance_session_id' => $id, 'child_id' => 1, 'status' => 'present',
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+        $request = $this->tenantRequest(['from' => '2026-10-04', 'to' => '2026-10-04']);
+        $request->attributes->set('organization', (object) ['id' => 2, 'slug' => 'other']);
+        $response = app(InstitutionAttendanceController::class)->report($request, 'other', 1);
+        $this->assertSame(200, $response->status());
+        $data = $response->getData(true);
+        $this->assertFalse($data['daily_recorded_only']);
+        $this->assertSame(2, $data['summary']['present']);
+    }
+
     private function tenantRequest(array $payload): Request
     {
         $request = Request::create('/', 'POST', $payload);
