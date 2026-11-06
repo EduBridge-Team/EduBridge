@@ -7,6 +7,7 @@ import {
   fetchJabaliaSubjectQuotas, updateJabaliaSubjectQuota,
 } from '../../api'
 import { useInstitution } from '../../institutionContext'
+import JabaliaTimetableCoveragePanel from '../../components/Institution/JabaliaTimetableCoveragePanel'
 import '../../styles/institution-operations.css'
 
 const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
@@ -205,6 +206,10 @@ export default function InstitutionTimetablePage() {
         {loading && <div className="state">جارِ تحميل الجدول…</div>}
       </section>
       {!!schoolId && academic && <>
+        {slug === 'jabalia' && timetableSettings && <JabaliaTimetableCoveragePanel
+          slug={slug} settings={timetableSettings} academic={academic}
+          quotas={subjectQuotas} entries={entries}
+        />}
         {slug === 'jabalia' && timetableSettings && <section className="institution-panel">
           <h2>إعدادات أوقات الدوام</h2>
           <p>حدد أيام الدوام وبداية ونهاية كل حصة. لا تُغيّر الإعدادات حصصًا محفوظة مسبقًا.</p>
