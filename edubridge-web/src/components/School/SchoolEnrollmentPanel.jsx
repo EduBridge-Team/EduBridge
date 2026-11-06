@@ -3,6 +3,7 @@ import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 import { useSchoolResource } from './useSchoolResource'
 import JabaliaAdmissionEvidencePanel from './JabaliaAdmissionEvidencePanel'
+import JabaliaAdmissionReadinessPanel from './JabaliaAdmissionReadinessPanel'
 import { jabaliaReviewRequired } from './jabaliaAdmissionEvidence'
 
 export default function SchoolEnrollmentPanel({ onSaved }) {
@@ -32,6 +33,10 @@ export default function SchoolEnrollmentPanel({ onSaved }) {
     {(error || inbox.error || options.error) && <p role="alert">{error || inbox.error || options.error}</p>}
     {inbox.loading && <p role="status">{t('جارِ التحميل…', 'Loading…')}</p>}
     {jabalia && <p role="status">{t('طلبات جباليا: قرار القبول النهائي متوقف إلى حين مراجعة المرشد واعتماد إدارة المدرسة. رفع الوثائق وحده لا يكفي.', 'Jabalia approvals are on hold until counselor review and school administration sign-off. Uploading documents alone is not sufficient.')}</p>}
+    {jabalia && inbox.data?.school_id && <JabaliaAdmissionReadinessPanel
+      key={inbox.data.school_id}
+      schoolId={inbox.data.school_id} requests={inbox.data.requests || []}
+    />}
     {inbox.data?.requests?.length === 0 && <p>{t('لا توجد طلبات معلقة.', 'No pending requests.')}</p>}
     {inbox.data?.requests?.map(row => <article className="institution-panel" key={row.id}>
       <b>{row.child_name}</b>
