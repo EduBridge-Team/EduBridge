@@ -14,6 +14,7 @@
 - Strict required start/end dates, optional recorded signature date (not a signature attestation), project title and creator id. SQL uniqueness constraints reinforce the duplicate and renewal lineage guarantees.
 - Listing paginates 20 periods per page, provides up to 100 unregistered attached contract document identifiers/titles to allow UI selection. It **never exposes** storage paths, original filenames, private document bytes or staff identification numbers. A metadata read and each creation are themselves recorded to the existing append-only private teacher document access-event ledger.
 - React institution teacher profile includes a contract-period form, existing-contract renewal selector, explicit legal-status disclaimer, time-line list and pagination, with no deletion or mutation control for previously registered periods.
+- Aggregate Jabalia contract readiness report now also counts recorded contract periods, within-date-range periods, ended/upcoming periods, periods ending within 30 days and one-to-one renewals. These are institution-only totals; individual employee identities and contract file paths do not appear in this summary. When the new table is missing, period statistics are unavailable rather than misreported as zero.
 - Status labels describe calendar dates, **not** employment authority, legally verified signed contracts, payroll or workplace compliance. Attachment path and file existence are not a cryptographic signature or formal legal audit.
 
 ## Security and policy limitations
