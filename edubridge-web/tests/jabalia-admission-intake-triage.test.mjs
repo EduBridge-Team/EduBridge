@@ -20,3 +20,14 @@ test('Jabalia intake journal is on-demand, request scoped and never accepts admi
   assert.match(panel, /لا تثبت مراجعة المرشد/)
   assert.doesNotMatch(panel, /close_session|approveEnrollment|decision: 'approved'|medical_notes|storage_path/)
 })
+
+
+test('Jabalia inbox hides all final decisions until separate reviews exist', () => {
+  const school = readFileSync(new URL(
+    '../src/components/School/SchoolEnrollmentPanel.jsx', import.meta.url
+  ), 'utf8')
+  assert.match(school, /if \(pending\.current \|\| jabalia\) return/)
+  assert.match(school, /\{!jabalia && <>\}/)
+  assert.match(school, /قرار القبول أو الرفض النهائي متوقف/)
+  assert.match(school, /قرار القبول النهائي/)
+})
