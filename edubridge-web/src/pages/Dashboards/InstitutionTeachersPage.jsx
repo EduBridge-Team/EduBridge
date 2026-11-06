@@ -284,7 +284,7 @@ export default function InstitutionTeachersPage() {
 
   async function downloadTeacherFile(item) {
     setError('')
-    try { await downloadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, 'document') }
+    try { await downloadJabaliaTeacherDocument(slug, schoolId, selectedHistoryTeacher, item.id, null) }
     catch (err) { setError(err.message) }
   }
 
