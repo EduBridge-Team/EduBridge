@@ -81,6 +81,18 @@ class JabaliaTeacherContractPeriodController extends Controller
             ];
         }));
 
+        // Only list attached contract document IDs and labels here: no private
+        // paths, filenames, or file bytes are sent to the browser.
+        $documentChoices = DB::table('jabalia_teacher_documents')
+            ->where('organization_id', $org->id)
+            ->where('school_id', $school)->where('teacher_id', $teacher)
+            ->where('type', 'contract')->whereNotNull('storage_path')
+            ->whereNotIn('id', DB::table('jabalia_teacher_contract_periods')
+                ->where('organization_id', $org->id)
+                ->where('school_id', $school)->where('teacher_id', $teacher)
+                ->select('contract_document_id'))
+            ->orderBy('id')->limit(100)->get(['id','title']);
+
         // A listing is an access to confidential employment metadata too.
         // Fail closed if the append-only access event cannot be recorded.
         $this->audit($request, $org, $school, $teacher, null, 'contract_periods_listed');
@@ -89,6 +101,7 @@ class JabaliaTeacherContractPeriodController extends Controller
             'school_id' => $school,
             'teacher_id' => $teacher,
             'periods' => $rows,
+            'available_contract_documents' => $documentChoices,
             'immutable' => true,
             'attachment_integrity_verified' => false,
             'employment_legally_verified' => false,
