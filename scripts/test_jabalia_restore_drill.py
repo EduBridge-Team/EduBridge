@@ -33,7 +33,7 @@ class JabaliaRestoreDrillCommandTest(unittest.TestCase):
         (root / (name + ".sha256")).write_text(hashlib.sha256(archive.read_bytes()).hexdigest())
         return archive
 
-    def run_drill(self, missing=False, corrupt=False):
+    def run_drill(self, missing=False, corrupt=False, fail_run=False):
         with tempfile.TemporaryDirectory() as location:
             root = Path(location)
             (root / "bin").mkdir()
@@ -48,6 +48,7 @@ class JabaliaRestoreDrillCommandTest(unittest.TestCase):
 set -eu
 printf '%s\\n' "$*" >> "$TEST_DOCKER_LOG"
 case "$*" in
+  *"run -d"*) [[ "${TEST_DOCKER_FAIL_RUN:-0}" != "1" ]] || exit 17;;
   *"SELECT count(*)"*) echo 1;;
   *"FROM jabalia_teacher_documents"*)
     echo "jabalia-teacher-documents/'''+("missing.pdf" if missing else "doc.pdf")+'''"
@@ -61,7 +62,8 @@ exit 0
             fake.chmod(0o755)
             log = root / "docker-calls.txt"
             env = dict(os.environ, PATH=str(root / "bin") + os.pathsep + os.environ["PATH"],
-                       TEST_DOCKER_LOG=str(log), JABALIA_DRILL_STAGE_ROOT=str(root))
+                       TEST_DOCKER_LOG=str(log), TEST_DOCKER_FAIL_RUN="1" if fail_run else "0",
+                       JABALIA_DRILL_STAGE_ROOT=str(root))
             result = subprocess.run([
                 "bash", str(SCRIPT), "--db", str(backup),
                 "--teachers", str(teacher), "--admissions", str(admission),
@@ -86,6 +88,12 @@ exit 0
         self.assertIn("database attachment references missing", result.stderr)
         self.assertIn("rm -f jabalia-restore-drill-", log)
         self.assertNotIn("missing.pdf", result.stderr)
+
+    def test_failed_disposable_container_start_does_not_delete_a_preexisting_container(self):
+        result, log = self.run_drill(fail_run=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("run -d", log)
+        self.assertNotIn("rm -f jabalia-restore-drill-", log)
 
     def test_bad_checksum_aborts_before_starting_docker(self):
         result, log = self.run_drill(corrupt=True)
