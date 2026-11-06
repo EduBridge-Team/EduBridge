@@ -10,7 +10,7 @@ Existing `verify-backup-archive.sh` checks archive SHA-256 and the PostgreSQL ta
 
 1. Obtain maintenance approval and pause upload/writes for the **Jabalia** stack; create one matching backup set at that checkpoint: a PostgreSQL 17 custom-format dump with `.sha256` sibling, the teacher `jabalia-teacher-files-*.tar.gz` with its checksum, and the admission `jabalia-admission-files-*.tar.gz` with its checksum. Archive timestamps alone are not sufficient to establish consistency.
 2. Keep each file and its `.sha256` sibling accessible locally in private directories (0700 directories, 0600 files); do **not** copy any private backup contents to GitHub, chat, CI artifacts, or a public bucket.
-3. Confirm sufficient available host disk and **RAM** for a temporary PostgreSQL 17 cluster. The tool defaults to a 2-GiB ephemeral database tmpfs, adjustable with `JABALIA_DRILL_TMPFS_BYTES`. If insufficient, stop: do not switch to a production mount or DB.
+3. Confirm sufficient **RAM** for a temporary PostgreSQL 17 cluster and extracted sensitive files. The tool defaults to a 2-GiB ephemeral database tmpfs (`JABALIA_DRILL_TMPFS_BYTES`) and extracts files into RAM-backed `/dev/shm`. If `/dev/shm` is too small, an **approved encrypted scratch filesystem** may be supplied via `JABALIA_DRILL_STAGE_ROOT`; never use an unencrypted shared temp directory or a production Docker volume. If space is insufficient, stop.
 4. Verify `docker image inspect postgres:17` succeeds locally. The command intentionally uses `--pull never` and `--network none`, binds no host ports and does not use the live Jabalia database/container.
 
 ## Operator command (safe to rehearse with approved backups)
@@ -28,7 +28,7 @@ bash deploy/jabalia-isolated-restore-drill.sh \
 
 The script **does not create backups**. Do not pass the main EduBridge dump. It fails if the restored database lacks the Jabalia organization, any checksum fails, any tar entry escapes its root or is a symlink, the PostgreSQL restore fails, a private evidence table is missing, or any non-null `storage_path` points outside its matching private directory or to a missing/empty recovered file.
 
-The disposable container has an isolated name `jabalia-restore-drill-<PID>`, is disconnected from all networks, is restricted to an ephemeral PostgreSQL tmpfs and is removed on exit. The recovered files and temporary CSV paths are extracted into a permission-restricted local staging directory and deleted on exit. The test never runs `docker exec` against live `edubridge-jabalia-api`, `edubridge-jabalia-postgres` or `edubridge-postgres` containers.
+The disposable container has an isolated name `jabalia-restore-drill-<PID>`, is disconnected from all networks, is restricted to an ephemeral PostgreSQL tmpfs and is removed on exit. The recovered files and temporary CSV paths are extracted by default under RAM-backed `/dev/shm` with permissions 0700/0600, and deleted on exit. An explicitly configured scratch root must be an authorized encrypted filesystem. Removing plaintext from a conventional disk is not a cryptographic secure erase. The test never runs `docker exec` against live `edubridge-jabalia-api`, `edubridge-jabalia-postgres` or `edubridge-postgres` containers.
 
 The exact teacher prefix is `jabalia-teacher-documents/` and admission prefix is `jabalia-admission-documents/`, corresponding to the two Laravel `Storage::disk('local')` mount points. No sensitive filename, document content, or `storage_path` is included in the success/failure output.
 
