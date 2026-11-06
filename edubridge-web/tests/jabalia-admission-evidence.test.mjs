@@ -48,12 +48,13 @@ test('all five categories may be present without authorizing enrollment', () => 
   assert.equal(Object.keys(JABALIA_DOCUMENT_LABELS).length, 5)
 })
 
-test('school enrollment panel hides generic approval for Jabalia and uses on-demand evidence', () => {
+test('school enrollment panel hides generic final decisions for Jabalia and uses on-demand evidence', () => {
   const view = readFileSync(new URL('../src/components/School/SchoolEnrollmentPanel.jsx', import.meta.url), 'utf8')
   const review = readFileSync(new URL('../src/components/School/JabaliaAdmissionEvidencePanel.jsx', import.meta.url), 'utf8')
   assert.match(view, /!jabalia && <button className="btn"/)
   assert.match(view, /<JabaliaAdmissionEvidencePanel/)
-  assert.match(view, /decision === 'approved' && jabalia/)
+  assert.match(view, /if \(pending\.current \|\| jabalia\) return/)
+  assert.match(view, /\{!jabalia && <>/)
   assert.match(review, /useSchoolResource\(expanded && allowedToRequest/)
   assert.doesNotMatch(review, /innerHTML/)
 })

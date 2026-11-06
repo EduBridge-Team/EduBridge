@@ -3,6 +3,7 @@ import { getUser } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 import { useSchoolResource } from './useSchoolResource'
 import { JABALIA_DOCUMENT_LABELS } from './jabaliaAdmissionEvidence'
+import JabaliaAdmissionIntakeTriagePanel from './JabaliaAdmissionIntakeTriagePanel'
 
 /**
  * School management's working checklist, not a clinical or admission decision.
@@ -47,6 +48,8 @@ export default function JabaliaAdmissionReadinessPanel({ requests = [], schoolId
               {JABALIA_DOCUMENT_LABELS[type]?.[en ? 1 : 0] || type}
             </li>)}</ul>}
             <p>{t('الحالة: لا توجد موافقة نهائية.', 'Status: admission is not approved.')}</p>
+            <JabaliaAdmissionIntakeTriagePanel key={item.request_id}
+              requestId={item.request_id} schoolId={schoolId} requestVersion={item.version} />
           </li>)}</ul>}
       </>}
     </>}

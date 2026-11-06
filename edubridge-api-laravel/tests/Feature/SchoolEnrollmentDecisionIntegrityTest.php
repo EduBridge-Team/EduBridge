@@ -116,6 +116,22 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
             ->where('id', 100)->value('status'));
         $this->assertDatabaseCount('student_enrollments', 0);
         $this->assertDatabaseCount('notifications', 0);
+
+        // Jabalia cannot silently reject an applicant before the required
+        // counselor review any more than it can approve that applicant.
+        $denied = $this->decide(100, [
+            'decision' => 'rejected', 'expected_version' => 1,
+            'reason' => 'No clinical reviewer has been appointed',
+        ]);
+        $this->assertSame(409, $denied->status());
+        $this->assertSame('JABALIA_ADMISSION_REVIEW_REQUIRED',
+            $denied->getData(true)['code']);
+        $this->assertSame('pending', DB::table('school_enrollment_requests')
+            ->where('id', 100)->value('status'));
+        $this->assertSame(1, DB::table('school_enrollment_requests')
+            ->where('id', 100)->value('version'));
+        $this->assertDatabaseCount('student_enrollments', 0);
+        $this->assertDatabaseCount('notifications', 0);
     }
 
     public function test_approval_creates_one_enrollment_without_recreating_child(): void
