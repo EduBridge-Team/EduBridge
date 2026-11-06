@@ -58,6 +58,14 @@ class InstitutionAttendanceController extends Controller
             ->where('c.organization_id', $organization->id)
             ->where('g.school_id', $school);
 
+        // Jabalia attendance is a single DAILY roll per child. A lesson-specific
+        // register and the unconfirmed 'present' placeholder created at session
+        // start are not evidence of the student's day-level attendance.
+        $dailyRecordedOnly = ($organization->slug ?? null) === 'jabalia';
+        if ($dailyRecordedOnly) {
+            $base->whereNull('a.period_number')->whereNotNull('r.marked_at');
+        }
+
         if (!empty($data['from'])) {
             $base->whereDate('a.attendance_date', '>=', $data['from']);
         }
@@ -101,6 +109,7 @@ class InstitutionAttendanceController extends Controller
                 'excused' => (int) ($summary['excused'] ?? 0),
             ],
             'students' => $students,
+            'daily_recorded_only' => $dailyRecordedOnly,
         ]);
     }
 
@@ -276,7 +285,11 @@ class InstitutionAttendanceController extends Controller
                 $previous = $previousRow?->status;
                 $note = $record['note'] ?? null;
                 // A repeated save cannot rewrite the original created_at or produce a new event.
-                if ($previous === $record['status'] && ($previousRow?->note ?? null) === $note) continue;
+                // Jabalia pre-fills each roll with an unverified 'present' placeholder.
+                // Explicitly saving the same status must still certify the child roll
+                // and set marked_at; subsequent identical saves stay idempotent.
+                if ($previous === $record['status'] && ($previousRow?->note ?? null) === $note
+                    && (!$jabalia || $previousRow?->marked_at !== null)) continue;
                 $values = [
                     'status' => $record['status'],
                     'note' => $note,
