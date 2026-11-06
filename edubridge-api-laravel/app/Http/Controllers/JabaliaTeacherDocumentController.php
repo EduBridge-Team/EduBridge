@@ -21,6 +21,19 @@ class JabaliaTeacherDocumentController extends Controller
         return $org;
     }
 
+    private function publicMetadataQuery()
+    {
+        // Internal private file paths, original filenames and binary metadata
+        // must never be serialized into the browser's document-list response.
+        return DB::table('jabalia_teacher_documents')
+            ->select([
+                'id', 'organization_id', 'school_id', 'teacher_id', 'type',
+                'title', 'issuer', 'issued_on', 'expires_on', 'notes',
+                'recorded_by', 'created_at', 'updated_at',
+            ])
+            ->selectRaw('CASE WHEN storage_path IS NOT NULL THEN 1 ELSE 0 END AS has_file');
+    }
+
     private function recordAccess(Request $request, object $org, int $school, int $teacher, ?int $document, string $action): void
     {
         DB::table('jabalia_teacher_document_access_events')->insert([
@@ -51,7 +64,7 @@ class JabaliaTeacherDocumentController extends Controller
     {
         $org = $this->tenant($request, $organizationSlug, $school, $teacher);
         if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
-        $rows = DB::table('jabalia_teacher_documents')
+        $rows = $this->publicMetadataQuery()
             ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)
             ->orderByDesc('id')->paginate(30);
         $this->recordAccess($request, $org, $school, $teacher, null, 'listed');
@@ -77,7 +90,8 @@ class JabaliaTeacherDocumentController extends Controller
             ...$data, 'recorded_by' => $request->attributes->get('jwt_user')?->id ?? $request->user()?->id,
             'created_at' => now(), 'updated_at' => now(),
         ]);
-        return response()->json(['document' => DB::table('jabalia_teacher_documents')->where('id', $id)->first()], 201);
+        return response()->json(['document' => $this->publicMetadataQuery()->where('id', $id)
+            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first()], 201);
     }
 
     public function upload(Request $request, string $organizationSlug, int $school, int $teacher, int $document): JsonResponse
