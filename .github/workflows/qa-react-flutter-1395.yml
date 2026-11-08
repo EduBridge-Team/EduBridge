@@ -1,0 +1,89 @@
+name: QA React and Flutter UI isolation #1395
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/qa-react-flutter-1395.yml'
+      - 'edubridge-web/scripts/qa-react-browser-1395.mjs'
+      - 'edubridge-app/**'
+      - 'edubridge-web/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  react-ui:
+    name: React suite, build, and isolated Chromium UI
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: edubridge-web
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: edubridge-web/package-lock.json
+      - name: Install locked React dependencies
+        run: npm ci
+      - name: Run React tests
+        run: npm test
+      - name: Lint React
+        run: npm run lint
+      - name: Build React
+        env:
+          VITE_API_URL: /api
+        run: npm run build
+      - name: Install isolated browser runner
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Serve production React build on loopback only
+        run: |
+          set -euo pipefail
+          node --input-type=module -e '
+            import { spawn } from "node:child_process";
+            const child = spawn("./node_modules/.bin/vite", ["preview", "--host", "127.0.0.1", "--port", "4173", "--strictPort"], { detached: true, stdio: "ignore" });
+            child.unref();
+          '
+          for i in $(seq 1 30); do
+            if curl --silent --fail --max-time 2 http://127.0.0.1:4173/login >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Test React browser flows with mocked in-memory API only
+        run: node scripts/qa-react-browser-1395.mjs
+      - name: Upload UI screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-ui-qa-1395
+          path: edubridge-web/test-artifacts/react-ui/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  flutter-ui:
+    name: Flutter analyze, widget tests, and web compilation
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: edubridge-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Restore Flutter dependencies
+        run: flutter pub get
+      - name: Static analysis (non-fatal warnings and infos)
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+      - name: Execute Flutter widget/unit suite
+        run: flutter test
+      - name: Compile Flutter web
+        run: flutter build web --release --base-href /
