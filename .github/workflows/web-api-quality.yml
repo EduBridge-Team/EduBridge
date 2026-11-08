@@ -403,7 +403,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Build production API image
-        run: docker build -t edubridge-api-ci edubridge-api-laravel
+        run: |
+          # Match restricted mode-0700 source checkouts seen on Oracle.
+          # Docker must normalize the parent /app/database directory.
+          chmod 700 edubridge-api-laravel/database
+          docker build -t edubridge-api-ci edubridge-api-laravel
       - name: Verify production container
         run: |
           set -o pipefail

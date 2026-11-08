@@ -36,7 +36,8 @@ COPY . .
 
 # Normalize application source permissions: local Git checkout may contain
 # mode 600 PHP files, but the runtime executes as the non-root www-data user.
-RUN find app routes database/migrations -type d -exec chmod 755 {} + \
+RUN chmod 755 database \
+    && find app routes database/migrations -type d -exec chmod 755 {} + \
     && find app routes database/migrations -type f -exec chmod 644 {} +
 
 RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \

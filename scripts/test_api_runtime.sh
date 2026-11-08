@@ -65,6 +65,10 @@ docker exec "$container" nginx -t
 docker exec "$container" php-fpm -t
 docker exec "$container" php -r 'exit(ini_get("upload_max_filesize") === "150M" && ini_get("post_max_size") === "170M" && extension_loaded("Zend OPcache") ? 0 : 1);'
 
+current_stage="non-root migration file access"
+# Deployment can import migrations only if www-data can traverse /app/database.
+docker exec "$container" php -l /app/database/migrations/2026_11_08_140000_create_institution_director_directory.php >/dev/null
+
 current_stage="database migration"
 docker exec "$container" php artisan migrate --force
 
