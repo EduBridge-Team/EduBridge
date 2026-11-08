@@ -32,6 +32,7 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         });
         Schema::create('teacher_assignments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
+            $t->string('status')->default('active'); $t->date('starts_on')->nullable(); $t->date('ends_on')->nullable();
         });
 
         Schema::create('jabalia_teacher_assignment_history', function (Blueprint $t) {
@@ -104,7 +105,7 @@ class InstitutionTeacherAssignmentsTest extends TestCase
 
         $removed = $controller->removeTeacherAssignment($this->request(), 'jabalia', 1, 1);
         $this->assertSame(200, $removed->getStatusCode());
-        $this->assertDatabaseMissing('teacher_assignments', ['id' => 1]);
+        $this->assertDatabaseHas('teacher_assignments', ['id' => 1, 'status' => 'ended', 'ends_on' => now()->toDateString()]);
         $this->assertDatabaseHas('jabalia_teacher_assignment_history', ['school_id' => 1, 'teacher_id' => 1, 'section_id' => 1, 'subject_id' => 1, 'status' => 'ended']);
         $this->assertDatabaseHas('teacher_assignments', ['id' => 2]);
     }
