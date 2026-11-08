@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use App\Support\InstitutionDirectorDirectorySync;
 
 class DedicatedSchoolDirectorController extends Controller
 {
@@ -73,6 +74,10 @@ class DedicatedSchoolDirectorController extends Controller
                     'starts_at' => now(), 'ends_at' => null,
                     'created_at' => now(), 'updated_at' => now(),
                 ]);
+                // In the same transaction as the verified dedicated-account
+                // appointment, mirror the current/historical profile directory.
+                // This never creates login rights from a draft profile.
+                InstitutionDirectorDirectorySync::activated($school, $invite, (int) $userId, $data['name']);
                 DB::table('school_director_invitations')->where('id', $invite->id)
                     ->update(['accepted_at' => now(), 'updated_at' => now()]);
                 return response()->json(['activated' => true, 'school_id' => (int) $school->id]);

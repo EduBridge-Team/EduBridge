@@ -1,7 +1,14 @@
 # School directors — Flutter API contract v1
 
-Status: implemented in Flutter; the new backend endpoints are pending. This change
-contains no Laravel, database, web or deployment changes.
+Status (partial backend implementation under review in PR for #1387):
+The directory GET, profile POST and profile PATCH are proposed, with
+school-scoped authorization, a new profile/history schema and an initial
+backfill of legacy director appointments. Verified invitation activation
+mirrors new appointments into the directory transactionally.
+The director-assignments POST and /end PATCH endpoints are **NOT** yet
+implemented, and Flutter must continue to treat them as unavailable.
+This is NOT a claim of integration/E2E acceptance or production deployment.
+A profile alone does not create an account or confer operational privileges.
 
 ## Scope and UI
 

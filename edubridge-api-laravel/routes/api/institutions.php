@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InstitutionAcademicController;
+use App\Http\Controllers\InstitutionDirectorDirectoryController;
 use App\Http\Controllers\InstitutionTeacherInvitationController;
 use App\Http\Controllers\InstitutionTeacherMembershipController;
 use App\Http\Controllers\InstitutionAttendanceController;
@@ -64,6 +65,14 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::get('/schools/{school}', [InstitutionSchoolController::class, 'show'])->whereNumber('school');
         Route::patch('/schools/{school}', [InstitutionSchoolController::class, 'update'])->whereNumber('school');
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
+        // Director profile directory only. Assignment-changing endpoints are
+        // intentionally not exposed until verified-identity lifecycle is ready.
+        Route::get('/schools/{school}/directors', [InstitutionDirectorDirectoryController::class, 'index'])
+            ->whereNumber('school')->middleware('throttle:60,1');
+        Route::post('/schools/{school}/directors', [InstitutionDirectorDirectoryController::class, 'store'])
+            ->whereNumber('school')->middleware('throttle:10,1');
+        Route::patch('/schools/{school}/directors/{director}', [InstitutionDirectorDirectoryController::class, 'update'])
+            ->whereNumber('school')->whereNumber('director')->middleware('throttle:10,1');
         Route::get('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'index'])->whereNumber('school');
         Route::put('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'update'])->whereNumber('school');
         // Jabalia-only supervision: institution membership enforced by this route group.
