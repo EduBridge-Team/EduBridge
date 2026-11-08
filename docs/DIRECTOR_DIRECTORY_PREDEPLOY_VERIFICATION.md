@@ -70,6 +70,29 @@ A03: stale-state rejection, director replacement/end, history preservation and r
 
 This is an actual HTTP integration, but NOT an approved institution staging/UAT session. A12 academic flows, rendered Flutter screens, separate real devices, representative file recovery and actual offsite recovery must still be accepted separately.
 
+## A12 academic catalog real-HTTP CI (synthetic)
+
+The `.github/workflows/academic-isolated-http.yml` workflow starts a *separate*
+PostgreSQL 17 GitHub Actions service, migrates a fresh isolated Laravel database,
+creates only synthetic accounts through
+`scripts/seed_academic_isolated_http.php` (hard-refuses non-testing/non-CI DBs),
+then runs the actual Flutter `AcademicRepository` via
+`EnrollmentApiClient` over authenticated HTTP:
+
+- School A (affiliated) and School B (independent) load distinct empty catalogs.
+- Create school-scoped year, grade, section and verify saved 201 receipts, scoped
+  foreign keys and canonical GET catalog.
+- Reject duplicate grade/section (409), stale/wrong expected-school (422),
+  invalid date/capacity (422) and cross-school year/grade references (422).
+- Create replacement current year; verify previous year becomes non-current
+  without changing School B.
+- Reject unauthorized teacher reads/writes (403) and unauthenticated reads (401).
+
+This CI is **not** institution-approved staging/UAT A12: it has no real users,
+rendered screens, physical-device run, or live institution signoff. It must PASS
+on the exact final PR head; any failures are blockers, not reasons to weaken
+scope checks or test assertions.
+
 ## Release gates
 
 - [ ] Approved migration review and valid history for each stack

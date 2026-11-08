@@ -1,0 +1,86 @@
+name: Academic A12 isolated Flutter HTTP acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'edubridge-api-laravel/**'
+      - 'edubridge-app/**'
+      - 'scripts/seed_academic_isolated_http.php'
+      - '.github/workflows/academic-isolated-http.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  academic-a12-http:
+    name: A12 Flutter real HTTP against disposable Laravel/PostgreSQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: edubridge_academic_ci
+          POSTGRES_USER: edubridge
+          POSTGRES_PASSWORD: synthetic-academic-ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U edubridge -d edubridge_academic_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: edubridge_academic_ci
+      DB_USERNAME: edubridge
+      DB_PASSWORD: synthetic-academic-ci-only-password
+      SESSION_DRIVER: file
+      ACADEMIC_STAGING_SYNTHETIC: '1'
+      JWT_SECRET: synthetic-academic-ci-jwt-secret-only-not-for-real-use
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install Laravel dependencies
+        working-directory: edubridge-api-laravel
+        run: composer install --no-interaction --prefer-dist
+      - name: Create disposable schema and synthetic A12 school identities
+        run: |
+          cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
+          cd edubridge-api-laravel
+          php artisan key:generate
+          php artisan migrate:fresh --force
+          cd ..
+          php scripts/seed_academic_isolated_http.php
+      - name: Start isolated local Laravel API
+        run: |
+          cd edubridge-api-laravel
+          php artisan serve --host=127.0.0.1 --port=8000 > /tmp/academic-ci-http.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS --max-time 2 http://127.0.0.1:8000/api/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo 'ERROR: disposable Laravel HTTP server failed to become ready' >&2
+          exit 1
+      - name: Resolve Flutter dependencies
+        working-directory: edubridge-app
+        run: flutter pub get
+      - name: Execute A12 real Flutter repository HTTP integration
+        working-directory: edubridge-app
+        run: |
+          flutter test test/school_academic_isolated_http_test.dart \
+            --dart-define=ACADEMIC_STAGING_RUN=true
