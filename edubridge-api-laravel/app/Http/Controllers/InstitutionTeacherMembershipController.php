@@ -45,7 +45,7 @@ class InstitutionTeacherMembershipController extends Controller
                     ->join('sections as s', 's.id', '=', 'ta.section_id')
                     ->join('grades as g', 'g.id', '=', 's.grade_id')
                     ->join('schools as school', 'school.id', '=', 'g.school_id')
-                    ->where('ta.teacher_id', $teacher)
+                    ->where('ta.teacher_id', $teacher)->where('ta.status', 'active')
                     ->where('school.organization_id', $org->id)->exists();
                 if ($assigned) {
                     return response()->json([
