@@ -104,7 +104,7 @@ try {
   assert.equal(await page.locator('html').getAttribute('dir'), 'rtl');
   await page.locator('#email').fill('synthetic-ui@example.test');
   await page.locator('#password').fill('SyntheticFakePass!');
-  await page.getByRole('button', { name: 'تسجيل الدخول' }).click();
+  await page.locator('form.auth-login-form').getByRole('button', { name: 'تسجيل الدخول' }).click();
 
   await page.waitForURL('**/institution', { timeout: 15000 });
   await page.getByRole('button', { name: 'إدارة المدارس' }).first().click();
