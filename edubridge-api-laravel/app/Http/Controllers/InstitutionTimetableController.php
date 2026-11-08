@@ -105,7 +105,7 @@ class InstitutionTimetableController extends Controller
                 if (!DB::table('teacher_assignments')
                     ->where('section_id', $data['section_id'])
                     ->where('subject_id', $data['subject_id'])
-                    ->where('teacher_id', $data['teacher_id'])->exists()) {
+                    ->where('teacher_id', $data['teacher_id'])->where('status', 'active')->exists()) {
                     return response()->json(['error' => 'المعلم غير مكلّف بهذه المادة في الشعبة المحددة'], 422);
                 }
             }
@@ -227,7 +227,7 @@ class InstitutionTimetableController extends Controller
             return DB::table('school_internal_identities as i')->join('users as u', 'u.id', '=', 'i.user_id')
                 ->where('i.school_id', $managed)->where('i.user_id', $teacher)->where('i.is_active', true)->where('u.role', 'teacher')->exists()
                 || DB::table('teacher_assignments as a')->join('sections as s', 's.id', '=', 'a.section_id')
-                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $managed)->where('a.teacher_id', $teacher)->exists();
+                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $managed)->where('a.teacher_id', $teacher)->where('a.status', 'active')->exists();
         }
 
         $organization = $request->attributes->get('organization');

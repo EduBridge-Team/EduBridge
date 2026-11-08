@@ -35,7 +35,7 @@ class JabaliaTeacherActivityTest extends TestCase
             $t->id(); $t->unsignedBigInteger('grade_id');
         });
         Schema::create('teacher_assignments', function (Blueprint $t) {
-            $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('teacher_id');
+            $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('teacher_id'); $t->string('status')->default('active');
         });
         Schema::create('jabalia_teacher_activities', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('school_id');

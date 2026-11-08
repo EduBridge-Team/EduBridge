@@ -31,7 +31,7 @@ class JabaliaTeacherActivityController extends Controller
             ->join('grades as g', 'g.id', '=', 's.grade_id')
             ->where('ou.organization_id', $organization)
             ->where('ou.role', 'teacher')->where('ou.is_active', true)
-            ->where('u.role', 'teacher')->where('g.school_id', $school)
+            ->where('u.role', 'teacher')->where('g.school_id', $school)->where('a.status', 'active')
             ->distinct();
     }
 

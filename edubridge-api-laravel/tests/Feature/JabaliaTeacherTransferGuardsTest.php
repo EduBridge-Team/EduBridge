@@ -26,6 +26,8 @@ class JabaliaTeacherTransferGuardsTest extends TestCase
         Schema::create('subjects', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); });
         Schema::create('teacher_assignments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
+            $t->string('status')->default('active'); $t->date('starts_on')->nullable(); $t->date('ends_on')->nullable();
+            $t->timestamps();
         });
         Schema::create('timetable_entries', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('section_id');
@@ -84,7 +86,7 @@ class JabaliaTeacherTransferGuardsTest extends TestCase
     {
         // Legacy entries can survive an assignment deletion. They must not
         // survive a school transfer unnoticed.
-        DB::table('teacher_assignments')->where('id', 1)->delete();
+        DB::table('teacher_assignments')->where('id', 1)->update(['status' => 'ended', 'ends_on' => '2026-10-30']);
         DB::table('timetable_entries')->insert([
             'school_id'=>1, 'section_id'=>1, 'subject_id'=>1, 'teacher_id'=>10,
         ]);
@@ -100,7 +102,10 @@ class JabaliaTeacherTransferGuardsTest extends TestCase
     public function test_transfer_closes_assignments_after_lessons_are_removed(): void
     {
         $this->assertSame(201,$this->transfer()->getStatusCode());
-        $this->assertSame(0,DB::table('teacher_assignments')->count());
+        $this->assertSame(1,DB::table('teacher_assignments')->count());
+        $this->assertDatabaseHas('teacher_assignments', ['id' => 1, 'status' => 'ended', 'ends_on' => '2026-10-30']);
+        DB::table('teacher_assignments')->insert(['section_id' => 1, 'subject_id' => 1, 'teacher_id' => 10, 'status' => 'active', 'starts_on' => '2026-11-01']);
+        $this->assertSame(2, DB::table('teacher_assignments')->count(), 'A new active assignment must coexist with the ended historical row.');
         $this->assertSame(1,DB::table('jabalia_teacher_school_transfers')->count());
         $this->assertSame(409,$this->transfer()->getStatusCode());
     }
