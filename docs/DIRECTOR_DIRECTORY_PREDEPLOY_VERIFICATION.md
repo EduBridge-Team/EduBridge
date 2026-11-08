@@ -32,6 +32,36 @@ With permission, use a matched database + teacher archive + admissions archive a
 
 This creates a disposable, offline PostgreSQL 17 container, checks private file reconciliation, and cleans up. Never use production databases as test restore targets. Do not publish personal details, passwords or file paths in GitHub comments.
 
+## Main database full offline recovery drill
+
+The main PostgreSQL dump is separate from Jabalia. Its SHA256/TOC checks
+previously passed on Oracle, but these do not establish that the full dump
+can be restored. The dedicated recovery tool rejects Jabalia archive naming,
+validates the main archive's checksum, creates an **offline disposable** local
+PostgreSQL 17 container with RAM-backed data and no published ports, restores
+the backup into a new test database, verifies core tables, constraint/index
+validity and aggregate counts, then removes the test resources.
+
+Prerequisites: PostgreSQL 17 image is already available, enough RAM on
+`/dev/shm`, and the private main dump plus its `.sha256` sidecar exist.
+Avoid quoting archive contents, credentials or any user data in tickets.
+
+```bash
+git fetch origin feature/1387-director-directory-profiles
+git show origin/feature/1387-director-directory-profiles:deploy/main-isolated-restore-drill.sh > /tmp/edubridge-main-isolated-restore-drill.sh
+bash -n /tmp/edubridge-main-isolated-restore-drill.sh
+bash /tmp/edubridge-main-isolated-restore-drill.sh --db "$HOME/edubridge-backups/edubridge-20261108T134041Z.dump"
+```
+
+Use the actual archive path and verify the exact fetched script and commit
+before execution. This tool **creates and deletes only disposable Docker
+resources**, never touches the live PostgreSQL containers, and suppresses
+sensitive pg_restore logs. It does not prove app-level login, media/R2
+availability, external-offsite recovery, or completeness of a backup made
+while live writes were occurring. Record aggregate success and recovery time,
+not contents of personal records. Main and Jabalia recovery drills are
+**separate** release gates.
+
 ## Real HTTP Flutter integration in isolated CI
 
 The new director-isolated-http workflow starts PostgreSQL 17 on GitHub Actions, migrates an empty database, creates exclusively synthetic director records, starts Laravel on localhost, and runs Flutter's actual SchoolDirectorRepository against HTTP endpoints using login-issued JWTs.
