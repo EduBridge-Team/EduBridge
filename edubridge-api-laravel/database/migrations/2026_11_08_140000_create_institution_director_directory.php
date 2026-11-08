@@ -30,6 +30,7 @@ return new class extends Migration
         }
 
         if ((clone $legacy)
+            ->selectRaw('1')
             ->groupBy('a.school_id')
             ->groupByRaw('LOWER(TRIM(u.email))')
             ->havingRaw('COUNT(DISTINCT a.user_id) > 1')
@@ -39,7 +40,7 @@ return new class extends Migration
 
         if (DB::table('school_management_assignments')
             ->where('role', 'director')->whereNull('ends_at')
-            ->groupBy('school_id')->havingRaw('COUNT(*) > 1')->exists()) {
+            ->select('school_id')->groupBy('school_id')->havingRaw('COUNT(*) > 1')->exists()) {
             throw new RuntimeException('Director directory preflight: multiple current directors in one school');
         }
 
@@ -47,7 +48,7 @@ return new class extends Migration
             ->join('users as u', 'u.id', '=', 'a.user_id')
             ->where('a.role', 'director')->whereNull('a.ends_at')
             ->where('u.role', 'school_director')
-            ->groupBy('a.user_id')->havingRaw('COUNT(DISTINCT a.school_id) > 1')
+            ->select('a.user_id')->groupBy('a.user_id')->havingRaw('COUNT(DISTINCT a.school_id) > 1')
             ->exists()) {
             throw new RuntimeException('Director directory preflight: dedicated director assigned to multiple schools');
         }
