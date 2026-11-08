@@ -4,7 +4,7 @@ import 'package:edubridge_app/model/schools/school_director.dart';
 import 'package:edubridge_app/services/schools/director_api_client.dart';
 import 'package:edubridge_app/services/schools/school_director_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http';
+import 'package:http/http.dart' as http;
 
 // Real HTTP against ephemeral Laravel/PostgreSQL on CI, not fake responses.
 const _run = bool.fromEnvironment('DIRECTOR_STAGING_RUN', defaultValue: false);
