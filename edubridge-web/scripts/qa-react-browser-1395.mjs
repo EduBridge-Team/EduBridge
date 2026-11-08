@@ -47,6 +47,12 @@ async function routeRequest(route) {
         verification_status: 'verified',
       },
     };
+  } else if (path === '/api/settings') {
+    data = { settings: {} };
+  } else if (path === '/api/notifications/unread/count') {
+    data = { count: 0 };
+  } else if (path === '/api/conversations') {
+    data = { conversations: [] };
   } else if (path === '/api/institutions/my-organization') {
     data = {
       organization: {
