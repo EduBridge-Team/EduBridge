@@ -1,14 +1,17 @@
 # School directors — Flutter API contract v1
 
-Status (partial backend implementation under review in PR for #1387):
-The directory GET, profile POST and profile PATCH are proposed, with
-school-scoped authorization, a new profile/history schema and an initial
-backfill of legacy director appointments. Verified invitation activation
-mirrors new appointments into the directory transactionally.
-The director-assignments POST and /end PATCH endpoints are **NOT** yet
-implemented, and Flutter must continue to treat them as unavailable.
-This is NOT a claim of integration/E2E acceptance or production deployment.
-A profile alone does not create an account or confer operational privileges.
+Status: backend implementation proposed in draft PR #1395 (not merged/deployed).
+All five profile/directory and appointment endpoints are registered in the draft.
+This is NOT a claim of CI, staging/E2E acceptance, or production deployment.
+
+**Identity gate:** a profile by itself never creates an account, verifies an
+identity, or confers operational privileges. Assignments require a separately
+activated and email-verified `school_director` account linked to that profile,
+with no active assignment at another school. Operators must use the existing
+dedicated director invitation/activation workflow before appointing a new
+candidate. Existing operational assignments and their audit history are imported
+during the migration. JWT session revocation follows an actual assignment end or
+replacement, not a profile edit.
 
 ## Scope and UI
 
@@ -128,5 +131,14 @@ A disposed screen ignores pending responses.
 Repository/controller/widget tests cover strict JSON scope, HTTP failures,
 assignment replacement assertions, malformed success, stale reads, duplicate
 writes, saved-but-refresh-failed behavior, cancellation, locales and small screens.
-Live role authorization, identity verification, documents, login and actual session
-revocation require backend implementation and integration acceptance testing.
+Backend unit/feature test coverage is included in the draft, but approval still
+requires independent migration preflight/backup, full required CI, live Flutter
+HTTP integration with server-side authorization, authenticated-token revocation
+tests and A03/A04/A12 acceptance on isolated staging.
+
+**Important:** The requested `starts_on`/`ended_on` values are historical
+effective dates (today or earlier). Actual operating access changes immediately
+when the request commits. The director's previously issued JWTs are invalidated
+on end/replacement. The user must refresh the directory after a timeout instead
+of replaying a mutation automatically. Neither a candidate who is unverified nor
+an identity with an active director appointment elsewhere may be assigned.

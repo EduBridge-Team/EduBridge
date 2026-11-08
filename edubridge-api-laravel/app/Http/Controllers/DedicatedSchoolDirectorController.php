@@ -66,8 +66,13 @@ class DedicatedSchoolDirectorController extends Controller
                 if (Schema::hasColumn('users', 'created_at')) $user['created_at'] = now();
                 if (Schema::hasColumn('users', 'updated_at')) $user['updated_at'] = now();
                 $userId = DB::table('users')->insertGetId($user);
-                if ($active) DB::table('school_management_assignments')
-                    ->where('id', $active->id)->update(['ends_at' => now(), 'updated_at' => now()]);
+                if ($active) {
+                    DB::table('school_management_assignments')
+                        ->where('id', $active->id)->update(['ends_at' => now(), 'updated_at' => now()]);
+                    // An invitation replaces a real operational identity too.
+                    // Stop previously-issued director tokens in the same transaction.
+                    \App\Support\SchoolDirectorSession::revoke((int) $active->user_id);
+                }
                 DB::table('school_management_assignments')->insert([
                     'school_id' => $school->id, 'user_id' => $userId,
                     'role' => 'director', 'appointed_by' => $invite->invited_by,

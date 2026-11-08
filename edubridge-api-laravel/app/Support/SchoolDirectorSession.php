@@ -29,4 +29,14 @@ final class SchoolDirectorSession
             ->limit(2)
             ->count() === 1;
     }
+    /**
+     * Revoke only the outgoing dedicated director's previously issued JWTs.
+     * A legacy teacher or other user's unrelated sessions are not touched.
+     * Called inside the school appointment transaction after taking its lock.
+     */
+    public static function revoke(int $userId): void
+    {
+        DB::table('users')->where('id', $userId)->where('role', 'school_director')
+            ->update(['session_version' => DB::raw('session_version + 1')]);
+    }
 }
