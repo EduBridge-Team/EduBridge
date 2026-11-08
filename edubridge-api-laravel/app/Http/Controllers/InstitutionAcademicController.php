@@ -187,16 +187,26 @@ class InstitutionAcademicController extends Controller
             'code.unique' => 'رمز المادة مستخدم مسبقاً في هذه المدرسة. أدخل رمزاً مختلفاً أو اتركه فارغاً.',
         ]);
 
-        $id = DB::table('subjects')->insertGetId([
-            'school_id' => $school,
-            'name' => $data['name'],
-            'code' => $data['code'] ?? null,
-            'code_normalized' => $data['code'] ?? null,
-            'color' => $data['color'] ?? null,
-            'is_active' => $data['is_active'] ?? true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        try {
+            $id = DB::table('subjects')->insertGetId([
+                'school_id' => $school,
+                'name' => $data['name'],
+                'code' => $data['code'] ?? null,
+                'code_normalized' => $data['code'] ?? null,
+                'color' => $data['color'] ?? null,
+                'is_active' => $data['is_active'] ?? true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\\Illuminate\\Database\\QueryException $exception) {
+            $sqlState = (string) ($exception->errorInfo[0] ?? $exception->getCode());
+            if (in_array($sqlState, ['23000', '23505'], true)) {
+                return response()->json([
+                    'error' => 'اسم المادة أو رمزها مستخدم مسبقاً في هذه المدرسة.',
+                ], 409);
+            }
+            throw $exception;
+        }
 
         return response()->json(['subject' => DB::table('subjects')->find($id)], 201);
     }
