@@ -6,6 +6,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Support\SchoolDirectorSession;
 
 trait AuthLoginActions
 {
@@ -81,6 +82,14 @@ trait AuthLoginActions
                         'code' => 'SCHOOL_ACCESS_UNAVAILABLE',
                     ], 403);
                 }
+            }
+
+            if ($user->role === 'school_director'
+                && !SchoolDirectorSession::active((int) $user->id)) {
+                return response()->json([
+                    'error' => 'لا يوجد تكليف مدير فعال لهذا الحساب',
+                    'code' => 'SCHOOL_ACCESS_UNAVAILABLE',
+                ], 403);
             }
 
             try {

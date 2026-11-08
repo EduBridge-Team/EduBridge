@@ -8,6 +8,7 @@ use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Support\AuthCredentials;
+use App\Support\SchoolDirectorSession;
 
 class JwtAuth
 {
@@ -80,6 +81,15 @@ class JwtAuth
                         'code' => 'SESSION_INVALID',
                     ], 401);
                 }
+            }
+
+            // A revoked/expired director appointment invalidates even a JWT
+            // issued before its end. The login route uses the same guard.
+            if ($account->role === 'school_director' && !SchoolDirectorSession::active((int) $account->id)) {
+                return response()->json([
+                    'error' => 'انتهت صلاحية تكليف مدير المدرسة',
+                    'code' => 'SESSION_INVALID',
+                ], 401);
             }
 
             // The current database account is authoritative for every policy.
