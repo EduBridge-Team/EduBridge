@@ -78,6 +78,7 @@ foreach ([
     "/app/routes/api.php",
     "/app/public/index.php",
     "/app/database/migrations/2026_11_08_140000_create_institution_director_directory.php",
+    "/app/database/data/psl_stem_labels.json",
 ] as $path) {
     if (!is_file($path) || !is_readable($path)) {
         fwrite(STDERR, "Unreadable Laravel source: " . $path . PHP_EOL);

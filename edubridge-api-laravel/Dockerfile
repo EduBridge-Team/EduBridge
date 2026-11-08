@@ -39,7 +39,7 @@ COPY . .
 # and PHP files mode 600; www-data must traverse and read all Laravel sources.
 RUN chmod 644 artisan composer.json composer.lock \
     && chmod 755 database \
-    && for dir in app bootstrap config public resources routes database/migrations database/factories database/seeders; do \
+    && for dir in app bootstrap config public resources routes database/migrations database/data database/factories database/seeders; do \
          if [ -d "$dir" ]; then \
            find "$dir" -type d -exec chmod 755 {} +; \
            find "$dir" -type f -exec chmod 644 {} +; \
