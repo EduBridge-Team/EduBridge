@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SubjectCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class InstitutionAcademicController extends Controller
 {
@@ -171,20 +173,25 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
         }
 
-        // Store a canonical code and compare it independently of case/outer whitespace.
+        // Validate the original type before normalizing; arrays must return 422, not warnings.
         $rawCode = $request->input('code');
-        $normalizedCode = $rawCode === null ? null : strtoupper(trim((string) $rawCode));
-        $normalizedCode = $normalizedCode === '' ? null : $normalizedCode;
-        $request->merge(['code' => $normalizedCode]);
+        if ($rawCode !== null && !is_string($rawCode)) {
+            throw ValidationException::withMessages(['code' => 'رمز المادة يجب أن يكون نصاً.']);
+        }
+        $request->merge(['code' => SubjectCode::normalize($rawCode)]);
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120', Rule::unique('subjects', 'name')->where(fn ($q) => $q->where('school_id', $school))],
-            'code' => ['nullable', 'string', 'max:40', Rule::unique('subjects', 'code_normalized')->where(fn ($q) => $q->where('school_id', $school))],
+            'code' => ['nullable', 'string', 'max:40', function (string $attribute, mixed $value, \Closure $fail) use ($school) {
+                if ($value !== null && DB::table('subjects')->where('school_id', $school)
+                    ->whereRaw(SubjectCode::normalizedSql() . ' = UPPER(?)', [$value])->exists()) {
+                    $fail('رمز المادة مستخدم مسبقاً في هذه المدرسة. أدخل رمزاً مختلفاً أو اتركه فارغاً.');
+                }
+            }],
             'color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'is_active' => ['nullable', 'boolean'],
         ], [
             'name.unique' => 'اسم المادة مستخدم مسبقاً في هذه المدرسة.',
-            'code.unique' => 'رمز المادة مستخدم مسبقاً في هذه المدرسة. أدخل رمزاً مختلفاً أو اتركه فارغاً.',
         ]);
 
         try {
@@ -192,7 +199,6 @@ class InstitutionAcademicController extends Controller
                 'school_id' => $school,
                 'name' => $data['name'],
                 'code' => $data['code'] ?? null,
-                'code_normalized' => $data['code'] ?? null,
                 'color' => $data['color'] ?? null,
                 'is_active' => $data['is_active'] ?? true,
                 'created_at' => now(),

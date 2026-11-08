@@ -36,10 +36,26 @@ position within a year. Term order is 1–20; names are nonblank and at most
 null or whitespace-only input means no code. A nonblank code is trimmed,
 uppercased for canonical storage/comparison, and limited to 40 characters.
 Codes are unique within a school (not globally); the same code may be used by
-another school. Legacy null/blank codes remain null in the normalized index:
-the migration never fabricates a code. Existing case/whitespace-equivalent
-duplicates stop the migration with the conflicting school and subject IDs,
-which must be reconciled before retrying.
+another school. A unique database expression index normalizes the original
+code for both inserts and updates; no writable secondary normalized column
+can drift out of sync. Legacy null/whitespace-only codes have a null index
+expression and are allowed to repeat. The migration never fabricates a code.
+Existing case/whitespace-equivalent duplicates stop the migration with the
+conflicting school and subject IDs, which must be reconciled before retrying.
+
+## Database migration and deployment safety
+
+The normalized unique expression index requires a reviewed migration on each
+independent PostgreSQL database, including the main stack and Jabalia. Before
+deployment, inventory each database for existing null, blank and normalized
+duplicate codes; reconcile nonblank conflicts with an approved mapping rather
+than generating codes. Verify a recoverable backup of each database and
+coordinate a maintenance window for subject writes. Apply the reviewed migration
+before releasing an API build that relies on the new index, then verify the index
+and create/read behavior on each database. The rollback removes only the index
+and never rewrites historical subject codes. Do not automatically run migrations
+against production or assume a successful fresh-database CI migration proves
+that legacy production rows have no conflicts.
 
 ## Creation
 

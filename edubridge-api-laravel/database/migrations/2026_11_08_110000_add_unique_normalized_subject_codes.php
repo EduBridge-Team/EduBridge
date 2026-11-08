@@ -1,22 +1,29 @@
 <?php
 
+use App\Support\SubjectCode;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
+        // Normalize the real code column at the database layer. A separate
+        // writable code_normalized column can silently drift from code when
+        // imports, maintenance scripts or other writers skip that column.
+        $normalizedSql = SubjectCode::normalizedSql();
+
         // Preflight before DDL: never silently choose a winner for legacy duplicates.
+        // Evaluate the same SQL expression used by the unique index so the
+        // preflight sees exactly the collisions that the database would see.
         $seen = [];
         $conflicts = [];
-        DB::table('subjects')->whereNotNull('code')->orderBy('id')->get(['id', 'school_id', 'code'])
+        DB::table('subjects')->whereNotNull('code')->orderBy('id')
+            ->get(['id', 'school_id', DB::raw($normalizedSql . ' AS normalized_code')])
             ->each(function ($subject) use (&$seen, &$conflicts) {
-                $normalized = strtoupper(trim((string) $subject->code));
-                if ($normalized === '') return;
+                $normalized = $subject->normalized_code;
+                if ($normalized === null) return;
 
                 $key = $subject->school_id . ':' . $normalized;
                 if (isset($seen[$key])) {
@@ -34,33 +41,19 @@ return new class extends Migration
 
         Log::info('Subject-code uniqueness migration preflight inventory', [
             'legacy_null_codes' => DB::table('subjects')->whereNull('code')->count(),
-            'legacy_blank_codes' => DB::table('subjects')->whereNotNull('code')->whereRaw("TRIM(code) = ''")->count(),
+            'legacy_blank_codes' => DB::table('subjects')->whereNotNull('code')
+                ->whereRaw($normalizedSql . ' IS NULL')->count(),
             'normalized_duplicate_groups' => 0,
         ]);
 
-        Schema::table('subjects', function (Blueprint $table) {
-            $table->string('code_normalized', 40)->nullable();
-        });
-
-        DB::table('subjects')->select('id', 'code')->orderBy('id')->chunkById(500, function ($subjects) {
-            foreach ($subjects as $subject) {
-                $code = $subject->code === null ? null : strtoupper(trim((string) $subject->code));
-                DB::table('subjects')->where('id', $subject->id)->update([
-                    'code_normalized' => $code === '' ? null : $code,
-                ]);
-            }
-        });
-
-        Schema::table('subjects', function (Blueprint $table) {
-            $table->unique(['school_id', 'code_normalized'], 'subjects_school_normalized_code_unique');
-        });
+        // NULLIF keeps null and whitespace-only legacy codes exempt from the
+        // constraint. Case/whitespace-equivalent nonblank codes are unique per
+        // school even for direct SQL inserts and updates.
+        DB::statement('CREATE UNIQUE INDEX subjects_school_normalized_code_unique ON subjects (school_id, (' . $normalizedSql . '))');
     }
 
     public function down(): void
     {
-        Schema::table('subjects', function (Blueprint $table) {
-            $table->dropUnique('subjects_school_normalized_code_unique');
-            $table->dropColumn('code_normalized');
-        });
+        DB::statement('DROP INDEX IF EXISTS subjects_school_normalized_code_unique');
     }
 };
