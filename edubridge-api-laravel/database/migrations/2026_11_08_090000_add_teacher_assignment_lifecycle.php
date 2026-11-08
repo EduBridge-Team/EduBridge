@@ -18,7 +18,7 @@ return new class extends Migration
         // Preserve legacy assignments as active, using their recorded creation date
         // as the best available start date without inventing a different date.
         DB::table('teacher_assignments')->whereNull('starts_on')->update([
-            'starts_on' => DB::raw('DATE(created_at)'),
+            'starts_on' => DB::raw('CAST(created_at AS DATE)'),
         ]);
 
         Schema::table('teacher_assignments', function (Blueprint $table) {
