@@ -15,7 +15,7 @@ permissions:
 jobs:
   react-ui:
     name: React suite, build, and isolated Chromium UI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     defaults:
       run:
