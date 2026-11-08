@@ -42,7 +42,7 @@ class InstitutionDirectorAssignmentTest extends TestCase
             $t->unsignedBigInteger('appointed_by')->nullable();
             $t->timestamp('starts_at'); $t->timestamp('ends_at')->nullable(); $t->timestamps();
         });
-        DB::table('users')->insert([
+        $users = [
             ['id' => 10, 'name' => 'Owner', 'email' => 'owner@example.test', 'role' => 'institution'],
             ['id' => 11, 'name' => 'Other Owner', 'email' => 'foreign@example.test', 'role' => 'institution'],
             ['id' => 20, 'name' => 'Director A', 'email' => 'a@example.test',
@@ -53,7 +53,13 @@ class InstitutionDirectorAssignmentTest extends TestCase
                 'role' => 'school_director'],
             ['id' => 23, 'name' => 'Teacher', 'email' => 'teacher@example.test', 'role' => 'teacher',
                 'email_verified_at' => now()],
-        ]);
+        ];
+        // Every row in a bulk SQLite insert must have identical columns.
+        // Profiles deliberately include both verified and unverified accounts.
+        DB::table('users')->insert(array_map(
+            fn (array $user) => array_merge(['email_verified_at' => null], $user),
+            $users
+        ));
         DB::table('organizations')->insert([
             ['id' => 1, 'slug' => 'jabalia', 'is_active' => true],
             ['id' => 2, 'slug' => 'other', 'is_active' => true],
