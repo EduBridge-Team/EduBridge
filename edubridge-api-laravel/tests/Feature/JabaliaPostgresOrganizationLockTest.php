@@ -104,7 +104,9 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
         DB::beginTransaction();
         try {
             DB::table('organizations')->where('id', $organizationId)->lockForUpdate()->first();
-            DB::table('teacher_assignments')->where('teacher_id', $teacherId)->delete();
+            DB::table('teacher_assignments')->where('teacher_id', $teacherId)->where('status', 'active')->update([
+                'status' => 'ended', 'ends_on' => '2026-10-30', 'updated_at' => now(),
+            ]);
 
             // The timetable writer cannot acquire the same lock while transfer is pending.
             $second->beginTransaction();
@@ -151,10 +153,13 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
             $lock = $second->prepare('SELECT id FROM organizations WHERE id = ? FOR UPDATE');
             $lock->execute([$organizationId]);
             $assignment = $second->prepare(
-                'SELECT COUNT(*) FROM teacher_assignments WHERE teacher_id = ? AND section_id = ? AND subject_id = ?'
+                'SELECT COUNT(*) FROM teacher_assignments WHERE teacher_id = ? AND section_id = ? AND subject_id = ? AND status = ?'
             );
-            $assignment->execute([$teacherId, $sectionId, $subjectId]);
+            $assignment->execute([$teacherId, $sectionId, $subjectId, 'active']);
             $this->assertSame(0, (int) $assignment->fetchColumn());
+            $history = $second->prepare('SELECT COUNT(*) FROM teacher_assignments WHERE teacher_id = ? AND status = ?');
+            $history->execute([$teacherId, 'ended']);
+            $this->assertSame(1, (int) $history->fetchColumn());
         } finally {
             $second->rollBack();
         }
