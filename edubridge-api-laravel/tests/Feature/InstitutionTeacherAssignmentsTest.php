@@ -106,6 +106,8 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         $removed = $controller->removeTeacherAssignment($this->request(), 'jabalia', 1, 1);
         $this->assertSame(200, $removed->getStatusCode());
         $this->assertDatabaseHas('teacher_assignments', ['id' => 1, 'status' => 'ended', 'ends_on' => now()->toDateString()]);
+        DB::table('teacher_assignments')->insert(['section_id' => 1, 'subject_id' => 1, 'teacher_id' => 1, 'status' => 'active', 'starts_on' => now()->toDateString()]);
+        $this->assertSame(2, DB::table('teacher_assignments')->where('section_id', 1)->where('subject_id', 1)->count());
         $this->assertDatabaseHas('jabalia_teacher_assignment_history', ['school_id' => 1, 'teacher_id' => 1, 'section_id' => 1, 'subject_id' => 1, 'status' => 'ended']);
         $this->assertDatabaseHas('teacher_assignments', ['id' => 2]);
     }
