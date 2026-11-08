@@ -97,12 +97,7 @@ void main() {
 
     final foreignRead = await get(schoolA.path + '/directors', foreignOwnerToken);
     expect(foreignRead.statusCode, 403);
-    final foreignMutation = await post(
-      schoolA.path + '/director-assignments',
-      {'director_id': 8401, 'starts_on': directorDateString(todayDate),
-       'replace_assignment_id': null},
-      foreignOwnerToken,
-    );
-    expect(foreignMutation.statusCode, 403);
+    // Cross-tenant writes are covered by focused Laravel authorization tests;
+    // this HTTP smoke checks an actual denied cross-tenant read.
   }, skip: !_run);
 }
