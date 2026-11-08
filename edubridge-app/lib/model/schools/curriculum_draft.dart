@@ -41,7 +41,13 @@ class CurriculumDraft {
 
   bool validFor(CurriculumCatalog catalog) {
     if (!valid) return false;
-    if (kind == CurriculumKind.subject) return true;
+    if (kind == CurriculumKind.subject) {
+      final code = normalizedCode;
+      return code == null ||
+          !catalog.subjects.any(
+            (subject) => subject.code?.trim().toUpperCase() == code,
+          );
+    }
     final years = catalog.years.where((year) => year.id == yearId);
     if (years.isEmpty) return false;
     final year = years.single;
