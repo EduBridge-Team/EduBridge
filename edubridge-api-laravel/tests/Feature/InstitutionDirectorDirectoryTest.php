@@ -241,6 +241,73 @@ class InstitutionDirectorDirectoryTest extends TestCase
         $this->assertSame(2, DB::table('school_management_assignments')->count());
     }
 
+    public function test_migration_refuses_duplicate_normalized_emails_of_distinct_directors_before_ddl(): void
+    {
+        $this->migration()->down();
+        DB::table('users')->where('id', 21)->update(['email' => ' DIRECTOR@EXAMPLE.TEST ']);
+        DB::table('school_management_assignments')->insert([
+            ['school_id' => 1, 'user_id' => 20, 'role' => 'director',
+                'starts_at' => '2026-09-01 09:00:00', 'ends_at' => '2026-10-01 09:00:00'],
+            ['school_id' => 1, 'user_id' => 21, 'role' => 'director',
+                'starts_at' => '2026-10-01 09:00:00', 'ends_at' => null],
+        ]);
+        try {
+            $this->migration()->up();
+            $this->fail('Duplicate people may not be merged into one directory profile');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('multiple identities share', $e->getMessage());
+            $this->assertFalse(Schema::hasTable('institution_director_profiles'));
+        }
+    }
+
+    public function test_migration_refuses_overlapping_legacy_history_before_ddl(): void
+    {
+        $this->migration()->down();
+        DB::table('school_management_assignments')->insert([
+            ['school_id' => 1, 'user_id' => 20, 'role' => 'director',
+                'starts_at' => '2026-09-01 09:00:00', 'ends_at' => '2026-10-05 09:00:00'],
+            ['school_id' => 1, 'user_id' => 21, 'role' => 'director',
+                'starts_at' => '2026-10-01 09:00:00', 'ends_at' => null],
+        ]);
+        try {
+            $this->migration()->up();
+            $this->fail('Overlapping appointments must not be imported');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('overlapping historical', $e->getMessage());
+            $this->assertFalse(Schema::hasTable('institution_director_assignments'));
+        }
+    }
+
+    public function test_migration_refuses_future_legacy_end_dates_before_ddl(): void
+    {
+        $this->migration()->down();
+        DB::table('school_management_assignments')->insert([
+            'school_id' => 1, 'user_id' => 20, 'role' => 'director',
+            'starts_at' => now()->subWeek(), 'ends_at' => now()->addWeek(),
+        ]);
+        try {
+            $this->migration()->up();
+            $this->fail('Future historical dates violate the Flutter contract');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('invalid legacy identity', $e->getMessage());
+            $this->assertFalse(Schema::hasTable('institution_director_profiles'));
+        }
+    }
+
+    public function test_migration_accepts_adjacent_history_when_handover_is_same_day(): void
+    {
+        $this->migration()->down();
+        DB::table('school_management_assignments')->insert([
+            ['school_id' => 1, 'user_id' => 20, 'role' => 'director',
+                'starts_at' => '2026-09-01 09:00:00', 'ends_at' => '2026-10-01 08:59:59'],
+            ['school_id' => 1, 'user_id' => 21, 'role' => 'director',
+                'starts_at' => '2026-10-01 09:00:00', 'ends_at' => null],
+        ]);
+        $this->migration()->up();
+        $this->assertSame(2, DB::table('institution_director_assignments')->count());
+        $this->assertSame(1, DB::table('institution_director_assignments')->whereNull('ended_on')->count());
+    }
+
     public function test_one_current_director_index_rejects_duplicate_active_records(): void
     {
         DB::table('institution_director_profiles')->insert([

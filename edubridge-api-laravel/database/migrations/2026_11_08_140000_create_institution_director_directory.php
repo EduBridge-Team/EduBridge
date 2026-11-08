@@ -9,6 +9,59 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Preflight BEFORE DDL. Do not silently collapse separate people into
+        // one profile when legacy emails collide after normalization. Reject
+        // any history Flutter would refuse to parse or display.
+        $legacy = DB::table('school_management_assignments as a')
+            ->join('users as u', 'u.id', '=', 'a.user_id')
+            ->where('a.role', 'director');
+
+        if ((clone $legacy)->where(function ($query) {
+            $query->whereNull('a.starts_at')
+                ->orWhereRaw("TRIM(COALESCE(u.name, '')) = ''")
+                ->orWhereRaw("TRIM(COALESCE(u.email, '')) = ''")
+                ->orWhereRaw('LENGTH(TRIM(u.name)) > 150')
+                ->orWhereRaw('LENGTH(TRIM(u.email)) > 190')
+                ->orWhereColumn('a.ends_at', '<', 'a.starts_at')
+                ->orWhereRaw('DATE(a.starts_at) > CURRENT_DATE')
+                ->orWhereRaw('DATE(a.ends_at) > CURRENT_DATE');
+        })->exists()) {
+            throw new RuntimeException('Director directory preflight: invalid legacy identity or appointment date');
+        }
+
+        if ((clone $legacy)
+            ->groupBy('a.school_id')
+            ->groupByRaw('LOWER(TRIM(u.email))')
+            ->havingRaw('COUNT(DISTINCT a.user_id) > 1')
+            ->exists()) {
+            throw new RuntimeException('Director directory preflight: multiple identities share a normalized email in one school');
+        }
+
+        if (DB::table('school_management_assignments')
+            ->where('role', 'director')->whereNull('ends_at')
+            ->groupBy('school_id')->havingRaw('COUNT(*) > 1')->exists()) {
+            throw new RuntimeException('Director directory preflight: multiple current directors in one school');
+        }
+
+        if (DB::table('school_management_assignments as a')
+            ->join('users as u', 'u.id', '=', 'a.user_id')
+            ->where('a.role', 'director')->whereNull('a.ends_at')
+            ->where('u.role', 'school_director')
+            ->groupBy('a.user_id')->havingRaw('COUNT(DISTINCT a.school_id) > 1')
+            ->exists()) {
+            throw new RuntimeException('Director directory preflight: dedicated director assigned to multiple schools');
+        }
+
+        if (DB::table('school_management_assignments as a')
+            ->join('school_management_assignments as b', 'a.school_id', '=', 'b.school_id')
+            ->where('a.role', 'director')->where('b.role', 'director')
+            ->whereColumn('a.id', '<', 'b.id')
+            ->whereRaw("DATE(a.starts_at) < COALESCE(DATE(b.ends_at), DATE('9999-12-31'))")
+            ->whereRaw("DATE(b.starts_at) < COALESCE(DATE(a.ends_at), DATE('9999-12-31'))")
+            ->exists()) {
+            throw new RuntimeException('Director directory preflight: overlapping historical director appointments');
+        }
+
         Schema::create('institution_director_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_id')->constrained('schools')->restrictOnDelete();
