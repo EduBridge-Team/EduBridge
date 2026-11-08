@@ -65,8 +65,24 @@ docker exec "$container" nginx -t
 docker exec "$container" php-fpm -t
 docker exec "$container" php -r 'exit(ini_get("upload_max_filesize") === "150M" && ini_get("post_max_size") === "170M" && extension_loaded("Zend OPcache") ? 0 : 1);'
 
-current_stage="non-root migration file access"
-# Deployment can import migrations only if www-data can traverse /app/database.
+current_stage="non-root Laravel source access"
+# A health endpoint on a different image does not prove CLI/bootstrap access.
+docker exec "$container" php -r '
+foreach ([
+    "/app/artisan",
+    "/app/bootstrap/app.php",
+    "/app/bootstrap/providers.php",
+    "/app/config/app.php",
+    "/app/routes/api.php",
+    "/app/public/index.php",
+    "/app/database/migrations/2026_11_08_140000_create_institution_director_directory.php",
+] as $path) {
+    if (!is_file($path) || !is_readable($path)) {
+        fwrite(STDERR, "Unreadable Laravel source: " . $path . PHP_EOL);
+        exit(1);
+    }
+}'
+docker exec "$container" php artisan --version >/dev/null
 docker exec "$container" php -l /app/database/migrations/2026_11_08_140000_create_institution_director_directory.php >/dev/null
 
 current_stage="database migration"
