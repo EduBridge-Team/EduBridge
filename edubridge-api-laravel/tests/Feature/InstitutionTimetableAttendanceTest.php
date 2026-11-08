@@ -43,6 +43,10 @@ class InstitutionTimetableAttendanceTest extends TestCase
         });
         Schema::create('teacher_assignments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id'); $t->string('status')->default('active'); $t->date('starts_on')->nullable(); $t->date('ends_on')->nullable(); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('academic_year_id'); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedTinyInteger('weekday'); $t->unsignedTinyInteger('period_number'); $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable(); $t->string('room')->nullable(); $t->timestamps(); });
+        Schema::create('jabalia_school_timetable_settings', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id')->unique();
+            $t->json('weekdays'); $t->json('periods'); $t->timestamps();
+        });
 
         DB::table('organizations')->insert(['id' => 1, 'slug' => 'jabalia', 'is_active' => true]);
         DB::table('users')->insert([['id' => 10, 'name' => 'Teacher'], ['id' => 20, 'name' => 'Parent'], ['id' => 30, 'name' => 'Admin']]);
@@ -60,7 +64,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
+        foreach (['jabalia_school_timetable_settings','jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -508,6 +512,134 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $data = $response->getData(true);
         $this->assertFalse($data['daily_recorded_only']);
         $this->assertSame(2, $data['summary']['present']);
+    }
+
+    private function addSecondJabaliaSchoolWithTeacher(): void
+    {
+        DB::table('schools')->insert(['id' => 2, 'organization_id' => 1, 'name' => 'Second school']);
+        DB::table('academic_years')->insert(['id' => 2, 'school_id' => 2, 'name' => '2026/2027']);
+        DB::table('grades')->insert(['id' => 2, 'school_id' => 2, 'name' => 'Grade 5']);
+        DB::table('sections')->insert(['id' => 3, 'grade_id' => 2, 'academic_year_id' => 2, 'name' => 'C']);
+        DB::table('subjects')->insert(['id' => 2, 'school_id' => 2, 'name' => 'Science']);
+        DB::table('teacher_assignments')->insert([
+            'section_id' => 3, 'subject_id' => 2, 'teacher_id' => 10,
+        ]);
+    }
+
+    private function setSecondJabaliaSchoolPeriods(array $periods): void
+    {
+        DB::table('jabalia_school_timetable_settings')->insert([
+            'school_id' => 2, 'weekdays' => json_encode([7, 1, 2, 3, 4]),
+            'periods' => json_encode($periods),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+    }
+
+    private function saveJabaliaTimetable(int $school, int $year, int $section, int $subject, int $period, array $extra = []): \Illuminate\Http\JsonResponse
+    {
+        return app(InstitutionTimetableController::class)->store($this->tenantRequest(array_merge([
+            'academic_year_id' => $year, 'section_id' => $section,
+            'subject_id' => $subject, 'teacher_id' => 10,
+            'weekday' => 1, 'period_number' => $period,
+        ], $extra)), 'jabalia', $school);
+    }
+
+    public function test_teacher_overlap_across_schools_is_rejected_even_if_period_numbers_differ(): void
+    {
+        $this->addSecondJabaliaSchoolWithTeacher();
+        $this->setSecondJabaliaSchoolPeriods([
+            ['starts_at' => '09:30', 'ends_at' => '10:10'],
+        ]);
+        $this->assertSame(201, $this->saveJabaliaTimetable(1, 1, 1, 1, 2)->status());
+
+        $response = $this->saveJabaliaTimetable(2, 2, 3, 2, 1);
+        $this->assertSame(409, $response->status());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_teacher_can_teach_adjacent_intervals_across_schools(): void
+    {
+        $this->addSecondJabaliaSchoolWithTeacher();
+        $this->setSecondJabaliaSchoolPeriods([
+            ['starts_at' => '09:50', 'ends_at' => '10:30'],
+        ]);
+        $this->assertSame(201, $this->saveJabaliaTimetable(1, 1, 1, 1, 2)->status());
+        $this->assertSame(201, $this->saveJabaliaTimetable(2, 2, 3, 2, 1)->status());
+        $this->assertSame(2, DB::table('timetable_entries')->count());
+    }
+
+    public function test_same_period_number_across_schools_does_not_clash_if_times_are_disjoint(): void
+    {
+        $this->addSecondJabaliaSchoolWithTeacher();
+        $this->setSecondJabaliaSchoolPeriods([
+            ['starts_at' => '10:00', 'ends_at' => '10:30'],
+            ['starts_at' => '10:40', 'ends_at' => '11:20'],
+        ]);
+        $this->assertSame(201, $this->saveJabaliaTimetable(1, 1, 1, 1, 2)->status());
+        $this->assertSame(201, $this->saveJabaliaTimetable(2, 2, 3, 2, 2)->status());
+    }
+
+    public function test_same_school_room_overlap_is_rejected_across_different_period_numbers(): void
+    {
+        // A legacy entry with clock times that no longer match default slot
+        // numbers must still block a conflicting room.
+        DB::table('timetable_entries')->insert([
+            'school_id' => 1, 'academic_year_id' => 1,
+            'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => null, 'weekday' => 1, 'period_number' => 1,
+            'starts_at' => '09:20', 'ends_at' => '09:40', 'room' => 'Lab',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $response = $this->saveJabaliaTimetable(1, 1, 2, 1, 2, ['room' => 'Lab']);
+        $this->assertSame(409, $response->status());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_same_section_overlap_is_rejected_across_different_period_numbers(): void
+    {
+        DB::table('timetable_entries')->insert([
+            'school_id' => 1, 'academic_year_id' => 1,
+            'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => null, 'weekday' => 1, 'period_number' => 1,
+            'starts_at' => '09:20', 'ends_at' => '09:40',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->assertSame(409, $this->saveJabaliaTimetable(1, 1, 1, 1, 2)->status());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_partial_legacy_time_keeps_same_number_conflict_guard(): void
+    {
+        DB::table('timetable_entries')->insert([
+            'school_id' => 1, 'academic_year_id' => 1,
+            'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 1, 'period_number' => 2,
+            'starts_at' => '09:10', 'ends_at' => null,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->assertSame(409, $this->saveJabaliaTimetable(1, 1, 2, 1, 2)->status());
+    }
+
+    public function test_non_jabalia_partial_interval_is_rejected(): void
+    {
+        DB::table('organizations')->insert(['id' => 2, 'slug' => 'demo', 'is_active' => true]);
+        DB::table('organization_user')->insert([
+            'organization_id' => 2, 'user_id' => 10, 'role' => 'teacher', 'is_active' => true,
+        ]);
+        DB::table('schools')->insert(['id' => 3, 'organization_id' => 2, 'name' => 'Demo']);
+        DB::table('academic_years')->insert(['id' => 3, 'school_id' => 3, 'name' => '2026/2027']);
+        DB::table('grades')->insert(['id' => 3, 'school_id' => 3, 'name' => 'Grade']);
+        DB::table('sections')->insert(['id' => 4, 'grade_id' => 3, 'academic_year_id' => 3, 'name' => 'A']);
+        DB::table('subjects')->insert(['id' => 3, 'school_id' => 3, 'name' => 'Math']);
+        $request = $this->tenantRequest([
+            'academic_year_id' => 3, 'section_id' => 4,
+            'subject_id' => 3, 'weekday' => 1, 'period_number' => 1,
+            'starts_at' => '10:00',
+        ]);
+        $request->attributes->set('organization', (object) ['id' => 2, 'slug' => 'demo']);
+        $response = app(InstitutionTimetableController::class)->store($request, 'demo', 3);
+        $this->assertSame(422, $response->status());
+        $this->assertSame(0, DB::table('timetable_entries')->count());
     }
 
     private function tenantRequest(array $payload): Request
