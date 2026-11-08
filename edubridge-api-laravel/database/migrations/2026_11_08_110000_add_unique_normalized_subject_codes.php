@@ -3,6 +3,7 @@
 use Illuminate\\Database\\Migrations\\Migration;
 use Illuminate\\Database\\Schema\\Blueprint;
 use Illuminate\\Support\\Facades\\DB;
+use Illuminate\\Support\\Facades\\Log;
 use Illuminate\\Support\\Facades\\Schema;
 
 return new class extends Migration
@@ -30,6 +31,12 @@ return new class extends Migration
             $details = collect($conflicts)->map(fn ($ids, $key) => $key . ' (subject IDs: ' . implode(', ', $ids) . ')')->implode('; ');
             throw new RuntimeException('Cannot add unique subject codes: resolve legacy normalized duplicates first: ' . $details);
         }
+
+        Log::info('Subject-code uniqueness migration preflight inventory', [
+            'legacy_null_codes' => DB::table('subjects')->whereNull('code')->count(),
+            'legacy_blank_codes' => DB::table('subjects')->whereNotNull('code')->whereRaw("TRIM(code) = ''")->count(),
+            'normalized_duplicate_groups' => 0,
+        ]);
 
         Schema::table('subjects', function (Blueprint $table) {
             $table->string('code_normalized', 40)->nullable();
