@@ -213,16 +213,15 @@ class InstitutionAcademicController extends Controller
 
         $organization = $request->attributes->get('organization');
         $created = DB::transaction(function () use ($data, $organization, $school, $request) {
-            // Lock the section shared by all competing assignments, not just the
-            // teacher row: two different teachers must not race into one slot.
-            if (($organization->slug ?? null) === 'jabalia') {
-                DB::table('sections')->where('id', $data['section_id'])->lockForUpdate()->first();
-                $existing = DB::table('teacher_assignments')
-                    ->where('section_id', $data['section_id'])
-                    ->where('subject_id', $data['subject_id'])->where('status', 'active')->first();
-                if ($existing && (int) $existing->teacher_id !== (int) $data['teacher_id']) {
-                    return 'subject_teacher_conflict';
-                }
+            // Serialize all writers for this section/subject slot. This remains
+            // necessary after allowing historical rows for repeated assignments.
+            DB::table('sections')->where('id', $data['section_id'])->lockForUpdate()->first();
+            $existing = DB::table('teacher_assignments')
+                ->where('section_id', $data['section_id'])
+                ->where('subject_id', $data['subject_id'])->where('status', 'active')->first();
+            if (($organization->slug ?? null) === 'jabalia'
+                && $existing && (int) $existing->teacher_id !== (int) $data['teacher_id']) {
+                return 'subject_teacher_conflict';
             }
             // Serialize duplicate requests against the teacher's user row.
             DB::table('users')->where('id', $data['teacher_id'])->lockForUpdate()->first();
