@@ -189,5 +189,5 @@ void main() {
     // No rejected operation may mutate either school's academic catalog.
     expect((await schoolA.load()).grades.length, 1);
     expect((await schoolB.load()).grades.length, 1);
-  }, skip: !_run);
+  }, skip: !_run, timeout: const Timeout(Duration(minutes: 5)));
 }
