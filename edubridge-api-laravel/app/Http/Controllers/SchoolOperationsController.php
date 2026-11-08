@@ -77,7 +77,7 @@ class SchoolOperationsController extends Controller
         $students = DB::table('student_enrollments as e')->join('sections as s', 's.id', '=', 'e.section_id')
             ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->where('e.status', 'active')->distinct()->count('e.child_id');
         $teachers = DB::table('teacher_assignments as a')->join('sections as s', 's.id', '=', 'a.section_id')
-            ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->distinct()->count('a.teacher_id');
+            ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->where('a.status', 'active')->distinct()->count('a.teacher_id');
         return response()->json(['statistics' => ['students' => $students, 'teachers' => $teachers,
             'grades' => DB::table('grades')->where('school_id', $school)->count(),
             'lessons' => DB::table('timetable_entries')->where('school_id', $school)->count(),
@@ -90,7 +90,7 @@ class SchoolOperationsController extends Controller
         $teachers = DB::table('users as u')->where('u.role', 'teacher')->where(function ($q) use ($school) {
             $q->whereIn('u.id', DB::table('school_internal_identities')->where('school_id', $school)->where('is_active', true)->select('user_id'))
                 ->orWhereIn('u.id', DB::table('teacher_assignments as a')->join('sections as s', 's.id', '=', 'a.section_id')
-                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->select('a.teacher_id'));
+                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->where('a.status', 'active')->select('a.teacher_id'));
         })->get(['u.id', 'u.name']);
         return response()->json(['teachers' => $teachers]);
     }
