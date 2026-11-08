@@ -32,8 +32,14 @@ are real YYYY-MM-DD calendar dates. All records belong to the context school.
 Reject duplicate IDs, more than one current year, missing year references,
 term dates outside the parent year, reversed/equal term dates, and repeated
 position within a year. Term order is 1–20; names are nonblank and at most
-60 characters for terms, 120 for subjects. Subject code key is required and
-nullable; a present string must be nonblank and at most 40 characters.
+60 characters for terms, 120 for subjects. Subject code is optional/nullable;
+null or whitespace-only input means no code. A nonblank code is trimmed,
+uppercased for canonical storage/comparison, and limited to 40 characters.
+Codes are unique within a school (not globally); the same code may be used by
+another school. Legacy null/blank codes remain null in the normalized index:
+the migration never fabricates a code. Existing case/whitespace-equivalent
+duplicates stop the migration with the conflicting school and subject IDs,
+which must be reconciled before retrying.
 
 ## Creation
 
@@ -56,7 +62,9 @@ successful write returns HTTP 201 with {"school_id":10,"item":<complete entity>}
 using exactly the catalog entity shape. The school and every submitted field must
 match the receipt. A plain success flag or mismatched record cannot confirm a save.
 Server must recheck authorization, parent year, dates, unique year+position and
-school-scoped subject-name uniqueness transactionally; return 409 for conflicts.
+school-scoped subject-name/code uniqueness. Duplicate normalized codes return a
+field-level validation error (HTTP 422); a concurrent database uniqueness
+conflict returns HTTP 409. Flutter displays the first field validation message.
 
 ## Flutter behavior and verification
 
