@@ -160,6 +160,16 @@ class JabaliaPostgresOrganizationLockTest extends TestCase
             $history = $second->prepare('SELECT COUNT(*) FROM teacher_assignments WHERE teacher_id = ? AND status = ?');
             $history->execute([$teacherId, 'ended']);
             $this->assertSame(1, (int) $history->fetchColumn());
+
+            // The removed lifetime unique key must allow a new active assignment
+            // to coexist with the retained ended row.
+            $insert = $second->prepare(
+                'INSERT INTO teacher_assignments (teacher_id, section_id, subject_id, status, starts_on) VALUES (?, ?, ?, ?, ?)'
+            );
+            $insert->execute([$teacherId, $sectionId, $subjectId, 'active', '2026-11-01']);
+            $active = $second->prepare('SELECT COUNT(*) FROM teacher_assignments WHERE teacher_id = ? AND status = ?');
+            $active->execute([$teacherId, 'active']);
+            $this->assertSame(1, (int) $active->fetchColumn());
         } finally {
             $second->rollBack();
         }
