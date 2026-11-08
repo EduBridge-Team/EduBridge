@@ -20,8 +20,9 @@ class CurriculumDraft {
   final DateTime? start, end;
   final String? code;
   final bool active;
-  String? get normalizedCode =>
-      code == null || code!.trim().isEmpty ? null : code!.trim();
+  String? get normalizedCode => code == null || code!.trim().isEmpty
+      ? null
+      : code!.trim().toUpperCase();
   bool get valid {
     if (name.trim().isEmpty ||
         name.trim().length > (kind == CurriculumKind.term ? 60 : 120))
