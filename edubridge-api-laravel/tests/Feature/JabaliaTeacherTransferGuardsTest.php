@@ -27,6 +27,7 @@ class JabaliaTeacherTransferGuardsTest extends TestCase
         Schema::create('teacher_assignments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id');
             $t->string('status')->default('active'); $t->date('starts_on')->nullable(); $t->date('ends_on')->nullable();
+            $t->timestamps();
         });
         Schema::create('timetable_entries', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('section_id');
