@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SubjectCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class InstitutionAcademicController extends Controller
 {
@@ -171,22 +173,46 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
         }
 
+        // Validate the original type before normalizing; arrays must return 422, not warnings.
+        $rawCode = $request->input('code');
+        if ($rawCode !== null && !is_string($rawCode)) {
+            throw ValidationException::withMessages(['code' => 'رمز المادة يجب أن يكون نصاً.']);
+        }
+        $request->merge(['code' => SubjectCode::normalize($rawCode)]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120', Rule::unique('subjects', 'name')->where(fn ($q) => $q->where('school_id', $school))],
-            'code' => ['nullable', 'string', 'max:40'],
+            'code' => ['nullable', 'string', 'max:40', function (string $attribute, mixed $value, \Closure $fail) use ($school) {
+                if ($value !== null && DB::table('subjects')->where('school_id', $school)
+                    ->whereRaw(SubjectCode::normalizedSql() . ' = UPPER(?)', [$value])->exists()) {
+                    $fail('رمز المادة مستخدم مسبقاً في هذه المدرسة. أدخل رمزاً مختلفاً أو اتركه فارغاً.');
+                }
+            }],
             'color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'is_active' => ['nullable', 'boolean'],
+        ], [
+            'name.unique' => 'اسم المادة مستخدم مسبقاً في هذه المدرسة.',
         ]);
 
-        $id = DB::table('subjects')->insertGetId([
-            'school_id' => $school,
-            'name' => $data['name'],
-            'code' => $data['code'] ?? null,
-            'color' => $data['color'] ?? null,
-            'is_active' => $data['is_active'] ?? true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        try {
+            $id = DB::table('subjects')->insertGetId([
+                'school_id' => $school,
+                'name' => $data['name'],
+                'code' => $data['code'] ?? null,
+                'color' => $data['color'] ?? null,
+                'is_active' => $data['is_active'] ?? true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $sqlState = (string) ($exception->errorInfo[0] ?? $exception->getCode());
+            if (in_array($sqlState, ['23000', '23505'], true)) {
+                return response()->json([
+                    'error' => 'اسم المادة أو رمزها مستخدم مسبقاً في هذه المدرسة.',
+                ], 409);
+            }
+            throw $exception;
+        }
 
         return response()->json(['subject' => DB::table('subjects')->find($id)], 201);
     }

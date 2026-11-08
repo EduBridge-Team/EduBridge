@@ -20,8 +20,9 @@ class CurriculumDraft {
   final DateTime? start, end;
   final String? code;
   final bool active;
-  String? get normalizedCode =>
-      code == null || code!.trim().isEmpty ? null : code!.trim();
+  String? get normalizedCode => code == null || code!.trim().isEmpty
+      ? null
+      : code!.trim().toUpperCase();
   bool get valid {
     if (name.trim().isEmpty ||
         name.trim().length > (kind == CurriculumKind.term ? 60 : 120))
@@ -40,7 +41,13 @@ class CurriculumDraft {
 
   bool validFor(CurriculumCatalog catalog) {
     if (!valid) return false;
-    if (kind == CurriculumKind.subject) return true;
+    if (kind == CurriculumKind.subject) {
+      final code = normalizedCode;
+      return code == null ||
+          !catalog.subjects.any(
+            (subject) => subject.code?.trim().toUpperCase() == code,
+          );
+    }
     final years = catalog.years.where((year) => year.id == yearId);
     if (years.isEmpty) return false;
     final year = years.single;
