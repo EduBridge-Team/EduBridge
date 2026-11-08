@@ -8,6 +8,18 @@ import 'package:edubridge_app/services/enrollment/enrollment_api_client.dart';
 import 'enrollment_fakes.dart';
 
 void main() {
+  test('Jabalia review flag blocks generic approval in controller but allows rejection', () async {
+    final gateway = FakeSchoolEnrollment()..requiresCounselorReview = true;
+    final controller = SchoolEnrollmentController(gateway);
+    addTearDown(controller.dispose);
+    await controller.reload();
+    final request = controller.snapshot!.requests.single;
+    await controller.decide(request, const EnrollmentDecision(approve: true, sectionId: 20));
+    expect(gateway.writes, 0);
+    await controller.decide(request, const EnrollmentDecision(approve: false, reason: 'Not eligible'));
+    expect(gateway.writes, 1);
+    expect(gateway.lastDecision!.approve, isFalse);
+  });
   test('school decision serializes and blocks repeat approval', () async {
     final gateway = FakeSchoolEnrollment()..pendingWrite = Completer<void>();
     final controller = SchoolEnrollmentController(gateway);

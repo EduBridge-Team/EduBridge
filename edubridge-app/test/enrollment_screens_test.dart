@@ -115,6 +115,20 @@ void main() {
       },
     );
   }
+  for (final language in ['ar', 'en']) {
+    testWidgets('Jabalia $language school UI never offers generic approval', (tester) async {
+      final gateway = FakeSchoolEnrollment()..requiresCounselorReview = true;
+      await tester.pumpWidget(host(SchoolDashboardScreen(gateway: gateway), language));
+      await tester.runAsync(() async { await SharedPreferences.getInstance(); });
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('jabalia-counselor-review-notice')), findsOneWidget);
+      expect(find.byKey(const ValueKey('enrollment-approve-50')), findsNothing);
+      final reject = find.byKey(const ValueKey('enrollment-reject-50'));
+      await tester.ensureVisible(reject);
+      expect(reject, findsOneWidget);
+      expect(gateway.writes, 0);
+    });
+  }
   testWidgets('school approval requires section before sending decision', (
     tester,
   ) async {

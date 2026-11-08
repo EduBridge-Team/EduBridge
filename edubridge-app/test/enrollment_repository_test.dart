@@ -24,6 +24,26 @@ Map<String, dynamic> sectionJson() => {
   'academic_year_name': '2026/2027',
 };
 void main() {
+  test('inbox review flag is server-owned, preserves normal schools and validates type', () async {
+    Future<SchoolEnrollmentInbox> load(Object? flag) =>
+        SchoolEnrollmentRepository(client: EnrollmentApiClient(
+          get: (path) async {
+            if (path.endsWith('/context')) return json(schoolContext());
+            if (path.endsWith('/enrollment-options')) {
+              return json({'school_id': 10, 'sections': [sectionJson()]});
+            }
+            return json({
+              'school_id': 10,
+              'requests': [enrollmentRequestJson()],
+              if (flag != null) 'requires_counselor_review': flag,
+            });
+          },
+        )).load();
+    expect((await load(true)).requiresCounselorReview, isTrue);
+    expect((await load(false)).requiresCounselorReview, isFalse);
+    expect((await load(null)).requiresCounselorReview, isFalse);
+    await expectLater(load('true'), fails(EnrollmentFailure.invalidResponse));
+  });
   test('school scope comes from authenticated context and supports independent schools', () async {
     final calls = <String>[];
     final repo = SchoolEnrollmentRepository(

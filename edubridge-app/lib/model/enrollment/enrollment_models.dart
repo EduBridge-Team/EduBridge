@@ -173,8 +173,11 @@ class SchoolEnrollmentInbox {
     required this.identity,
     required List<EnrollmentRequest> requests,
     required List<EnrollmentSection> sections,
+    this.requiresCounselorReview = false,
   }) : requests = List.unmodifiable(requests),
        sections = List.unmodifiable(sections);
+  // Never infer clinical or administrative clearance from uploaded evidence.
+  final bool requiresCounselorReview;
   final SchoolPortalIdentity identity;
   final List<EnrollmentRequest> requests;
   final List<EnrollmentSection> sections;
