@@ -198,7 +198,7 @@ class InstitutionAcademicController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        } catch (\\Illuminate\\Database\\QueryException $exception) {
+        } catch (\Illuminate\Database\QueryException $exception) {
             $sqlState = (string) ($exception->errorInfo[0] ?? $exception->getCode());
             if (in_array($sqlState, ['23000', '23505'], true)) {
                 return response()->json([
