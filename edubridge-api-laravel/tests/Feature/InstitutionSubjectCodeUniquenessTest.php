@@ -1,15 +1,15 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use App\\Http\\Controllers\\InstitutionAcademicController;
-use Illuminate\\Database\\QueryException;
-use Illuminate\\Database\\Schema\\Blueprint;
-use Illuminate\\Http\\Request;
-use Illuminate\\Support\\Facades\\DB;
-use Illuminate\\Support\\Facades\\Schema;
-use Illuminate\\Validation\\ValidationException;
-use Tests\\TestCase;
+use App\Http\Controllers\InstitutionAcademicController;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
+use Tests\TestCase;
 
 class InstitutionSubjectCodeUniquenessTest extends TestCase
 {
@@ -46,7 +46,7 @@ class InstitutionSubjectCodeUniquenessTest extends TestCase
         parent::tearDown();
     }
 
-    private function createSubject(int $school, string $name, ?string $code): \\Illuminate\\Http\\JsonResponse
+    private function createSubject(int $school, string $name, ?string $code): \Illuminate\Http\JsonResponse
     {
         $request = Request::create('/api/institutions/test/schools/'.$school.'/subjects', 'POST', [
             'name' => $name,
