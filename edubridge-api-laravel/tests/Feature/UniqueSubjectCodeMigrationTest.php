@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use Illuminate\\Database\\Schema\\Blueprint;
-use Illuminate\\Support\\Facades\\DB;
-use Illuminate\\Support\\Facades\\Schema;
-use Tests\\TestCase;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Tests\TestCase;
 
 class UniqueSubjectCodeMigrationTest extends TestCase
 {
@@ -60,7 +60,7 @@ class UniqueSubjectCodeMigrationTest extends TestCase
         try {
             $migration->up();
             $this->fail('Expected legacy duplicate preflight to stop the migration.');
-        } catch (\\RuntimeException $exception) {
+        } catch (\RuntimeException $exception) {
             $this->assertStringContainsString('subject IDs: 1, 2', $exception->getMessage());
         }
 
