@@ -219,7 +219,7 @@ class InstitutionAcademicController extends Controller
                 DB::table('sections')->where('id', $data['section_id'])->lockForUpdate()->first();
                 $existing = DB::table('teacher_assignments')
                     ->where('section_id', $data['section_id'])
-                    ->where('subject_id', $data['subject_id'])->first();
+                    ->where('subject_id', $data['subject_id'])->where('status', 'active')->first();
                 if ($existing && (int) $existing->teacher_id !== (int) $data['teacher_id']) {
                     return 'subject_teacher_conflict';
                 }
@@ -227,10 +227,10 @@ class InstitutionAcademicController extends Controller
             // Serialize duplicate requests against the teacher's user row.
             DB::table('users')->where('id', $data['teacher_id'])->lockForUpdate()->first();
             $criteria = ['section_id' => $data['section_id'], 'subject_id' => $data['subject_id'], 'teacher_id' => $data['teacher_id']];
-            if (DB::table('teacher_assignments')->where($criteria)->exists()) {
+            if (DB::table('teacher_assignments')->where($criteria)->where('status', 'active')->exists()) {
                 return false;
             }
-            DB::table('teacher_assignments')->insert([...$criteria, 'created_at' => now(), 'updated_at' => now()]);
+            DB::table('teacher_assignments')->insert([...$criteria, 'status' => 'active', 'starts_on' => now()->toDateString(), 'ends_on' => null, 'created_at' => now(), 'updated_at' => now()]);
             if ($organization && $organization->slug === 'jabalia') {
                 DB::table('jabalia_teacher_assignment_history')->insert([
                     'organization_id' => $organization->id,
@@ -267,7 +267,7 @@ class InstitutionAcademicController extends Controller
             ->join('sections as s', 's.id', '=', 'ta.section_id')
             ->join('grades as g', 'g.id', '=', 's.grade_id')
             ->join('subjects as sub', 'sub.id', '=', 'ta.subject_id')
-            ->where('ta.id', $assignment)
+            ->where('ta.id', $assignment)->where('ta.status', 'active')
             ->where('g.school_id', $school)
             ->where('sub.school_id', $school)
             ->exists();
@@ -278,7 +278,7 @@ class InstitutionAcademicController extends Controller
 
         $organization = $request->attributes->get('organization');
         return DB::transaction(function () use ($assignment, $organization, $school, $request) {
-            $current = DB::table('teacher_assignments')->where('id', $assignment)->lockForUpdate()->first();
+            $current = DB::table('teacher_assignments')->where('id', $assignment)->where('status', 'active')->lockForUpdate()->first();
             if (!$current) {
                 return response()->json(['error' => 'التعيين غير موجود'], 404);
             }
@@ -316,7 +316,9 @@ class InstitutionAcademicController extends Controller
                     ]);
                 }
             }
-            DB::table('teacher_assignments')->where('id', $assignment)->delete();
+            DB::table('teacher_assignments')->where('id', $assignment)->update([
+                'status' => 'ended', 'ends_on' => now()->toDateString(), 'updated_at' => now(),
+            ]);
             return response()->json(['removed' => true]);
         });
     }
@@ -415,7 +417,7 @@ class InstitutionAcademicController extends Controller
             return DB::table('school_internal_identities as i')->join('users as u', 'u.id', '=', 'i.user_id')
                 ->where('i.school_id', $managed)->where('i.user_id', $teacher)->where('i.is_active', true)->where('u.role', 'teacher')->exists()
                 || DB::table('teacher_assignments as a')->join('sections as s', 's.id', '=', 'a.section_id')
-                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $managed)->where('a.teacher_id', $teacher)->exists();
+                    ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $managed)->where('a.teacher_id', $teacher)->where('a.status', 'active')->exists();
         }
 
         $organization = $request->attributes->get('organization');
