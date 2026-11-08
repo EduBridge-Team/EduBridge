@@ -16,8 +16,13 @@ void main() {
   test('A12 school year/grade/section real HTTP isolated acceptance', () async {
     final client = http.Client();
     addTearDown(client.close);
+    // Throttle middleware shares an IP budget across many authenticated routes.
+    // Pace isolated CI's requests rather than weakening production protections.
+    // Mutations are never automatically replayed on a 429 or a network error.
+    Future<void> pace() => Future<void>.delayed(const Duration(seconds: 4));
 
     Future<String> signIn(String email) async {
+      await pace();
       final response = await client.post(
         Uri.parse('$_base/auth/login'),
         headers: {'Content-Type': 'application/json'},
@@ -39,15 +44,20 @@ void main() {
       'Content-Type': 'application/json',
     };
 
-    Future<http.Response> get(String path, String token) =>
-        client.get(Uri.parse('$_base$path'), headers: headers(token));
+    Future<http.Response> get(String path, String token) async {
+      await pace();
+      return client.get(Uri.parse('$_base$path'), headers: headers(token));
+    }
     Future<http.Response> post(
       String path, Map<String, dynamic> body, String token,
-    ) => client.post(
-      Uri.parse('$_base$path'),
-      headers: headers(token),
-      body: jsonEncode(body),
-    );
+    ) async {
+      await pace();
+      return client.post(
+        Uri.parse('$_base$path'),
+        headers: headers(token),
+        body: jsonEncode(body),
+      );
+    }
     AcademicRepository schoolRepository(String token) => AcademicRepository(
       client: EnrollmentApiClient(
         get: (path) => get(path, token),
@@ -172,6 +182,7 @@ void main() {
       'expected_school_id': 9301, 'name': 'Unauthorized',
     }, outsiderToken);
     expect(outsiderWrite.statusCode, 403);
+    await pace();
     final missingToken = await client.get(Uri.parse('$_base/school/academic'));
     expect(missingToken.statusCode, 401);
 
