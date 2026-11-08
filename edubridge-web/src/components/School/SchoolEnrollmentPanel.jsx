@@ -3,6 +3,7 @@ import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
 import { useSchoolResource } from './useSchoolResource'
 import JabaliaAdmissionEvidencePanel from './JabaliaAdmissionEvidencePanel'
+import JabaliaAdmissionReadinessPanel from './JabaliaAdmissionReadinessPanel'
 import { jabaliaReviewRequired } from './jabaliaAdmissionEvidence'
 
 export default function SchoolEnrollmentPanel({ onSaved }) {
@@ -15,7 +16,7 @@ export default function SchoolEnrollmentPanel({ onSaved }) {
   const pending = useRef(false)
   const jabalia = jabaliaReviewRequired(inbox.data)
   async function decide(row, decision) {
-    if (pending.current || (decision === 'approved' && jabalia)) return
+    if (pending.current || jabalia) return
     const draft = drafts[row.id] || {}
     if (decision === 'approved' && !draft.section_id || decision === 'rejected' && !draft.reason?.trim()) return
     if (!window.confirm(t('تأكيد قرار طلب التسجيل؟', 'Confirm this enrollment decision?'))) return
@@ -31,15 +32,21 @@ export default function SchoolEnrollmentPanel({ onSaved }) {
     <h3>{t('طلبات التسجيل', 'Enrollment requests')}</h3>
     {(error || inbox.error || options.error) && <p role="alert">{error || inbox.error || options.error}</p>}
     {inbox.loading && <p role="status">{t('جارِ التحميل…', 'Loading…')}</p>}
-    {jabalia && <p role="status">{t('طلبات جباليا: قرار القبول النهائي متوقف إلى حين مراجعة المرشد واعتماد إدارة المدرسة. رفع الوثائق وحده لا يكفي.', 'Jabalia approvals are on hold until counselor review and school administration sign-off. Uploading documents alone is not sufficient.')}</p>}
+    {jabalia && <p role="status">{t('طلبات جباليا: قرار القبول أو الرفض النهائي متوقف إلى حين مراجعة المرشد واعتماد إدارة المدرسة. رفع الوثائق وحده لا يكفي.', 'Jabalia final approval and rejection are on hold until counselor review and school administration sign-off. Uploading documents alone is not sufficient.')}</p>}
+    {jabalia && inbox.data?.school_id && <JabaliaAdmissionReadinessPanel
+      key={inbox.data.school_id}
+      schoolId={inbox.data.school_id} requests={inbox.data.requests || []}
+    />}
     {inbox.data?.requests?.length === 0 && <p>{t('لا توجد طلبات معلقة.', 'No pending requests.')}</p>}
     {inbox.data?.requests?.map(row => <article className="institution-panel" key={row.id}>
       <b>{row.child_name}</b>
       {!jabalia && <label>{t('شعبة القبول', 'Destination section')}<select value={drafts[row.id]?.section_id || ''} disabled={busy} onChange={event => change(row.id, 'section_id', event.target.value)}><option value="">{t('اختر…', 'Choose…')}</option>{options.data?.sections?.map(section => <option value={section.id} key={section.id}>{section.grade_name} — {section.name} — {section.academic_year_name}</option>)}</select></label>}
       {!jabalia && <button className="btn" disabled={busy || !drafts[row.id]?.section_id || Boolean(options.error)} onClick={() => decide(row, 'approved')}>{t('قبول التسجيل', 'Approve enrollment')}</button>}
       {jabalia && <JabaliaAdmissionEvidencePanel key={`${inbox.data.school_id}-${row.id}`} requestId={row.id} />}
-      <label>{t('سبب الرفض', 'Reason for rejection')}<textarea maxLength={1000} value={drafts[row.id]?.reason || ''} disabled={busy} onChange={event => change(row.id, 'reason', event.target.value)} /></label>
-      <button className="btn outline" disabled={busy || !drafts[row.id]?.reason?.trim()} onClick={() => decide(row, 'rejected')}>{t('رفض الطلب', 'Reject request')}</button>
+      {!jabalia && <>
+        <label>{t('سبب الرفض', 'Reason for rejection')}<textarea maxLength={1000} value={drafts[row.id]?.reason || ''} disabled={busy} onChange={event => change(row.id, 'reason', event.target.value)} /></label>
+        <button className="btn outline" disabled={busy || !drafts[row.id]?.reason?.trim()} onClick={() => decide(row, 'rejected')}>{t('رفض الطلب', 'Reject request')}</button>
+      </>}
     </article>)}
   </section>
 }

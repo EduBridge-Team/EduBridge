@@ -82,7 +82,8 @@ jobs:
             api=true
           fi
 
-          if matches '^(edubridge-app/|\.github/workflows/web-api-quality\.yml$)'; then
+          # Run full Android builds only for mobile-source changes.
+          if matches '^edubridge-app/'; then
             app=true
           fi
 
@@ -116,6 +117,8 @@ jobs:
           node --check deploy/web-server.mjs
           python3 -m unittest discover -s scripts -p test_noor_config.py
           python3 -m unittest discover -s scripts -p test_schools_update.py
+          python3 -m unittest discover -s scripts -p test_jabalia_restore_reconcile.py
+          python3 -m unittest discover -s scripts -p test_jabalia_restore_drill.py
 
           cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
           sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' edubridge-api-laravel/.env

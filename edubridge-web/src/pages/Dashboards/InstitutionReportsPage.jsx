@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchInstitutionManagementReport } from '../../api'
+import JabaliaSupervisorVisitsPanel from '../../components/Institution/JabaliaSupervisorVisitsPanel'
+import JabaliaSuccessStoriesPanel from '../../components/Institution/JabaliaSuccessStoriesPanel'
+import JabaliaContractReadinessPanel from '../../components/Institution/JabaliaContractReadinessPanel'
+import JabaliaTeacherActivitiesPanel from '../../components/Institution/JabaliaTeacherActivitiesPanel'
+import JabaliaStaffAttendanceSummaryPanel from '../../components/Institution/JabaliaStaffAttendanceSummaryPanel'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -76,6 +81,11 @@ export default function InstitutionReportsPage() {
           </div>}
         </section>
       </>}
+      {slug === 'jabalia' && !loading && data && <JabaliaSupervisorVisitsPanel slug={slug} schools={schools} />}
+      {slug === 'jabalia' && !loading && data && <JabaliaSuccessStoriesPanel slug={slug} schools={schools} />}
+      {slug === 'jabalia' && !loading && data && <JabaliaContractReadinessPanel slug={slug} schools={schools} />}
+      {slug === 'jabalia' && !loading && data && <JabaliaTeacherActivitiesPanel slug={slug} schools={schools} />}
+      {slug === 'jabalia' && !loading && data && <JabaliaStaffAttendanceSummaryPanel slug={slug} schools={schools} />}
     </main>
   </div>
 }

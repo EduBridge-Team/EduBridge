@@ -13,6 +13,7 @@ import LessonFormModal from './LessonFormModal'
 import TeacherChildrenSection from './TeacherChildrenSection'
 import TeacherLessonsSection from './TeacherLessonsSection'
 import TeacherLessonViewer from './TeacherLessonViewer'
+import JabaliaHomeroomAttendancePanel from '../../../components/Teacher/JabaliaHomeroomAttendancePanel'
 
 export default function TeacherDashboard() {
   const me = getUser()
@@ -137,6 +138,8 @@ export default function TeacherDashboard() {
             </article>
           </div>
         </section>
+
+        <JabaliaHomeroomAttendancePanel />
 
         {loading ? (
           <div className="state">

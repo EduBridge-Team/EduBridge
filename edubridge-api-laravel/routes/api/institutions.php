@@ -66,6 +66,18 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
         Route::get('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'index'])->whereNumber('school');
         Route::put('/schools/{school}/subject-quotas', [\App\Http\Controllers\JabaliaSubjectQuotaController::class, 'update'])->whereNumber('school');
+        // Jabalia-only supervision: institution membership enforced by this route group.
+        Route::get('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'index'])->whereNumber('school');
+        Route::post('/schools/{school}/supervisor-visits', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
+        Route::patch('/schools/{school}/supervisor-visits/{visit}', [\App\Http\Controllers\JabaliaSupervisorVisitController::class, 'updateStatus'])->whereNumber('school')->whereNumber('visit')->middleware('throttle:20,1');
+        // Internal educational activity reports, never HR compliance attestations.
+        Route::get('/schools/{school}/staff-attendance-summary', [\App\Http\Controllers\JabaliaStaffAttendanceReportController::class, 'index'])->whereNumber('school')->middleware('throttle:30,1');
+        Route::get('/schools/{school}/teacher-activities', [\App\Http\Controllers\JabaliaTeacherActivityController::class, 'index'])->whereNumber('school');
+        Route::post('/schools/{school}/teacher-activities', [\App\Http\Controllers\JabaliaTeacherActivityController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
+        Route::get('/schools/{school}/contract-readiness', [\App\Http\Controllers\JabaliaContractReadinessController::class, 'index'])->whereNumber('school');
+        // Internal, append-only Jabalia student progress stories. No guardian/public endpoints.
+        Route::get('/schools/{school}/success-stories', [\App\Http\Controllers\JabaliaSuccessStoryController::class, 'index'])->whereNumber('school');
+        Route::post('/schools/{school}/success-stories', [\App\Http\Controllers\JabaliaSuccessStoryController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::get('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'index'])->whereNumber('school');
         Route::post('/schools/{school}/closure-days', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'store'])->whereNumber('school')->middleware('throttle:10,1');
         Route::delete('/schools/{school}/closure-days/{closure}', [\App\Http\Controllers\JabaliaSchoolCalendarController::class, 'destroy'])->whereNumber('school')->whereNumber('closure');
@@ -76,7 +88,14 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::patch('/schools/{school}/teachers/{teacher}/profile', [\App\Http\Controllers\JabaliaTeacherHistoryController::class, 'updateProfile'])->whereNumber('school')->whereNumber('teacher');
         Route::get('/schools/{school}/teachers/{teacher}/transfers', [\App\Http\Controllers\JabaliaTeacherSchoolTransferController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
         Route::post('/schools/{school}/teachers/{teacher}/transfers', [\App\Http\Controllers\JabaliaTeacherSchoolTransferController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
+        // Jabalia contract employment periods: immutable metadata, attached to
+        // an existing private contract copy. Institution account only.
+        Route::get('/schools/{school}/teachers/{teacher}/contract-periods', [\App\Http\Controllers\JabaliaTeacherContractPeriodController::class, 'index'])
+            ->whereNumber('school')->whereNumber('teacher');
+        Route::post('/schools/{school}/teachers/{teacher}/contract-periods', [\App\Http\Controllers\JabaliaTeacherContractPeriodController::class, 'store'])
+            ->whereNumber('school')->whereNumber('teacher')->middleware('throttle:10,1');
         Route::get('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'index'])->whereNumber('school')->whereNumber('teacher');
+        Route::get('/schools/{school}/teachers/{teacher}/document-access-events', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'accessEvents'])->whereNumber('school')->whereNumber('teacher');
         Route::post('/schools/{school}/teachers/{teacher}/documents', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'store'])->whereNumber('school')->whereNumber('teacher');
         Route::delete('/schools/{school}/teachers/{teacher}/documents/{document}', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'destroy'])->whereNumber('school')->whereNumber('teacher')->whereNumber('document');
         Route::post('/schools/{school}/teachers/{teacher}/documents/{document}/file', [\App\Http\Controllers\JabaliaTeacherDocumentController::class, 'upload'])->whereNumber('school')->whereNumber('teacher')->whereNumber('document');
@@ -106,6 +125,7 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::get('/report', [InstitutionAttendanceController::class, 'report']);
             Route::post('/', [InstitutionAttendanceController::class, 'store']);
             Route::get('/{attendanceSession}', [InstitutionAttendanceController::class, 'show'])->whereNumber('attendanceSession');
+            Route::get('/{attendanceSession}/change-history', [InstitutionAttendanceController::class, 'changeHistory'])->whereNumber('attendanceSession');
             Route::put('/{attendanceSession}/records', [InstitutionAttendanceController::class, 'mark'])->whereNumber('attendanceSession');
         });
 
@@ -125,6 +145,21 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::post('/books/{book}/units', [InstitutionCurriculumController::class, 'storeUnit'])->whereNumber('book');
             Route::post('/units/{unit}/lessons', [InstitutionCurriculumController::class, 'storeLesson'])->whereNumber('unit');
         });
+    });
+
+// Jabalia classroom teachers may work ONLY on their active, explicitly
+// assigned homeroom section. No generic school-wide attendance grant.
+Route::prefix('/institutions/{organizationSlug}/homeroom')
+    ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
+    ->middleware('organization.member:teacher')
+    ->group(function () {
+        Route::get('/sections', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'sections']);
+        Route::get('/sections/{section}/attendance', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'show'])
+            ->whereNumber('section');
+        Route::post('/sections/{section}/attendance', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'start'])
+            ->whereNumber('section')->middleware('throttle:10,1');
+        Route::put('/sections/{section}/attendance/{session}/records', [\App\Http\Controllers\JabaliaHomeroomAttendanceController::class, 'mark'])
+            ->whereNumber('section')->whereNumber('session')->middleware('throttle:20,1');
     });
 
 Route::prefix('/institutions/{organizationSlug}/schools/{school}/teaching')

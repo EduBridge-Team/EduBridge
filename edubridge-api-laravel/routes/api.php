@@ -133,12 +133,27 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     Route::get('/parent/children/{child}/enrollment-requests/{enrollmentRequest}/jabalia-documents/{document}/file',
         [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'parentDownload'])
         ->whereNumber('child')->whereNumber('enrollmentRequest')->whereNumber('document')->middleware(['role:parent', 'throttle:30,1']);
+    // Only the same authorized director/enrollment deputy may inspect confidential access events.
+    Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-document-access-events',
+        [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolAccessEvents'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
     Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-documents',
         [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolIndex'])
         ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
     Route::get('/school/enrollment-requests/{enrollmentRequest}/jabalia-documents/{document}/file',
         [\App\Http\Controllers\JabaliaAdmissionEvidenceController::class, 'schoolDownload'])
         ->whereNumber('enrollmentRequest')->whereNumber('document')->middleware('throttle:30,1');
+    // Administrative intake tracking only: no clinical review, approval or rejection.
+    Route::get('/school/jabalia/enrollment-requests/{enrollmentRequest}/intake-triage',
+        [\App\Http\Controllers\JabaliaAdmissionIntakeTriageController::class, 'show'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:30,1');
+    Route::post('/school/jabalia/enrollment-requests/{enrollmentRequest}/intake-triage',
+        [\App\Http\Controllers\JabaliaAdmissionIntakeTriageController::class, 'store'])
+        ->whereNumber('enrollmentRequest')->middleware('throttle:10,1');
+    // Jabalia admission readiness is management-only metadata. NEVER an approval.
+    Route::get('/school/jabalia/admission-readiness',
+        [\App\Http\Controllers\JabaliaAdmissionReadinessController::class, 'index'])
+        ->middleware('throttle:30,1');
     Route::get('/school/enrollment-requests', [\App\Http\Controllers\SchoolEnrollmentInboxController::class, 'index'])
         ->middleware(['role:school', 'throttle:60,1']);
     Route::post('/school/enrollment-requests/{request}/decision', [\App\Http\Controllers\SchoolEnrollmentDecisionController::class, 'decide'])

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument, fetchJabaliaTeacherTransfers, transferJabaliaTeacher } from '../../api/institutions'
+import JabaliaTeacherDocumentAccessPanel from '../../components/Institution/JabaliaTeacherDocumentAccessPanel'
+import JabaliaTeacherContractPeriodsPanel from '../../components/Institution/JabaliaTeacherContractPeriodsPanel'
 import '../../styles/institution-operations.css'
 
 const TEACHER_DOCUMENT_TYPE_LABELS = Object.freeze({
@@ -533,6 +535,14 @@ export default function InstitutionTeachersPage() {
                     <span>صفحة {documentPage.current_page} من {documentPage.last_page} — {documentPage.total} وثيقة</span>
                     <button type="button" className="btn outline" disabled={documentSaving || documentPage.current_page >= documentPage.last_page} onClick={() => changeDocumentPage(documentPage.current_page + 1)}>التالي</button>
                   </div>}
+                  <JabaliaTeacherContractPeriodsPanel
+                    key={`${schoolId}-${selectedHistoryTeacher}`}
+                    slug={slug} schoolId={schoolId} teacherId={selectedHistoryTeacher}
+                  />
+                  <JabaliaTeacherDocumentAccessPanel
+                    key={`${schoolId}-${selectedHistoryTeacher}`}
+                    slug={slug} schoolId={schoolId} teacherId={selectedHistoryTeacher}
+                  />
                   <h4>سجل التكليفات المسجلة</h4>
                   {!teacherHistory.history?.data?.length ? <p>لا توجد أحداث تكليف مؤرشفة لهذه المدرسة بعد.</p> : <ul>
                     {teacherHistory.history.data.map((item) => <li key={item.id}>{item.subject_name || 'مادة محذوفة'} — {item.section_name || 'شعبة محذوفة'}، من {item.starts_on} {item.ends_on ? `إلى ${item.ends_on}` : 'حتى الآن'} ({item.status}){item.reason ? ` — ${item.reason}` : ''}</li>)}

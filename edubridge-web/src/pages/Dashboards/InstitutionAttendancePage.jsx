@@ -6,6 +6,7 @@ import {
   fetchInstitutionAttendanceSession, fetchInstitutionSchools, markInstitutionAttendance,
 } from '../../api'
 import { fetchJabaliaSchoolClosureDays, createJabaliaSchoolClosureDay, deleteJabaliaSchoolClosureDay } from '../../api/institutions'
+import JabaliaAttendanceChangeHistoryPanel from '../../components/Institution/JabaliaAttendanceChangeHistoryPanel'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -258,7 +259,7 @@ export default function InstitutionAttendancePage() {
         </section>}
         <section className="institution-panel">
           <h2>إنشاء سجل حضور</h2>
-          <p>تُنشأ السجلات للطلاب المسجلين فعليًا في الشعبة. الحالة الأولية حاضر ويمكن تعديلها قبل الحفظ.</p>
+          <p>تُنشأ السجلات للطلاب المسجلين فعليًا في الشعبة. الحالة الأولية حاضر ويمكن تعديلها قبل الحفظ. {slug === 'jabalia' && 'في جباليا، الحالة الأولية غير مؤكدة حتى حفظ سجل حضور الطلاب صراحةً.'}</p>
           <form className="institution-school-form" onSubmit={createSession}>
             <label>التاريخ<input type="date" required value={date} onChange={(e) => setDate(e.target.value)} /></label>
             <label>الشعبة
@@ -294,6 +295,10 @@ export default function InstitutionAttendancePage() {
                 </div>)}
               </div>
             )}
+            {slug === 'jabalia' && <JabaliaAttendanceChangeHistoryPanel
+              key={`${schoolId}-${session.id}`}
+              slug={slug} schoolId={schoolId} sessionId={session.id} students={records}
+            />}
             {session.status === 'closed' ? <p>هذا السجل مغلق للعرض فقط.</p> : (
               <div className="role-hero-actions">
                 <button className="btn" disabled={saving || loading || !records.length} onClick={() => saveRecords(false)}>حفظ الحضور</button>
@@ -316,6 +321,9 @@ export default function InstitutionAttendancePage() {
             <button type="submit" className="btn" disabled={loading}>عرض التقرير</button>
           </form>
           {report && <>
+            {report.daily_recorded_only && <p role="note">
+              هذا تقرير الحضور اليومي المؤكّد لجباليا: تُحسب السجلات المحفوظة فعليًا فقط، ولا تُحسب حالات «حاضر» الافتراضية قبل الحفظ أو سجلات الحصص المنفصلة.
+            </p>}
             <div className="academic-setup-summary">
               <span>حاضر: <b>{summary.present || 0}</b></span>
               <span>غائب: <b>{summary.absent || 0}</b></span>

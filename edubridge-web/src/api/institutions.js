@@ -259,6 +259,17 @@ export async function downloadJabaliaTeacherDocument(slug, schoolId, teacherId, 
   window.setTimeout(() => URL.revokeObjectURL(url), 60000)
 }
 
+// Jabalia institution-only immutable contract period metadata.
+export function fetchJabaliaTeacherContractPeriods(slug, schoolId, teacherId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/contract-periods?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaTeacherContractPeriod(slug, schoolId, teacherId, payload) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/contract-periods`), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
 export function fetchJabaliaTeacherTransfers(slug, schoolId, teacherId) {
   return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/transfers`))
 }
@@ -314,4 +325,62 @@ export function deleteJabaliaSchoolClosureDay(slug, schoolId, closureId) {
   return request(schoolPath(slug, schoolId, '/closure-days/' + encodeURIComponent(closureId)), {
     method: 'DELETE',
   })
+}
+
+export function fetchJabaliaSupervisorVisits(slug, schoolId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/supervisor-visits?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaSupervisorVisit(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/supervisor-visits'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function updateJabaliaSupervisorVisit(slug, schoolId, visitId, payload) {
+  return request(schoolPath(slug, schoolId, `/supervisor-visits/${encodeURIComponent(visitId)}`), {
+    method: 'PATCH', body: JSON.stringify(payload),
+  })
+}
+
+// Confidential Jabalia student progress records; institution administration only.
+export function fetchJabaliaSuccessStories(slug, schoolId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/success-stories?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaSuccessStory(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/success-stories'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function fetchJabaliaContractReadiness(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/contract-readiness'))
+}
+
+// Authenticated, organization-scoped audit trail. No binary or storage paths.
+export function fetchJabaliaTeacherDocumentAccessEvents(slug, schoolId, teacherId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teachers/${teacherId}/document-access-events?page=${encodeURIComponent(page)}`))
+}
+
+// Jabalia-only institution attendance-change audit; no parent/public access.
+export function fetchJabaliaAttendanceChangeHistory(slug, schoolId, sessionId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/attendance/${encodeURIComponent(sessionId)}/change-history?page=${encodeURIComponent(page)}`))
+}
+
+// Jabalia institution-only educational activity log, no private staff documents.
+export function fetchJabaliaTeacherActivities(slug, schoolId, page = 1) {
+  return request(schoolPath(slug, schoolId, `/teacher-activities?page=${encodeURIComponent(page)}`))
+}
+
+export function createJabaliaTeacherActivity(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/teacher-activities'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+// Read-only Jabalia institution summary; only recorded staff days are counted.
+export function fetchJabaliaStaffAttendanceSummary(slug, schoolId, from, to, page = 1) {
+  const query = new URLSearchParams({ from, to, page: String(page) })
+  return request(schoolPath(slug, schoolId, `/staff-attendance-summary?${query}`))
 }

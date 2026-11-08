@@ -41,11 +41,11 @@ class SchoolEnrollmentDecisionController extends Controller
         if (!$candidate) {
             return response()->json(['error' => 'Request unavailable'], 404);
         }
-        // Fail closed for Jabalia: collecting evidence is not equivalent to
-        // medical verification and a counselor + school sign-off. Until that
-        // distinct approval workflow exists, generic school approval must not
-        // create a new enrollment in the isolated Jabalia organization.
-        if ($data['decision'] === 'approved' && DB::table('schools as s')
+        // Fail closed for ALL final Jabalia admissions decisions: collecting
+        // evidence or recording administrative preparation cannot replace
+        // counselor review and independent school approval/rejection. Until
+        // that workflow is approved, neither decision may end the request.
+        if (DB::table('schools as s')
             ->join('organizations as o', 'o.id', '=', 's.organization_id')
             ->where('s.id', $school->id)
             ->where('o.slug', 'jabalia')->exists()) {
