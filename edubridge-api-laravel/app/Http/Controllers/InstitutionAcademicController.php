@@ -182,6 +182,9 @@ class InstitutionAcademicController extends Controller
             'code' => ['nullable', 'string', 'max:40', Rule::unique('subjects', 'code_normalized')->where(fn ($q) => $q->where('school_id', $school))],
             'color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'is_active' => ['nullable', 'boolean'],
+        ], [
+            'name.unique' => 'اسم المادة مستخدم مسبقاً في هذه المدرسة.',
+            'code.unique' => 'رمز المادة مستخدم مسبقاً في هذه المدرسة. أدخل رمزاً مختلفاً أو اتركه فارغاً.',
         ]);
 
         $id = DB::table('subjects')->insertGetId([
