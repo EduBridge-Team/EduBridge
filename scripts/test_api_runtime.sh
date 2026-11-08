@@ -70,6 +70,8 @@ current_stage="non-root Laravel source access"
 docker exec "$container" php -r '
 foreach ([
     "/app/artisan",
+    "/app/composer.json",
+    "/app/composer.lock",
     "/app/bootstrap/app.php",
     "/app/bootstrap/providers.php",
     "/app/config/app.php",

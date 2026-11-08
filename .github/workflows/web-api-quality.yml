@@ -406,7 +406,7 @@ jobs:
         run: |
           # Reproduce an Oracle checkout populated under umask 077.
           # Do not restrict storage: Dockerfile owns its private runtime modes.
-          chmod 600 edubridge-api-laravel/artisan
+          chmod 600 edubridge-api-laravel/artisan edubridge-api-laravel/composer.json edubridge-api-laravel/composer.lock
           for dir in app bootstrap config database public resources routes; do
             if [[ -d "edubridge-api-laravel/$dir" ]]; then
               find "edubridge-api-laravel/$dir" -type d -exec chmod 700 {} +

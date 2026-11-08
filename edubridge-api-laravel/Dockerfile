@@ -37,7 +37,7 @@ COPY . .
 # Normalize only shipped application source, never private storage or environment.
 # A deployment checkout created with umask 077 can give directories mode 700
 # and PHP files mode 600; www-data must traverse and read all Laravel sources.
-RUN chmod 644 artisan \
+RUN chmod 644 artisan composer.json composer.lock \
     && chmod 755 database \
     && for dir in app bootstrap config public resources routes database/migrations database/factories database/seeders; do \
          if [ -d "$dir" ]; then \
