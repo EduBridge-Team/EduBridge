@@ -136,8 +136,12 @@ export async function request(path, options = {}) {
       logout();
       window.location.assign('/login');
     }
+    const validationMessage = data.errors && typeof data.errors === "object"
+      ? Object.values(data.errors).flat().find((item) => typeof item === "string" && item.trim())
+      : null;
     const serverMessage =
       data.error ||
+      validationMessage ||
       data.message ||
       (res.status >= 500
         ? `خطأ في السيرفر (HTTP ${res.status})`
