@@ -64,9 +64,12 @@ class JabaliaTeacherSchoolTransferController extends Controller
                 ->join('grades as g', 'g.id', '=', 's.grade_id')
                 ->join('subjects as sub', 'sub.id', '=', 'ta.subject_id')
                 ->where('g.school_id', $school)->where('sub.school_id', $school)
-                ->where('ta.teacher_id', $teacher)
-                ->select('ta.id', 'ta.section_id', 'ta.subject_id')->get();
-            // A timetable entry can outlive a deleted assignment. Block transfers
+                ->where('ta.teacher_id', $teacher)->where('ta.status', 'active')
+                ->select('ta.id', 'ta.section_id', 'ta.subject_id', 'ta.starts_on')->get();
+            if ($assignments->contains(fn ($assignment) => $assignment->starts_on && $assignment->starts_on > $data['effective_on'])) {
+                return response()->json(['error' => 'تاريخ النقل يسبق تاريخ بدء أحد التكليفات النشطة'], 422);
+            }
+            // A timetable entry can outlive an ended assignment. Block transfers
             // until every scheduled lesson for this teacher in the source school
             // has been removed or reassigned, including legacy orphaned entries.
             if (DB::table('timetable_entries')
@@ -99,7 +102,9 @@ class JabaliaTeacherSchoolTransferController extends Controller
                         'created_at' => now(), 'updated_at' => now(),
                     ]);
                 }
-                DB::table('teacher_assignments')->where('id', $assignment->id)->delete();
+                DB::table('teacher_assignments')->where('id', $assignment->id)->update([
+                    'status' => 'ended', 'ends_on' => $data['effective_on'], 'updated_at' => now(),
+                ]);
             }
 
             $id = DB::table('jabalia_teacher_school_transfers')->insertGetId([

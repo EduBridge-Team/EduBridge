@@ -25,7 +25,7 @@ class InstitutionParticipantController extends Controller
             $teachers = DB::table('users as u')->where('u.role', 'teacher')->where(function ($q) use ($school) {
                 $q->whereIn('u.id', DB::table('school_internal_identities')->where('school_id', $school)->where('is_active', true)->select('user_id'))
                     ->orWhereIn('u.id', DB::table('teacher_assignments as ta')->join('sections as s', 's.id', '=', 'ta.section_id')
-                        ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->select('ta.teacher_id'));
+                        ->join('grades as g', 'g.id', '=', 's.grade_id')->where('g.school_id', $school)->where('ta.status', 'active')->select('ta.teacher_id'));
             })->get(['u.id', 'u.name', 'u.email']);
             $students = DB::table('children as c')->whereIn('c.id', DB::table('student_enrollments as se')
                 ->join('sections as s', 's.id', '=', 'se.section_id')->join('grades as g', 'g.id', '=', 's.grade_id')
@@ -53,7 +53,7 @@ class InstitutionParticipantController extends Controller
             ->join('grades as g', 'g.id', '=', 's.grade_id')
             ->join('subjects as sub', 'sub.id', '=', 'ta.subject_id')
             ->join('users as u', 'u.id', '=', 'ta.teacher_id')
-            ->where('g.school_id', $school)
+            ->where('g.school_id', $school)->where('ta.status', 'active')
             ->where('sub.school_id', $school)
             ->select(
                 'ta.id',

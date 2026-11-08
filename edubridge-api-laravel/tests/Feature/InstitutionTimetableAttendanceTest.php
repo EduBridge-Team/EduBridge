@@ -41,7 +41,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
             $t->unsignedBigInteger('school_id'); $t->date('closed_on');
             $t->string('reason'); $t->timestamps();
         });
-        Schema::create('teacher_assignments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id'); });
+        Schema::create('teacher_assignments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id'); $t->string('status')->default('active'); $t->date('starts_on')->nullable(); $t->date('ends_on')->nullable(); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('academic_year_id'); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedTinyInteger('weekday'); $t->unsignedTinyInteger('period_number'); $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable(); $t->string('room')->nullable(); $t->timestamps(); });
 
         DB::table('organizations')->insert(['id' => 1, 'slug' => 'jabalia', 'is_active' => true]);
@@ -78,9 +78,9 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     public function test_teacher_assignment_is_checked_after_organization_lock(): void
     {
-        // Emulate the state after a completed transfer removed the assignment.
+        // Emulate the state after a completed transfer ended the assignment.
         // The timetable writer must reject it rather than create a stale lesson.
-        DB::table('teacher_assignments')->where('teacher_id', 10)->delete();
+        DB::table('teacher_assignments')->where('teacher_id', 10)->update(['status' => 'ended', 'ends_on' => '2026-10-30']);
 
         $response = app(InstitutionTimetableController::class)->store(
             $this->tenantRequest([
@@ -95,7 +95,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     public function test_teacher_without_matching_assignment_cannot_be_scheduled(): void
     {
-        DB::table('teacher_assignments')->where('section_id', 2)->delete();
+        DB::table('teacher_assignments')->where('section_id', 2)->update(['status' => 'ended', 'ends_on' => '2026-10-30']);
         $response = app(InstitutionTimetableController::class)->store(
             $this->tenantRequest(['academic_year_id'=>1,'section_id'=>2,'subject_id'=>1,
                 'teacher_id'=>10,'weekday'=>1,'period_number'=>2]), 'jabalia', 1);
