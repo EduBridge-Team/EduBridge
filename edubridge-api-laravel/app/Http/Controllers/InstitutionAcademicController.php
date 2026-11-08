@@ -171,9 +171,15 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'المدرسة غير موجودة'], 404);
         }
 
+        // Store a canonical code and compare it independently of case/outer whitespace.
+        $rawCode = $request->input('code');
+        $normalizedCode = $rawCode === null ? null : strtoupper(trim((string) $rawCode));
+        $normalizedCode = $normalizedCode === '' ? null : $normalizedCode;
+        $request->merge(['code' => $normalizedCode]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120', Rule::unique('subjects', 'name')->where(fn ($q) => $q->where('school_id', $school))],
-            'code' => ['nullable', 'string', 'max:40'],
+            'code' => ['nullable', 'string', 'max:40', Rule::unique('subjects', 'code_normalized')->where(fn ($q) => $q->where('school_id', $school))],
             'color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -182,6 +188,7 @@ class InstitutionAcademicController extends Controller
             'school_id' => $school,
             'name' => $data['name'],
             'code' => $data['code'] ?? null,
+            'code_normalized' => $data['code'] ?? null,
             'color' => $data['color'] ?? null,
             'is_active' => $data['is_active'] ?? true,
             'created_at' => now(),
