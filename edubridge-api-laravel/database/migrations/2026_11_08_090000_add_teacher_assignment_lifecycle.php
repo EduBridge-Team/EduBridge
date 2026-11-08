@@ -35,7 +35,7 @@ return new class extends Migration
             ->groupBy('section_id', 'subject_id', 'teacher_id')
             ->havingRaw('COUNT(*) > 1')->exists();
 
-        Schema::table('teacher_assignments', function (Blueprint $table) {
+        Schema::table('teacher_assignments', function (Blueprint $table) use ($hasRepeatedHistory) {
             $table->dropIndex('teacher_assignments_active_lookup');
             $table->dropIndex('teacher_assignments_teacher_status_end');
             $table->dropColumn(['status', 'starts_on', 'ends_on']);
