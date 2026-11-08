@@ -49,6 +49,12 @@ class InstitutionTimetableController extends Controller
             'room' => ['nullable', 'string', 'max:80'],
         ]);
 
+        // A supplied interval must be complete. Older non-Jabalia clients may
+        // still omit both times and use a period-number slot instead.
+        if (($data['starts_at'] ?? null) === null xor ($data['ends_at'] ?? null) === null) {
+            return response()->json(['error' => 'يجب تحديد وقت بداية الحصة ونهايتها معاً'], 422);
+        }
+
         if (!$this->academicYearWithinSchool($school, (int) $data['academic_year_id'])
             || !$this->sectionWithinSchool($school, (int) $data['section_id'])
             || !$this->subjectWithinSchool($school, (int) $data['subject_id'])) {
@@ -121,11 +127,45 @@ class InstitutionTimetableController extends Controller
                 }
             }
 
+            // Half-open clock intervals overlap only when existing.start < new.end
+            // AND existing.end > new.start. Numbered slots are not comparable
+            // across schools with independently configured bell schedules.
+            // For pre-existing entries missing one/both times, retain the old
+            // same-period rejection so legacy records are not silently ignored.
+            $overlappingSlot = function ($query, string $alias = '') use ($data): void {
+                $column = fn (string $name) => $alias === '' ? $name : $alias . '.' . $name;
+                $start = $data['starts_at'] ?? null;
+                $end = $data['ends_at'] ?? null;
+                if ($start === null || $end === null) {
+                    $query->where($column('period_number'), $data['period_number']);
+                    return;
+                }
+
+                // Validated H:i strings are normalized to the stored TIME
+                // precision, so an end equal to another start is not a clash.
+                $startTime = $start . ':00';
+                $endTime = $end . ':00';
+                $query->where(function ($candidate) use ($column, $data, $startTime, $endTime) {
+                    $candidate->where(function ($timed) use ($column, $startTime, $endTime) {
+                        $timed->whereNotNull($column('starts_at'))
+                            ->whereNotNull($column('ends_at'))
+                            ->where($column('starts_at'), '<', $endTime)
+                            ->where($column('ends_at'), '>', $startTime);
+                    })->orWhere(function ($legacy) use ($column, $data) {
+                        $legacy->where($column('period_number'), $data['period_number'])
+                            ->where(function ($missing) use ($column) {
+                                $missing->whereNull($column('starts_at'))
+                                    ->orWhereNull($column('ends_at'));
+                            });
+                    });
+                });
+            };
+
             $conflict = DB::table('timetable_entries')
                 ->where('school_id', $school)
                 ->where('academic_year_id', $data['academic_year_id'])
                 ->where('weekday', $data['weekday'])
-                ->where('period_number', $data['period_number'])
+                ->where(fn ($query) => $overlappingSlot($query))
                 ->where(function ($query) use ($data) {
                     $query->where('section_id', $data['section_id']);
                     if (!empty($data['teacher_id'])) {
@@ -137,15 +177,15 @@ class InstitutionTimetableController extends Controller
                 })
                 ->first();
 
-            // A teacher may serve multiple Jabalia schools, but cannot teach
-            // simultaneous periods in two schools of the same institution.
+            // Organization lock above serializes shared-teacher schedules
+            // across its schools, including differing period configurations.
             if (!$conflict && ($org->id ?? null) !== null && !empty($data['teacher_id'])) {
                 $conflict = DB::table('timetable_entries as other')
                     ->join('schools as other_school', 'other_school.id', '=', 'other.school_id')
                     ->where('other_school.organization_id', $org->id)
                     ->where('other.school_id', '!=', $school)
                     ->where('other.weekday', $data['weekday'])
-                    ->where('other.period_number', $data['period_number'])
+                    ->where(fn ($query) => $overlappingSlot($query, 'other'))
                     ->where('other.teacher_id', $data['teacher_id'])
                     ->select('other.id')
                     ->first();
