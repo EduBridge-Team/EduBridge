@@ -30,12 +30,19 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Recreate the old unique key only if the historical data permits it.
+        $hasRepeatedHistory = DB::table('teacher_assignments')
+            ->select('section_id', 'subject_id', 'teacher_id')
+            ->groupBy('section_id', 'subject_id', 'teacher_id')
+            ->havingRaw('COUNT(*) > 1')->exists();
+
         Schema::table('teacher_assignments', function (Blueprint $table) {
             $table->dropIndex('teacher_assignments_active_lookup');
             $table->dropIndex('teacher_assignments_teacher_status_end');
             $table->dropColumn(['status', 'starts_on', 'ends_on']);
-            $table->unique(['section_id', 'subject_id', 'teacher_id']);
+            // Do not destroy historical rows merely to restore a legacy constraint.
+            if (! $hasRepeatedHistory) {
+                $table->unique(['section_id', 'subject_id', 'teacher_id']);
+            }
         });
     }
 };
