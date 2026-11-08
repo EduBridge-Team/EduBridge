@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:edubridge_app/model/schools/school_director.dart';
 import 'package:edubridge_app/services/schools/director_api_client.dart';
 import 'package:edubridge_app/services/schools/school_director_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
