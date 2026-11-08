@@ -32,7 +32,7 @@ class InstitutionTeacherMembershipTest extends TestCase
             $t->id(); $t->unsignedBigInteger('grade_id');
         });
         Schema::create('teacher_assignments', function (Blueprint $t) {
-            $t->id(); $t->unsignedBigInteger('teacher_id'); $t->unsignedBigInteger('section_id');
+            $t->id(); $t->unsignedBigInteger('teacher_id'); $t->unsignedBigInteger('section_id'); $t->string('status')->default('active');
         });
         DB::table('users')->insert([
             'id' => 7, 'name' => 'Teacher', 'email' => 'teacher@example.com',
@@ -73,7 +73,7 @@ class InstitutionTeacherMembershipTest extends TestCase
         DB::table('teacher_assignments')->insert(['teacher_id' => 7, 'section_id' => 8]);
         $this->assertSame(409, $this->change(3, false)->getStatusCode());
         $this->assertDatabaseHas('organization_user', ['organization_id' => 3, 'user_id' => 7, 'is_active' => true]);
-        DB::table('teacher_assignments')->delete();
+        DB::table('teacher_assignments')->update(['status' => 'ended']);
         $this->assertSame(200, $this->change(3, false)->getStatusCode());
         $this->assertDatabaseHas('organization_user', ['organization_id' => 3, 'user_id' => 7, 'is_active' => false]);
         $this->assertSame(200, $this->change(3, true)->getStatusCode());
