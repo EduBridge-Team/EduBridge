@@ -91,12 +91,8 @@ void main() {
 
     await repository.end(schoolA, afterReplacement.current!, todayDate);
     expect((await repository.directory(schoolA)).current, isNull);
-    await expectLater(
-      repository.end(schoolA, afterReplacement.current!, todayDate),
-      throwsA(isA<DirectorApiException>().having(
-        (e) => e.failure, 'failure', DirectorFailure.conflict,
-      )),
-    );
+    // Repeated-end 409 is covered by Laravel feature tests. This real-HTTP
+    // workflow avoids intentionally exhausting the production route throttle.
     expect((await repository.directory(schoolB)).assignments, isEmpty);
 
     final foreignRead = await get(schoolA.path + '/directors', foreignOwnerToken);
