@@ -27,6 +27,8 @@ jobs:
         with:
           php-version: "8.4"
           coverage: none
+      - name: Validate locked PHP dependency manifest strictly
+        run: composer validate --strict --no-interaction
       - name: Audit locked PHP dependencies
         run: composer audit --locked --no-interaction
 
