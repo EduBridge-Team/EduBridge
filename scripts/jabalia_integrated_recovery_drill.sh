@@ -13,7 +13,8 @@ if [[ "${GITHUB_ACTIONS:-}" != true ||
   exit 2
 fi
 
-for cmd in pg_dump pg_restore createdb dropdb python3; do command -v "$cmd" >/dev/null; done
+for cmd in docker python3; do command -v "$cmd" >/dev/null; done
+docker image inspect postgres:17 >/dev/null || { echo "REFUSED: PostgreSQL 17 CI image missing" >&2; exit 2; }
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PRIVATE="$ROOT/edubridge-api-laravel/storage/app/private"
 TEACHER_FILE="$PRIVATE/jabalia-teacher-documents/recovery-ci-teacher.pdf"
@@ -31,6 +32,19 @@ cleanup() { rm -rf -- "$STAGE"; }
 trap cleanup EXIT
 
 export PGPASSWORD="${DB_PASSWORD:?}"
+# Use the disposable CI Docker image as the PG17 client, not the backup VM.
+# Bind only the synthetic temporary backup directory, never a real volume.
+pg_client() {
+  docker run --rm --network host --pull never \
+    -e PGPASSWORD \
+    --mount "type=bind,src=$STAGE,dst=$STAGE" \
+    postgres:17 "$@"
+}
+pg_dump() { pg_client pg_dump "$@"; }
+pg_restore() { pg_client pg_restore "$@"; }
+createdb() { pg_client createdb "$@"; }
+dropdb() { pg_client dropdb "$@"; }
+psql() { pg_client psql "$@"; }
 CONN=(-h "$DB_HOST" -p "${DB_PORT:-5432}" -U "$DB_USERNAME")
 mkdir -m 700 "$STAGE/teacher-snapshot" "$STAGE/admission-snapshot"
 mkdir -m 700 "$STAGE/teacher-snapshot/snapshot" "$STAGE/admission-snapshot/snapshot"
