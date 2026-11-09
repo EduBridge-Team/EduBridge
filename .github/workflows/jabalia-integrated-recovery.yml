@@ -1,0 +1,132 @@
+name: Jabalia integrated synthetic backup and authenticated recovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/jabalia-integrated-recovery.yml'
+      - 'scripts/seed_jabalia_integrated_recovery.php'
+      - 'scripts/jabalia_integrated_recovery_drill.sh'
+      - 'scripts/test_jabalia_integrated_recovery_http.py'
+      - 'scripts/jabalia_restore_reconcile.py'
+      - 'edubridge-api-laravel/app/Http/Controllers/JabaliaTeacherDocumentController.php'
+      - 'edubridge-api-laravel/app/Http/Controllers/JabaliaAdmissionEvidenceController.php'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-restored-app:
+    name: Synthetic dump + private blobs + real HTTP role acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: jabalia_recovery_source_ci
+          POSTGRES_USER: edubridge
+          POSTGRES_PASSWORD: ci-disposable-postgres-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U edubridge -d jabalia_recovery_source_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      GITHUB_ACTIONS: 'true'
+      JABALIA_RECOVERY_SYNTHETIC: '1'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: jabalia_recovery_source_ci
+      DB_USERNAME: edubridge
+      DB_PASSWORD: ci-disposable-postgres-password
+      JWT_SECRET: ci-disposable-recovery-jwt-key-very-long-test-only-not-real-secret
+      SESSION_DRIVER: file
+      CACHE_STORE: array
+      JABALIA_ADMISSION_UPLOAD_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Validate PostgreSQL 17 CI image
+        run: |
+          set -euo pipefail
+          docker image inspect postgres:17 >/dev/null
+          docker run --rm --pull never postgres:17 pg_dump --version
+      - name: Install locked Laravel dependencies
+        working-directory: edubridge-api-laravel
+        run: composer install --no-interaction --prefer-dist
+      - name: Create isolated source schema and synthetic identities/attachments
+        run: |
+          set -euo pipefail
+          cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
+          php edubridge-api-laravel/artisan key:generate
+          php edubridge-api-laravel/artisan migrate:fresh --force
+          php scripts/seed_jabalia_integrated_recovery.php
+      - name: Back up synthetic DB and files then restore into a new database/storage
+        run: bash scripts/jabalia_integrated_recovery_drill.sh
+      - name: Boot Laravel against RESTORED database only
+        env:
+          DB_DATABASE: jabalia_recovery_restored_ci
+        run: |
+          set -euo pipefail
+          cd edubridge-api-laravel
+          php artisan serve --host=127.0.0.1 --port=18891 >"$RUNNER_TEMP/jabalia-recovery-http.log" 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS --max-time 2 http://127.0.0.1:18891/api/health >/dev/null; then
+              echo "PASS: recovered Laravel API health"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "BLOCKER: recovered HTTP API failed to start" >&2
+          exit 1
+      - name: Verify real JWT login, recovered bytes, and denied roles/tenants
+        env:
+          DB_DATABASE: jabalia_recovery_restored_ci
+        run: python3 scripts/test_jabalia_integrated_recovery_http.py
+      - name: Sanitized CI Laravel exception category (only on failure)
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          log = Path("edubridge-api-laravel/storage/logs/laravel.log")
+          if not log.is_file():
+              print("DIAGNOSTIC: no application exception log")
+              raise SystemExit(0)
+          errors = [line for line in log.read_text(errors="replace").splitlines()
+                    if "ERROR:" in line or "CRITICAL:" in line]
+          if not errors:
+              print("DIAGNOSTIC: no logged exception category")
+              raise SystemExit(0)
+          line = errors[-1].split("ERROR:", 1)[-1]
+          line = re.sub(r"[^\s]+@[^\s]+", "<redacted-email>", line)
+          line = re.sub(r"'[^']*'", "'<redacted>'", line)
+          line = re.sub(r'"[^"]*"', '"<redacted>"', line)
+          line = re.sub(r"[A-Za-z0-9_=-]{60,}", "<redacted-long-token>", line)
+          print("DIAGNOSTIC:", line[:250])
+          PY
+      - name: Confirm recovered database access-event audit
+        env:
+          DB_DATABASE: jabalia_recovery_restored_ci
+          PGPASSWORD: ci-disposable-postgres-password
+        run: |
+          set -euo pipefail
+          observed="$(docker run --rm --pull never --network host -e PGPASSWORD \
+            postgres:17 psql -h 127.0.0.1 -U edubridge -d jabalia_recovery_restored_ci -X -qAt \
+            -v ON_ERROR_STOP=1 -c \
+            "SELECT (SELECT count(*) FROM jabalia_teacher_document_access_events WHERE action='download_issued' AND document_id=8601), (SELECT count(*) FROM jabalia_admission_evidence_access_events WHERE action='download_issued' AND document_id=8701)")"
+          test "$observed" = "1|2" || {
+            echo "BLOCKER: recovered download issuance audit incomplete" >&2
+            exit 1
+          }
+          echo "PASS: recovered HTTP authorization/audit evidence verified"
