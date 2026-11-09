@@ -8,6 +8,14 @@ Status: NOT VERIFIED. This checklist is not a claim that CI or staging tests pas
 - **A01–A19 remain NOT RUN.** Unit/Feature test success and health checks do not establish end-to-end acceptance.
 - React local tests: **75/75 PASS**; Vite build successful; oxlint **0 errors, 50 warnings**. See [verification evidence](VERIFICATION_EVIDENCE_2026_11_01.md). These do not constitute A01–A19 acceptance.
 
+## Technical acceptance update — 2026-11-09 (not device sign-off)
+
+- **Backend:** all five school-director directory and assignment endpoints are merged through PR #1395 (API code SHA `2cb06fbdeec95c6076f05e768b88d7d8770081d1`). Separate main/Jabalia API containers reported that exact deployed SHA; corresponding director migration reported `RAN` in both.
+- **Isolated real-HTTP UAT, synthetic accounts only:** operator-reported A03/A04 director workflows **PASS (55 checks, recovered in an independently audited run after initial HTTP 429)** and A12 academic workflows **PASS (96 checks)**, with separate PostgreSQL invariant verification and cross-school denial. Original interrupted attempt remains an audit record.
+- **Automated front ends:** React Chromium mock-API login/school switch/RTL/mobile smoke, Flutter full unit/widget suite and web build PASSED in GitHub Actions, including [QA run #42543142898](https://github.com/EduBridge-Team/EduBridge/actions/runs/42543142898); QA scripts merged in PR #1397. React browser used **mocked API**, not the live UAT backend.
+- **Operator vs testers:** A03/A04/A12 are **API-verified** but **rendered React/Flutter device UAT is NOT SIGNED OFF**. The A01–A19 table below retains `NOT RUN` entries for unverified **full device/E2E acceptance**; do not misinterpret them as denying the API evidence. Dedicated tester checklist and sign-off: [#1398](https://github.com/EduBridge-Team/EduBridge/issues/1398).
+- **Remaining release gates:** representative teacher/admissions private-document recovery, authorized and forbidden restored-file downloads, encrypted offsite restore and operational approval [#1389](https://github.com/EduBridge-Team/EduBridge/issues/1389). Source-only fast-forward and code merge do not themselves evidence full disaster recovery or institution sign-off.
+
 ## Prerequisites
 - Record exact SHA, staging environment, operator, CI links, Flutter logs and Laravel feature test logs.
 - Prepare two unrelated schools (affiliated and independent), two guardians and children, two directors, two academic years, and sections with capacity limits.
