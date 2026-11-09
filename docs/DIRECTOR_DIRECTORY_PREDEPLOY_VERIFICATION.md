@@ -1,6 +1,6 @@
 # Director directory: migration, backups, and isolated Flutter HTTP checks
 
-Status: PENDING LIVE VERIFICATION. A green fresh-database migration in CI never proves that legacy production data can be migrated.
+Status update 2026-11-09: PR #1395 was merged to main (`28f25d7d7f1af72a665be1cd8194bcbc428a9ea5`). The exact API release code SHA `2cb06fbdeec95c6076f05e768b88d7d8770081d1` was independently reported by the operator as running in both production API stacks; both directory migrations are `RAN` and HTTP health is 200. Source Git was fast-forwarded to `59ed5182402ff40095171ddc93a4c673f88a665e` with containers untouched; subsequent changes add CI only. The original predeploy commands below are retained as historical runbook evidence, **not instructions to repeat a migration or production deployment**. Green CI and live health are not institutional acceptance or offsite/representative private-file disaster recovery proof.
 
 ## Read-only legacy-data preflight
 
@@ -104,4 +104,4 @@ scope checks or test assertions.
 - [ ] Institution-approved A03/A04/A12 isolated staging signoff
 - [ ] Approved maintenance / release / rollback plan
 
-PR #1395 must remain draft and unmerged; no Oracle deployment is authorized by this document alone.
+PR #1395 is **MERGED** and the operator reported its API release SHA in both production stacks with director migration completed. **Do not re-run the migration or rebuild/restart production merely to align a newer CI-only Git SHA.** As of 2026-11-09, rendered React/Flutter testers' acceptance remains tracked in [issue #1398](https://github.com/EduBridge-Team/EduBridge/issues/1398); representative private document and encrypted offsite restore acceptance remains tracked in [issue #1389](https://github.com/EduBridge-Team/EduBridge/issues/1389). Formal institution/release/rollback approval must not be inferred from a GitHub merge.
