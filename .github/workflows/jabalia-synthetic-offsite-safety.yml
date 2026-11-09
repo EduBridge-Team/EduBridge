@@ -1,0 +1,68 @@
+name: Jabalia synthetic offsite drill static safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/jabalia-synthetic-offsite-safety.yml'
+      - 'scripts/jabalia-synthetic-offsite-roundtrip.sh'
+      - 'docs/JABALIA_SYNTHETIC_OFFSITE_CRYPT_DRILL_2026_11_09.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-safety:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate syntax and explicit nonproduction safeguards
+        run: |
+          set -euo pipefail
+          file=scripts/jabalia-synthetic-offsite-roundtrip.sh
+          bash -n "$file"
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/jabalia-synthetic-offsite-roundtrip.sh')
+          s = p.read_text()
+          required = (
+              'hostname -s',
+              'edubridge-backup',
+              'EUID == 0',
+              'RCLONE_CONFIG_BACKUPCRYPT_REMOTE',
+              'synthetic-recovery-drills/',
+              'gdrive-offsite:',
+              'rclone check',
+              'rclone copy',
+              'sha256',
+              'SYNTHETIC-PRIVATE-RECOVERY-ONLY',
+              'trap cleanup EXIT',
+          )
+          for text in required:
+              if text not in s:
+                  raise SystemExit('BLOCKER: missing static guard: ' + text)
+          forbidden = ('rclone sync', 'rclone purge', 'rclone delete',
+                       '/srv/edubridge-backups/encrypted', 'docker exec',
+                       'yalla-server:')
+          for text in forbidden:
+              # The script contains a comment about the original source host,
+              # but must never invoke or address the production backup volume.
+              if text in s:
+                  raise SystemExit('BLOCKER: forbidden production operation present')
+          print('PASS: synthetic offsite script static guard inspection')
+          PY
+      - name: Confirm script requires explicit opt in and rejects CI hostname
+        run: |
+          set -euo pipefail
+          file=scripts/jabalia-synthetic-offsite-roundtrip.sh
+          if bash "$file" >/dev/null 2>&1; then
+            echo 'BLOCKER: script unexpectedly executed without opt in' >&2
+            exit 1
+          fi
+          if bash "$file" --execute >/dev/null 2>&1; then
+            echo 'BLOCKER: script unexpectedly executed outside backup VM' >&2
+            exit 1
+          fi
+          echo 'PASS: no accidental execution on GitHub CI'
