@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use App\Support\InstitutionDirectorDirectorySync;
 
 class DedicatedSchoolDirectorController extends Controller
 {
@@ -65,14 +66,23 @@ class DedicatedSchoolDirectorController extends Controller
                 if (Schema::hasColumn('users', 'created_at')) $user['created_at'] = now();
                 if (Schema::hasColumn('users', 'updated_at')) $user['updated_at'] = now();
                 $userId = DB::table('users')->insertGetId($user);
-                if ($active) DB::table('school_management_assignments')
-                    ->where('id', $active->id)->update(['ends_at' => now(), 'updated_at' => now()]);
+                if ($active) {
+                    DB::table('school_management_assignments')
+                        ->where('id', $active->id)->update(['ends_at' => now(), 'updated_at' => now()]);
+                    // An invitation replaces a real operational identity too.
+                    // Stop previously-issued director tokens in the same transaction.
+                    \App\Support\SchoolDirectorSession::revoke((int) $active->user_id);
+                }
                 DB::table('school_management_assignments')->insert([
                     'school_id' => $school->id, 'user_id' => $userId,
                     'role' => 'director', 'appointed_by' => $invite->invited_by,
                     'starts_at' => now(), 'ends_at' => null,
                     'created_at' => now(), 'updated_at' => now(),
                 ]);
+                // In the same transaction as the verified dedicated-account
+                // appointment, mirror the current/historical profile directory.
+                // This never creates login rights from a draft profile.
+                InstitutionDirectorDirectorySync::activated($school, $invite, (int) $userId, $data['name']);
                 DB::table('school_director_invitations')->where('id', $invite->id)
                     ->update(['accepted_at' => now(), 'updated_at' => now()]);
                 return response()->json(['activated' => true, 'school_id' => (int) $school->id]);

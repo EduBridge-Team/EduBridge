@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Http\Controllers\DedicatedSchoolDirectorController;
 use App\Http\Controllers\SchoolDirectorInvitationController;
 use App\Support\SchoolDirectorInvitations;
+use App\Support\AuthCredentials;
+use App\Http\Middleware\JwtAuth;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +24,8 @@ class SchoolDirectorInvitationTest extends TestCase
         Schema::create('users', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->string('email')->unique();
             $t->string('password_hash'); $t->string('role');
-            $t->timestamp('email_verified_at')->nullable(); $t->timestamps();
+            $t->timestamp('email_verified_at')->nullable();
+            $t->unsignedBigInteger('session_version')->default(0); $t->timestamps();
         });
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->boolean('is_active');
@@ -118,6 +121,42 @@ class SchoolDirectorInvitationTest extends TestCase
         ]);
         $this->assertSame(409, $this->activate()->status());
         $this->assertSame(0, DB::table('users')->count());
+    }
+
+    public function test_replacing_director_by_verified_invitation_invalidates_old_token(): void
+    {
+        config()->set('services.jwt.secret', 'director-invitation-rotation-test-secret');
+        DB::table('users')->insert([
+            'id' => 77, 'name' => 'Previous Director',
+            'email' => 'previous.director@example.test', 'role' => 'school_director',
+            'password_hash' => password_hash('PreviouslyIssuedPassword123', PASSWORD_BCRYPT),
+            'email_verified_at' => now(),
+        ]);
+        $oldAssignment = DB::table('school_management_assignments')->insertGetId([
+            'school_id' => 44, 'user_id' => 77, 'role' => 'director',
+            'appointed_by' => 1, 'starts_at' => now()->subWeek(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $jwt = AuthCredentials::issue(DB::table('users')->where('id', 77)->first(), config('services.jwt.secret'));
+        $this->issue('new.director@example.test');
+        DB::table('school_director_invitations')
+            ->update(['expected_director_assignment_id' => $oldAssignment]);
+
+        $this->assertSame(200, $this->activate()->status());
+        $this->assertNotNull(DB::table('school_management_assignments')
+            ->where('id', $oldAssignment)->value('ends_at'));
+        $this->assertSame(1, (int) DB::table('users')->where('id', 77)->value('session_version'));
+        $this->assertSame(1, DB::table('school_management_assignments')
+            ->whereNull('ends_at')->count());
+
+        $request = Request::create('/api/me', 'GET', [], [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.$jwt,
+        ]);
+        $response = app(JwtAuth::class)->handle(
+            $request, fn (Request $request) => response()->json(['ok' => true])
+        );
+        $this->assertSame(401, $response->status());
+        $this->assertSame('SESSION_INVALID', $response->getData(true)['code']);
     }
 
     public function test_old_authenticated_accept_endpoint_cannot_promote_existing_users(): void

@@ -34,10 +34,23 @@ RUN composer install \
 
 COPY . .
 
-# Normalize application source permissions: local Git checkout may contain
-# mode 600 PHP files, but the runtime executes as the non-root www-data user.
-RUN find app routes database/migrations -type d -exec chmod 755 {} + \
-    && find app routes database/migrations -type f -exec chmod 644 {} +
+# Normalize only shipped application source, never private storage or environment.
+# A deployment checkout created with umask 077 can give directories mode 700
+# and PHP files mode 600; www-data must traverse and read all Laravel sources.
+RUN chmod 644 artisan composer.json composer.lock \
+    && chmod 755 database \
+    && for dir in app bootstrap config public resources routes database/migrations database/data database/factories database/seeders; do \
+         if [ -d "$dir" ]; then \
+           find "$dir" -type d -exec chmod 755 {} +; \
+           find "$dir" -type f -exec chmod 644 {} +; \
+         fi; \
+       done \
+    && chmod 644 \
+         /etc/nginx/nginx.conf \
+         /etc/supervisor/edubridge.conf \
+         /usr/local/etc/php-fpm.conf \
+         /usr/local/etc/php/conf.d/98-edubridge-production.ini \
+         /usr/local/etc/php/conf.d/99-edubridge-uploads.ini
 
 RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
     && php artisan package:discover --ansi \
