@@ -52,6 +52,42 @@ class RestoreReconcileTests(unittest.TestCase):
             refs, files = reconcile(self.refs(f"{category}.csv", [f"{prefix}/secure.pdf"]), dest, category)
             self.assertEqual((refs, files), (1, 1))
 
+    def test_nonempty_synthetic_private_file_roundtrip_matches_original_bytes(self):
+        # Proves the archive extract preserves full synthetic bytes for both
+        # categories. Unlike existence checks, digest equality detects changes.
+        # This is offline fixture evidence, NOT a production/offsite restore.
+        for category, prefix in [
+            ("teacher", "jabalia-teacher-documents"),
+            ("admission", "jabalia-admission-documents"),
+        ]:
+            with self.subTest(category=category):
+                payload = (
+                    b"%PDF-1.4\\n"
+                    + b"synthetic-jabalia-private-restore-fixture-only\\n"
+                    + category.encode("ascii")
+                    + bytes(range(32))
+                    + b"\\n%%EOF\\n"
+                )
+                source_digest = hashlib.sha256(payload).hexdigest()
+                archived = self.archive(
+                    [("snapshot/recovery-proof.pdf", payload)],
+                    name=f"{category}-nonempty.tar.gz",
+                )
+                destination = self.root / f"restored-{category}-nonempty"
+                verify_checksum(archived)
+                self.assertEqual(1, extract_archive(archived, destination))
+                csv_path = self.refs(
+                    f"{category}-nonempty.csv",
+                    [f"{prefix}/recovery-proof.pdf"],
+                )
+                self.assertEqual(
+                    (1, 1), reconcile(csv_path, destination, category)
+                )
+                recovered = (destination / "snapshot" / "recovery-proof.pdf").read_bytes()
+                self.assertEqual(len(payload), len(recovered))
+                self.assertEqual(source_digest, hashlib.sha256(recovered).hexdigest())
+                self.assertEqual(payload, recovered)
+
     def test_missing_referenced_file_is_a_failure_without_disclosing_path(self):
         archive = self.archive([])
         dest = self.root / "teacher"
