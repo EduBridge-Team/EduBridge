@@ -93,6 +93,28 @@ jobs:
         env:
           DB_DATABASE: jabalia_recovery_restored_ci
         run: python3 scripts/test_jabalia_integrated_recovery_http.py
+      - name: Sanitized CI Laravel exception category (only on failure)
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          log = Path("edubridge-api-laravel/storage/logs/laravel.log")
+          if not log.is_file():
+              print("DIAGNOSTIC: no application exception log")
+              raise SystemExit(0)
+          errors = [line for line in log.read_text(errors="replace").splitlines()
+                    if "ERROR:" in line or "CRITICAL:" in line]
+          if not errors:
+              print("DIAGNOSTIC: no logged exception category")
+              raise SystemExit(0)
+          line = errors[-1].split("ERROR:", 1)[-1]
+          line = re.sub(r"[^\s]+@[^\s]+", "<redacted-email>", line)
+          line = re.sub(r"'[^']*'", "'<redacted>'", line)
+          line = re.sub(r'"[^"]*"', '"<redacted>"', line)
+          line = re.sub(r"[A-Za-z0-9_=-]{60,}", "<redacted-long-token>", line)
+          print("DIAGNOSTIC:", line[:250])
+          PY
       - name: Confirm recovered database access-event audit
         env:
           DB_DATABASE: jabalia_recovery_restored_ci
