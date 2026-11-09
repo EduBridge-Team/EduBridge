@@ -1,0 +1,45 @@
+name: Jabalia synthetic private recovery QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/jabalia-private-recovery-qa.yml'
+      - 'scripts/jabalia_restore_reconcile.py'
+      - 'scripts/test_jabalia_restore_reconcile.py'
+      - 'edubridge-api-laravel/tests/Feature/JabaliaTeacherDocumentIsolationTest.php'
+      - 'edubridge-api-laravel/tests/Feature/JabaliaAdmissionEvidenceIsolationTest.php'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-private-recovery:
+    name: Nonempty archive bytes and protected Laravel downloads
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify offline private-file recovery fixtures
+        run: python3 -m unittest discover -s scripts -p test_jabalia_restore_reconcile.py -v
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Install locked Laravel dependencies
+        working-directory: edubridge-api-laravel
+        run: composer install --no-interaction --prefer-dist
+      - name: Run synthetic-only authorized/denied download tests
+        working-directory: edubridge-api-laravel
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          DB_URL: ''
+          JWT_SECRET: ci-jabalia-private-recovery-only
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate
+          php artisan test --filter='JabaliaTeacherDocumentIsolationTest|JabaliaAdmissionEvidenceIsolationTest'

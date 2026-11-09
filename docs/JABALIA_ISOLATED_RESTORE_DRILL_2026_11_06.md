@@ -32,6 +32,26 @@ The disposable container has an isolated name `jabalia-restore-drill-<PID>`, is 
 
 The exact teacher prefix is `jabalia-teacher-documents/` and admission prefix is `jabalia-admission-documents/`, corresponding to the two Laravel `Storage::disk('local')` mount points. No sensitive filename, document content, or `storage_path` is included in the success/failure output.
 
+## Synthetic regression checkpoint (added 2026-11-09)
+
+The `.github/workflows/jabalia-private-recovery-qa.yml` CI workflow runs **only disposable synthetic fixtures**:
+
+- `scripts/test_jabalia_restore_reconcile.py`: non-empty teacher and admission test files are placed into verified tar archives, safely extracted and reconciled with synthetic CSV database references, then compared for **exact byte equality and SHA-256 digest equality**. Missing files, corrupt archives, unsafe paths and symlinks must fail closed.
+- `JabaliaTeacherDocumentIsolationTest`: on a fake Laravel `local` disk, simulate an already recovered document, assert its authorized streamed binary bytes match the synthetic source digest, deny other roles/tenants/schools and verify scoped access audits.
+- `JabaliaAdmissionEvidenceIsolationTest`: on a fake disk and SQLite test database, simulate an already recovered synthetic admission attachment, check authorized parent/director-deputy stream access, deny unrelated parent and cross-school access, and confirm access auditing. The test-only admission upload fixture **does not enable medical upload in production**.
+
+**Scope boundary:** the archive and Laravel authorization checks are complementary regression tests, not one integrated restoration of a live backup set into a running recovered application. A green CI workflow does **not** establish actual Jabalia attachment recoverability or completion of issue #1389.
+
+## Still-required operator drill for #1389
+
+Only after an approved backup window and secure isolated restoration setup:
+
+1. Select an **approved synthetic private fixture** with both non-empty file content and an associated database record in an isolated test environment, never real staff/child records merely to satisfy a test. Keep production admission uploads disabled.
+2. Capture a coherent database and private-file snapshot; verify individual checksums and do the existing offline PostgreSQL restore. Ensure the restored archive includes a representative non-empty referenced private attachment.
+3. Recover encrypted backup objects from a separate **offsite provider** to a fresh private/encrypted scratch destination, decrypt with separately authorized recovery key custody, and compare backup manifests and non-empty recovered file hashes. Do not use `rclone sync`, production mounts, or an unencrypted shared scratch directory.
+4. On a **separate, approved recovered application environment**, run real HTTP authentication: allowed staff/parent download must return exact expected bytes, wrong role/school/tenant must be denied, and access-event audit entries must be verified. The test database must not be a live database.
+5. Record the backup and application source SHA, UTC timestamps, redacted pass/fail and aggregate counts, measured RPO/RTO, cleanup and operational/institutional sign-off. Keep #1389 and the parent #1364 **open** until all conditions pass.
+
 ## What passing proves / does not prove
 
 A success proves a **specific backup set** can be restored into a fresh offline PostgreSQL 17 cluster and all non-null teacher/admission database file references can be resolved against the separately recovered volume archives. The utility reports only file counts, not names.

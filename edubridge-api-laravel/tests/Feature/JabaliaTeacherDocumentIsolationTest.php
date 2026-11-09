@@ -278,4 +278,41 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         $this->assertSame(0, DB::table('jabalia_teacher_document_access_events')->count());
     }
 
+    public function test_recovered_synthetic_teacher_file_download_is_byte_exact_and_other_roles_denied(): void
+    {
+        // Simulate recovery only on the testing-local fake disk; never touch
+        // real teacher documents, a live volume, or a production database.
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $path = 'jabalia-teacher-documents/synthetic-recovered-teacher.pdf';
+        $payload = "%PDF-1.4\nSynthetic recovered teacher fixture only.\n%%EOF\n";
+        \Illuminate\Support\Facades\Storage::disk('local')->put($path, $payload);
+        DB::table('jabalia_teacher_documents')->where('id', 1)->update([
+            'storage_path' => $path, 'original_filename' => 'synthetic-recovered-teacher.pdf',
+        ]);
+
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $allowed = $controller->download($this->request(1, 'jabalia'), 'jabalia', 1, 11, 1);
+        $this->assertSame(200, $allowed->getStatusCode());
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\StreamedResponse::class, $allowed);
+        $this->assertStringContainsString('no-store', (string) $allowed->headers->get('Cache-Control'));
+        ob_start();
+        try {
+            $allowed->sendContent();
+            $downloaded = ob_get_clean();
+        } catch (\Throwable $exception) {
+            ob_end_clean();
+            throw $exception;
+        }
+        $this->assertSame(hash('sha256', $payload), hash('sha256', $downloaded));
+        $this->assertSame($payload, $downloaded);
+
+        $wrongRole = $this->request(1, 'jabalia');
+        $wrongRole->attributes->set('jwt_user', (object) ['id' => 100, 'role' => 'parent']);
+        $this->assertSame(404, $controller->download($wrongRole, 'jabalia', 1, 11, 1)->status());
+        $this->assertSame(404, $controller->download($this->request(2, 'other'), 'other', 1, 11, 1)->status());
+        $this->assertSame(404, $controller->download($this->request(1, 'jabalia'), 'jabalia', 2, 11, 1)->status());
+        $this->assertSame(1, DB::table('jabalia_teacher_document_access_events')
+            ->where('action', 'download_issued')->count());
+    }
+
 }
