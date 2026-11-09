@@ -42,7 +42,14 @@ def login(email):
         "email": email, "password": PASSWORD
     })
     if status != 200:
-        raise AssertionError("synthetic login failed with status " + str(status))
+        try:
+            problem = json.loads(body)
+            code = str(problem.get("code", "UNKNOWN"))
+        except (ValueError, TypeError, AttributeError):
+            code = "UNREADABLE_ERROR"
+        raise AssertionError(
+            "synthetic login failed with status " + str(status) + " code=" + code
+        )
     token = json.loads(body).get("token")
     assert isinstance(token, str) and len(token) > 32
     return token
