@@ -56,13 +56,11 @@ jobs:
         with:
           php-version: '8.4'
           coverage: none
-      - name: Install matching PostgreSQL 17 client
+      - name: Validate PostgreSQL 17 CI image
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y postgresql-client-17
-          pg_dump --version
-          test "$(pg_dump --version | grep -oE '[0-9]+\.' | head -1)" = "17."
+          docker image inspect postgres:17 >/dev/null
+          docker run --rm --pull never postgres:17 pg_dump --version
       - name: Install locked Laravel dependencies
         working-directory: edubridge-api-laravel
         run: composer install --no-interaction --prefer-dist
@@ -101,7 +99,8 @@ jobs:
           PGPASSWORD: ci-disposable-postgres-password
         run: |
           set -euo pipefail
-          observed="$(psql -h 127.0.0.1 -U edubridge -d jabalia_recovery_restored_ci -X -qAt \
+          observed="$(docker run --rm --pull never --network host -e PGPASSWORD \
+            postgres:17 psql -h 127.0.0.1 -U edubridge -d jabalia_recovery_restored_ci -X -qAt \
             -v ON_ERROR_STOP=1 -c \
             "SELECT (SELECT count(*) FROM jabalia_teacher_document_access_events WHERE action='download_issued' AND document_id=8601), (SELECT count(*) FROM jabalia_admission_evidence_access_events WHERE action='download_issued' AND document_id=8701)")"
           test "$observed" = "1|2" || {
