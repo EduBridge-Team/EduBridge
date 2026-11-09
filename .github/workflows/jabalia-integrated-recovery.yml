@@ -46,7 +46,7 @@ jobs:
       DB_DATABASE: jabalia_recovery_source_ci
       DB_USERNAME: edubridge
       DB_PASSWORD: ci-disposable-postgres-password
-      JWT_SECRET: ci-disposable-recovery-jwt-key
+      JWT_SECRET: ci-disposable-recovery-jwt-key-very-long-test-only-not-real-secret
       SESSION_DRIVER: file
       CACHE_STORE: array
       JABALIA_ADMISSION_UPLOAD_ENABLED: 'false'
