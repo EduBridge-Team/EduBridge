@@ -285,4 +285,50 @@ class JabaliaAdmissionEvidenceIsolationTest extends TestCase
         )->status());
     }
 
+    public function test_recovered_synthetic_admission_file_download_is_byte_exact_and_other_roles_denied(): void
+    {
+        // Simulates recovered bytes in a disposable test storage fake only;
+        // no actual medical/child data or live admissions volume is used.
+        $payload = "%PDF-1.4\nSynthetic restored admission fixture only.\n%%EOF\n";
+        $path = 'jabalia-admission-documents/synthetic-recovered-admission.pdf';
+        Storage::disk('local')->put($path, $payload);
+        DB::table('jabalia_admission_documents')->insert([
+            'id' => 801, 'enrollment_request_id' => 100, 'school_id' => 1,
+            'child_id' => 10, 'type' => 'birth_certificate',
+            'storage_path' => $path, 'mime_type' => 'application/pdf',
+            'file_size' => strlen($payload), 'uploaded_by' => 40,
+        ]);
+
+        $controller = app(JabaliaAdmissionEvidenceController::class);
+        $allowed = $controller->parentDownload($this->actor(40, 'parent'), 10, 100, 801);
+        $this->assertSame(200, $allowed->getStatusCode());
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\StreamedResponse::class, $allowed);
+        $this->assertStringContainsString('no-store', (string) $allowed->headers->get('Cache-Control'));
+        ob_start();
+        try {
+            $allowed->sendContent();
+            $downloaded = ob_get_clean();
+        } catch (\Throwable $exception) {
+            ob_end_clean();
+            throw $exception;
+        }
+        $this->assertSame(hash('sha256', $payload), hash('sha256', $downloaded));
+        $this->assertSame($payload, $downloaded);
+
+        $this->assertSame(200, $controller->schoolDownload(
+            $this->actor(62, 'teacher'), 100, 801
+        )->getStatusCode());
+        $this->assertSame(404, $controller->parentDownload(
+            $this->actor(50, 'parent'), 10, 100, 801
+        )->status());
+        $this->assertSame(404, $controller->schoolDownload(
+            $this->actor(61, 'teacher'), 100, 801
+        )->status());
+        $this->assertSame(404, $controller->schoolDownload(
+            $this->actor(70, 'teacher'), 200, 801
+        )->status());
+        $this->assertSame(2, DB::table('jabalia_admission_evidence_access_events')
+            ->where('action', 'download_issued')->count());
+    }
+
 }
