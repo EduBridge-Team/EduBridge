@@ -1,0 +1,58 @@
+name: Jabalia DR retention and unsigned acceptance evidence
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/jabalia_backup_readonly_audit.py'
+      - 'scripts/test_jabalia_backup_readonly_audit.py'
+      - 'docs/JABALIA_RECOVERY_RPO_RTO_RETENTION_ACCEPTANCE_2026_11_09.md'
+      - '.github/workflows/jabalia-dr-retention-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-safety:
+    name: Read-only evidence safety and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Syntax and unit tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/jabalia_backup_readonly_audit.py scripts/test_jabalia_backup_readonly_audit.py
+          python3 -m unittest discover -s scripts -p test_jabalia_backup_readonly_audit.py -v
+      - name: Require host-bound execution and never mutate backup data
+        run: |
+          set -euo pipefail
+          if python3 scripts/jabalia_backup_readonly_audit.py --audit >/dev/null 2>&1; then
+            echo "BLOCKER: audit must refuse CI/non-backup host" >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          script = Path('scripts/jabalia_backup_readonly_audit.py').read_text()
+          required = (
+              'edubridge-backup', 'rclone', 'lsjson',
+              'listremotes', 'stat.S_IMODE', 'rclone-recovery-20261012.conf.gpg',
+              'last-success-jabalia', 'UNVERIFIED', 'NOT MEASURED', 'PENDING',
+          )
+          for item in required:
+              if item not in script:
+                  raise SystemExit('BLOCKER: missing audit guard')
+          forbidden = (
+              '"sync"', "'sync'", '"delete"', "'delete'", '"purge"', "'purge'",
+              'pg_restore', 'docker exec', 'config show', 'rclone.conf --',
+          )
+          for item in forbidden:
+              if item in script:
+                  raise SystemExit('BLOCKER: unsafe audit operation detected')
+          record = Path('docs/JABALIA_RECOVERY_RPO_RTO_RETENTION_ACCEPTANCE_2026_11_09.md').read_text()
+          for item in ('NOT institution-approved', 'NOT MEASURED', 'PENDING', '#1389'):
+              if item not in record:
+                  raise SystemExit('BLOCKER: unsigned record scope not explicit')
+          print('PASS: read-only metadata audit and unsigned acceptance safeguards')
+          PY
