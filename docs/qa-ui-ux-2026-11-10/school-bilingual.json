@@ -1,0 +1,42 @@
+[
+  {
+    "width": 320,
+    "arabic": "PASS",
+    "english": "PASS",
+    "text200": "PASS",
+    "vw": 320,
+    "sw": 310
+  },
+  {
+    "width": 390,
+    "arabic": "PASS",
+    "english": "PASS",
+    "text200": "PASS",
+    "vw": 390,
+    "sw": 380
+  },
+  {
+    "width": 720,
+    "arabic": "PASS",
+    "english": "PASS",
+    "text200": "PASS",
+    "vw": 720,
+    "sw": 710
+  },
+  {
+    "width": 1280,
+    "arabic": "PASS",
+    "english": "PASS",
+    "text200": "PASS",
+    "vw": 1280,
+    "sw": 1270
+  },
+  {
+    "width": 1920,
+    "arabic": "PASS",
+    "english": "PASS",
+    "text200": "PASS",
+    "vw": 1920,
+    "sw": 1910
+  }
+]

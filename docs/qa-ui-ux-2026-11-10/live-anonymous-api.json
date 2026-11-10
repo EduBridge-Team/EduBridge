@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://api.edubridge.win/",
+    "status": 403
+  },
+  {
+    "url": "https://api.edubridge.win/api/me",
+    "status": 403
+  },
+  {
+    "url": "https://api.edubridge.win/api/children",
+    "status": 403
+  },
+  {
+    "url": "https://api.edubridge.win/api/notifications",
+    "status": 403
+  },
+  {
+    "url": "https://api.edubridge.win/api/school/delegation",
+    "status": 403
+  },
+  {
+    "url": "https://edubridge.win/api/me",
+    "status": 403
+  },
+  {
+    "url": "https://jabalia.edubridge.win/api/me",
+    "status": 403
+  }
+]

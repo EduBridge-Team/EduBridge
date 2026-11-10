@@ -57,11 +57,11 @@ export function LoginCard({
       <p className="auth-welcome-copy">{institution ? 'سجّل الدخول إلى بوابة المؤسسة' : 'سجّل الدخول لمتابعة رحلة التعلّم'}</p>
 
       {successMsg && (
-        <div className={successIsError ? 'error-box' : 'success-box'}>
+        <div className={successIsError ? 'error-box' : 'success-box'} role={successIsError ? 'alert' : 'status'}>
           {successMsg}
         </div>
       )}
-      {notice && <div className="success-box">{notice}</div>}
+      {notice && <div className="success-box" role="status">{notice}</div>}
 
       <form className="auth-login-form" onSubmit={onSubmit}>
         <div className="auth-field">

@@ -33,11 +33,11 @@ export default function ForgotPasswordPage() {
           <BrandLogo className="auth-brand-logo" />
           <h1 className="auth-form-title">استعادة كلمة المرور</h1>
           <p className="muted">أدخل بريدك وسنرسل لك رابطاً آمناً لتعيين كلمة مرور جديدة.</p>
-          {message && <div className="success-box">{message}</div>}
-          {error && <div className="error-box">{error}</div>}
+          {message && <div className="success-box" role="status">{message}</div>}
+          {error && <div className="error-box" role="alert">{error}</div>}
           <form onSubmit={submit}>
             <label htmlFor="forgot-email">البريد الإلكتروني</label>
-            <input id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+            <input id="forgot-email" type="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
             <button className="btn full" disabled={loading}>{loading ? 'جارِ الإرسال...' : 'إرسال رابط الاستعادة'}</button>
           </form>
           <Link className="link-btn" to="/login">العودة لتسجيل الدخول</Link>

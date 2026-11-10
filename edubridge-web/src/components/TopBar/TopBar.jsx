@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getUser, logout } from '../../api'
 import { dashboardFor } from '../../roleRoutes'
 import { isPortalPathForRole } from '../../portalRoutes'
 import { useTheme } from '../../theme'
 import BrandLogo from '../BrandLogo/BrandLogo'
+import { useMobileNavigation } from '../useMobileNavigation'
 import { GuestTopBarMenu, SignedInTopBarMenu } from './TopBarMenus'
 import { buildTopBarStripLinks } from './topBarLinks'
 import { useVerification } from '../../verification'
@@ -25,10 +26,12 @@ export default function TopBar() {
 
   useEffect(() => setOpen(false), [location.pathname, location.hash, location.key])
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
+  const menuRef = useRef(null)
+  const triggerRef = useRef(null)
+  const mobile = useMobileNavigation({
+    open, setOpen, panelRef: menuRef, triggerRef,
+    query: user ? '(max-width: 1024px)' : '(max-width: 780px)',
+  })
 
   const handleLogout = () => {
     logout()
@@ -48,7 +51,7 @@ export default function TopBar() {
 
   return (
     <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isRolePortal ? ' role-portal-global-topbar' : '')}>
-      <div className="topbar-brand" onClick={() => navigate('/')}>
+      <Link className="topbar-brand" to="/" aria-label="EduBridge — الرئيسية">
         {institution ? (
           <div className="institution-topbar-brand">
             {institutionLogo ? <img className="institution-topbar-logo" src={institutionLogo} alt={`شعار ${institutionName}`} /> : <BrandLogo className="topbar-brand-logo" />}
@@ -57,9 +60,9 @@ export default function TopBar() {
         ) : (
           <BrandLogo className="topbar-brand-logo" />
         )}
-      </div>
+      </Link>
 
-      <button className={'hamburger ' + (open ? 'is-open' : '')} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+      <button ref={triggerRef} type="button" aria-controls="topbar-menu" className={'hamburger ' + (open ? 'is-open' : '')} aria-label={open ? 'إغلاق القائمة' : 'فتح القائمة'} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
         <span /><span /><span />
       </button>
 
@@ -84,7 +87,7 @@ export default function TopBar() {
 
       {open && <div className="topbar-backdrop" onClick={() => setOpen(false)} />}
 
-      <div className={'topbar-menu ' + (open ? 'open' : '')}>
+      <div id="topbar-menu" ref={menuRef} inert={mobile && !open} className={'topbar-menu ' + (open ? 'open' : '')}>
         {user ? (
           <SignedInTopBarMenu
             dashboardPath={verified ? dashboardPath : '/verify'}

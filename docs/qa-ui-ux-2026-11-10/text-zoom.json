@@ -1,0 +1,212 @@
+[
+  {
+    "path": "/",
+    "width": 320,
+    "sw": 320,
+    "vw": 320,
+    "clipped": []
+  },
+  {
+    "path": "/about",
+    "width": 320,
+    "sw": 320,
+    "vw": 320,
+    "clipped": []
+  },
+  {
+    "path": "/login",
+    "width": 320,
+    "sw": 320,
+    "vw": 320,
+    "clipped": []
+  },
+  {
+    "path": "/register",
+    "width": 320,
+    "sw": 320,
+    "vw": 320,
+    "clipped": []
+  },
+  {
+    "path": "/forgot-password",
+    "width": 320,
+    "sw": 320,
+    "vw": 320,
+    "clipped": []
+  },
+  {
+    "path": "/reset-password",
+    "width": 320,
+    "sw": 320,
+    "vw": 320,
+    "clipped": []
+  },
+  {
+    "path": "/",
+    "width": 390,
+    "sw": 390,
+    "vw": 390,
+    "clipped": []
+  },
+  {
+    "path": "/about",
+    "width": 390,
+    "sw": 390,
+    "vw": 390,
+    "clipped": []
+  },
+  {
+    "path": "/login",
+    "width": 390,
+    "sw": 390,
+    "vw": 390,
+    "clipped": []
+  },
+  {
+    "path": "/register",
+    "width": 390,
+    "sw": 390,
+    "vw": 390,
+    "clipped": []
+  },
+  {
+    "path": "/forgot-password",
+    "width": 390,
+    "sw": 390,
+    "vw": 390,
+    "clipped": []
+  },
+  {
+    "path": "/reset-password",
+    "width": 390,
+    "sw": 390,
+    "vw": 390,
+    "clipped": []
+  },
+  {
+    "path": "/",
+    "width": 720,
+    "sw": 720,
+    "vw": 720,
+    "clipped": []
+  },
+  {
+    "path": "/about",
+    "width": 720,
+    "sw": 720,
+    "vw": 720,
+    "clipped": []
+  },
+  {
+    "path": "/login",
+    "width": 720,
+    "sw": 720,
+    "vw": 720,
+    "clipped": []
+  },
+  {
+    "path": "/register",
+    "width": 720,
+    "sw": 720,
+    "vw": 720,
+    "clipped": []
+  },
+  {
+    "path": "/forgot-password",
+    "width": 720,
+    "sw": 720,
+    "vw": 720,
+    "clipped": []
+  },
+  {
+    "path": "/reset-password",
+    "width": 720,
+    "sw": 720,
+    "vw": 720,
+    "clipped": []
+  },
+  {
+    "path": "/",
+    "width": 1280,
+    "sw": 1280,
+    "vw": 1280,
+    "clipped": []
+  },
+  {
+    "path": "/about",
+    "width": 1280,
+    "sw": 1280,
+    "vw": 1280,
+    "clipped": []
+  },
+  {
+    "path": "/login",
+    "width": 1280,
+    "sw": 1280,
+    "vw": 1280,
+    "clipped": []
+  },
+  {
+    "path": "/register",
+    "width": 1280,
+    "sw": 1280,
+    "vw": 1280,
+    "clipped": []
+  },
+  {
+    "path": "/forgot-password",
+    "width": 1280,
+    "sw": 1280,
+    "vw": 1280,
+    "clipped": []
+  },
+  {
+    "path": "/reset-password",
+    "width": 1280,
+    "sw": 1280,
+    "vw": 1280,
+    "clipped": []
+  },
+  {
+    "path": "/",
+    "width": 1920,
+    "sw": 1920,
+    "vw": 1920,
+    "clipped": []
+  },
+  {
+    "path": "/about",
+    "width": 1920,
+    "sw": 1920,
+    "vw": 1920,
+    "clipped": []
+  },
+  {
+    "path": "/login",
+    "width": 1920,
+    "sw": 1920,
+    "vw": 1920,
+    "clipped": []
+  },
+  {
+    "path": "/register",
+    "width": 1920,
+    "sw": 1920,
+    "vw": 1920,
+    "clipped": []
+  },
+  {
+    "path": "/forgot-password",
+    "width": 1920,
+    "sw": 1920,
+    "vw": 1920,
+    "clipped": []
+  },
+  {
+    "path": "/reset-password",
+    "width": 1920,
+    "sw": 1920,
+    "vw": 1920,
+    "clipped": []
+  }
+]

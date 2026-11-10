@@ -5,13 +5,13 @@ import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export function RegisterDecor() {
   return (
-    <>
+    <div className="auth-page-decor-layer" aria-hidden="true">
       <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-a" aria-hidden="true" />
       <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-b" aria-hidden="true" />
       <div className="auth-page-decor auth-page-decor-dots" aria-hidden="true" />
       <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-a" aria-hidden="true">✦</div>
       <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-b" aria-hidden="true">✦</div>
-    </>
+    </div>
   )
 }
 

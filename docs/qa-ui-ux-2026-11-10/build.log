@@ -1,0 +1,103 @@
+
+> edubridge-web@0.0.0 build
+> vite build && node scripts/compress-assets.mjs
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 2057 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                           1.02 kB │ gzip:   0.55 kB
+dist/assets/cairo-latin-ext-wght-normal-at8nfxId.woff2   16.64 kB
+dist/assets/cairo-arabic-wght-normal-CJWMIGCx.woff2      30.89 kB
+dist/assets/cairo-latin-wght-normal-PfPtmrPZ.woff2       33.82 kB
+dist/assets/institution-operations-DHZnxu27.css           6.78 kB │ gzip:   1.41 kB
+dist/assets/index-D76ZPfRD.css                          342.92 kB │ gzip:  59.85 kB
+dist/assets/check-CYJiiQEr.js                             0.11 kB │ gzip:   0.13 kB
+dist/assets/chevron-left-C9A-IGKI.js                      0.11 kB │ gzip:   0.13 kB
+dist/assets/square-BlqmD5TV.js                            0.13 kB │ gzip:   0.14 kB
+dist/assets/plus-CcXxi6tZ.js                              0.14 kB │ gzip:   0.14 kB
+dist/assets/arrow-right-3JVFNsDe.js                       0.15 kB │ gzip:   0.15 kB
+dist/assets/user-round-DmgJQPjH.js                        0.17 kB │ gzip:   0.17 kB
+dist/assets/user-CsT7hzGL.js                              0.18 kB │ gzip:   0.17 kB
+dist/assets/FormField-BDUtAzoR.js                         0.19 kB │ gzip:   0.17 kB
+dist/assets/paperclip-CIehv4yr.js                         0.22 kB │ gzip:   0.18 kB
+dist/assets/triangle-alert-DTZwsIzX.js                    0.25 kB │ gzip:   0.20 kB
+dist/assets/pencil-BOR5-yTQ.js                            0.26 kB │ gzip:   0.21 kB
+dist/assets/phone-CbvuSt_E.js                             0.31 kB │ gzip:   0.22 kB
+dist/assets/file-text-BsQiuL5t.js                         0.37 kB │ gzip:   0.24 kB
+dist/assets/baby-O2W_K4Fo.js                              0.38 kB │ gzip:   0.25 kB
+dist/assets/childPresentation-BwAJwLfJ.js                 0.39 kB │ gzip:   0.26 kB
+dist/assets/sliders-horizontal-CthjKX-6.js                0.41 kB │ gzip:   0.23 kB
+dist/assets/specialistAssignment-DRfadbCL.js              0.41 kB │ gzip:   0.24 kB
+dist/assets/lessonCategories-CqzD1nPb.js                  0.48 kB │ gzip:   0.29 kB
+dist/assets/useSchoolResource-BFWfP5eN.js                 0.49 kB │ gzip:   0.28 kB
+dist/assets/useSchoolLanguage-pS8924gX.js                 0.55 kB │ gzip:   0.30 kB
+dist/assets/schools-BoitP6DD.js                           0.55 kB │ gzip:   0.29 kB
+dist/assets/PasswordField-xI86F0nn.js                     0.59 kB │ gzip:   0.40 kB
+dist/assets/gamepad-2-BROPpd3U.js                         0.61 kB │ gzip:   0.37 kB
+dist/assets/AuthVisual-DUkfmjIY.js                        0.63 kB │ gzip:   0.43 kB
+dist/assets/LessonEditorPage-B9b2Tk17.js                  0.67 kB │ gzip:   0.43 kB
+dist/assets/workflowLabels-B8oFnwzB.js                    0.72 kB │ gzip:   0.44 kB
+dist/assets/FormDisclosure-DdVxsFvx.js                    0.76 kB │ gzip:   0.45 kB
+dist/assets/EmptyState-B7HlKQgI.js                        0.79 kB │ gzip:   0.46 kB
+dist/assets/AdminSectionTabs-Bv0Jc7Ay.js                  1.09 kB │ gzip:   0.68 kB
+dist/assets/TeacherInvitationPage-BHPGKuhb.js             1.31 kB │ gzip:   0.71 kB
+dist/assets/ForgotPasswordPage-Cuoo6Agl.js                1.70 kB │ gzip:   0.85 kB
+dist/assets/ListPagination-tEkeIyx-.js                    1.77 kB │ gzip:   0.99 kB
+dist/assets/ResetPasswordPage-D_6SkI-a.js                 2.31 kB │ gzip:   1.04 kB
+dist/assets/AccessibilityOverviewPage-DbHujWwB.js         2.33 kB │ gzip:   1.13 kB
+dist/assets/SearchPage-B4eVEk_9.js                        3.03 kB │ gzip:   1.39 kB
+dist/assets/SchoolInvitationPage-LoWfPLlA.js              3.28 kB │ gzip:   1.53 kB
+dist/assets/StudentDashboard-C0xpVP_c.js                  3.54 kB │ gzip:   1.56 kB
+dist/assets/support-CM2NcdKJ.js                           3.55 kB │ gzip:   1.16 kB
+dist/assets/core-BGkqnCJy.js                              3.62 kB │ gzip:   1.66 kB
+dist/assets/ParentLessonsPage-BHBQKrPx.js                 4.02 kB │ gzip:   1.71 kB
+dist/assets/WeeklyReportSections-BXeZ4kK1.js              4.05 kB │ gzip:   1.34 kB
+dist/assets/InstitutionDashboard-DRyVZczN.js              4.61 kB │ gzip:   1.59 kB
+dist/assets/WeeklyReportsPage-CKkQn9gE.js                 4.67 kB │ gzip:   2.02 kB
+dist/assets/SupportPage-CLdWl5c0.js                       4.85 kB │ gzip:   1.88 kB
+dist/assets/SchoolAccountSetupPage-CgAy-gTz.js            4.91 kB │ gzip:   2.03 kB
+dist/assets/ChildProgressPage-DDZ54zsa.js                 4.92 kB │ gzip:   1.88 kB
+dist/assets/LoginPage-B-tuErjN.js                         4.95 kB │ gzip:   2.00 kB
+dist/assets/CareTeamPage-CWieTYW9.js                      5.01 kB │ gzip:   1.84 kB
+dist/assets/NotificationsPage-DZiwDvT7.js                 5.60 kB │ gzip:   2.25 kB
+dist/assets/RegisterPage-DCpxWKRA.js                      6.01 kB │ gzip:   1.98 kB
+dist/assets/InstitutionSubstitutionsPage-BhE0Zzke.js      6.04 kB │ gzip:   2.19 kB
+dist/assets/ConsultationsPage-DwFwL1iK.js                 6.05 kB │ gzip:   2.20 kB
+dist/assets/SpecialistDashboard-D7AYEE4w.js               6.84 kB │ gzip:   2.38 kB
+dist/assets/accessibility-UB2Sjsff.js                     6.87 kB │ gzip:   2.23 kB
+dist/assets/VerificationsPage-DXIHD9rB.js                 6.94 kB │ gzip:   2.06 kB
+dist/assets/CaseDiscussionsPage-WcNJmVYT.js               6.96 kB │ gzip:   2.45 kB
+dist/assets/AboutPage-FqBzl6uU.js                         7.13 kB │ gzip:   2.49 kB
+dist/assets/VerifyIdentityPage-75hjxs6I.js                7.25 kB │ gzip:   2.65 kB
+dist/assets/institutions-0A_-LLsU.js                      7.28 kB │ gzip:   1.91 kB
+dist/assets/LearningSupportPage-C7l_F6Fd.js               7.60 kB │ gzip:   2.43 kB
+dist/assets/ChildLessonsPage-1HQUJ0-N.js                  7.68 kB │ gzip:   3.24 kB
+dist/assets/MinistryPage-BDl28-RS.js                      7.91 kB │ gzip:   2.63 kB
+dist/assets/LessonFormModal-34y8hnxX.js                   7.93 kB │ gzip:   2.91 kB
+dist/assets/ConversationsPage-BLVbqooE.js                 8.33 kB │ gzip:   3.01 kB
+dist/assets/jsx-runtime-CU_pEDDh.js                       8.44 kB │ gzip:   3.21 kB
+dist/assets/ChildrenPage-BC6ybi2U.js                      8.81 kB │ gzip:   2.73 kB
+dist/assets/ChildFormPage-Bjz8_hum.js                     9.02 kB │ gzip:   2.89 kB
+dist/assets/SpecialistWorkflowPage-CZXYLz_d.js            9.85 kB │ gzip:   2.94 kB
+dist/assets/ChildDetailsPage-C-Cdzghc.js                 10.24 kB │ gzip:   3.51 kB
+dist/assets/SchoolProvisionForm-dqbp146a.js              10.42 kB │ gzip:   3.69 kB
+dist/assets/LessonsPage-DbaLSFJT.js                      10.60 kB │ gzip:   4.02 kB
+dist/assets/ProfilePage-B1_WEZ3X.js                      10.73 kB │ gzip:   3.76 kB
+dist/assets/AccessibilityPage-ByGMnTdo.js                11.08 kB │ gzip:   4.62 kB
+dist/assets/HomeworkPage-CH0aqVNg.js                     11.34 kB │ gzip:   3.72 kB
+dist/assets/InstitutionStudentsPage-BXiRl0-4.js          12.05 kB │ gzip:   3.35 kB
+dist/assets/TeacherDashboard-DM1QvwkP.js                 13.71 kB │ gzip:   4.60 kB
+dist/assets/InstitutionAttendancePage-DSuyyYtF.js        14.69 kB │ gzip:   4.37 kB
+dist/assets/ParentDashboard-zv0_Vpo1.js                  14.94 kB │ gzip:   4.86 kB
+dist/assets/InstitutionSchoolsPage-YZXefJzV.js           15.14 kB │ gzip:   4.44 kB
+dist/assets/EducationalGamesPage-BygHs_BX.js             16.32 kB │ gzip:   6.19 kB
+dist/assets/AdminPage-DUELdT-c.js                        16.42 kB │ gzip:   5.05 kB
+dist/assets/InstitutionTimetablePage-CD4mmU0o.js         21.89 kB │ gzip:   5.77 kB
+dist/assets/InstitutionReportsPage-DsUhfZem.js           26.06 kB │ gzip:   5.80 kB
+dist/assets/InstitutionTeachersPage-BSaI5gF1.js          33.79 kB │ gzip:   8.33 kB
+dist/assets/SchoolWorkspacePage--Gikm8zx.js              69.62 kB │ gzip:  19.41 kB
+dist/assets/index-BdbMR4S9.js                           350.78 kB │ gzip: 108.20 kB
+
+✓ built in 1.21s

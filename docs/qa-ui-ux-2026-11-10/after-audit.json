@@ -1,0 +1,1120 @@
+[
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "تعليم دامج للطلبةذوي الهمم",
+      "التعليم الدامج هو محور المنصة",
+      "لمن صُممت EduBridge؟",
+      "خدمات EduBridge",
+      "مميزات المنصة",
+      "مساعدك التعليمي نور",
+      "كيف تبدأ؟",
+      "آراء المجتمع"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/about",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "تعليم دامج للطلبة ذوي الهمم وصعوبات التعلّم",
+      "التعلّم لا يجب أن يكون قالباً واحداً للجميع",
+      "مبادئ نبني عليها EduBridge",
+      "رحلة واحدة بدلاً من أدوات متفرقة",
+      "نحو تعليم أكثر شمولاً، خطوة بخطوة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/login",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "أهلاً بعودتك"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/register",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "ابدأ رحلتك مع EduBridge"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/forgot-password",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "استعادة كلمة المرور"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/reset-password",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "تعيين كلمة مرور جديدة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school-account/setup",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "تفعيل الحساب الرسمي للمدرسة",
+      "إعادة إرسال رابط التفعيل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school/invitation",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "إنشاء حساب مدير المدرسة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/privacy.html",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "سياسة الخصوصية — EduBridge",
+      "البيانات التي قد نجمعها",
+      "الأذونات على الجهاز",
+      "كيف نستخدم البيانات",
+      "مشاركة البيانات",
+      "حماية البيانات",
+      "الاحتفاظ والحذف",
+      "الأطفال",
+      "حقوقك",
+      "التحديثات",
+      "التواصل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/terms.html",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "شروط استخدام EduBridge",
+      "الحساب وصلاحيات الوصول",
+      "استخدام المحتوى والتواصل",
+      "المساعد والدعم التعليمي",
+      "الخصوصية وحذف الحساب",
+      "الملاحظات والتقييمات",
+      "التواصل والتحديثات"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/delete-account.html",
+    "width": 320,
+    "status": 200,
+    "viewport": 320,
+    "scroll": 320,
+    "headings": [
+      "حذف حساب EduBridge والبيانات",
+      "الحذف من داخل التطبيق",
+      "ما الذي يُحذف؟",
+      "ما الذي قد نحتفظ به؟",
+      "إذا تعذر الدخول إلى الحساب"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "تعليم دامج للطلبةذوي الهمم",
+      "التعليم الدامج هو محور المنصة",
+      "لمن صُممت EduBridge؟",
+      "خدمات EduBridge",
+      "مميزات المنصة",
+      "مساعدك التعليمي نور",
+      "كيف تبدأ؟",
+      "آراء المجتمع"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/about",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "تعليم دامج للطلبة ذوي الهمم وصعوبات التعلّم",
+      "التعلّم لا يجب أن يكون قالباً واحداً للجميع",
+      "مبادئ نبني عليها EduBridge",
+      "رحلة واحدة بدلاً من أدوات متفرقة",
+      "نحو تعليم أكثر شمولاً، خطوة بخطوة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/login",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "أهلاً بعودتك"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/register",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "ابدأ رحلتك مع EduBridge"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/forgot-password",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "استعادة كلمة المرور"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/reset-password",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "تعيين كلمة مرور جديدة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school-account/setup",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "تفعيل الحساب الرسمي للمدرسة",
+      "إعادة إرسال رابط التفعيل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school/invitation",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "إنشاء حساب مدير المدرسة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/privacy.html",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "سياسة الخصوصية — EduBridge",
+      "البيانات التي قد نجمعها",
+      "الأذونات على الجهاز",
+      "كيف نستخدم البيانات",
+      "مشاركة البيانات",
+      "حماية البيانات",
+      "الاحتفاظ والحذف",
+      "الأطفال",
+      "حقوقك",
+      "التحديثات",
+      "التواصل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/terms.html",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "شروط استخدام EduBridge",
+      "الحساب وصلاحيات الوصول",
+      "استخدام المحتوى والتواصل",
+      "المساعد والدعم التعليمي",
+      "الخصوصية وحذف الحساب",
+      "الملاحظات والتقييمات",
+      "التواصل والتحديثات"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/delete-account.html",
+    "width": 390,
+    "status": 200,
+    "viewport": 390,
+    "scroll": 390,
+    "headings": [
+      "حذف حساب EduBridge والبيانات",
+      "الحذف من داخل التطبيق",
+      "ما الذي يُحذف؟",
+      "ما الذي قد نحتفظ به؟",
+      "إذا تعذر الدخول إلى الحساب"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "تعليم دامج للطلبةذوي الهمم",
+      "التعليم الدامج هو محور المنصة",
+      "لمن صُممت EduBridge؟",
+      "خدمات EduBridge",
+      "مميزات المنصة",
+      "مساعدك التعليمي نور",
+      "كيف تبدأ؟",
+      "آراء المجتمع"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/about",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "تعليم دامج للطلبة ذوي الهمم وصعوبات التعلّم",
+      "التعلّم لا يجب أن يكون قالباً واحداً للجميع",
+      "مبادئ نبني عليها EduBridge",
+      "رحلة واحدة بدلاً من أدوات متفرقة",
+      "نحو تعليم أكثر شمولاً، خطوة بخطوة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/login",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "أهلاً بعودتك"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/register",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "ابدأ رحلتك مع EduBridge"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/forgot-password",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "استعادة كلمة المرور"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/reset-password",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "تعيين كلمة مرور جديدة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school-account/setup",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "تفعيل الحساب الرسمي للمدرسة",
+      "إعادة إرسال رابط التفعيل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school/invitation",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "إنشاء حساب مدير المدرسة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/privacy.html",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "سياسة الخصوصية — EduBridge",
+      "البيانات التي قد نجمعها",
+      "الأذونات على الجهاز",
+      "كيف نستخدم البيانات",
+      "مشاركة البيانات",
+      "حماية البيانات",
+      "الاحتفاظ والحذف",
+      "الأطفال",
+      "حقوقك",
+      "التحديثات",
+      "التواصل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/terms.html",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "شروط استخدام EduBridge",
+      "الحساب وصلاحيات الوصول",
+      "استخدام المحتوى والتواصل",
+      "المساعد والدعم التعليمي",
+      "الخصوصية وحذف الحساب",
+      "الملاحظات والتقييمات",
+      "التواصل والتحديثات"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/delete-account.html",
+    "width": 720,
+    "status": 200,
+    "viewport": 720,
+    "scroll": 720,
+    "headings": [
+      "حذف حساب EduBridge والبيانات",
+      "الحذف من داخل التطبيق",
+      "ما الذي يُحذف؟",
+      "ما الذي قد نحتفظ به؟",
+      "إذا تعذر الدخول إلى الحساب"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "تعليم دامج للطلبةذوي الهمم",
+      "التعليم الدامج هو محور المنصة",
+      "لمن صُممت EduBridge؟",
+      "خدمات EduBridge",
+      "مميزات المنصة",
+      "مساعدك التعليمي نور",
+      "كيف تبدأ؟",
+      "آراء المجتمع"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/about",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "تعليم دامج للطلبة ذوي الهمم وصعوبات التعلّم",
+      "التعلّم لا يجب أن يكون قالباً واحداً للجميع",
+      "مبادئ نبني عليها EduBridge",
+      "رحلة واحدة بدلاً من أدوات متفرقة",
+      "نحو تعليم أكثر شمولاً، خطوة بخطوة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/login",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "أهلاً بعودتك"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/register",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "ابدأ رحلتك مع EduBridge"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "auth-page-decor auth-page-decor-ring auth-page-decor-ring-a"
+      },
+      {
+        "tag": "DIV",
+        "cls": "auth-page-decor auth-page-decor-ring auth-page-decor-ring-b"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/forgot-password",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "استعادة كلمة المرور"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/reset-password",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "تعيين كلمة مرور جديدة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school-account/setup",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "تفعيل الحساب الرسمي للمدرسة",
+      "إعادة إرسال رابط التفعيل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school/invitation",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "إنشاء حساب مدير المدرسة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/privacy.html",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "سياسة الخصوصية — EduBridge",
+      "البيانات التي قد نجمعها",
+      "الأذونات على الجهاز",
+      "كيف نستخدم البيانات",
+      "مشاركة البيانات",
+      "حماية البيانات",
+      "الاحتفاظ والحذف",
+      "الأطفال",
+      "حقوقك",
+      "التحديثات",
+      "التواصل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/terms.html",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "شروط استخدام EduBridge",
+      "الحساب وصلاحيات الوصول",
+      "استخدام المحتوى والتواصل",
+      "المساعد والدعم التعليمي",
+      "الخصوصية وحذف الحساب",
+      "الملاحظات والتقييمات",
+      "التواصل والتحديثات"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/delete-account.html",
+    "width": 1280,
+    "status": 200,
+    "viewport": 1280,
+    "scroll": 1280,
+    "headings": [
+      "حذف حساب EduBridge والبيانات",
+      "الحذف من داخل التطبيق",
+      "ما الذي يُحذف؟",
+      "ما الذي قد نحتفظ به؟",
+      "إذا تعذر الدخول إلى الحساب"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "تعليم دامج للطلبةذوي الهمم",
+      "التعليم الدامج هو محور المنصة",
+      "لمن صُممت EduBridge؟",
+      "خدمات EduBridge",
+      "مميزات المنصة",
+      "مساعدك التعليمي نور",
+      "كيف تبدأ؟",
+      "آراء المجتمع"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "footer-decor footer-decor-a"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/about",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "تعليم دامج للطلبة ذوي الهمم وصعوبات التعلّم",
+      "التعلّم لا يجب أن يكون قالباً واحداً للجميع",
+      "مبادئ نبني عليها EduBridge",
+      "رحلة واحدة بدلاً من أدوات متفرقة",
+      "نحو تعليم أكثر شمولاً، خطوة بخطوة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/login",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "أهلاً بعودتك"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/register",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "ابدأ رحلتك مع EduBridge"
+    ],
+    "brokenAnchors": [],
+    "overflow": [
+      {
+        "tag": "DIV",
+        "cls": "auth-page-decor auth-page-decor-ring auth-page-decor-ring-a"
+      },
+      {
+        "tag": "DIV",
+        "cls": "auth-page-decor auth-page-decor-ring auth-page-decor-ring-b"
+      }
+    ],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/forgot-password",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "معاً، خطوة نحو تعلّم أفضل",
+      "استعادة كلمة المرور"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/reset-password",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "تعيين كلمة مرور جديدة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school-account/setup",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "تفعيل الحساب الرسمي للمدرسة",
+      "إعادة إرسال رابط التفعيل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/school/invitation",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "إنشاء حساب مدير المدرسة"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/privacy.html",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "سياسة الخصوصية — EduBridge",
+      "البيانات التي قد نجمعها",
+      "الأذونات على الجهاز",
+      "كيف نستخدم البيانات",
+      "مشاركة البيانات",
+      "حماية البيانات",
+      "الاحتفاظ والحذف",
+      "الأطفال",
+      "حقوقك",
+      "التحديثات",
+      "التواصل"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/terms.html",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "شروط استخدام EduBridge",
+      "الحساب وصلاحيات الوصول",
+      "استخدام المحتوى والتواصل",
+      "المساعد والدعم التعليمي",
+      "الخصوصية وحذف الحساب",
+      "الملاحظات والتقييمات",
+      "التواصل والتحديثات"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  },
+  {
+    "origin": "http://127.0.0.1:4176",
+    "path": "/delete-account.html",
+    "width": 1920,
+    "status": 200,
+    "viewport": 1920,
+    "scroll": 1920,
+    "headings": [
+      "حذف حساب EduBridge والبيانات",
+      "الحذف من داخل التطبيق",
+      "ما الذي يُحذف؟",
+      "ما الذي قد نحتفظ به؟",
+      "إذا تعذر الدخول إلى الحساب"
+    ],
+    "brokenAnchors": [],
+    "overflow": [],
+    "errors": [],
+    "failed": [],
+    "axe": []
+  }
+]

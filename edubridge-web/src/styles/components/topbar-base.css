@@ -21,6 +21,7 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
+    text-decoration: none;
     flex-shrink: 0;
 }
 .topbar-menu {
@@ -410,4 +411,9 @@
 @keyframes edubridge-actions-enter {
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+.topbar-brand:focus-visible {
+    outline: 3px solid var(--brand-blue);
+    outline-offset: 3px;
 }

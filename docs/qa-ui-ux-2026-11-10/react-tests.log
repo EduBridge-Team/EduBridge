@@ -1,0 +1,164 @@
+
+> edubridge-web@0.0.0 test
+> node --test tests/*.test.mjs
+
+✔ lesson categories remain truthful and consistent across search and filtering (16.646576ms)
+✔ missing teacher data does not contradict the assignment label (1.696516ms)
+✔ workflow values display Arabic labels without changing stored enum values (1.122162ms)
+✔ workflow controls render visible associated labels and child links are keyboard focusable (3388.831038ms)
+✔ admin child counts use real parent relations and include every assigned specialist (7.672985ms)
+✔ closed support tickets do not offer close or in-progress actions (956.091713ms)
+✔ auth pages do not lock the document viewport on desktop (5.518862ms)
+✔ auth forms retain natural page scrolling across breakpoints (2.832133ms)
+✔ switching conversations rejects late responses and cancelled requests (6.89384ms)
+✔ the newest request for one conversation wins (1.070027ms)
+✔ Google SDK loads once, retries after failure, and reuses the ready SDK (8.443757ms)
+✔ Google signup keeps a public role selector and forwards it to the API (68.969384ms)
+✔ cross-page destination waits for section mount and clears sticky header (7.744849ms)
+✔ repeated section navigation scrolls again and respects reduced motion (1.041091ms)
+✔ abandoned navigation cancels retries and missing targets have a bounded wait (5.23612ms)
+✔ encoded section IDs work and malformed or empty hashes do nothing (1.018156ms)
+✔ all three section destinations return to the top of home and about (3.249762ms)
+✔ first impression clearly names disability-focused inclusive education (6.724806ms)
+✔ differentiators specify adaptive learning and team support (2.158804ms)
+✔ saving existing grades and editing only feedback send the grade actually displayed (6.427234ms)
+✔ missing, cleared, invalid and out-of-range grades cannot be sent as zero or null (1.115514ms)
+✔ homework submission choices contain only owned, assigned children (9.111232ms)
+WebSocket server error: Port 24678 is already in use
+7:11:37 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+7:11:38 PM [vite] (client) [optimizer] scanning dependencies...
+✔ parent sees zero grades and feedback, pending status, and no other child submissions or grading controls (5312.324102ms)
+7:11:41 PM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia admission access history is fetched only on click for a specific request (5.106587ms)
+✔ Jabalia admission approval is disabled only when server sets explicit review requirement (3.700184ms)
+✔ safe evidence metadata omits sensitive paths and never implies an admission decision (7.576154ms)
+✔ all five categories may be present without authorizing enrollment (1.00482ms)
+✔ school enrollment panel hides generic final decisions for Jabalia and uses on-demand evidence (2.107296ms)
+✔ Jabalia intake journal is on-demand, request scoped and never accepts admissions (10.623869ms)
+✔ Jabalia inbox hides all final decisions until separate reviews exist (1.084182ms)
+✔ Jabalia school readiness remains on demand and never shows approval buttons (6.261971ms)
+WebSocket server error: Port 24678 is already in use
+7:11:39 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia attendance change history is on-demand and scoped (4054.769895ms)
+7:11:41 PM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia attendance report explains that only saved daily rolls count (4.704458ms)
+WebSocket server error: Port 24678 is already in use
+7:11:39 PM [vite] (client) [optimizer] scanning dependencies...
+7:11:43 PM [vite] (client) [optimizer] bundling dependencies...
+✔ contract readiness is a private Jabalia-only institution report (6857.08661ms)
+✔ Jabalia homeroom UI is teacher-scoped and never sends arbitrary school or teacher IDs (5.788715ms)
+WebSocket server error: Port 24678 is already in use
+7:11:39 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia institution-only staff attendance is a recorded-days report (5001.983918ms)
+7:11:42 PM [vite] (client) [optimizer] bundling dependencies...
+WebSocket server error: Port 24678 is already in use
+7:11:40 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia reports expose internal-only success story controls and hide them elsewhere (5953.888839ms)
+7:11:43 PM [vite] (client) [optimizer] bundling dependencies...
+WebSocket server error: Port 24678 is already in use
+7:11:41 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia supervision panel presents record and follow-up controls (5871.911219ms)
+✔ follow-up notes are stored and submitted per visit (92.620306ms)
+7:11:43 PM [vite] (client) [optimizer] bundling dependencies...
+7:11:44 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia institution activity report is private and never includes document access controls (3614.438907ms)
+7:11:45 PM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia teacher contract period records use private institution-scoped API and immutable renewal UX (15.06522ms)
+WebSocket server error: Port 24678 is already in use
+7:11:45 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia contract period panel renders only in the institution teacher document context (4995.531454ms)
+7:11:48 PM [vite] (client) [optimizer] bundling dependencies...
+7:11:46 PM [vite] (client) [optimizer] scanning dependencies...
+✔ teacher document access audit is gated to Jabalia and does not contain file metadata (4988.168125ms)
+7:11:49 PM [vite] (client) [optimizer] bundling dependencies...
+✔ teacher personnel document UI uses only a safe attachment flag (22.097678ms)
+✔ metadata-minimized teacher document controller never directly serializes raw document table rows (1.327731ms)
+✔ default Jabalia school week reports 12 defined quota slots, 13 unspecified, and no invented lessons (11.284289ms)
+✔ capacity respects changed local days/periods; flags duplicate slots and overbooked quotas (3.99764ms)
+✔ does not guess the current academic year if no current flag exists (5.128691ms)
+WebSocket server error: Port 24678 is already in use
+7:11:47 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia quota coverage is read-only and integrated with actual school settings (3686.586916ms)
+✔ late page or search responses cannot overwrite a newer request or an unmounted view (5.149397ms)
+✔ failed page retains last good data and retries the requested page (6.235257ms)
+WebSocket server error: Port 24678 is already in use
+(node:30238) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+7:11:48 PM [vite] (client) [optimizer] scanning dependencies...
+✔ API preserves legacy lists and encodes explicit page and filter requests (5288.422325ms)
+WebSocket server error: Port 24678 is already in use
+7:11:51 PM [vite] (client) [optimizer] scanning dependencies...
+✔ parent statistics stay global, search stays mounted during loading, and pager buttons have correct boundaries (2157.898502ms)
+✔ Noor offers a direct continuation for token-limited text replies (4.624807ms)
+✔ image replies retain their provenance instead of offering text-only image continuation (5.952717ms)
+✔ Noor shortcuts wrap into a two-column grid on phones (25.657525ms)
+✔ Noor input remains shrinkable and shortcuts remain scrollable on very narrow screens (1.769997ms)
+✔ overlapping history pages stay unique, ordered, and preserve local reads (16.882831ms)
+✔ global unread badge and empty final pages survive parsing; malformed cursor cannot truncate silently (2.197244ms)
+WebSocket server error: Port 24678 is already in use
+(node:30281) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+7:11:48 PM [vite] (client) [optimizer] scanning dependencies...
+✔ notifications request bounded pages with explicit history/delta cursors using the web session cookie (4622.466781ms)
+✔ private downloads follow the configured API origin and prefix (25.562431ms)
+✔ active uploaded content is rendered as text rather than executable same-origin HTML (36.785903ms)
+✔ signed video opts into CORS for captions while external legacy video keeps its behavior (32.941324ms)
+✔ portal role permissions match the API roles shared with mobile (6.30318ms)
+(node:30402) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+7:11:51 PM [vite] (client) [optimizer] scanning dependencies...
+7:11:53 PM [vite] (client) [optimizer] bundling dependencies...
+✔ public and auth pages resolve lazy modules on direct entry (6515.394273ms)
+✔ each role dashboard resolves inside its existing portal shell (910.980894ms)
+✔ protected pages still reject guests before resolving their lazy content (24.610758ms)
+✔ unverified roles see identity instructions on every private route without portal content (228.029235ms)
+✔ specialist can open parent guide authoring and text conversation (165.200776ms)
+✔ child adaptation entries are available only to specialists (83.782287ms)
+✔ specialist weekly progress is separate from read-only teacher reports (103.250431ms)
+✔ each role menu links only to authorized portal pages (4.302517ms)
+✔ admin has institution and ministry creation inside account management (121.797199ms)
+✔ parent portal works without general identity approval (566.35654ms)
+✔ lesson authoring is a standalone page with video controls for teaching roles (128.948684ms)
+✔ institution sidebar exposes operational modules and tracks current section (3.349399ms)
+✔ institution hostname resolver does not mistake the main domain for a tenant (1.24972ms)
+✔ public school password setup route is reachable without an existing session (41.500971ms)
+✔ school creation and director replacement use the identity API and preserve errors (54.665865ms)
+(node:30471) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ school operation forms accept valid references and omit client authority and empty options (8.000381ms)
+✔ school forms preserve explicit false and require a real destination selection (1.375072ms)
+WebSocket server error: Port 24678 is already in use
+7:11:52 PM [vite] (client) [optimizer] scanning dependencies...
+✔ school provisioning and operation forms render in both languages without school-login passwords (4226.085943ms)
+7:11:53 PM [vite] (client) [optimizer] bundling dependencies...
+✔ all school promotion decisions use one complete snapshot and server confirmation (10.371703ms)
+✔ no partial, repeated, invalid or cross-school decision can be approved locally (3.067838ms)
+✔ web server sends the expected baseline security headers (6.580721ms)
+✔ CSP allows required Google Identity resources without opening script-src globally (14.305ms)
+✔ CSP keeps stylesheet loading strict while permitting React style attributes (3.428855ms)
+✔ CSP does not allow arbitrary HTTPS image or media origins (4.490884ms)
+✔ HTML and SPA fallback responses are not stored by caches (1.03469ms)
+✔ static content only accepts GET and HEAD (0.759947ms)
+✔ compression negotiates supported formats and quality preferences (8.521178ms)
+✔ identity approval is authoritative and email approval never unlocks private pages (5.778325ms)
+✔ new activated school mailbox bypasses personal ID verification only after setup (0.93688ms)
+✔ admin-created ministry and institution accounts do not require identity verification (0.886848ms)
+✔ assigned child scope supports all API representations and normalized IDs (1.89009ms)
+✔ web defaults and every disability recommendation match the mobile shared model (165.008176ms)
+✔ picture messages remain in the normal conversation draft and respect the API limit (3.652077ms)
+✔ parent access does not imply identity approval; queue excludes occupied specialties (1.276293ms)
+✔ Arabic commands prioritize specific phrases and normalize speech spelling (47.655229ms)
+✔ recognition executes only one final result and ignores cancelled sessions (3.438123ms)
+✔ microphone permission failure allows retry and surfaces an actionable message (1.614678ms)
+✔ web auth no longer persists JWTs in localStorage (5.359342ms)
+✔ web API requests use same-origin credentials for HttpOnly session cookie (1.406353ms)
+✔ first-party web requests identify themselves so login JSON omits the JWT (6.857637ms)
+✔ logout asks the API to expire the HttpOnly session cookie (4.090136ms)
+ℹ tests 105
+ℹ suites 0
+ℹ pass 105
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22664.193705

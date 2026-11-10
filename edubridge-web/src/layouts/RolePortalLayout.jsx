@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Bell, ChevronDown, Eye, EyeOff, Menu, Moon, Search, Sun, X } from 'lucide-react'
 import {
@@ -11,6 +11,7 @@ import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
 import { useUserSettings } from '../userSettings'
+import { useMobileNavigation } from '../components/useMobileNavigation'
 import BrandLogo from '../components/BrandLogo/BrandLogo'
 import { activeSection, createRoleNavItems } from './rolePortalNavigation'
 
@@ -27,6 +28,12 @@ export default function RolePortalLayout({ children }) {
   const profileInitial = String(user?.name || roleName || '؟').trim().charAt(0) || '؟'
 
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const drawerRef = useRef(null)
+  const menuTriggerRef = useRef(null)
+  const mobile = useMobileNavigation({
+    open: drawerOpen, setOpen: setDrawerOpen, panelRef: drawerRef, triggerRef: menuTriggerRef,
+    query: '(max-width: 900px)', focusOnOpen: true,
+  })
   const [unread, setUnread] = useState(0)
   const [childrenList, setChildrenList] = useState([])
   const [conversationCount, setConversationCount] = useState(0)
@@ -157,6 +164,9 @@ export default function RolePortalLayout({ children }) {
       )}
 
       <aside
+        id="portal-navigation"
+        ref={drawerRef}
+        inert={mobile && !drawerOpen}
         className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`}
         data-nav-density={navDensity}
         aria-label={`قائمة ${roleName}`}
@@ -236,7 +246,7 @@ export default function RolePortalLayout({ children }) {
 
       <section className="pp-body">
         <header className="pp-toolbar">
-          <button className="pp-menu-button" onClick={() => setDrawerOpen(true)} aria-label="فتح القائمة">
+          <button ref={menuTriggerRef} aria-controls="portal-navigation" aria-expanded={drawerOpen} className="pp-menu-button" onClick={() => setDrawerOpen(true)} aria-label="فتح القائمة">
             <Menu size={21} />
           </button>
 

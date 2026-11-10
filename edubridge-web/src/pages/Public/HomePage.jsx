@@ -94,7 +94,7 @@ function InstitutionHome({ institution, loggedIn, navigate, user }) {
             <button className="btn hero-primary" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/login')}>
               <LogIn size={18} /> {loggedIn ? 'الانتقال إلى لوحتي' : 'تسجيل الدخول'}
             </button>
-            <a className="btn outline" href="#institution-services">استكشف النظام <ArrowLeft size={18} /></a>
+            <a className="btn outline" href="#services">استكشف النظام <ArrowLeft size={18} /></a>
           </div>
 
           <div className="institution-home-trust">
@@ -119,14 +119,14 @@ function InstitutionHome({ institution, loggedIn, navigate, user }) {
         </div>
       </section>
 
-      <section className="institution-home-section" id="institution-services">
+      <section className="institution-home-section" id="services">
         <div className="institution-home-section-heading">
           <span>نظام المدرسة</span>
           <h2>كل ما تحتاجه المؤسسة في مكان واحد</h2>
           <p>أدوات مترابطة تساعد المدرسة على إدارة اليوم الدراسي وتطوير تجربة التعلم البصري.</p>
         </div>
 
-        <div className="institution-home-grid">
+        <div className="institution-home-grid" id="features">
           {INSTITUTION_FEATURES.map(({ Icon, title, text }) => (
             <article className="institution-home-feature" key={title}>
               <div className="institution-home-feature-icon"><Icon size={24} /></div>

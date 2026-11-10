@@ -42,10 +42,10 @@ export default function ResetPasswordPage() {
         </div>
         <div className="auth-card auth-card-branded">
           <BrandLogo className="auth-brand-logo" />
-          <h2 className="auth-form-title">تعيين كلمة مرور جديدة</h2>
+          <h1 className="auth-form-title">تعيين كلمة مرور جديدة</h1>
           {invalidLink ? (
             <>
-              <div className="error-box">رابط الاستعادة غير مكتمل.</div>
+              <div className="error-box" role="alert">رابط الاستعادة غير مكتمل.</div>
               <Link className="link-btn" to="/forgot-password">اطلب رابطاً جديداً</Link>
             </>
           ) : (
@@ -54,7 +54,7 @@ export default function ResetPasswordPage() {
               <input id="new-password" type="password" minLength={8} maxLength={128} value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" />
               <label htmlFor="confirm-password">تأكيد كلمة المرور</label>
               <input id="confirm-password" type="password" minLength={8} maxLength={128} value={confirm} onChange={(e) => setConfirm(e.target.value)} required autoComplete="new-password" />
-              {error && <div className="error-box">{error}</div>}
+              {error && <div className="error-box" role="alert">{error}</div>}
               <button className="btn full" disabled={loading}>{loading ? 'جارِ الحفظ...' : 'حفظ كلمة المرور'}</button>
             </form>
           )}

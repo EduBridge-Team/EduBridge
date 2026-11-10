@@ -75,3 +75,21 @@
     object-fit: contain;
   }
 }
+
+/* Text enlargement may require several navigation rows without a narrower viewport. */
+.topbar.topbar.topbar-guest {
+  height: auto;
+  max-height: none;
+}
+.topbar-guest .guest-nav {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.topbar-guest .guest-nav a {
+  white-space: normal;
+  text-align: center;
+}
+.topbar.topbar.topbar-guest .guest-actions .topbar-btn {
+  height: auto;
+  white-space: normal;
+}
