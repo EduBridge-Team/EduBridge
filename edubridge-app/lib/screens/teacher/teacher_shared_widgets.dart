@@ -11,7 +11,7 @@ Widget _buildTeacherHeader({
 }) {
 
   return BrandDashboardHeader(child: Row(children: [
-Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.teacherRole, subtitle: switch (tabIndex) { 0 => Localizations.localeOf(context).languageCode == 'en' ? 'Your assigned sections and their students' : 'شُعبك المكلّف بها وطلاب كل شعبة', 1 => context.l10n.teacherLessonsDescription, _ => context.l10n.teacherHomeworkDescription })),
+Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.teacherRole, subtitle: switch (tabIndex) { 0 => Localizations.localeOf(context).languageCode == 'en' ? 'Your assigned sections and their students' : 'شُعبك المكلّف بها وطلاب كل شعبة', 1 => context.l10n.teacherLessonsDescription, 2 => context.l10n.teacherHomeworkDescription, _ => context.l10n.caseStudies })),
 const SizedBox(width: 8),
 DashboardHeaderActions(
                   actions: [
