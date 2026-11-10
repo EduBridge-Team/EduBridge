@@ -93,6 +93,7 @@ try {
       await trigger.click()
       const panel = page.locator('#topbar-menu')
       const first = panel.locator('a').first()
+      assert.equal(await panel.evaluate(element => getComputedStyle(element).transitionDuration), '0s', 'Reduced-motion menu must be immediately focusable')
       await assertFocused(trigger)
       await page.keyboard.press('Tab')
       await assertFocused(first)
