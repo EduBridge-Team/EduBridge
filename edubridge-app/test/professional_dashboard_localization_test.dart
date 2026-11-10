@@ -37,6 +37,9 @@ MockClient _client({bool hasLesson = false, bool verified = true}) => MockClient
   if (request.url.path.endsWith('/me')) {
     return _response({'user': {'id': 2, 'specialty': 'educational'}});
   }
+  if (request.url.path.endsWith('/case-discussions')) {
+    return _response({'discussions': []});
+  }
   return _response({
     'children': [], 'users': [], 'disability_types': [], 'homeworks': [],
     'lessons': hasLesson ? [{
@@ -65,8 +68,13 @@ void main() {
   for (final language in ['ar', 'en']) {
     for (final scale in [1.0, 2.0]) {
       for (final teacher in [true, false]) {
-        for (final tab in teacher ? [0, 1, 2] : [0, 1]) {
+        for (final tab in teacher ? [0, 1, 2, 3] : [0, 1]) {
           testWidgets('${teacher ? 'teacher' : 'specialist'} tab $tab in $language at $scale', (tester) async {
+            SharedPreferences.setMockInitialValues({
+              'userId': 2,
+              'name': 'ليان',
+              'role': teacher ? 'teacher' : 'specialist',
+            });
             await http.runWithClient(() async {
               await _open(tester, teacher ? TeacherScreen(initialTab: tab)
                   : SpecialistDashboardScreen(initialTab: tab), language, scale);
@@ -79,6 +87,9 @@ void main() {
                 expect(find.text(strings.noLessonsYet), findsOneWidget);
               } else if (teacher && tab == 2) {
                 expect(find.text(strings.noHomeworkInCategory), findsOneWidget);
+              } else if (teacher && tab == 3) {
+                expect(find.text(strings.caseListEmpty), findsOneWidget);
+                expect(find.text(strings.caseStudies), findsWidgets);
               } else {
                 expect(find.text(teacher ? (language == 'en' ? 'No sections currently assigned to you.' : 'لا توجد شُعب مكلّف بها حاليًا.') : strings.noAssignedChildren), findsOneWidget);
               }

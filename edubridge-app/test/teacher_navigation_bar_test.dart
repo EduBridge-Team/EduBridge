@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('teacher navigation shows children lessons and homework', (tester) async {
+  testWidgets('teacher navigation shows children lessons homework and case studies', (tester) async {
     SharedPreferences.setMockInitialValues({'role': 'teacher'});
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(bottomNavigationBar: TeacherNavigationBar()),
@@ -13,6 +13,7 @@ void main() {
     expect(find.text('الأطفال'), findsOneWidget);
     expect(find.text('الدروس'), findsOneWidget);
     expect(find.text('الواجبات'), findsOneWidget);
+    expect(find.text('دراسة الحالة'), findsOneWidget);
   });
 
   testWidgets('specialist navigation shows students and lessons', (tester) async {
