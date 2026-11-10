@@ -1,0 +1,59 @@
+name: Jabalia synthetic historical-version safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/jabalia-synthetic-version-safety.yml'
+      - 'scripts/jabalia-synthetic-version-retention-drill.sh'
+      - 'docs/JABALIA_SYNTHETIC_HISTORICAL_VERSION_DRILL_2026_11_10.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-safety:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Require explicitly scoped non-production historical-version drill
+        run: |
+          set -euo pipefail
+          file=scripts/jabalia-synthetic-version-retention-drill.sh
+          bash -n "$file"
+          python3 - <<'PY'
+          from pathlib import Path
+          script = Path("scripts/jabalia-synthetic-version-retention-drill.sh").read_text()
+          required = (
+              'hostname -s', 'edubridge-backup', 'EUID',
+              '/dev/shm', 'RCLONE_CONFIG_BACKUPCRYPT_REMOTE',
+              'synthetic-recovery-drills/$RUN_ID', '--backup-dir "$VERSIONS"',
+              '--ignore-times', 'rclone check', '--download',
+              'ORIGINAL-A', 'UPDATED-B', 'trap cleanup EXIT',
+          )
+          for item in required:
+              if item not in script:
+                  raise SystemExit('BLOCKER: missing safety requirement: ' + item)
+          forbidden = (
+              'rclone sync', 'rclone delete', 'rclone purge',
+              '/srv/edubridge-backups/encrypted', 'docker exec',
+              'gdrive-offsite:EduBridge-Encrypted-Offsite-Backups/data',
+          )
+          for item in forbidden:
+              if item in script:
+                  raise SystemExit('BLOCKER: forbidden backup data operation')
+          print('PASS: historical-version script guards verified')
+          PY
+      - name: Fail closed on non backup host and missing explicit opt-in
+        run: |
+          set -euo pipefail
+          script=scripts/jabalia-synthetic-version-retention-drill.sh
+          if bash "$script" >/dev/null 2>&1; then
+            echo 'BLOCKER: missing --execute accepted' >&2; exit 1
+          fi
+          if bash "$script" --execute >/dev/null 2>&1; then
+            echo 'BLOCKER: CI host executed remote drill' >&2; exit 1
+          fi
+          echo 'PASS: no GitHub-hosted cloud writes'
