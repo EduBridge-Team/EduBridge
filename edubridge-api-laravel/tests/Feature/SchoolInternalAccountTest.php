@@ -120,6 +120,48 @@ class SchoolInternalAccountTest extends TestCase
         $this->assertSame(422, $this->createAccount(20, ['username'=>'student03','role'=>'student','child_id'=>101])->getStatusCode());
     }
 
+    public function test_staff_account_creation_supports_users_without_updated_at(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('updated_at');
+        });
+
+        $response = $this->createAccount(20, [
+            'name' => 'QA Staff', 'username' => 'qa-staff', 'role' => 'staff',
+        ]);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $data = $response->getData(true);
+        $this->assertSame('qa-staff@alpha.edubridge', $data['login_identifier']);
+        $this->assertSame('staff', $data['role']);
+
+        $user = DB::table('users')->where('id', $data['user_id'])->first();
+        $this->assertNotNull($user);
+        $this->assertNotNull($user->created_at);
+        $this->assertTrue(password_verify('StrongPassword123!', $user->password_hash));
+        $this->assertSame('verified', $user->verification_status);
+        $this->assertSame(10, (int) DB::table('school_internal_identities')
+            ->where('user_id', $user->id)->value('school_id'));
+    }
+
+    public function test_staff_account_creation_supports_users_without_any_timestamps(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['created_at', 'updated_at']);
+        });
+
+        $response = $this->createAccount(20, [
+            'name' => 'QA Staff', 'username' => 'qa-staff', 'role' => 'staff',
+        ]);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $data = $response->getData(true);
+        $this->assertSame('qa-staff@alpha.edubridge', $data['login_identifier']);
+        $this->assertSame('staff', DB::table('users')->where('id', $data['user_id'])->value('role'));
+        $this->assertSame(10, (int) DB::table('school_internal_identities')
+            ->where('user_id', $data['user_id'])->value('school_id'));
+    }
+
     public function test_duplicate_username_and_invalid_input_are_rejected(): void
     {
         $this->assertSame(201, $this->createAccount()->getStatusCode());
