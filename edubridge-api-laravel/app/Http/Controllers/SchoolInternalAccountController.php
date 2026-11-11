@@ -110,6 +110,8 @@ class SchoolInternalAccountController extends Controller
                 }
                 if (Schema::hasColumn('users', 'created_at')) {
                     $user['created_at'] = now();
+                }
+                if (Schema::hasColumn('users', 'updated_at')) {
                     $user['updated_at'] = now();
                 }
                 $userId = DB::table('users')->insertGetId($user);
