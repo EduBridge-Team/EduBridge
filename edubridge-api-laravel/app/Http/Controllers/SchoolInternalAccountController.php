@@ -42,9 +42,9 @@ class SchoolInternalAccountController extends Controller
             'username' => ['required', 'string', 'regex:/^[a-z0-9][a-z0-9._-]{1,63}$/D'],
             'role' => ['required', 'in:teacher,student,staff'],
             'create_new_student' => ['sometimes', 'boolean'],
-            'section_id' => ['required_if:create_new_student,true', 'nullable', 'integer', 'min:1'],
+            'section_id' => ['nullable', 'integer', 'min:1'],
             'birth_date' => ['nullable', 'date', 'before:today'],
-            'child_id' => ['required_if:role,student', 'nullable', 'integer', 'min:1'],
+            'child_id' => ['nullable', 'integer', 'min:1'],
             'password' => ['required', 'string', 'min:12', 'max:128'],
         ]);
         if ($validation->fails()) {
@@ -56,6 +56,7 @@ class SchoolInternalAccountController extends Controller
         if ($directStudent && ($input['role'] !== 'student' || isset($input['child_id']) || empty($input['section_id']))) {
             return response()->json(['error' => 'Invalid direct student admission'], 422);
         }
+        if (!$directStudent && (isset($input['section_id']) || isset($input['birth_date']))) return response()->json(['error' => 'Unexpected direct student fields'], 422);
         if ($input['role'] === 'student' && !$directStudent && empty($input['child_id'])) {
             return response()->json(['error' => 'Enrolled child required'], 422);
         }
