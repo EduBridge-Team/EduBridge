@@ -11,7 +11,7 @@ test('independent school student creation form renders required safeguards in Ar
     const { default: Panel } = await server.ssrLoadModule('/src/components/School/SchoolInternalAccountsPanel.jsx')
     for (const language of ['ar', 'en']) {
       globalThis.localStorage = { getItem: () => language }
-      const markup = renderToStaticMarkup(createElement(Panel, { schoolId: 10, initialRole: 'student' }))
+      const markup = renderToStaticMarkup(createElement(Panel, { schoolId: 10, initialRole: 'student', initialDomain: 'qa.edubridge' }))
       assert.match(markup, /name="|role="|type="password"/)
       assert.match(markup, /pattern="\[A-Za-z0-9\]/)
       assert.match(markup, /type="checkbox"/)
