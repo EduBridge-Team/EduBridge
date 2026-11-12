@@ -16,6 +16,30 @@ test('school forms preserve explicit false and require a real destination select
   assert.throws(() => schoolOperationPayload(transfer, { enrollment_id: 12, section_id: '' }))
 })
 
+test('school internal accounts form renders safely with direct-student UI available in the module', async () => {
+  const { createServer } = await import('vite')
+  const { createElement } = await import('react')
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const { readFile } = await import('node:fs/promises')
+  const source = await readFile(new URL('../src/components/School/SchoolInternalAccountsPanel.jsx', import.meta.url), 'utf8')
+  const previous = globalThis.localStorage
+  globalThis.localStorage = { getItem: () => 'ar' }
+  const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
+  try {
+    const { default: Accounts } = await server.ssrLoadModule('/src/components/School/SchoolInternalAccountsPanel.jsx')
+    const html = renderToStaticMarkup(createElement(Accounts, { schoolId: 2 }))
+    assert.match(html, /الحسابات الداخلية|Internal accounts/)
+    assert.match(source, /create_student: false/)
+    assert.match(source, /form\.role === 'student'/)
+    assert.match(source, /form\.create_student/)
+    assert.match(source, /birth_date/)
+    assert.match(source, /section_id/)
+    assert.match(source, /data\.academic_years/)
+    assert.match(source, /data\.school\?\.id/)
+    assert.match(source, /expected_school_id: schoolId/)
+  } finally { globalThis.localStorage = previous; await server.close() }
+})
+
 test('school provisioning and operation forms render in both languages without school-login passwords', async () => {
   const { createServer } = await import('vite')
   const { createElement } = await import('react')
