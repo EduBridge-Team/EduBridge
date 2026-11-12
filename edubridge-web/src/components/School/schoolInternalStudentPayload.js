@@ -10,7 +10,7 @@ export function internalAccountPayload(form) {
   if (!Number.isInteger(sectionId) || sectionId <= 0) {
     throw new Error('A current school section is required')
   }
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(form.birth_date || '')) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(form.birth_date || '')) {
     throw new Error('Student birth date is required')
   }
 
