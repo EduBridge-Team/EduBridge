@@ -178,7 +178,7 @@ class SchoolInternalAccountTest extends TestCase
             [...$payload, 'name'=>'Different student', 'username'=>'student-c'])->getStatusCode());
         $this->assertSame(1, DB::table('children')->count());
         $this->assertSame(1, DB::table('users')->count());
-        $this->assertSame(1, DB::table('student_enrollments')->where('status','active')->count());
+        $this->assertSame(1, DB::table('student_enrollments')->where('child_id', DB::table('children')->value('id'))->where('status', 'active')->count());
     }
 
     public function test_direct_student_creation_requires_data_and_director(): void
