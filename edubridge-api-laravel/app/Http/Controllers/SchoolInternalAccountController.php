@@ -23,9 +23,6 @@ class SchoolInternalAccountController extends Controller
         if ($schools->count() !== 1 || !$schools[0]->internal_domain_confirmed_at) return response()->json(['error' => 'Forbidden'], 403);
         $school = $schools[0];
         if ($school->organization_id !== null) return response()->json(['error' => 'Direct student admission is unavailable for institution-managed schools'], 403);
-        if ($school->organization_id !== null && !DB::table('organizations')->where('id', $school->organization_id)->where('is_active', true)->exists()) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
         $sections = DB::table('sections as s')
             ->join('grades as g', 'g.id', '=', 's.grade_id')
             ->join('academic_years as y', 'y.id', '=', 's.academic_year_id')
