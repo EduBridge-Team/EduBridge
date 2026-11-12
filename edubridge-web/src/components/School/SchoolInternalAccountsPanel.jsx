@@ -5,12 +5,12 @@ import { useSchoolResource } from './useSchoolResource'
 
 const EMPTY = { name: '', username: '', role: 'teacher', password: '', student_number: '', section_id: '', school_authorized: false }
 
-export default function SchoolInternalAccountsPanel({ revision = 0, schoolId, initialRole = 'teacher' }) {
+export default function SchoolInternalAccountsPanel({ revision = 0, schoolId, initialRole = 'teacher', initialDomain = '' }) {
   const { t } = useSchoolLanguage()
   const enrollmentOptions = useSchoolResource('/school/enrollment-options')
   const [items, setItems] = useState([])
   const [cursor, setCursor] = useState(null)
-  const [domain, setDomain] = useState('')
+  const [domain, setDomain] = useState(initialDomain)
   const [form, setForm] = useState(() => ({ ...EMPTY, role: initialRole }))
   const [selected, setSelected] = useState(null)
   const [password, setPassword] = useState('')
