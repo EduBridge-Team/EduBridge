@@ -17,7 +17,7 @@ class SchoolInternalAccountController extends Controller
             'name' => ['required', 'string', 'max:190'],
             'username' => ['required', 'string', 'regex:/^[a-z0-9][a-z0-9._-]{1,63}$/D'],
             'role' => ['required', 'in:teacher,student,staff'],
-            'child_id' => ['required_if:role,student', 'nullable', 'integer', 'min:1'],
+            'child_id' => ['nullable', 'integer', 'min:1'],
             'create_student' => ['sometimes', 'boolean'],
             'section_id' => ['required_if:create_student,true', 'nullable', 'integer', 'min:1'],
             'birth_date' => ['required_if:create_student,true', 'nullable', 'date', 'before:today', 'after:1900-01-01'],
@@ -32,8 +32,14 @@ class SchoolInternalAccountController extends Controller
         if (($input['create_student'] ?? false) && $input['role'] !== 'student') {
             return response()->json(['error' => 'Direct provisioning is only available for students'], 422);
         }
+        if ($directStudent && mb_strlen(trim($input['name'])) > 100) {
+            return response()->json(['error' => 'Student name must not exceed 100 characters'], 422);
+        }
         if ($directStudent && !empty($input['child_id'])) {
             return response()->json(['error' => 'Choose either an existing child or direct student creation'], 422);
+        }
+        if ($directStudent && (empty($input['section_id']) || empty($input['birth_date']))) {
+            return response()->json(['error' => 'Student birth date and section are required'], 422);
         }
         if ($input['role'] === 'student' && !$directStudent && empty($input['child_id'])) {
             return response()->json(['error' => 'An enrolled child is required'], 422);
