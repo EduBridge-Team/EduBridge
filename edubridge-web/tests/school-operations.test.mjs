@@ -27,6 +27,7 @@ test('school provisioning and operation forms render in both languages without s
     const { default: Operation } = await server.ssrLoadModule('/src/components/School/SchoolOperationForm.jsx')
     const { default: AttendanceReport } = await server.ssrLoadModule('/src/components/School/SchoolAttendanceReportPanel.jsx')
     const { default: Promotion } = await server.ssrLoadModule('/src/components/School/SchoolPromotionPanel.jsx')
+    const { default: NewStudent } = await server.ssrLoadModule('/src/components/School/SchoolStudentRegistrationPanel.jsx')
     for (const language of ['ar', 'en']) {
       globalThis.localStorage = { getItem: () => language }
       const html = renderToStaticMarkup(createElement(Form, {}))
@@ -40,6 +41,10 @@ test('school provisioning and operation forms render in both languages without s
       assert.match(report, language === 'ar' ? /تقرير حضور الطلاب/ : /Student attendance report/)
       assert.match(report, language === 'ar' ? /من تاريخ/ : /From date/)
       assert.match(report, /type="date"/)
+      const newStudent = renderToStaticMarkup(createElement(NewStudent, { schoolId: 10, domain: 'independent.edubridge', onCreated() {} }))
+      assert.match(newStudent, language === 'ar' ? /إنشاء طالب جديد من المدرسة/ : /Register a new student at school/)
+      assert.match(newStudent, /independent|مستقلة/)
+      assert.doesNotMatch(newStudent, /type="password"/)
       const promotion = renderToStaticMarkup(createElement(Promotion, {schoolId: 10, years: [
         {id: 4, name: '2026', starts_on: '2026-09-01'},
         {id: 3, name: '2027', starts_on: '2027-09-01'},
