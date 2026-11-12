@@ -220,13 +220,26 @@ class SchoolInternalAccountTest extends TestCase
 
     public function test_section_directory_is_director_scoped_and_excludes_other_schools(): void
     {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
         $request = Request::create('/api/school/internal-student-sections', 'GET');
         $request->attributes->set('jwt_user', (object) ['id' => 20, 'role' => 'school_director']);
         $response = app(SchoolInternalAccountController::class)->sections($request);
         $this->assertSame(200, $response->getStatusCode());
+        $this->assertTrue($response->getData(true)['direct_admission_enabled']);
         $this->assertSame([1], array_column($response->getData(true)['sections'], 'id'));
         $request->attributes->set('jwt_user', (object) ['id' => 21, 'role' => 'teacher']);
         $this->assertSame(403, app(SchoolInternalAccountController::class)->sections($request)->getStatusCode());
+    }
+
+    public function test_institution_school_keeps_internal_accounts_without_direct_admission(): void
+    {
+        $request = Request::create('/api/school/internal-student-sections', 'GET');
+        $request->attributes->set('jwt_user', (object) ['id' => 20, 'role' => 'school_director']);
+        $response = app(SchoolInternalAccountController::class)->sections($request);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertFalse($response->getData(true)['direct_admission_enabled']);
+        $this->assertSame([], $response->getData(true)['sections']);
+        $this->assertSame(201, $this->createAccount()->getStatusCode());
     }
 
     public function test_staff_account_creation_supports_users_without_updated_at(): void
