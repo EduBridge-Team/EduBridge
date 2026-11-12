@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
+import SchoolStudentRegistrationPanel from './SchoolStudentRegistrationPanel'
 
 const EMPTY = { name: '', username: '', role: 'teacher', password: '' }
 
@@ -50,10 +51,11 @@ export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) 
     {domain && <form className="institution-school-form" onSubmit={event => { event.preventDefault(); mutate('/school/internal-identities', 'POST', form, t('تم إنشاء الحساب', 'Account created')) }}>
       <label>{t('الاسم', 'Name')}<input required maxLength={190} disabled={busy} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
       <label>{t('اسم المستخدم', 'Username')}<input required dir="ltr" pattern="[a-z0-9][a-z0-9._-]{1,63}" disabled={busy} value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} /><small><bdi>@{domain}</bdi></small></label>
-      <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>{['teacher', 'student', 'staff'].map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
+      <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>{['teacher', 'staff'].map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
       <label>{t('كلمة المرور', 'Password')}<input required type="password" minLength={12} maxLength={128} autoComplete="new-password" disabled={busy} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} /></label>
       <button className="btn" disabled={busy}>{t('إنشاء الحساب', 'Create account')}</button>
     </form>}
+    {domain && <SchoolStudentRegistrationPanel schoolId={schoolId} domain={domain} onCreated={() => load()} />}
     {!items.length && !error && <p>{t('لا توجد حسابات داخلية بعد.', 'No internal accounts yet.')}</p>}
     {items.map(item => <article key={item.id} className="institution-panel">
       <b>{item.name}</b> — {roleName(item.role)} <bdi>{item.username}@{domain}</bdi>
