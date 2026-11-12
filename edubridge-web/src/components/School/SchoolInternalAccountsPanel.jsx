@@ -11,6 +11,7 @@ export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) 
   const [cursor, setCursor] = useState(null)
   const [domain, setDomain] = useState('')
   const [sections, setSections] = useState([])
+  const [directAdmissionEnabled, setDirectAdmissionEnabled] = useState(false)
   const [form, setForm] = useState(EMPTY)
   const [selected, setSelected] = useState(null)
   const [password, setPassword] = useState('')
@@ -32,6 +33,7 @@ export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) 
       if (current !== version.current) return
       if (Number(available.school_id) !== Number(schoolId)) throw new Error('School context changed')
       setSections(available.sections || [])
+      setDirectAdmissionEnabled(available.direct_admission_enabled === true)
     } catch (err) { if (current === version.current) { setError(err.message); if (!after) { setItems([]); setDomain('') } } }
   }
   useEffect(() => { load(); return () => { version.current++ } }, [revision])
@@ -56,8 +58,9 @@ export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) 
     {domain && <form className="institution-school-form" onSubmit={event => { event.preventDefault(); mutate('/school/internal-identities', 'POST', internalAccountPayload(form), t('تم إنشاء الحساب', 'Account created')) }}>
       <label>{t('الاسم', 'Name')}<input required maxLength={form.role === 'student' ? 100 : 190} disabled={busy} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
       <label>{t('اسم المستخدم', 'Username')}<input required dir="ltr" pattern="[a-z0-9][a-z0-9._-]{1,63}" disabled={busy} value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} /><small><bdi>@{domain}</bdi></small></label>
-      <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...form, role: e.target.value, create_new_student: e.target.value === 'student', section_id: '', birth_date: '' })}>{['teacher', 'student', 'staff'].map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
-      {form.role === 'student' && <>
+      <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...form, role: e.target.value, create_new_student: e.target.value === 'student', section_id: '', birth_date: '' })}>{(directAdmissionEnabled ? ['teacher', 'student', 'staff'] : ['teacher', 'staff']).map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
+      {!directAdmissionEnabled && <p>{t('إنشاء الطلاب الجدد مباشرة غير متاح للمدارس التابعة للمؤسسات. الحسابات الأخرى متاحة.', 'Direct student admission is unavailable for institution-managed schools. Other accounts remain available.')}</p>}
+      {form.role === 'student' && directAdmissionEnabled && <>
         <p>{t('ستنشئ المدرسة سجل الطالب وحساب دخوله وتسجله في الشعبة مباشرة. لا يُنشأ حساب ولي أمر أو تُعتبر وثائق الهوية موثقة.', 'The school will create a student record, login, and active section enrollment. No guardian account or identity document verification is implied.')}</p>
         <label>{t('تاريخ الميلاد', 'Birth date')}<input required type="date" disabled={busy} max={new Date().toISOString().slice(0, 10)} value={form.birth_date} onChange={e => setForm({ ...form, birth_date: e.target.value })} /></label>
         <label>{t('الشعبة الحالية', 'Current section')}<select required disabled={busy} value={form.section_id} onChange={e => setForm({ ...form, section_id: e.target.value })}>
