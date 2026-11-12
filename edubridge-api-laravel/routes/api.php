@@ -91,6 +91,8 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
         ->middleware('throttle:120,1');
     Route::post('/school/internal-domain/confirm', [\App\Http\Controllers\SchoolInternalDomainController::class, 'confirm'])
         ->middleware('throttle:10,1');
+    Route::get('/school/internal-student-sections', [\App\Http\Controllers\SchoolInternalAccountController::class, 'sections'])
+        ->middleware('throttle:60,1');
     Route::post('/school/internal-identities', [\App\Http\Controllers\SchoolInternalAccountController::class, 'store'])
         ->middleware('throttle:10,1');
     Route::get('/school/internal-identities', [\App\Http\Controllers\SchoolInternalIdentityDirectoryController::class, 'index'])
