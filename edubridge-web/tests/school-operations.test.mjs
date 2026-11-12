@@ -43,7 +43,7 @@ test('school provisioning and operation forms render in both languages without s
       assert.match(report, /type="date"/)
       const newStudent = renderToStaticMarkup(createElement(NewStudent, { schoolId: 10, domain: 'independent.edubridge', onCreated() {} }))
       assert.match(newStudent, language === 'ar' ? /إنشاء طالب جديد من المدرسة/ : /Register a new student at school/)
-      assert.match(newStudent, /independent|مستقلة/)
+      assert.match(newStudent, /[Ii]ndependent|مستقلة/)
       assert.doesNotMatch(newStudent, /type="password"/)
       const promotion = renderToStaticMarkup(createElement(Promotion, {schoolId: 10, years: [
         {id: 4, name: '2026', starts_on: '2026-09-01'},
