@@ -22,6 +22,8 @@ test('school internal accounts form renders safely with direct-student UI availa
   const { renderToStaticMarkup } = await import('react-dom/server')
   const { readFile } = await import('node:fs/promises')
   const source = await readFile(new URL('../src/components/School/SchoolInternalAccountsPanel.jsx', import.meta.url), 'utf8')
+  const previous = globalThis.localStorage
+  globalThis.localStorage = { getItem: () => 'ar' }
   const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
   try {
     const { default: Accounts } = await server.ssrLoadModule('/src/components/School/SchoolInternalAccountsPanel.jsx')
@@ -35,7 +37,7 @@ test('school internal accounts form renders safely with direct-student UI availa
     assert.match(source, /data\.academic_years/)
     assert.match(source, /data\.school\?\.id/)
     assert.match(source, /expected_school_id: schoolId/)
-  } finally { await server.close() }
+  } finally { globalThis.localStorage = previous; await server.close() }
 })
 
 test('school provisioning and operation forms render in both languages without school-login passwords', async () => {
