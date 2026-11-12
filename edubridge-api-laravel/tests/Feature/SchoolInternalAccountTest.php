@@ -53,8 +53,25 @@ class SchoolInternalAccountTest extends TestCase
             $t->timestamps();
             $t->unique(['school_id', 'username']);
         });
-        Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); });
-        Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); });
+        Schema::create('children', function (Blueprint $t) {
+            $t->id(); $t->string('name'); $t->date('birth_date')->nullable();
+            $t->string('status')->default('pending');
+            $t->string('doc_verification_status')->default('pending');
+        });
+        Schema::create('academic_years', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name');
+            $t->boolean('is_current')->default(false);
+        });
+        Schema::create('grades', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id');
+            $t->boolean('is_active')->default(true);
+            $t->integer('position')->default(1);
+        });
+        Schema::create('sections', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('grade_id');
+            $t->unsignedBigInteger('academic_year_id'); $t->string('name');
+            $t->integer('capacity')->nullable();
+        });
         Schema::create('student_enrollments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('section_id'); $t->string('status');
         });
@@ -62,8 +79,18 @@ class SchoolInternalAccountTest extends TestCase
             $t->id(); $t->unsignedBigInteger('user_id')->unique(); $t->unsignedBigInteger('child_id')->unique();
             $t->unsignedBigInteger('school_id'); $t->timestamps();
         });
-        DB::table('grades')->insert(['id'=>1,'school_id'=>10]);
-        DB::table('sections')->insert(['id'=>1,'grade_id'=>1]);
+        DB::table('grades')->insert([
+            ['id'=>1,'school_id'=>10,'is_active'=>true],
+            ['id'=>2,'school_id'=>11,'is_active'=>true],
+        ]);
+        DB::table('academic_years')->insert([
+            ['id'=>1,'school_id'=>10,'name'=>'Current','is_current'=>true],
+            ['id'=>2,'school_id'=>11,'name'=>'Other','is_current'=>true],
+        ]);
+        DB::table('sections')->insert([
+            ['id'=>1,'grade_id'=>1,'academic_year_id'=>1,'name'=>'A','capacity'=>3],
+            ['id'=>2,'grade_id'=>2,'academic_year_id'=>2,'name'=>'B','capacity'=>3],
+        ]);
         DB::table('student_enrollments')->insert(['child_id'=>100,'section_id'=>1,'status'=>'active']);
         DB::table('organizations')->insert(['id' => 1, 'is_active' => true]);
         DB::table('schools')->insert([
@@ -79,7 +106,7 @@ class SchoolInternalAccountTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['student_account_links','student_enrollments','sections','grades'] as $table) Schema::dropIfExists($table);
+        foreach (['student_account_links','student_enrollments','sections','grades','academic_years','children'] as $table) Schema::dropIfExists($table);
         Schema::dropIfExists('school_internal_identities');
         Schema::dropIfExists('school_management_assignments');
         Schema::dropIfExists('users');
@@ -118,6 +145,87 @@ class SchoolInternalAccountTest extends TestCase
         $this->assertSame(100, (int) DB::table('student_account_links')->value('child_id'));
         $this->assertSame(409, $this->createAccount(20, ['username'=>'student02','role'=>'student','child_id'=>100])->getStatusCode());
         $this->assertSame(422, $this->createAccount(20, ['username'=>'student03','role'=>'student','child_id'=>101])->getStatusCode());
+    }
+
+    public function test_director_creates_new_student_without_guardian_with_scoped_enrollment(): void
+    {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
+        $response = $this->createAccount(20, [
+            'name' => 'QA Student', 'username' => 'qa-student',
+            'role' => 'student', 'create_new_student' => true,
+            'birth_date' => '2017-05-04', 'section_id' => 1,
+            'expected_school_id' => 10,
+        ]);
+        $this->assertSame(201, $response->getStatusCode(), $response->getContent());
+        $data = $response->getData(true);
+        $this->assertSame('qa-student@alpha.edubridge', $data['login_identifier']);
+        $this->assertSame(1, DB::table('children')->count());
+        $this->assertSame('pending', DB::table('children')->value('doc_verification_status'));
+        $this->assertSame('active', DB::table('student_enrollments')
+            ->where('child_id', $data['child_id'])->value('status'));
+        $this->assertSame((int) $data['child_id'], (int) DB::table('student_account_links')
+            ->where('user_id', $data['user_id'])->value('child_id'));
+        $this->assertTrue(password_verify('StrongPassword123!', DB::table('users')
+            ->where('id', $data['user_id'])->value('password_hash')));
+        $this->assertSame(409, $this->createAccount(20, [
+            'name' => 'QA Student', 'username' => 'another-student',
+            'role' => 'student', 'create_new_student' => true,
+            'birth_date' => '2017-05-04', 'section_id' => 1,
+        ])->getStatusCode());
+        $this->assertSame(1, DB::table('children')->count());
+    }
+
+    public function test_direct_student_admission_rejects_foreign_section_and_institution(): void
+    {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
+        $payload = [
+            'name' => 'Other Student', 'username' => 'qa-other',
+            'role' => 'student', 'create_new_student' => true,
+            'birth_date' => '2016-03-01',
+        ];
+        $this->assertSame(422, $this->createAccount(20, [
+            ...$payload, 'section_id' => 2,
+        ])->getStatusCode());
+        $this->assertSame(409, $this->createAccount(20, [
+            ...$payload, 'section_id' => 1, 'expected_school_id' => 11,
+        ])->getStatusCode());
+        DB::table('schools')->where('id', 10)->update(['organization_id' => 1]);
+        $this->assertSame(403, $this->createAccount(20, [
+            ...$payload, 'section_id' => 1,
+        ])->getStatusCode());
+        $this->assertSame(0, DB::table('children')->count());
+        $this->assertSame(0, DB::table('users')->count());
+    }
+
+    public function test_direct_student_admission_rejects_invalid_input_and_full_section(): void
+    {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
+        $payload = [
+            'name' => 'QA Student', 'username' => 'qa-student',
+            'role' => 'student', 'create_new_student' => true,
+            'section_id' => 1,
+        ];
+        $this->assertSame(422, $this->createAccount(20, $payload)->getStatusCode());
+        $this->assertSame(422, $this->createAccount(20, [
+            ...$payload, 'birth_date' => '2017-05-04', 'child_id' => 100,
+        ])->getStatusCode());
+        DB::table('sections')->where('id', 1)->update(['capacity' => 1]);
+        $this->assertSame(409, $this->createAccount(20, [
+            ...$payload, 'birth_date' => '2017-05-04',
+        ])->getStatusCode());
+        $this->assertSame(0, DB::table('children')->count());
+        $this->assertSame(0, DB::table('users')->count());
+    }
+
+    public function test_section_directory_is_director_scoped_and_excludes_other_schools(): void
+    {
+        $request = Request::create('/api/school/internal-student-sections', 'GET');
+        $request->attributes->set('jwt_user', (object) ['id' => 20, 'role' => 'school_director']);
+        $response = app(SchoolInternalAccountController::class)->sections($request);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([1], array_column($response->getData(true)['sections'], 'id'));
+        $request->attributes->set('jwt_user', (object) ['id' => 21, 'role' => 'teacher']);
+        $this->assertSame(403, app(SchoolInternalAccountController::class)->sections($request)->getStatusCode());
     }
 
     public function test_staff_account_creation_supports_users_without_updated_at(): void
