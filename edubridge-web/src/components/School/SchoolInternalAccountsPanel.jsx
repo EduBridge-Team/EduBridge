@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
+import { internalAccountPayload } from './schoolInternalStudentPayload'
 
 const EMPTY = { name: '', username: '', role: 'teacher', password: '', create_new_student: false, section_id: '', birth_date: '' }
 
@@ -52,7 +53,7 @@ export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) 
     <p>{t('هذه معرّفات دخول داخلية وليست صناديق بريد.', 'These are internal sign-in identifiers, not email mailboxes.')}</p>
     {error && <p role="alert">{error}</p>}{message && <p role="status">{message}</p>}
     <button className="btn outline" disabled={busy} onClick={() => load()}>{t('تحديث', 'Refresh')}</button>
-    {domain && <form className="institution-school-form" onSubmit={event => { event.preventDefault(); mutate('/school/internal-identities', 'POST', form.role === 'student' ? { ...form, section_id: Number(form.section_id) } : { name: form.name, username: form.username, role: form.role, password: form.password }, t('تم إنشاء الحساب', 'Account created')) }}>
+    {domain && <form className="institution-school-form" onSubmit={event => { event.preventDefault(); mutate('/school/internal-identities', 'POST', internalAccountPayload(form), t('تم إنشاء الحساب', 'Account created')) }}>
       <label>{t('الاسم', 'Name')}<input required maxLength={form.role === 'student' ? 100 : 190} disabled={busy} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
       <label>{t('اسم المستخدم', 'Username')}<input required dir="ltr" pattern="[a-z0-9][a-z0-9._-]{1,63}" disabled={busy} value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} /><small><bdi>@{domain}</bdi></small></label>
       <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...form, role: e.target.value, create_new_student: e.target.value === 'student', section_id: '', birth_date: '' })}>{['teacher', 'student', 'staff'].map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
