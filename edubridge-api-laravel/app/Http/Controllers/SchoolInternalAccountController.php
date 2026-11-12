@@ -22,7 +22,10 @@ class SchoolInternalAccountController extends Controller
             ->select('s.id', 's.organization_id', 's.internal_domain_confirmed_at')->limit(2)->get();
         if ($schools->count() !== 1 || !$schools[0]->internal_domain_confirmed_at) return response()->json(['error' => 'Forbidden'], 403);
         $school = $schools[0];
-        if ($school->organization_id !== null) return response()->json(['error' => 'Direct student admission is unavailable for institution-managed schools'], 403);
+        if ($school->organization_id !== null) {
+            return response()->json(['school_id' => (int) $school->id,
+                'direct_admission_enabled' => false, 'sections' => []]);
+        }
         $sections = DB::table('sections as s')
             ->join('grades as g', 'g.id', '=', 's.grade_id')
             ->join('academic_years as y', 'y.id', '=', 's.academic_year_id')
@@ -30,7 +33,8 @@ class SchoolInternalAccountController extends Controller
             ->where('g.is_active', true)->where('y.is_current', true)
             ->select('s.id', 's.name', 's.capacity', 'g.name as grade_name', 'y.name as year_name')
             ->orderBy('g.position')->orderBy('s.name')->get();
-        return response()->json(['school_id' => (int) $school->id, 'sections' => $sections]);
+        return response()->json(['school_id' => (int) $school->id,
+            'direct_admission_enabled' => true, 'sections' => $sections]);
     }
 
     public function store(Request $request): JsonResponse
