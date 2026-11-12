@@ -22,6 +22,7 @@ class SchoolInternalAccountController extends Controller
             ->select('s.id', 's.organization_id', 's.internal_domain_confirmed_at')->limit(2)->get();
         if ($schools->count() !== 1 || !$schools[0]->internal_domain_confirmed_at) return response()->json(['error' => 'Forbidden'], 403);
         $school = $schools[0];
+        if ($school->organization_id !== null) return response()->json(['error' => 'Direct student admission is unavailable for institution-managed schools'], 403);
         if ($school->organization_id !== null && !DB::table('organizations')->where('id', $school->organization_id)->where('is_active', true)->exists()) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
@@ -123,6 +124,7 @@ class SchoolInternalAccountController extends Controller
                             ->where('y.is_current', true)
                             ->select('s.id', 's.capacity')->first();
                         if (!$section) return response()->json(['error' => 'Section is unavailable in the current school year'], 422);
+                        DB::table('sections')->where('id', $section->id)->lockForUpdate()->first();
                         $count = DB::table('student_enrollments')->where('section_id', $section->id)->where('status', 'active')->count();
                         if ($section->capacity !== null && $count >= $section->capacity) return response()->json(['error' => 'Section is full'], 409);
                         $duplicate = DB::table('student_enrollments as e')
@@ -135,7 +137,7 @@ class SchoolInternalAccountController extends Controller
                             ->where('c.birth_date', $input['birth_date'] ?? null)->exists();
                         if ($duplicate) return response()->json(['error' => 'Possible duplicate student enrollment'], 409);
                     } else {
-                    // An existing student login must belong to an enrolled child in this school.
+                        // An existing student login must belong to an enrolled child in this school.
                     $enrolled = DB::table('student_enrollments as e')
                         ->join('sections as s', 's.id', '=', 'e.section_id')
                         ->join('grades as g', 'g.id', '=', 's.grade_id')
