@@ -101,6 +101,13 @@ class SchoolInternalAccountController extends Controller
                     return response()->json(['error' => 'Internal domain must be confirmed'], 409);
                 }
 
+                if ($directStudent && $school->organization_id !== null) {
+                    return response()->json(['error' => 'Direct student admission is unavailable for institution-managed schools'], 403);
+                }
+                if ($directStudent && (mb_strlen(trim($input['name'])) > 100 || empty($input['birth_date']))) {
+                    return response()->json(['error' => 'Student name and birth date are required'], 422);
+                }
+
                 if ($input['role'] === 'student') {
                     if (!Schema::hasTable('student_account_links')) {
                         return response()->json(['error' => 'Student account linking is unavailable'], 503);
