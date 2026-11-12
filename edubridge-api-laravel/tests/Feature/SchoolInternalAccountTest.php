@@ -125,6 +125,7 @@ class SchoolInternalAccountTest extends TestCase
 
     public function test_direct_school_student_registration_creates_pending_child_and_active_enrollment_atomically(): void
     {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
         $response = $this->createAccount(20, [
             'name' => 'QA Student', 'username' => 'qa-student', 'role' => 'student',
             'create_student' => true, 'section_id' => 1, 'birth_date' => '2018-05-15',
@@ -149,6 +150,7 @@ class SchoolInternalAccountTest extends TestCase
 
     public function test_direct_registration_rejects_foreign_school_section_and_institution_school(): void
     {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
         DB::table('academic_years')->insert(['id'=>2,'school_id'=>11,'is_current'=>true]);
         DB::table('grades')->insert(['id'=>2,'school_id'=>11,'is_active'=>true]);
         DB::table('sections')->insert(['id'=>2,'grade_id'=>2,'academic_year_id'=>2,'capacity'=>2]);
@@ -165,6 +167,7 @@ class SchoolInternalAccountTest extends TestCase
 
     public function test_direct_student_creation_prevents_duplicates_and_full_sections(): void
     {
+        DB::table('schools')->where('id', 10)->update(['organization_id' => null]);
         $payload = ['name'=>'QA Student', 'username'=>'student-a', 'role'=>'student',
             'create_student'=>true, 'section_id'=>1, 'birth_date'=>'2017-01-20'];
         $this->assertSame(201, $this->createAccount(20, $payload)->getStatusCode());
