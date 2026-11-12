@@ -14,8 +14,9 @@ class SchoolStudentRegistrationController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        if (!$request->attributes->get('jwt_user')) {
-            return response()->json(['error' => 'School access is unavailable'], 403);
+        $actor = $request->attributes->get('jwt_user');
+        if (!$actor || ($actor->role ?? null) !== 'school_director') {
+            return response()->json(['error' => 'School director access is required'], 403);
         }
 
         $validation = Validator::make($request->all(), [
