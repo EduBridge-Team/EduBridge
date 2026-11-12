@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { request } from '../../api/core'
 import { useSchoolLanguage } from './useSchoolLanguage'
+import { useSchoolResource } from './useSchoolResource'
 
-const EMPTY = { name: '', username: '', role: 'teacher', password: '' }
+const EMPTY = { name: '', username: '', role: 'teacher', password: '', student_number: '', section_id: '', school_authorized: false }
 
-export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) {
+export default function SchoolInternalAccountsPanel({ revision = 0, schoolId, initialRole = 'teacher', initialDomain = '' }) {
   const { t } = useSchoolLanguage()
+  const enrollmentOptions = useSchoolResource('/school/enrollment-options')
   const [items, setItems] = useState([])
   const [cursor, setCursor] = useState(null)
-  const [domain, setDomain] = useState('')
-  const [form, setForm] = useState(EMPTY)
+  const [domain, setDomain] = useState(initialDomain)
+  const [form, setForm] = useState(() => ({ ...EMPTY, role: initialRole }))
   const [selected, setSelected] = useState(null)
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -47,12 +49,31 @@ export default function SchoolInternalAccountsPanel({ revision = 0, schoolId }) 
     <p>{t('هذه معرّفات دخول داخلية وليست صناديق بريد.', 'These are internal sign-in identifiers, not email mailboxes.')}</p>
     {error && <p role="alert">{error}</p>}{message && <p role="status">{message}</p>}
     <button className="btn outline" disabled={busy} onClick={() => load()}>{t('تحديث', 'Refresh')}</button>
-    {domain && <form className="institution-school-form" onSubmit={event => { event.preventDefault(); mutate('/school/internal-identities', 'POST', form, t('تم إنشاء الحساب', 'Account created')) }}>
+    {domain && <form className="institution-school-form" onSubmit={event => {
+      event.preventDefault()
+      const student = form.role === 'student'
+      const payload = student ? {
+        name: form.name, username: form.username, student_number: form.student_number,
+        section_id: Number(form.section_id), school_authorized: form.school_authorized,
+        password: form.password,
+      } : { name: form.name, username: form.username, role: form.role, password: form.password }
+      mutate(student ? '/school/students/direct' : '/school/internal-identities', 'POST', payload, t('تم إنشاء الحساب', 'Account created'))
+    }}>
       <label>{t('الاسم', 'Name')}<input required maxLength={190} disabled={busy} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>
       <label>{t('اسم المستخدم', 'Username')}<input required dir="ltr" pattern="[a-z0-9][a-z0-9._-]{1,63}" disabled={busy} value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} /><small><bdi>@{domain}</bdi></small></label>
-      <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>{['teacher', 'student', 'staff'].map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
+      <label>{t('نوع الحساب', 'Account type')}<select disabled={busy} value={form.role} onChange={e => setForm({ ...EMPTY, role: e.target.value })}>{['teacher', 'student', 'staff'].map(role => <option key={role} value={role}>{roleName(role)}</option>)}</select></label>
+      {form.role === 'student' && <>
+        <p>{t('إنشاء طالب جديد في مدرسة مستقلة، دون اشتراط حساب ولي أمر مسبق. لا يثبت إنشاء الحساب الهوية أو موافقة ولي الأمر. تتطلب مدارس المؤسسات مسار القبول المعتمد.', 'Enroll a new student at an independent school without an existing guardian account. Account creation does not verify identity or establish guardian consent. Institution schools use their approved admissions workflow.')}</p>
+        <label>{t('رقم القيد المدرسي', 'School admission number')}<input required maxLength={40} dir="ltr" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,39}" disabled={busy} value={form.student_number} onChange={e => setForm({ ...form, student_number: e.target.value })} /></label>
+        <label>{t('الشعبة الحالية', 'Current section')}<select required disabled={busy || enrollmentOptions.loading || Boolean(enrollmentOptions.error)} value={form.section_id} onChange={e => setForm({ ...form, section_id: e.target.value })}>
+          <option value="">{t('اختر الشعبة', 'Select section')}</option>
+          {(Number(enrollmentOptions.data?.school_id) === Number(schoolId) ? enrollmentOptions.data.sections || [] : []).map(section => <option key={section.id} value={section.id}>{section.grade_name} - {section.name} - {section.academic_year_name}</option>)}
+        </select></label>
+        {enrollmentOptions.error && <p role="alert">{enrollmentOptions.error}</p>}
+        <label><input type="checkbox" required disabled={busy} checked={form.school_authorized} onChange={e => setForm({ ...form, school_authorized: e.target.checked })} /> {t('أؤكد أن المدرسة مخوّلة بتسجيل هذا الطالب وأن معلومات التسجيل صحيحة.', 'I confirm the school is authorized to enroll this student and the registration details are accurate.')}</label>
+      </>}
       <label>{t('كلمة المرور', 'Password')}<input required type="password" minLength={12} maxLength={128} autoComplete="new-password" disabled={busy} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} /></label>
-      <button className="btn" disabled={busy}>{t('إنشاء الحساب', 'Create account')}</button>
+      <button className="btn" disabled={busy || (form.role === 'student' && (enrollmentOptions.loading || Boolean(enrollmentOptions.error) || Number(enrollmentOptions.data?.school_id) !== Number(schoolId) || !form.section_id || !form.school_authorized))}>{form.role === 'student' ? t('إنشاء الطالب وتسجيله', 'Create and enroll student') : t('إنشاء الحساب', 'Create account')}</button>
     </form>}
     {!items.length && !error && <p>{t('لا توجد حسابات داخلية بعد.', 'No internal accounts yet.')}</p>}
     {items.map(item => <article key={item.id} className="institution-panel">
