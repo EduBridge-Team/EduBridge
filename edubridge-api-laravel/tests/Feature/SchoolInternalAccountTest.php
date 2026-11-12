@@ -63,7 +63,7 @@ class SchoolInternalAccountTest extends TestCase
             $t->boolean('is_current')->default(false);
         });
         Schema::create('grades', function (Blueprint $t) {
-            $t->id(); $t->unsignedBigInteger('school_id');
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name')->default('Grade');
             $t->boolean('is_active')->default(true);
             $t->integer('position')->default(1);
         });
@@ -74,6 +74,7 @@ class SchoolInternalAccountTest extends TestCase
         });
         Schema::create('student_enrollments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('section_id'); $t->string('status');
+            $t->date('enrolled_on')->nullable(); $t->timestamps();
         });
         Schema::create('student_account_links', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('user_id')->unique(); $t->unsignedBigInteger('child_id')->unique();
