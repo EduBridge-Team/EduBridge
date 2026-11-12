@@ -152,7 +152,7 @@ class SchoolStudentRegistrationTest extends TestCase
         $this->assertSame(403, $this->register(21)->getStatusCode());
         $this->assertSame(403, $this->register(99)->getStatusCode());
         $this->assertSame(403, $this->register(22, 'school_director', ['expected_school_id' => 11])->getStatusCode());
-        $this->assertSame(403, $this->register(20, 'school', ['expected_school_id' => 10])->getStatusCode() === 201 ? 201 : 403);
+        $this->assertSame(403, $this->register(20, 'school', ['expected_school_id' => 10])->getStatusCode());
         $this->assertSame(403, $this->register(20, 'school_director', ['expected_school_id' => 12])->getStatusCode());
         $this->assertSame(0, DB::table('users')->count());
         $this->assertSame(0, DB::table('children')->count());
