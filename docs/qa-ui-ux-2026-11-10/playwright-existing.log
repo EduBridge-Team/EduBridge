@@ -1,0 +1,4 @@
+PASS: React institution login, school A, and director A rendered
+PASS: React school switch shows isolated UI data and academic forms
+PASS: React RTL and 390px mobile login rendering
+PASS: React isolated Chromium smoke completed (mocked API, no backend writes)

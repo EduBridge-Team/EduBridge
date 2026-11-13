@@ -1,0 +1,8 @@
+PASS: registration fits all five viewports and both password fields remain reachable
+PASS: guest menu cycles focus, closes with Escape, restores focus, and unlocks on resize
+PASS: portal drawer excludes hidden controls and supports keyboard dismissal
+PASS: Jabalia services and features links scroll to real sections
+PASS: recovery responses and invalid-link errors are announced without real emails
+PASS: expired sessions clear display data and parent cannot open admin UI
+PASS: 200% text does not overlap public navigation at desktop width
+PASS: no uncaught browser exceptions or unexpected API calls

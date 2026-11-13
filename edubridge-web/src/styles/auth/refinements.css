@@ -1,4 +1,22 @@
 /* Auth geometry shared by login and registration, after legacy auth layers. */
+.auth-card-branded {
+  --muted: #526d88;
+  --auth-link: var(--brand-blue-deep);
+}
+:root[data-theme="dark"] .auth-card-branded {
+  --muted: #b8cfe0;
+  --auth-link: var(--dark-accent);
+}
+/* Clip only decorative rings; keep forms and their focus outlines scrollable. */
+.auth-page-decor-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.auth-card-branded > .link-btn { color: var(--auth-link); }
+
 .auth-card-branded .auth-brand-logo {
   width: 176px;
   max-width: 80%;
@@ -17,6 +35,7 @@
 
 .auth-card-branded .auth-welcome-copy {
   margin: 6px 0 16px;
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -271,7 +290,7 @@
   font-weight: 800;
   text-align: start;
 }
-.auth-card-branded > .link-btn strong { color: var(--blue); }
+.auth-card-branded > .link-btn strong { color: var(--auth-link); }
 :root[data-theme="dark"] .auth-provider-heading strong,
 :root[data-theme="dark"] .auth-form-section-label { color: #f1f7fc; }
 

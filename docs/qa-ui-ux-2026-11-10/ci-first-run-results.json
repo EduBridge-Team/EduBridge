@@ -1,0 +1,97 @@
+{
+  "results": [
+    {
+      "name": "registration fits all five viewports and both password fields remain reachable",
+      "status": "PASS"
+    },
+    {
+      "name": "guest menu cycles focus, closes with Escape, restores focus, and unlocks on resize",
+      "status": "FAIL",
+      "error": "page.waitForFunction: Timeout 30000ms exceeded.\n    at assertFocused (/home/runner/work/EduBridge/EduBridge/edubridge-web/scripts/qa-ui-ux-audit.mjs:66:62)\n    at async file:///home/runner/work/EduBridge/EduBridge/edubridge-web/scripts/qa-ui-ux-audit.mjs:98:7\n    at async test (/home/runner/work/EduBridge/EduBridge/edubridge-web/scripts/qa-ui-ux-audit.mjs:59:9)\n    at async file:///home/runner/work/EduBridge/EduBridge/edubridge-web/scripts/qa-ui-ux-audit.mjs:87:3"
+    },
+    {
+      "name": "portal drawer excludes hidden controls and supports keyboard dismissal",
+      "status": "PASS"
+    },
+    {
+      "name": "Jabalia services and features links scroll to real sections",
+      "status": "PASS"
+    },
+    {
+      "name": "recovery responses and invalid-link errors are announced without real emails",
+      "status": "PASS"
+    },
+    {
+      "name": "expired sessions clear display data and parent cannot open admin UI",
+      "status": "PASS"
+    },
+    {
+      "name": "200% text does not overlap public navigation at desktop width",
+      "status": "PASS"
+    },
+    {
+      "name": "no uncaught browser exceptions or unexpected API calls",
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "requests": [
+    {
+      "path": "/api/settings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/children",
+      "method": "GET"
+    },
+    {
+      "path": "/api/notifications/unread/count",
+      "method": "GET"
+    },
+    {
+      "path": "/api/conversations",
+      "method": "GET"
+    },
+    {
+      "path": "/api/institutions/jabalia/context",
+      "method": "GET"
+    },
+    {
+      "path": "/api/auth/forgot-password",
+      "method": "POST"
+    },
+    {
+      "path": "/api/auth/forgot-password",
+      "method": "POST"
+    },
+    {
+      "path": "/api/settings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/settings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/children",
+      "method": "GET"
+    },
+    {
+      "path": "/api/notifications/unread/count",
+      "method": "GET"
+    },
+    {
+      "path": "/api/conversations",
+      "method": "GET"
+    },
+    {
+      "path": "/api/lessons",
+      "method": "GET"
+    },
+    {
+      "path": "/api/auth/logout",
+      "method": "POST"
+    }
+  ],
+  "apiMode": "mock-only"
+}

@@ -88,3 +88,7 @@ Do not record secrets, private keys, real user data, JWTs, database passwords or
 | [Jabalia deployment](../deploy/institutions-jabalia.md) | Isolated stack, first-time onboarding vs repeat deploy |
 
 Important: the main site and Jabalia currently have **separate PostgreSQL containers and R2 buckets**. Older descriptions of only the main ports/API are not complete descriptions of all production deployments. PostgreSQL dump backups do not include R2 objects.
+
+## Web QA evidence — 2026-11-10
+
+- [Arabic UI/UX audit, fixes, screenshots and acceptance limits](QA_UI_UX_AUDIT_2026_11_10.md) — live read-only public audit; local mocked browser verification; A01–A19 full acceptance remains blocked.

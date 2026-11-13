@@ -55,13 +55,17 @@ jobs:
           done
           exit 1
       - name: Test React browser flows with mocked in-memory API only
-        run: node scripts/qa-react-browser-1395.mjs
+        run: |
+          node scripts/qa-react-browser-1395.mjs
+          node scripts/qa-ui-ux-audit.mjs
       - name: Upload UI screenshots for review
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: react-ui-qa-1395
-          path: edubridge-web/test-artifacts/react-ui/
+          path: |
+            edubridge-web/test-artifacts/react-ui/
+            edubridge-web/test-artifacts/ui-ux-audit/
           if-no-files-found: ignore
           retention-days: 7
 

@@ -21,6 +21,7 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
+    text-decoration: none;
     flex-shrink: 0;
 }
 .topbar-menu {
@@ -229,7 +230,7 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s ease;
+        transition: transform 0.22s ease, opacity 0.22s ease;
     }
 }
 @media (max-width: 1024px) {
@@ -410,4 +411,14 @@
 @keyframes edubridge-actions-enter {
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+.topbar-brand:focus-visible {
+    outline: 3px solid var(--brand-blue);
+    outline-offset: 3px;
+}
+
+/* Visibility must change immediately so a quick Tab can enter the open menu. */
+@media (prefers-reduced-motion: reduce) {
+    .topbar-menu { transition: none; }
 }

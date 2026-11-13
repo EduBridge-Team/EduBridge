@@ -1,0 +1,44 @@
+[
+  {
+    "url": "https://api.edubridge.win/",
+    "agent": "curl",
+    "status": 200,
+    "exit_code": 0
+  },
+  {
+    "url": "https://api.edubridge.win/api/me",
+    "agent": "curl",
+    "status": 401,
+    "exit_code": 0
+  },
+  {
+    "url": "https://api.edubridge.win/api/children",
+    "agent": "curl",
+    "status": 401,
+    "exit_code": 0
+  },
+  {
+    "url": "https://api.edubridge.win/api/notifications",
+    "agent": "curl",
+    "status": 401,
+    "exit_code": 0
+  },
+  {
+    "url": "https://api.edubridge.win/api/school/delegation",
+    "agent": "curl",
+    "status": 401,
+    "exit_code": 0
+  },
+  {
+    "url": "https://edubridge.win/api/me",
+    "agent": "curl",
+    "status": 401,
+    "exit_code": 0
+  },
+  {
+    "url": "https://jabalia.edubridge.win/api/me",
+    "agent": "curl",
+    "status": 401,
+    "exit_code": 0
+  }
+]

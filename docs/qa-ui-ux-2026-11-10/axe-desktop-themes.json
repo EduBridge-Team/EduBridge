@@ -1,0 +1,82 @@
+[
+  {
+    "path": "/",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/about",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/login",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/register",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/forgot-password",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/reset-password",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/school-account/setup",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/school/invitation",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "path": "/",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/about",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/login",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/register",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/forgot-password",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/reset-password",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/school-account/setup",
+    "theme": "dark",
+    "violations": []
+  },
+  {
+    "path": "/school/invitation",
+    "theme": "dark",
+    "violations": []
+  }
+]
