@@ -1,0 +1,407 @@
+[
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 1911,
+    "role": "student",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 200,
+    "elapsed_ms": 564,
+    "role": "student",
+    "check": "read-only RBAC",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 519,
+    "role": "student",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 473,
+    "role": "student",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 251,
+    "role": "student",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 763,
+    "role": "parent",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 321,
+    "role": "parent",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 266,
+    "role": "parent",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 278,
+    "role": "parent",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 313,
+    "role": "parent",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 6408,
+    "role": "teacher",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 374,
+    "role": "teacher",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 388,
+    "role": "teacher",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 405,
+    "role": "teacher",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 369,
+    "role": "teacher",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 1150,
+    "role": "specialist",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 357,
+    "role": "specialist",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 385,
+    "role": "specialist",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 665,
+    "role": "specialist",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 371,
+    "role": "specialist",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 1273,
+    "role": "staff",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 244,
+    "role": "staff",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 285,
+    "role": "staff",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 348,
+    "role": "staff",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 509,
+    "role": "staff",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 1701,
+    "role": "school_director",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 457,
+    "role": "school_director",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 344,
+    "role": "school_director",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 259,
+    "role": "school_director",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 240,
+    "role": "school_director",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 848,
+    "role": "school",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 250,
+    "role": "school",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 321,
+    "role": "school",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 361,
+    "role": "school",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 319,
+    "role": "school",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 1050,
+    "role": "institution",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 342,
+    "role": "institution",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 364,
+    "role": "institution",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 345,
+    "role": "institution",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 343,
+    "role": "institution",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  },
+  {
+    "path": "/auth/login",
+    "status": 200,
+    "elapsed_ms": 693,
+    "role": "ministry",
+    "check": "login",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 403,
+    "elapsed_ms": 334,
+    "role": "ministry",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/admin/schools",
+    "status": 403,
+    "elapsed_ms": 304,
+    "role": "ministry",
+    "check": "read-only RBAC",
+    "expected_status": 403,
+    "passed": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 200,
+    "elapsed_ms": 250,
+    "role": "ministry",
+    "check": "logout",
+    "expected_status": 200,
+    "passed": true
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "elapsed_ms": 274,
+    "role": "ministry",
+    "check": "revoked token",
+    "expected_status": 401,
+    "passed": true
+  }
+]

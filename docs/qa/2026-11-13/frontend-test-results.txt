@@ -1,0 +1,28 @@
+✔ toolbar search always opens a route permitted for the current role (3.506382ms)
+✔ student and school accounts search lessons instead of being redirected from staff search (2.55353ms)
+✔ authorized staff keep identity search (0.584413ms)
+✔ portal role permissions match the API roles shared with mobile (4.815652ms)
+(node:49473) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ public and auth pages resolve lazy modules on direct entry (1869.748642ms)
+✔ each role dashboard resolves inside its existing portal shell (826.891953ms)
+✔ protected pages still reject guests before resolving their lazy content (24.916538ms)
+✔ unverified roles see identity instructions on every private route without portal content (199.139805ms)
+✔ specialist can open parent guide authoring and text conversation (136.072116ms)
+✔ child adaptation entries are available only to specialists (72.255047ms)
+✔ specialist weekly progress is separate from read-only teacher reports (87.237439ms)
+✔ each role menu links only to authorized portal pages (4.262616ms)
+✔ admin has institution and ministry creation inside account management (118.222194ms)
+✔ parent portal works without general identity approval (345.742705ms)
+✔ lesson authoring is a standalone page with video controls for teaching roles (76.427077ms)
+✔ institution sidebar exposes operational modules and tracks current section (1.701569ms)
+✔ institution hostname resolver does not mistake the main domain for a tenant (0.796199ms)
+✔ student toolbar offers lesson search instead of unavailable identity search (38.349969ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4527.940854
