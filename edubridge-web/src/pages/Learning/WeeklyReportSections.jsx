@@ -80,11 +80,16 @@ export function WeeklyReportForm({
   )
 }
 
-export function WeeklyReportsGrid({ reports, progressView = false }) {
+export function WeeklyReportsGrid({ reports, progressView = false, hasAvailableChildren = true }) {
   return (
     <section className="fp-grid">
       {reports.length === 0 ? (
-        <EmptyState title={progressView ? "لا يوجد تقدم أسبوعي لهذا الطفل بعد" : "لا توجد تقارير لهذا الطفل بعد"} description="ستظهر هنا ملخصات التقدّم والإنجازات بعد إضافة التقرير الأسبوعي. يمكنك اختيار طفل آخر من أعلى الصفحة." />
+        <EmptyState
+          title={!hasAvailableChildren ? 'لا يوجد أطفال متاحون للمتابعة' : progressView ? 'لا يوجد تقدم أسبوعي لهذا الطفل بعد' : 'لا توجد تقارير لهذا الطفل بعد'}
+          description={!hasAvailableChildren
+            ? 'ستظهر التقارير عندما يصبح لديك طفل مرتبط بحسابك ومتاح للمتابعة.'
+            : 'ستظهر هنا ملخصات التقدّم والإنجازات بعد إضافة التقرير الأسبوعي. يمكنك اختيار طفل آخر من أعلى الصفحة.'}
+        />
       ) : (
         reports.map((report) => (
           <article className="fp-card weekly-report-card" key={report.id}>
