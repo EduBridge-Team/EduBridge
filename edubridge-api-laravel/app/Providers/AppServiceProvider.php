@@ -31,7 +31,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('auth-login', function (Request $request) {
-            $email = Str::lower(trim((string) $request->input('email', 'unknown')));
+            $rawEmail = $request->input('email', 'unknown');
+            $email = is_string($rawEmail) ? Str::lower(trim($rawEmail)) : 'unknown';
             $ip = $request->ip();
 
             return [
@@ -49,7 +50,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('auth-recovery', function (Request $request) {
-            $email = Str::lower(trim((string) $request->input('email', 'unknown')));
+            $rawEmail = $request->input('email', 'unknown');
+            $email = is_string($rawEmail) ? Str::lower(trim($rawEmail)) : 'unknown';
 
             return [
                 Limit::perMinute(3)->by('recovery-ip:' . $request->ip()),
