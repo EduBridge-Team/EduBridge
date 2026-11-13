@@ -7,4 +7,7 @@ export const ROLE_NAMES = {
   admin: 'مدير النظام',
   ministry: 'الوزارة',
   institution: 'المؤسسة التعليمية',
+  school: 'المدرسة',
+  school_director: 'مدير المدرسة',
+  staff: 'موظف المدرسة',
 }
