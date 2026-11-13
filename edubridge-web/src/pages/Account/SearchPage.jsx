@@ -7,6 +7,19 @@ import { ROLE_NAMES } from '../../roles'
 
 const STAFF = ['teacher', 'specialist', 'admin', 'ministry', 'institution']
 
+export function IdentitySearchForm({ q, error, loading, onChange, onSubmit }) {
+  return <>
+    <form onSubmit={onSubmit} className="search-row identity-search-form" aria-busy={loading}>
+      <input type="search" placeholder="أدخل رقم الهوية الكامل..." aria-label="أدخل رقم الهوية الكامل..."
+        value={q} inputMode="numeric" onChange={onChange}
+        aria-invalid={Boolean(error)} aria-describedby={error ? 'identity-search-error' : undefined} />
+      <button className="btn" type="submit" disabled={loading}>{loading ? 'جارٍ البحث...' : 'بحث'}</button>
+    </form>
+    {loading && <div className="state" role="status">جارٍ البحث...</div>}
+    {error && <div id="identity-search-error" role="alert" className="error-box" style={{ marginTop: 12 }}>{error}</div>}
+  </>
+}
+
 // شارة حالة التوثيق
 function VerifyBadge({ status }) {
   const map = {
@@ -57,24 +70,11 @@ export default function SearchPage() {
         <p>ابحث عن طالب أو ولي أمر أو موظف باستخدام رقم الهوية الكامل.</p>
       </section>
 
-      <form onSubmit={run} className="search-row identity-search-form">
-        <input
-          type="search"
-          placeholder="أدخل رقم الهوية الكامل..." aria-label="أدخل رقم الهوية الكامل..."
-          value={q}
-          inputMode="numeric"
-          onChange={(e) => setQ(e.target.value)}
-        />
-        <button className="btn" type="submit" disabled={loading}>
-          {loading ? 'جارٍ البحث...' : 'بحث'}
-        </button>
-      </form>
-
-      {error && <div className="error-box" style={{ marginTop: 12 }}>{error}</div>}
+      <IdentitySearchForm q={q} error={error} loading={loading} onSubmit={run} onChange={(e) => setQ(e.target.value)} />
 
       {results && (
         results.length === 0 ? (
-          <div className="state">لا توجد نتائج مطابقة</div>
+          <div className="state" role="status">لا توجد نتائج مطابقة</div>
         ) : (
           <div style={{ marginTop: 16 }}>
             {results.map((r) => (
