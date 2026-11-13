@@ -66,7 +66,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
     super.initState();
     _tabIndex = widget.initialTab < 0
         ? 0
-        : (widget.initialTab > 2 ? 2 : widget.initialTab);
+        : (widget.initialTab > 3 ? 3 : widget.initialTab);
     _loadData().then((_) => _checkAndShowVerificationDialog());
   }
 
@@ -169,6 +169,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     ? _currentPrimaryTab(context, c)
                     : _tabIndex == 2
                     ? _TeacherHomeworksTab(children: _children)
+                    : _tabIndex == 3
+                    ? const CaseDiscussionScreen(embedded: true)
                     : RefreshIndicator(
                         onRefresh: _refreshData,
                         child: _loading
@@ -203,6 +205,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
             icon: Icon(AppIcons.homework),
             selectedIcon: Icon(Icons.assignment),
             label: context.l10n.homeworks,
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.forum),
+            selectedIcon: Icon(Icons.forum),
+            label: context.l10n.caseStudy,
           ),
         ],
       ),

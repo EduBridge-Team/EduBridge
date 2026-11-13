@@ -14,6 +14,7 @@ import { useUserSettings } from '../userSettings'
 import { useMobileNavigation } from '../components/useMobileNavigation'
 import BrandLogo from '../components/BrandLogo/BrandLogo'
 import { activeSection, createRoleNavItems } from './rolePortalNavigation'
+import { portalSearchFor } from './portalSearch.js'
 
 export default function RolePortalLayout({ children }) {
   const navigate = useNavigate()
@@ -121,13 +122,10 @@ export default function RolePortalLayout({ children }) {
     navigate(`/children/${child.id}/progress`, { state: { childName: child.name } })
   }, [childrenList, navigate])
 
+  const search = portalSearchFor(role)
   const submitSearch = (event) => {
     event.preventDefault()
-    if (role === 'parent') {
-      navigate('/lessons', { state: { focusSearch: true } })
-      return
-    }
-    navigate('/search')
+    navigate(search.path, { state: { focusSearch: true } })
   }
 
   const current = activeSection(location.pathname, role, homePath)
@@ -144,9 +142,6 @@ export default function RolePortalLayout({ children }) {
     [childrenList, conversationCount, goToProgress, homePath, navigate, role],
   )
 
-  const searchPlaceholder = role === 'parent'
-    ? 'ابحث في الدروس والمحتوى...'
-    : 'ابحث برقم الهوية أو افتح صفحة البحث...'
   const navDensity = navItems.length <= 6
     ? 'relaxed'
     : navItems.length <= 9
@@ -273,7 +268,7 @@ export default function RolePortalLayout({ children }) {
 
           <form className="pp-global-search" onSubmit={submitSearch}>
             <Search size={19} />
-            <button type="submit">{searchPlaceholder}</button>
+            <button type="submit">{search.placeholder}</button>
           </form>
 
           <button

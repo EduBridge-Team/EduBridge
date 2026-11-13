@@ -15,7 +15,7 @@ trait AuthLoginActions
         $email = $request->input('email');
         $password = $request->input('password');
 
-        if (!$email || !$password) {
+        if (!is_string($email) || !is_string($password) || !$email || !$password) {
             return response()->json(['error' => 'الإيميل والباسورد مطلوبان'], 400);
         }
 

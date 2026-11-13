@@ -195,3 +195,9 @@ test('institution hostname resolver does not mistake the main domain for a tenan
   assert.equal(resolveInstitutionSlug('jabalia.edubridge.win'), 'jabalia')
   assert.equal(resolveInstitutionSlug('api.edubridge.win'), null)
 })
+
+test('student toolbar offers lesson search instead of unavailable identity search', async () => {
+  const html = await renderRoute('/student', 'student')
+  assert.match(html, /ابحث في الدروس والمحتوى/)
+  assert.doesNotMatch(html, /ابحث برقم الهوية/)
+})

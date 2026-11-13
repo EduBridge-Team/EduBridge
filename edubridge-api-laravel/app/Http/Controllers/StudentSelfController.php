@@ -31,8 +31,9 @@ class StudentSelfController extends Controller
             ->where('school.is_active', true)
             ->where('identity.is_active', true)
             ->select('child.id as child_id', 'child.name as child_name',
-                'school.id as school_id', 'section.id as section_id',
-                'grade.id as grade_id')
+                'school.id as school_id', 'school.name as school_name',
+                'section.id as section_id', 'section.name as section_name',
+                'grade.id as grade_id', 'grade.name as grade_name')
             ->limit(2)->get();
 
         if ($student->count() !== 1) {

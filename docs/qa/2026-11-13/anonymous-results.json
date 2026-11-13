@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/health",
+    "status": 200,
+    "expected": 200
+  },
+  {
+    "path": "/student/me",
+    "status": 401,
+    "expected": 401
+  },
+  {
+    "path": "/admin/schools",
+    "status": 401,
+    "expected": 401
+  }
+]

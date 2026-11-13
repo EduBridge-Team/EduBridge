@@ -137,7 +137,8 @@ export default function WeeklyReportsPage() {
 
         <label className="reports-child-select">
           <span>الطفل</span>
-          <select value={childId} onChange={(event) => setChildId(event.target.value)}>
+          <select value={childId} onChange={(event) => setChildId(event.target.value)} disabled={childrenLoading || children.length === 0}>
+            {children.length === 0 ? <option value="">لا يوجد أطفال متاحون</option> : null}
             {children.map((child) => (
               <option key={child.id} value={child.id}>{child.name}</option>
             ))}
@@ -162,7 +163,7 @@ export default function WeeklyReportsPage() {
       {isSpecialist && childId && <SpecialistWeeklyProgressForm key={childId} childId={childId} onSaved={() => loadReports(childId)} />}
       {childrenLoading || reportsLoading || loadedChildId !== childId
         ? <div className="state" role="status">جارِ تحميل التقارير...</div>
-        : !error && !childrenError && <WeeklyReportsGrid reports={reports} progressView={isSpecialist} />}
+        : !error && !childrenError && <WeeklyReportsGrid reports={reports} progressView={isSpecialist} hasAvailableChildren={children.length > 0} />}
     </div>
   )
 }

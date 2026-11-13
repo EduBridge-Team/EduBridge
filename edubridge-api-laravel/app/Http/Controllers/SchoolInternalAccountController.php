@@ -11,13 +11,42 @@ use Illuminate\Support\Facades\Validator;
 
 class SchoolInternalAccountController extends Controller
 {
+    public function sections(Request $request): JsonResponse
+    {
+        $actor = $request->attributes->get('jwt_user');
+        if (!$actor) return response()->json(['error' => 'Forbidden'], 403);
+        $schools = DB::table('school_management_assignments as a')
+            ->join('schools as s', 's.id', '=', 'a.school_id')
+            ->where('a.user_id', $actor->id)->where('a.role', 'director')
+            ->whereNull('a.ends_at')->where('s.is_active', true)
+            ->select('s.id', 's.organization_id', 's.internal_domain_confirmed_at')->limit(2)->get();
+        if ($schools->count() !== 1 || !$schools[0]->internal_domain_confirmed_at) return response()->json(['error' => 'Forbidden'], 403);
+        $school = $schools[0];
+        if ($school->organization_id !== null) {
+            return response()->json(['school_id' => (int) $school->id,
+                'direct_admission_enabled' => false, 'sections' => []]);
+        }
+        $sections = DB::table('sections as s')
+            ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->join('academic_years as y', 'y.id', '=', 's.academic_year_id')
+            ->where('g.school_id', $school->id)->where('y.school_id', $school->id)
+            ->where('g.is_active', true)->where('y.is_current', true)
+            ->select('s.id', 's.name', 's.capacity', 'g.name as grade_name', 'y.name as year_name')
+            ->orderBy('g.position')->orderBy('s.name')->get();
+        return response()->json(['school_id' => (int) $school->id,
+            'direct_admission_enabled' => true, 'sections' => $sections]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validation = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:190'],
             'username' => ['required', 'string', 'regex:/^[a-z0-9][a-z0-9._-]{1,63}$/D'],
             'role' => ['required', 'in:teacher,student,staff'],
-            'child_id' => ['required_if:role,student', 'nullable', 'integer', 'min:1'],
+            'create_new_student' => ['sometimes', 'boolean'],
+            'section_id' => ['nullable', 'integer', 'min:1'],
+            'birth_date' => ['nullable', 'date', 'before:today'],
+            'child_id' => ['nullable', 'integer', 'min:1'],
             'password' => ['required', 'string', 'min:12', 'max:128'],
         ]);
         if ($validation->fails()) {
@@ -25,6 +54,14 @@ class SchoolInternalAccountController extends Controller
         }
 
         $input = $validation->validated();
+        $directStudent = ($input['create_new_student'] ?? false) === true || ($input['create_new_student'] ?? false) === 1;
+        if ($directStudent && ($input['role'] !== 'student' || isset($input['child_id']) || empty($input['section_id']))) {
+            return response()->json(['error' => 'Invalid direct student admission'], 422);
+        }
+        if (!$directStudent && (isset($input['section_id']) || isset($input['birth_date']))) return response()->json(['error' => 'Unexpected direct student fields'], 422);
+        if ($input['role'] === 'student' && !$directStudent && empty($input['child_id'])) {
+            return response()->json(['error' => 'Enrolled child required'], 422);
+        }
         if (trim($input['name']) === '') return response()->json(['error' => 'Name required'], 422);
         $actor = $request->attributes->get('jwt_user');
         if (!$actor) {
@@ -43,7 +80,7 @@ class SchoolInternalAccountController extends Controller
         }
 
         try {
-            return DB::transaction(function () use ($request, $actor, $input, $passwordColumn) {
+            return DB::transaction(function () use ($request, $actor, $input, $passwordColumn, $directStudent) {
                 $schools = DB::table('school_management_assignments as assignment')
                     ->join('schools as school', 'school.id', '=', 'assignment.school_id')
                     ->where('assignment.user_id', $actor->id)
@@ -66,11 +103,42 @@ class SchoolInternalAccountController extends Controller
                     return response()->json(['error' => 'Internal domain must be confirmed'], 409);
                 }
 
+                if ($directStudent && $school->organization_id !== null) {
+                    return response()->json(['error' => 'Direct student admission is unavailable for institution-managed schools'], 403);
+                }
+                if ($directStudent && (mb_strlen(trim($input['name'])) > 100 || empty($input['birth_date']))) {
+                    return response()->json(['error' => 'Student name and birth date are required'], 422);
+                }
+
                 if ($input['role'] === 'student') {
                     if (!Schema::hasTable('student_account_links')) {
                         return response()->json(['error' => 'Student account linking is unavailable'], 503);
                     }
-                    // A student login must belong to an existing enrolled child in this school.
+                    if ($directStudent) {
+                        $section = DB::table('sections as s')
+                            ->join('grades as g', 'g.id', '=', 's.grade_id')
+                            ->join('academic_years as y', 'y.id', '=', 's.academic_year_id')
+                            ->where('s.id', $input['section_id'])
+                            ->where('g.school_id', $school->id)
+                            ->where('y.school_id', $school->id)
+                            ->where('g.is_active', true)
+                            ->where('y.is_current', true)
+                            ->select('s.id', 's.capacity')->first();
+                        if (!$section) return response()->json(['error' => 'Section is unavailable in the current school year'], 422);
+                        DB::table('sections')->where('id', $section->id)->lockForUpdate()->first();
+                        $count = DB::table('student_enrollments')->where('section_id', $section->id)->where('status', 'active')->count();
+                        if ($section->capacity !== null && $count >= $section->capacity) return response()->json(['error' => 'Section is full'], 409);
+                        $duplicate = DB::table('student_enrollments as e')
+                            ->join('sections as s', 's.id', '=', 'e.section_id')
+                            ->join('grades as g', 'g.id', '=', 's.grade_id')
+                            ->join('children as c', 'c.id', '=', 'e.child_id')
+                            ->where('g.school_id', $school->id)
+                            ->where('e.status', 'active')
+                            ->where('c.name', trim($input['name']))
+                            ->where('c.birth_date', $input['birth_date'] ?? null)->exists();
+                        if ($duplicate) return response()->json(['error' => 'Possible duplicate student enrollment'], 409);
+                    } else {
+                        // An existing student login must belong to an enrolled child in this school.
                     $enrolled = DB::table('student_enrollments as e')
                         ->join('sections as s', 's.id', '=', 'e.section_id')
                         ->join('grades as g', 'g.id', '=', 's.grade_id')
@@ -82,6 +150,7 @@ class SchoolInternalAccountController extends Controller
                     }
                     if (DB::table('student_account_links')->where('child_id', $input['child_id'])->exists()) {
                         return response()->json(['error' => 'This student already has a login account'], 409);
+                    }
                     }
                 }
 
@@ -110,6 +179,8 @@ class SchoolInternalAccountController extends Controller
                 }
                 if (Schema::hasColumn('users', 'created_at')) {
                     $user['created_at'] = now();
+                }
+                if (Schema::hasColumn('users', 'updated_at')) {
                     $user['updated_at'] = now();
                 }
                 $userId = DB::table('users')->insertGetId($user);
@@ -117,6 +188,19 @@ class SchoolInternalAccountController extends Controller
                     'school_id' => $school->id, 'user_id' => $userId,
                     'username' => $input['username'], 'created_at' => now(), 'updated_at' => now(),
                 ]);
+                if ($directStudent) {
+                    $input['child_id'] = DB::table('children')->insertGetId([
+                        'name' => trim($input['name']),
+                        'birth_date' => $input['birth_date'] ?? null,
+                        'status' => 'pending',
+                        'doc_verification_status' => 'pending',
+                    ]);
+                    DB::table('student_enrollments')->insert([
+                        'section_id' => $input['section_id'], 'child_id' => $input['child_id'],
+                        'status' => 'active', 'enrolled_on' => now()->toDateString(),
+                        'created_at' => now(), 'updated_at' => now(),
+                    ]);
+                }
                 if ($input['role'] === 'student') {
                     DB::table('student_account_links')->insert([
                         'user_id' => $userId,
@@ -131,6 +215,7 @@ class SchoolInternalAccountController extends Controller
                     'username' => $input['username'],
                     'login_identifier' => $email,
                     'role' => $input['role'],
+                    'child_id' => $input['role'] === 'student' ? (int) $input['child_id'] : null,
                 ], 201);
             }, 3);
         } catch (QueryException $e) {

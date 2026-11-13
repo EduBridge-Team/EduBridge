@@ -1,0 +1,24 @@
+{
+  "pull_requests": {
+    "1417": "all executed checks passed",
+    "1418": "all executed checks passed",
+    "1419": "all executed checks passed"
+  },
+  "laravel_job": {
+    "passed": 554,
+    "skipped": 7,
+    "assertions": 2775,
+    "new_login_tests": "2 passed",
+    "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43431420971/job/131905655105"
+  },
+  "school_job": {
+    "passed": 166,
+    "assertions": 781,
+    "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43431420914"
+  },
+  "postgres_lock_job": {
+    "passed": 3,
+    "assertions": 10
+  },
+  "note": "Overlapping CI jobs are not summed. These are isolated tests, not production write tests."
+}

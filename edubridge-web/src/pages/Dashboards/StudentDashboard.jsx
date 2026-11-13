@@ -58,7 +58,7 @@ export default function StudentDashboard() {
       {!loading && !error && student ? (
         <>
           <p>مرحبًا {student.child_name}</p>
-          <p>المدرسة: {student.school_id} · الصف: {student.grade_id} · الشعبة: {student.section_id}</p>
+          <p>المدرسة: {student.school_name || 'غير محددة'} · الصف: {student.grade_name || 'غير محدد'} · الشعبة: {student.section_name || 'غير محددة'}</p>
           <h2>جدولي الدراسي</h2>
           {timetable.length ? <ul>{timetable.map((entry, index) => <li key={`${entry.weekday}-${entry.period_number}-${index}`}>اليوم {entry.weekday} · الحصة {entry.period_number} · {entry.subject_name}{entry.teacher_name ? ` · ${entry.teacher_name}` : ""}</li>)}</ul> : <p>لا توجد حصص مسجلة لشعبتك حاليًا.</p>}
           <h2>واجباتي</h2>

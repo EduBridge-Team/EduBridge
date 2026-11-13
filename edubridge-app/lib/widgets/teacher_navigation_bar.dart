@@ -43,6 +43,11 @@ class _TeacherNavigationBarState extends State<TeacherNavigationBar> {
                   selectedIcon: Icon(Icons.assignment),
                   label: context.l10n.homework,
                 ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.forum),
+                  selectedIcon: Icon(Icons.forum),
+                  label: context.l10n.caseStudy,
+                ),
               ]
             : [
                 NavigationDestination(

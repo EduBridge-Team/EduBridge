@@ -14,7 +14,7 @@ class StudentSelfTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Schema::create('schools', function (Blueprint $t) { $t->id(); $t->boolean('is_active'); });
+        Schema::create('schools', function (Blueprint $t) { $t->id(); $t->string('name'); $t->boolean('is_active'); });
         Schema::create('school_internal_identities', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('user_id');
             $t->boolean('is_active');
@@ -24,8 +24,8 @@ class StudentSelfTest extends TestCase
             $t->unsignedBigInteger('school_id');
         });
         Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); });
-        Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); });
-        Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); });
+        Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
+        Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); $t->string('name'); });
         Schema::create('student_enrollments', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('section_id'); $t->string('status');
         });
@@ -47,12 +47,12 @@ class StudentSelfTest extends TestCase
             ['title'=>'Mine','description'=>'Task A','due_date'=>'2026-11-01','assigned_child_ids'=>'[100]'],
             ['title'=>'Other','description'=>'Task B','due_date'=>'2026-11-02','assigned_child_ids'=>'[101]'],
         ]);
-        DB::table('schools')->insert([['id'=>1,'is_active'=>true],['id'=>2,'is_active'=>true]]);
+        DB::table('schools')->insert([['id'=>1,'name'=>'مدرسة الاختبار','is_active'=>true],['id'=>2,'name'=>'School 2','is_active'=>true]]);
         DB::table('school_internal_identities')->insert(['school_id'=>1,'user_id'=>10,'is_active'=>true]);
         DB::table('student_account_links')->insert(['school_id'=>1,'user_id'=>10,'child_id'=>100]);
         DB::table('children')->insert([['id'=>100,'name'=>'Student A'],['id'=>101,'name'=>'Student B']]);
-        DB::table('grades')->insert([['id'=>1,'school_id'=>1],['id'=>2,'school_id'=>2]]);
-        DB::table('sections')->insert([['id'=>1,'grade_id'=>1],['id'=>2,'grade_id'=>2]]);
+        DB::table('grades')->insert([['id'=>1,'school_id'=>1,'name'=>'الصف الأول'],['id'=>2,'school_id'=>2,'name'=>'Grade 2']]);
+        DB::table('sections')->insert([['id'=>1,'grade_id'=>1,'name'=>'شعبة أ'],['id'=>2,'grade_id'=>2,'name'=>'B']]);
         DB::table('student_enrollments')->insert([
             ['child_id'=>100,'section_id'=>1,'status'=>'active'],
             ['child_id'=>101,'section_id'=>2,'status'=>'active'],
@@ -78,6 +78,10 @@ class StudentSelfTest extends TestCase
         $response = $this->requestAs(10, 'student');
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(100, $response->getData(true)['student']['child_id']);
+        $this->assertSame('مدرسة الاختبار', $response->getData(true)['student']['school_name']);
+        $this->assertSame('الصف الأول', $response->getData(true)['student']['grade_name']);
+        $this->assertSame('شعبة أ', $response->getData(true)['student']['section_name']);
+        $this->assertSame(1, $response->getData(true)['student']['section_id']);
         $this->assertArrayNotHasKey('email', $response->getData(true)['student']);
         $this->assertSame(403, $this->requestAs(20, 'student')->getStatusCode());
         $this->assertSame(403, $this->requestAs(10, 'parent')->getStatusCode());
