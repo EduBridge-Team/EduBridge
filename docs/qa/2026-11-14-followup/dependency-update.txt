@@ -1,0 +1,11 @@
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 0 installs, 2 updates, 0 removals
+  - Upgrading laravel/framework (v13.34.0 => v13.40.0)
+  - Upgrading laravel/prompts (v0.3.24 => v0.3.27)
+Writing lock file
+No security vulnerability advisories found.
+
+composer validate --strict: ./composer.json is valid
+Separate audit retry: network timeout to Packagist (exit 100), not a pass.
+CI evidence is recorded separately.

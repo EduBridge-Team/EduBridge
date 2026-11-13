@@ -1,0 +1,159 @@
+{
+  "production_baseline_user_supplied": "f17fc1de0051d568b7525ff5179da6e421e5de80",
+  "production_deployment_performed": false,
+  "rbac_86_rerun": false,
+  "local": {
+    "targeted": {
+      "passed": 19,
+      "failed": 0
+    },
+    "full_first_attempt": {
+      "passed": 106,
+      "failed": 4,
+      "reason": "Partial checkout missing PHP/Flutter/deploy files"
+    },
+    "full_after_restoring_files": {
+      "passed": 115,
+      "failed": 0,
+      "skipped": 0
+    },
+    "build": "pass",
+    "scoped_oxlint": "pass"
+  },
+  "pull_requests": {
+    "1406": {
+      "head_tested": "89b1cbe40bed0747afeb06a9bea86c9126ac0fcf",
+      "merged_sha": "1c980e997ae5da7977d04cc0e347cdf756b07a35",
+      "checks": "All executed checks success; three inapplicable deployment/database checks skipped"
+    },
+    "1423": {
+      "first_head": "80a72638924967fe7788e2536194d707116ac8f0",
+      "first_attempt": "Composer audit failed on newly reported Laravel advisory; other workflows passed",
+      "updated_head": "b426da55a6fb352941d61f19d406cdec4390dfdc",
+      "result": "pending",
+      "react_ci": {
+        "passed": 115,
+        "failed": 0,
+        "skipped": 0,
+        "job": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43518768187/job/132207401409",
+        "browser": "mocked in-memory API on loopback; not production E2E"
+      }
+    },
+    "1424": {
+      "head_tested": "ef9173c29bac5d346a5766cfb10aef7fef1a40cb",
+      "merged_sha": "5c9b945dd8d7d99746de32b9b14c1d5843a33686",
+      "checks": [
+        {
+          "name": "Cloudflare Pages",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "PHP syntax",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Laravel tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Deployment config syntax",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "React production build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Flutter ↔ Laravel API contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Laravel unit and feature tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Fresh PostgreSQL migration",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "PHP syntax details",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Production API container",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Composer vulnerability audit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "npm vulnerability audit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "School PostgreSQL lock regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "check-source-branch",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "School access and isolation (SQLite)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Detect changed areas",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "A12 Flutter real HTTP against disposable Laravel/PostgreSQL",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Flutter real HTTP against disposable Laravel/PostgreSQL",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "test_groups": {
+        "Laravel": {
+          "passed": 556,
+          "skipped": 7,
+          "assertions": 2787
+        },
+        "school_sqlite": {
+          "passed": 166,
+          "assertions": 781
+        },
+        "fresh_postgres": {
+          "passed": 4,
+          "assertions": 60
+        },
+        "postgres_lock": {
+          "passed": 3,
+          "assertions": 10
+        },
+        "note": "Overlapping groups, do not add counts"
+      }
+    }
+  }
+}
