@@ -39,7 +39,7 @@ class AuthLoginInputValidationTest extends TestCase
 
     public function test_account_recovery_rate_limiter_handles_non_string_email(): void
     {
-        $limiter = \\Illuminate\\Support\\Facades\\RateLimiter::limiter('auth-recovery');
+        $limiter = \Illuminate\Support\Facades\RateLimiter::limiter('auth-recovery');
         $this->assertNotNull($limiter);
         $request = Request::create('/api/auth/forgot-password', 'POST', ['email' => ['invalid']]);
         $this->assertCount(2, $limiter($request));
