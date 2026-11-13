@@ -1,0 +1,27 @@
+[
+  {
+    "path": "/auth/login",
+    "check": "input validation",
+    "status": 400,
+    "expected": 400,
+    "passed": true,
+    "initial_expected": 422,
+    "expectation_note": "Reviewed AuthLoginActions: missing email/password explicitly returns 400."
+  },
+  {
+    "path": "/auth/login",
+    "check": "input validation",
+    "status": 400,
+    "expected": 400,
+    "passed": true,
+    "initial_expected": 422,
+    "expectation_note": "Reviewed AuthLoginActions: missing email/password explicitly returns 400."
+  },
+  {
+    "path": "/student/me",
+    "check": "invalid bearer",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  }
+]

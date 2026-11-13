@@ -1,0 +1,25 @@
+✔ every supported portal role has a readable Arabic name (4.117457ms)
+✔ portal role permissions match the API roles shared with mobile (3.310289ms)
+(node:56965) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ public and auth pages resolve lazy modules on direct entry (1598.264501ms)
+✔ each role dashboard resolves inside its existing portal shell (729.768216ms)
+✔ protected pages still reject guests before resolving their lazy content (24.676062ms)
+✔ unverified roles see identity instructions on every private route without portal content (175.777135ms)
+✔ specialist can open parent guide authoring and text conversation (108.970251ms)
+✔ child adaptation entries are available only to specialists (63.974242ms)
+✔ specialist weekly progress is separate from read-only teacher reports (78.616852ms)
+✔ each role menu links only to authorized portal pages (3.642403ms)
+✔ admin has institution and ministry creation inside account management (108.984207ms)
+✔ parent portal works without general identity approval (317.868439ms)
+✔ lesson authoring is a standalone page with video controls for teaching roles (67.48808ms)
+✔ institution sidebar exposes operational modules and tracks current section (1.458609ms)
+✔ institution hostname resolver does not mistake the main domain for a tenant (0.604781ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3883.625922

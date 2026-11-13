@@ -1,0 +1,7 @@
+[
+  {
+    "path": "/institutions/my-organization",
+    "status": 403,
+    "error": "هذا الحساب غير مرتبط بمؤسسة فعالة"
+  }
+]
