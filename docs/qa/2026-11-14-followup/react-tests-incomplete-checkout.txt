@@ -1,0 +1,246 @@
+
+> edubridge-web@0.0.0 test
+> node --test tests/*.test.mjs
+
+✔ lesson categories remain truthful and consistent across search and filtering (8.708444ms)
+✔ missing teacher data does not contradict the assignment label (1.569861ms)
+✔ workflow values display Arabic labels without changing stored enum values (1.15754ms)
+✔ workflow controls render visible associated labels and child links are keyboard focusable (2865.050754ms)
+✔ admin child counts use real parent relations and include every assigned specialist (3.810597ms)
+✔ closed support tickets do not offer close or in-progress actions (735.87164ms)
+✔ auth pages do not lock the document viewport on desktop (4.32192ms)
+✔ auth forms retain natural page scrolling across breakpoints (4.63407ms)
+✔ switching conversations rejects late responses and cancelled requests (8.922676ms)
+✔ the newest request for one conversation wins (1.469793ms)
+✔ Google SDK loads once, retries after failure, and reuses the ready SDK (8.879556ms)
+✔ Google signup keeps a public role selector and forwards it to the API (32.768404ms)
+✔ cross-page destination waits for section mount and clears sticky header (8.247227ms)
+✔ repeated section navigation scrolls again and respects reduced motion (1.069787ms)
+✔ abandoned navigation cancels retries and missing targets have a bounded wait (5.048156ms)
+✔ encoded section IDs work and malformed or empty hashes do nothing (0.732802ms)
+✔ all three section destinations return to the top of home and about (1.766802ms)
+✔ first impression clearly names disability-focused inclusive education (7.447868ms)
+✔ differentiators specify adaptive learning and team support (1.436778ms)
+✔ saving existing grades and editing only feedback send the grade actually displayed (7.690387ms)
+✔ missing, cleared, invalid and out-of-range grades cannot be sent as zero or null (1.218371ms)
+✔ homework submission choices contain only owned, assigned children (7.23604ms)
+WebSocket server error: Port 24678 is already in use
+11:59:53 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+11:59:54 PM [vite] (client) [optimizer] scanning dependencies...
+✔ parent sees zero grades and feedback, pending status, and no other child submissions or grading controls (4817.914595ms)
+11:59:57 PM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia admission access history is fetched only on click for a specific request (5.764667ms)
+✔ Jabalia admission approval is disabled only when server sets explicit review requirement (4.373801ms)
+✔ safe evidence metadata omits sensitive paths and never implies an admission decision (8.14389ms)
+✔ all five categories may be present without authorizing enrollment (1.176476ms)
+✔ school enrollment panel hides generic final decisions for Jabalia and uses on-demand evidence (2.2461ms)
+✔ Jabalia intake journal is on-demand, request scoped and never accepts admissions (6.477438ms)
+✔ Jabalia inbox hides all final decisions until separate reviews exist (1.158493ms)
+✔ Jabalia school readiness remains on demand and never shows approval buttons (5.149272ms)
+WebSocket server error: Port 24678 is already in use
+11:59:54 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia attendance change history is on-demand and scoped (3239.961655ms)
+11:59:56 PM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia attendance report explains that only saved daily rolls count (4.762626ms)
+WebSocket server error: Port 24678 is already in use
+11:59:55 PM [vite] (client) [optimizer] scanning dependencies...
+✔ contract readiness is a private Jabalia-only institution report (4408.890776ms)
+11:59:57 PM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia homeroom UI is teacher-scoped and never sends arbitrary school or teacher IDs (6.363456ms)
+WebSocket server error: Port 24678 is already in use
+11:59:55 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia institution-only staff attendance is a recorded-days report (4981.683856ms)
+11:59:58 PM [vite] (client) [optimizer] bundling dependencies...
+WebSocket server error: Port 24678 is already in use
+11:59:55 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia reports expose internal-only success story controls and hide them elsewhere (3285.495987ms)
+11:59:57 PM [vite] (client) [optimizer] bundling dependencies...
+WebSocket server error: Port 24678 is already in use
+11:59:55 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia supervision panel presents record and follow-up controls (3669.350155ms)
+✔ follow-up notes are stored and submitted per visit (12.357061ms)
+11:59:57 PM [vite] (client) [optimizer] bundling dependencies...
+11:59:59 PM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia institution activity report is private and never includes document access controls (3920.927625ms)
+12:00:01 AM [vite] (client) [optimizer] bundling dependencies...
+✔ Jabalia teacher contract period records use private institution-scoped API and immutable renewal UX (9.024944ms)
+WebSocket server error: Port 24678 is already in use
+12:00:00 AM [vite] (client) [optimizer] scanning dependencies...
+✔ Jabalia contract period panel renders only in the institution teacher document context (3755.284637ms)
+12:00:02 AM [vite] (client) [optimizer] bundling dependencies...
+WebSocket server error: Port 24678 is already in use
+12:00:00 AM [vite] (client) [optimizer] scanning dependencies...
+✔ teacher document access audit is gated to Jabalia and does not contain file metadata (5363.697566ms)
+12:00:03 AM [vite] (client) [optimizer] bundling dependencies...
+✔ teacher personnel document UI uses only a safe attachment flag (9.943868ms)
+✖ metadata-minimized teacher document controller never directly serializes raw document table rows (1.360768ms)
+✔ default Jabalia school week reports 12 defined quota slots, 13 unspecified, and no invented lessons (6.905924ms)
+✔ capacity respects changed local days/periods; flags duplicate slots and overbooked quotas (1.387695ms)
+✔ does not guess the current academic year if no current flag exists (3.9989ms)
+WebSocket server error: Port 24678 is already in use
+✔ Jabalia quota coverage is read-only and integrated with actual school settings (2374.976686ms)
+✔ late page or search responses cannot overwrite a newer request or an unmounted view (5.587965ms)
+✔ failed page retains last good data and retries the requested page (1.960462ms)
+WebSocket server error: Port 24678 is already in use
+(node:21080) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+12:00:01 AM [vite] (client) [optimizer] scanning dependencies...
+✔ API preserves legacy lists and encodes explicit page and filter requests (4265.627034ms)
+12:00:04 AM [vite] (client) [optimizer] scanning dependencies...
+✔ parent statistics stay global, search stays mounted during loading, and pager buttons have correct boundaries (1974.159211ms)
+✔ Noor offers a direct continuation for token-limited text replies (5.110178ms)
+✔ image replies retain their provenance instead of offering text-only image continuation (1.937256ms)
+✔ Noor shortcuts wrap into a two-column grid on phones (5.438982ms)
+✔ Noor input remains shrinkable and shortcuts remain scrollable on very narrow screens (3.000931ms)
+✔ overlapping history pages stay unique, ordered, and preserve local reads (22.153766ms)
+✔ global unread badge and empty final pages survive parsing; malformed cursor cannot truncate silently (1.722551ms)
+(node:21131) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+12:00:02 AM [vite] (client) [optimizer] scanning dependencies...
+✔ notifications request bounded pages with explicit history/delta cursors using the web session cookie (3076.175818ms)
+✔ toolbar search always opens a route permitted for the current role (6.410516ms)
+✔ student and school accounts search lessons instead of being redirected from staff search (3.870111ms)
+✔ authorized staff keep identity search (2.836994ms)
+✔ private downloads follow the configured API origin and prefix (4.699934ms)
+✔ active uploaded content is rendered as text rather than executable same-origin HTML (4.916273ms)
+✔ signed video opts into CORS for captions while external legacy video keeps its behavior (5.424911ms)
+WebSocket server error: Port 24678 is already in use
+12:00:04 AM [vite] (client) [optimizer] scanning dependencies...
+✔ weekly progress without assigned children does not suggest switching child (3561.273754ms)
+✔ every supported portal role has a readable Arabic name (8.146441ms)
+✔ portal role permissions match the API roles shared with mobile (6.952732ms)
+(node:21391) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+WebSocket server error: Port 24678 is already in use
+12:00:05 AM [vite] (client) [optimizer] scanning dependencies...
+✔ public and auth pages resolve lazy modules on direct entry (3941.323616ms)
+✔ each role dashboard resolves inside its existing portal shell (761.547968ms)
+✔ protected pages still reject guests before resolving their lazy content (22.946931ms)
+✔ unverified roles see identity instructions on every private route without portal content (189.382146ms)
+✔ specialist can open parent guide authoring and text conversation (157.902619ms)
+✔ child adaptation entries are available only to specialists (83.109059ms)
+✔ specialist weekly progress is separate from read-only teacher reports (127.745939ms)
+✔ each role menu links only to authorized portal pages (5.466839ms)
+✔ admin has institution and ministry creation inside account management (156.416905ms)
+✔ parent portal works without general identity approval (410.120454ms)
+✔ lesson authoring is a standalone page with video controls for teaching roles (82.196169ms)
+✔ institution sidebar exposes operational modules and tracks current section (1.558691ms)
+✔ institution hostname resolver does not mistake the main domain for a tenant (0.617096ms)
+✔ student toolbar offers lesson search instead of unavailable identity search (42.000479ms)
+✔ public school password setup route is reachable without an existing session (90.998267ms)
+✔ direct student account payload includes section and birth date without a guardian (9.077612ms)
+✔ direct student requires a valid section and birthday (13.547157ms)
+✔ teacher and staff payloads remain unchanged (3.011177ms)
+✔ school creation and director replacement use the identity API and preserve errors (46.068158ms)
+(node:21480) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ school operation forms accept valid references and omit client authority and empty options (8.859424ms)
+✔ school forms preserve explicit false and require a real destination selection (1.475841ms)
+WebSocket server error: Port 24678 is already in use
+✔ school provisioning and operation forms render in both languages without school-login passwords (2838.214651ms)
+✔ all school promotion decisions use one complete snapshot and server confirmation (8.606162ms)
+✔ no partial, repeated, invalid or cross-school decision can be approved locally (2.675425ms)
+12:00:06 AM [vite] (client) [optimizer] scanning dependencies...
+✔ identity search links invalid input to an announced error (2144.029193ms)
+node:fs:539
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/deploy/web-server.mjs'
+    at readFileSync (node:fs:539:20)
+    at file:///home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-web/tests/security-headers.test.mjs:5:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/deploy/web-server.mjs'
+}
+
+Node.js v26.7.0
+✖ tests/security-headers.test.mjs (154.759478ms)
+node:internal/modules/esm/resolve:272
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/deploy/static-encoding.mjs' imported from /home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-web/tests/static-encoding.test.mjs
+    at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+    at moduleResolve (node:internal/modules/esm/resolve:879:10)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:708:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:728:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:766:56)
+    at #resolve (node:internal/modules/esm/loader:690:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:610:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:277:33)
+    at ModuleJob.link (node:internal/modules/esm/module_job:389:17) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/deploy/static-encoding.mjs'
+}
+
+Node.js v26.7.0
+✖ tests/static-encoding.test.mjs (156.98453ms)
+✔ identity approval is authoritative and email approval never unlocks private pages (5.850491ms)
+✔ new activated school mailbox bypasses personal ID verification only after setup (1.069478ms)
+✔ admin-created ministry and institution accounts do not require identity verification (0.867134ms)
+✔ assigned child scope supports all API representations and normalized IDs (1.525963ms)
+✖ web defaults and every disability recommendation match the mobile shared model (46.033574ms)
+✔ picture messages remain in the normal conversation draft and respect the API limit (5.486183ms)
+✔ parent access does not imply identity approval; queue excludes occupied specialties (1.841825ms)
+✔ Arabic commands prioritize specific phrases and normalize speech spelling (141.948918ms)
+✔ recognition executes only one final result and ignores cancelled sessions (7.664678ms)
+✔ microphone permission failure allows retry and surfaces an actionable message (4.42139ms)
+✔ web auth no longer persists JWTs in localStorage (4.27863ms)
+✔ web API requests use same-origin credentials for HttpOnly session cookie (1.249834ms)
+✔ first-party web requests identify themselves so login JSON omits the JWT (11.334353ms)
+✔ logout asks the API to expire the HttpOnly session cookie (7.100069ms)
+ℹ tests 110
+ℹ suites 0
+ℹ pass 106
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18053.08935
+
+✖ failing tests:
+
+test at tests/jabalia-teacher-document-metadata.test.mjs:19:1
+✖ metadata-minimized teacher document controller never directly serializes raw document table rows (1.360768ms)
+  Error: ENOENT: no such file or directory, open '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-api-laravel/app/Http/Controllers/JabaliaTeacherDocumentController.php'
+      at readFileSync (node:fs:539:20)
+      at TestContext.<anonymous> (file:///home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-web/tests/jabalia-teacher-document-metadata.test.mjs:20:18)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-api-laravel/app/Http/Controllers/JabaliaTeacherDocumentController.php'
+  }
+
+test at tests/security-headers.test.mjs:1:1
+✖ tests/security-headers.test.mjs (154.759478ms)
+  'test failed'
+
+test at tests/static-encoding.test.mjs:1:1
+✖ tests/static-encoding.test.mjs (156.98453ms)
+  'test failed'
+
+test at tests/verification-care-team.test.mjs:44:1
+✖ web defaults and every disability recommendation match the mobile shared model (46.033574ms)
+  Error: ENOENT: no such file or directory, open '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-app/lib/services/accessibility_profile.dart'
+      at async open (node:internal/fs/promises:1360:25)
+      at async readFile (node:internal/fs/promises:2149:14)
+      at async TestContext.<anonymous> (file:///home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-web/tests/verification-care-team.test.mjs:45:16)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/home/mee/.codex/.chatgpt-projects/g-p-6af05f14e33481919576a67b0b4defa1/edubridge-review/edubridge-app/lib/services/accessibility_profile.dart'
+  }
