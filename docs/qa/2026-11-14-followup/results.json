@@ -30,14 +30,20 @@
       "first_head": "80a72638924967fe7788e2536194d707116ac8f0",
       "first_attempt": "Composer audit failed on newly reported Laravel advisory; other workflows passed",
       "updated_head": "b426da55a6fb352941d61f19d406cdec4390dfdc",
-      "result": "pending",
+      "result": "All executed checks success; three inapplicable server/deployment jobs skipped. Merged after clean merge state and expected-head check.",
       "react_ci": {
         "passed": 115,
         "failed": 0,
         "skipped": 0,
         "job": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43518768187/job/132207401409",
         "browser": "mocked in-memory API on loopback; not production E2E"
-      }
+      },
+      "merged_sha": "4d0b591c0cf3e741b006dbc47ceec98ee723ca6d",
+      "final_runs": [
+        "https://github.com/EduBridge-Team/EduBridge/actions/runs/43518768187",
+        "https://github.com/EduBridge-Team/EduBridge/actions/runs/43518768147",
+        "https://github.com/EduBridge-Team/EduBridge/actions/runs/43518767987"
+      ]
     },
     "1424": {
       "head_tested": "ef9173c29bac5d346a5766cfb10aef7fef1a40cb",
