@@ -1,0 +1,309 @@
+{
+  "date": "2026-11-14",
+  "timezone": "Asia/Jerusalem",
+  "github_login": "MohammedEmad333",
+  "production_baseline_user_supplied": "4a0c975f7eeb55cdb28df941ba108bb296a85da1",
+  "production_deployment_performed": false,
+  "production_migrations_performed": false,
+  "production_data_writes": false,
+  "jabalia_uat_touched": false,
+  "rbac_86_rerun": false,
+  "live": {
+    "authenticated_roles_tested": [],
+    "public_home": "pass",
+    "login_form": "pass",
+    "login_email_tab_to_recovery": "pass",
+    "login_horizontal_overflow": {
+      "viewport": 1363,
+      "document": 1348
+    },
+    "console_observed": "Two chrome-extension errors; no claim of comprehensive site/network coverage",
+    "protected_mobile_tablet_search_student_weekly_and_role_pages": "not tested; no active authenticated browser session"
+  },
+  "local": {
+    "react": {
+      "passed": 115,
+      "failed": 0,
+      "skipped": 0
+    },
+    "build": "pass",
+    "lint": "completed with existing warnings",
+    "npm_audit": {
+      "total": 0
+    },
+    "php_composer_docker": "unavailable"
+  },
+  "pull_requests": {
+    "1427": {
+      "state": "closed, superseded",
+      "reason": "test/* rejected by branch guard"
+    },
+    "1428": {
+      "head": "99ddca5f30b91af8b9d45a26fd01e5006167fa62",
+      "merged_sha": "1fb1d6f7672afb3b76ba2b729b5b2faedbbe7b51",
+      "checks": [
+        {
+          "name": "A12 Flutter real HTTP against disposable Laravel/PostgreSQL",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814870/job/132274261129"
+        },
+        {
+          "name": "Composer vulnerability audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814263/job/132274258937"
+        },
+        {
+          "name": "School PostgreSQL lock regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814235/job/132274258994"
+        },
+        {
+          "name": "Flutter real HTTP against disposable Laravel/PostgreSQL",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814499/job/132274259580"
+        },
+        {
+          "name": "Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274258853"
+        },
+        {
+          "name": "School access and isolation (SQLite)",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814235/job/132274258808"
+        },
+        {
+          "name": "npm vulnerability audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814263/job/132274258771"
+        },
+        {
+          "name": "check-source-branch",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814431/job/132274259553"
+        },
+        {
+          "name": "PHP syntax details",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274310807"
+        },
+        {
+          "name": "Flutter ↔ Laravel API contract",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274310787"
+        },
+        {
+          "name": "Laravel unit and feature tests",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274310827"
+        },
+        {
+          "name": "React production build",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274310861"
+        },
+        {
+          "name": "Fresh PostgreSQL migration",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274310795"
+        },
+        {
+          "name": "Production API container",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274310812"
+        },
+        {
+          "name": "Deployment config syntax",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132274312877"
+        },
+        {
+          "name": "Laravel tests",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132275258087"
+        },
+        {
+          "name": "PHP syntax",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43538814321/job/132275293065"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/runs/132275738196"
+        }
+      ],
+      "laravel": {
+        "passed": 559,
+        "skipped": 7,
+        "assertions": 2806
+      },
+      "school_sqlite": {
+        "passed": 166,
+        "assertions": 781
+      },
+      "postgres_lock": {
+        "passed": 3,
+        "assertions": 10
+      },
+      "count_note": "overlapping groups; do not add"
+    },
+    "1429": {
+      "head": "a65e2ef26b54328276207c0bc1ccf232baa48f94",
+      "first_attempt": "failed: missing synthetic verification endpoint fixture; corrected, production verification gate untouched",
+      "state": "merged",
+      "checks": [
+        {
+          "name": "Cloudflare Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/runs/132278344884"
+        },
+        {
+          "name": "PHP syntax",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276452400"
+        },
+        {
+          "name": "Laravel tests",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276428278"
+        },
+        {
+          "name": "Fresh PostgreSQL migration",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276393787"
+        },
+        {
+          "name": "Production API container",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276393662"
+        },
+        {
+          "name": "Deployment config syntax",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276392570"
+        },
+        {
+          "name": "React production build",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276391521"
+        },
+        {
+          "name": "Laravel unit and feature tests",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276391496"
+        },
+        {
+          "name": "Flutter ↔ Laravel API contract",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276391445"
+        },
+        {
+          "name": "PHP syntax details",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276391436"
+        },
+        {
+          "name": "check-source-branch",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461914/job/132276347749"
+        },
+        {
+          "name": "npm vulnerability audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461947/job/132276345991"
+        },
+        {
+          "name": "Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461941/job/132276345890"
+        },
+        {
+          "name": "Composer vulnerability audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461947/job/132276345706"
+        },
+        {
+          "name": "React suite, build, and isolated Chromium UI",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461428/job/132276344386"
+        },
+        {
+          "name": "Flutter analyze, widget tests, and web compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461428/job/132276343894"
+        }
+      ],
+      "isolated_ui": {
+        "scenario_groups_passed": 10,
+        "failed": 0,
+        "pageErrors": [],
+        "unexpectedApi": [],
+        "mode": "mock-only loopback",
+        "artifact_url": "https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461428/artifacts/14090989031",
+        "visual_review_widths": [
+          390,
+          768,
+          1280
+        ]
+      },
+      "merged_sha": "46fefe8138bbda10ae5121005945eb211cc1d72d",
+      "flutter": {
+        "passed": 2552,
+        "skipped": 2,
+        "web_build": "pass",
+        "note": "unit/widget suite; not rendered physical-device institutional UAT"
+      }
+    }
+  },
+  "open_prs_reviewed_not_merged": [
+    1411,
+    1412,
+    1414
+  ],
+  "issues_reviewed_kept_open": [
+    1398,
+    1177,
+    1390,
+    1389,
+    1388,
+    1364,
+    1120,
+    1119,
+    1118
+  ]
+}
