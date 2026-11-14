@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Tests\Concerns\MocksPrivateR2;
 
 class PrivateLessonFileTest extends \Tests\TestCase
@@ -129,6 +130,60 @@ class PrivateLessonFileTest extends \Tests\TestCase
         $this->travel(16)->minutes();
         $this->getJson($url)->assertForbidden();
         $this->travelBack();
+        $this->assertCount(0, $this->r2History);
+    }
+
+    public function test_expiration_survives_missing_parsed_query_parameter(): void
+    {
+        // Model PHP max_input_vars truncation without sending a large request or
+        // changing the process configuration. The signed raw query stays intact.
+        $request = Request::create($this->link());
+        $request->query->remove('expires');
+        $this->assertNull($request->query('expires'));
+        $this->assertStringContainsString('expires=', $request->server->get('QUERY_STRING'));
+        $this->assertTrue(URL::hasValidSignature($request, absolute: false));
+        $this->travel(16)->minutes();
+        try {
+            $this->assertFalse(URL::hasValidSignature($request, absolute: false));
+        } finally {
+            $this->travelBack();
+        }
+        $this->assertCount(0, $this->r2History);
+    }
+
+    public function test_numeric_query_values_cannot_inject_a_second_expiration(): void
+    {
+        // Synthetic framework regression for GHSA-6rv8-qj5v-p8ch. EduBridge's
+        // actual generator uses selected string keys, never a request query array.
+        $url = URL::temporarySignedRoute('lesson.file', now()->addMinutes(15), [
+            'lessonId' => 100, 'filename' => 'video.mp4', 0 => 'extra&expires=0',
+        ], absolute: false);
+        $this->assertSame(1, substr_count($url, 'expires='));
+        $this->assertStringContainsString('extra%26expires%3D0', $url);
+        $request = Request::create($url);
+        $this->assertTrue(URL::hasValidSignature($request, absolute: false));
+        $this->travel(16)->minutes();
+        try {
+            $this->assertFalse(URL::hasValidSignature($request, absolute: false));
+        } finally {
+            $this->travelBack();
+        }
+        $this->assertCount(0, $this->r2History);
+    }
+
+    public function test_signed_link_cannot_be_reused_for_another_lesson_file_or_role(): void
+    {
+        $this->mockR2([]);
+        $url = $this->link();
+        foreach ([
+            str_replace('/lesson/100/', '/lesson/101/', $url),
+            str_replace('/video.mp4', '/other.mp4', $url),
+            str_replace('role=parent', 'role=teacher', $url),
+            $url . '&extra=1',
+        ] as $tampered) {
+            $this->assertNotSame($url, $tampered);
+            $this->getJson($tampered)->assertForbidden();
+        }
         $this->assertCount(0, $this->r2History);
     }
 
