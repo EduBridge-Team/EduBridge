@@ -75,3 +75,9 @@ https://github.com/EduBridge-Team/EduBridge/actions/runs/43539461428/job/1322763
 #1429 دُمج بعد نجاح أحدث فحوصه جميعها؛ الرأس المختبر a65e2ef26b54328276207c0bc1ccf232baa48f94. React 115/115، عشرة سيناريوهات audit وsmoke Chromium، Flutter 2552 PASS و2 skipped وبناء الويب PASS. فحوص Laravel/صورة API/قاعدة البيانات غير المتأثرة مرّت بالحراسة أو skipped؛ لا ندعي تشغيل Laravel كاملًا من جديد في PR الواجهة.
 المراجع النهائية للفحوص والبصمات في results.json. نتائج التصحيح تحل محل نتيجة فشل تجهيز الاختبار الأولى دون حذفها.
 لم ننشر أي إصدار إلى الإنتاج؛ يبقى الإصدار المنشور بحسب إفادة المستخدم 4a0c975f7eeb55cdb28df941ba108bb296a85da1. دمج المصدر لا يغير هذا الوصف إلى منشور.
+
+روابط الإصلاحات والتقرير:
+https://github.com/EduBridge-Team/EduBridge/pull/1428
+https://github.com/EduBridge-Team/EduBridge/pull/1429
+https://github.com/EduBridge-Team/EduBridge/pull/1430
+بصمة دمج #1429: 46fefe8138bbda10ae5121005945eb211cc1d72d.
