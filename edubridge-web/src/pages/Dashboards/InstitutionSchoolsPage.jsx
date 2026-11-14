@@ -117,7 +117,7 @@ export default function InstitutionSchoolsPage() {
 
   if (!slug || !institution) {
     return (
-      <div className="state error">
+      <div className="state error" role="alert">
         {institutionError || 'لم يتم العثور على مؤسسة مرتبطة بهذا الحساب.'}
       </div>
     )
