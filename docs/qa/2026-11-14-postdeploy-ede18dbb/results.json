@@ -1,0 +1,237 @@
+{
+  "date": "2026-11-14",
+  "site": "https://edubridge.win",
+  "production_sha": "ede18dbb93c4e0a97b717f346bb997af2d317535",
+  "revision_evidence": "Deployment SHA supplied by user; matching commit and merged PR #1432 verified in GitHub. Runtime hash not independently exposed/verified. Current live UI shows published #1431 labels and #1432 reason.",
+  "server_baseline": {
+    "source": "User-confirmed, not rerun",
+    "health": "API/Web/PostgreSQL healthy; HTTP 200; Laravel 13.41.0",
+    "authentication": "10 QA accounts pass",
+    "rbac": "86 PASS, 0 FAIL; not repeated"
+  },
+  "method": {
+    "production": "Real cloud browser, real site; no Mock API",
+    "auth": "Secure credential requests; no secret values inspected or copied",
+    "sessions": "Separate tab per role; sequential logout. Shared browser profile, not independent contexts. Transient prior route after logout resolved to sign-in before next auth."
+  },
+  "accounts": [
+    {
+      "role": "Parent",
+      "role_label": "ولي أمر",
+      "landing_path": "/parent",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "لوحة الحساب والحالات الفارغة ظاهرة",
+        "التقارير الأسبوعية: شوهد التحميل ثم لا يوجد أطفال متاحون للمتابعة؛ اختيار الطفل معطل",
+        "الدعم: الحقول الثلاثة بأسماء وصول عربية صحيحة؛ Tab من العنوان إلى الرسالة",
+        "نموذج دعم فارغ: العنوان والرسالة مطلوبان عبر role=alert، لا طلب محفوظ",
+        "بحث الدروس الاصطناعي: لا توجد دروس مطابقة"
+      ],
+      "not_completed": [
+        "أخطاء تحميل التقارير لم تحدث طبيعيًا؛ غير مختبرة",
+        "رسالة نجاح الدعم غير مختبرة لأنها تتطلب حفظ طلب"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "Teacher",
+      "role_label": "معلّم",
+      "landing_path": "/teacher",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "اللوحة: 4 دروس وصفر أطفال متابعين",
+        "بحث فارغ: تحقق معلن عبر alert",
+        "بحث 000000000 الاصطناعي: جارٍ البحث وزر معطل ثم لا توجد نتائج مطابقة عبر status",
+        "التقارير الأسبوعية: حالة لا أطفال متاحين للمتابعة؛ التنقل باستخدام Enter"
+      ],
+      "not_completed": [
+        "أخطاء تحميل التقارير غير مختبرة",
+        "لم يُفحص نموذج الدعم لهذا الحساب"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "Specialist",
+      "role_label": "أخصائي",
+      "landing_path": "/specialist",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "لوحة المختص: حالات صفرية دون أطفال",
+        "التقدم الأسبوعي باستخدام Enter: الحالة الفارغة الصحيحة واختيار الطفل معطل",
+        "البحث الفارغ: رسالة التحقق عبر alert"
+      ],
+      "not_completed": [
+        "أخطاء تحميل التقارير غير مختبرة",
+        "لم تفتعل أخطاء أو تنشأ تقارير"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "Ministry",
+      "role_label": "الوزارة",
+      "landing_path": "/ministry",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "لوحة المتابعة المركزية والمناهج الفارغة ظاهرة",
+        "فتح الدعم باستخدام Enter",
+        "تأكدت أسماء التصنيف والعنوان والرسالة كعناصر دلالية مستقلة",
+        "الإرسال الفارغ: رسالة العنوان والرسالة مطلوبان عبر alert؛ لا إنشاء طلب",
+        "فتح البحث من القائمة"
+      ],
+      "not_completed": [
+        "رسالة نجاح الدعم غير مختبرة",
+        "لم تُعاد مراجعة جميع تبويبات الوزارة"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "Institution",
+      "role_label": "المؤسسة التعليمية",
+      "landing_path": "/institution",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "لوحة المؤسسة والدور المعرّب ظاهران",
+        "صفحة المدارس: هذا الحساب غير مرتبط بمؤسسة فعالة، بدل الخطأ العام السابق",
+        "لم يُتجاوز الرفض ولم تغير عضوية الحساب",
+        "فحص DOM لرسالة الرفض وحاوياتها: لا role ولا aria-live",
+        "فتح البحث والتحقق من رسالة الإدخال الفارغ"
+      ],
+      "not_completed": [
+        "إدارة المدارس محجوبة بسبب حالة العضوية؛ ليست قبولًا لوظائف المدارس",
+        "لا سجل HTTP لإثبات رمز الاستجابة الفعلي",
+        "ملاحظة إتاحة جديدة: الرفض الديناميكي غير معلن كتنبيه"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "School",
+      "role_label": "المدرسة",
+      "landing_path": "/school",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "لوحة المدرسة الرسمية للعرض فقط",
+        "المدرسة التجريبية نشطة والمدير التجريبي ظاهر",
+        "فتح المحادثات باستخدام Enter: لا توجد محادثات بعد"
+      ],
+      "not_completed": [
+        "البحث والنماذج غير مختبرة لهذا الدور",
+        "لم تختبر إجراءات إدارة، فالحساب للعرض فقط"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "School Director",
+      "role_label": "مدير المدرسة",
+      "landing_path": "/school",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "لوحة إدارة المدرسة والدور الصحيح",
+        "فتح التقارير باستخدام Enter: شوهد جارِ التحميل ثم أعداد 1 طالب و1 صف، وصفر معلمين وحصص وكتب",
+        "المحادثات: حالة فارغة؛ العودة للرئيسية والتقارير نجحت"
+      ],
+      "not_completed": [
+        "لم تكرر مراجعة بقية الأقسام الإدارية",
+        "لم تنفذ أي عملية إدارية أو تغيير صلاحية أو حساب",
+        "البحث غير مختبر لهذا الدور"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "Staff",
+      "role_label": "موظف المدرسة",
+      "landing_path": "/profile",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "الملف الشخصي والدور الصحيح؛ قائمة الرئيسية والمحادثات",
+        "المحادثات باستخدام Enter: حالة فارغة"
+      ],
+      "not_completed": [
+        "البحث غير مختبر لهذا الدور",
+        "إعدادات الحساب وكلمة المرور لم تتغير"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    },
+    {
+      "role": "Student",
+      "role_label": "طالب",
+      "landing_path": "/student",
+      "login": "PASS",
+      "logout": "PASS",
+      "coverage": "PARTIAL",
+      "checks": [
+        "المدرسة والصف والشعبة التجريبية ظاهرة صحيحة",
+        "الجدول والواجبات وتقدم التسليم: حالات فارغة مفهومة",
+        "استكشف الدروس باستخدام Enter: فتح مكتبة المحتوى",
+        "بحث اصطناعي: لا توجد دروس مطابقة"
+      ],
+      "not_completed": [
+        "لم يبدأ درس أو يحفظ تقدم أو يسلم واجبًا",
+        "المحادثات لم تُعد في هذه الجولة"
+      ],
+      "javascript": "No application-origin warn/error observed in reviewed session log; extension entries excluded"
+    }
+  ],
+  "admin": {
+    "visual_status": "NOT TESTED",
+    "reason": "Explicitly excluded"
+  },
+  "regressions": {
+    "PR1429": {
+      "empty_state": "PASS for Parent, Teacher, Specialist",
+      "error_announcements": "NOT TESTED live: no natural load error; no fault injection"
+    },
+    "PR1431": {
+      "labels": "PASS live for Parent and Ministry",
+      "validation_error_alert": "PASS live on blank form",
+      "success_feedback": "NOT TESTED live: would require a write"
+    },
+    "PR1432": {
+      "clear_membership_denial": "PASS live",
+      "management_workflows": "BLOCKED by current QA membership; no bypass",
+      "http_status": "NOT CAPTURED"
+    }
+  },
+  "findings": [
+    {
+      "id": "POST-01",
+      "severity": "medium",
+      "result": "FAIL on deployed UI",
+      "evidence": "Visible institution membership rejection and ancestors have neither role=alert/status nor aria-live",
+      "fix": "Add role=alert to missing institution state; SSR regression ensures announcement role and no school-management controls",
+      "deployment": "Not deployed; requires separate approval"
+    }
+  ],
+  "incomplete": {
+    "viewports_390_768_1280": "NOT TESTED; no supported viewport resizing API",
+    "mobile_escape_focus": "NOT TESTED; mobile layout unavailable",
+    "network_capture": "INCOMPLETE; console is not full HTTP trace",
+    "actual_width_observed_px": 1353,
+    "screen_reader_audio": "NOT TESTED; semantic roles inspected, not audible reader output",
+    "full_role_page_matrix": "PARTIAL, only explicit checks above executed"
+  },
+  "safety": {
+    "production_data_writes": false,
+    "migrations": false,
+    "deployment": false,
+    "rbac_repeated": false,
+    "membership_changes": false,
+    "oracle_cloudflare_changes": false,
+    "jabalia_uat_changes": false
+  }
+}
