@@ -43,6 +43,7 @@ async function context({ width = 390, user, institution = false, api } = {}) {
     if (response) return route.fulfill(response)
     let data
     if (url.pathname === '/api/institutions/jabalia/context') data = { organization: { id: 8201, slug: 'jabalia', name: 'جمعية جباليا للتأهيل', settings: {} } }
+    else if (url.pathname === '/api/me/verification') data = { verification: { verification_status: 'verified', certificate_status: 'verified' } }
     else if (url.pathname === '/api/settings') data = { settings }
     else if (url.pathname === '/api/notifications/unread/count') data = { count: 0 }
     else if (url.pathname === '/api/children') data = { children: [] }
@@ -204,6 +205,58 @@ try {
       assert.equal(overlaps.length, 0)
       await page.screenshot({ path: `${artifacts}/login-text-200-1280.png` })
     } finally { await c.close() }
+  })
+  await test('specialist weekly empty state and child-load error are distinct and announced', async () => {
+    let failed = false
+    const c = await context({ user: { ...parent, role: 'specialist' }, api: path => path === '/api/children'
+      ? { status: failed ? 503 : 200, json: failed ? { error: 'تعذر تحميل الأطفال اصطناعياً' } : { children: [] } } : null })
+    try {
+      const page = await c.newPage()
+      for (const width of [390, 768, 1280]) {
+        await page.setViewportSize({ width, height: 900 })
+        await page.goto(origin + '/weekly-reports')
+        await page.getByText('لا يوجد أطفال متاحون للمتابعة', { exact: true }).waitFor()
+        assert.equal(await page.getByRole('combobox', { name: 'الطفل', exact: true }).isDisabled(), true)
+        assert.equal(await page.getByRole('alert').count(), 0)
+        await assertFits(page)
+        await page.screenshot({ path: `${artifacts}/specialist-weekly-empty-${width}.png`, fullPage: true })
+      }
+      failed = true
+      await page.reload()
+      await page.getByRole('alert').getByText('تعذر تحميل الأطفال اصطناعياً').waitFor()
+      assert.equal(await page.getByText('لا يوجد أطفال متاحون للمتابعة', { exact: true }).count(), 0)
+    } finally { await c.close() }
+  })
+  await test('identity search announces invalid, loading, empty and failed states', async () => {
+    let fail = false
+    let release
+    const gate = new Promise(resolve => { release = resolve })
+    const c = await context({ user: { ...parent, role: 'specialist' }, api: async path => {
+      if (path !== '/api/search/national-id') return null
+      await gate
+      return { status: fail ? 503 : 200, json: fail ? { error: 'تعذر البحث اصطناعياً' } : { results: [] } }
+    } })
+    try {
+      const page = await c.newPage()
+      await page.goto(origin + '/search')
+      const input = page.getByRole('searchbox', { name: 'أدخل رقم الهوية الكامل...' })
+      await input.fill('QA-NO-SUCH-CHILD')
+      await page.getByRole('button', { name: 'بحث', exact: true }).click()
+      await page.getByRole('alert').getByText('أدخل رقم الهوية الكامل بالأرقام فقط').waitFor()
+      assert.equal(await input.getAttribute('aria-invalid'), 'true')
+      assert.equal(await input.getAttribute('aria-describedby'), 'identity-search-error')
+      // All requests are intercepted on loopback; no person's identifier is used.
+      await input.fill('0000000000')
+      await page.getByRole('button', { name: 'بحث', exact: true }).click()
+      await page.getByRole('status').getByText('جارٍ البحث...').waitFor()
+      assert.equal(await page.getByRole('button', { name: 'جارٍ البحث...' }).isDisabled(), true)
+      release()
+      await page.getByRole('status').getByText('لا توجد نتائج مطابقة').waitFor()
+      fail = true
+      await page.getByRole('button', { name: 'بحث', exact: true }).click()
+      await page.getByRole('alert').getByText('تعذر البحث اصطناعياً').waitFor()
+      assert.equal(await page.getByText('لا توجد نتائج مطابقة', { exact: true }).count(), 0)
+    } finally { release(); await c.close() }
   })
   await test('no uncaught browser exceptions or unexpected API calls', async () => {
     assert.deepEqual(pageErrors, [], 'Uncaught browser exceptions')

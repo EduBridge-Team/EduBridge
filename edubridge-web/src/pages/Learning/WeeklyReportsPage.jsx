@@ -12,6 +12,7 @@ import {
 import {
   WeeklyReportForm,
   WeeklyReportsGrid,
+  WeeklyReportErrors,
 } from './WeeklyReportSections'
 
 function currentMonday() {
@@ -146,8 +147,7 @@ export default function WeeklyReportsPage() {
         </label>
       </section>
 
-      {error && <div className="fp-error">{error}</div>}
-      {childrenError && <div className="fp-error">{childrenError}</div>}
+      <WeeklyReportErrors error={error} childrenError={childrenError} />
 
       {isStaff && childId && (
         <FormDisclosure label="إضافة أو تحديث تقرير" open={createOpen} onToggle={setCreateOpen}>
