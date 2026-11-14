@@ -43,6 +43,7 @@ async function context({ width = 390, user, institution = false, api } = {}) {
     if (response) return route.fulfill(response)
     let data
     if (url.pathname === '/api/institutions/jabalia/context') data = { organization: { id: 8201, slug: 'jabalia', name: 'جمعية جباليا للتأهيل', settings: {} } }
+    else if (url.pathname === '/api/me/verification') data = { verification: { verification_status: 'verified', certificate_status: 'verified' } }
     else if (url.pathname === '/api/settings') data = { settings }
     else if (url.pathname === '/api/notifications/unread/count') data = { count: 0 }
     else if (url.pathname === '/api/children') data = { children: [] }
