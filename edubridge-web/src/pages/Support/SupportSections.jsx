@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { LifeBuoy, TriangleAlert } from 'lucide-react'
 
 const STATUS_LABELS = {
@@ -26,12 +27,15 @@ export function SupportRequestForm({
   onSubmit,
   sending,
 }) {
+  const formId = useId()
+
   return (
     <form onSubmit={onSubmit} className="card support-request-card">
       <h3>طلب جديد</h3>
 
-      <label>التصنيف</label>
+      <label htmlFor={`${formId}-category`}>التصنيف</label>
       <select
+        id={`${formId}-category`}
         value={form.category}
         onChange={(e) => onChange({ ...form, category: e.target.value })}
       >
@@ -39,21 +43,23 @@ export function SupportRequestForm({
         <option value="complaint">شكوى</option>
       </select>
 
-      <label>العنوان</label>
+      <label htmlFor={`${formId}-subject`}>العنوان</label>
       <input
+        id={`${formId}-subject`}
         value={form.subject}
         onChange={(e) => onChange({ ...form, subject: e.target.value })}
       />
 
-      <label>الرسالة</label>
+      <label htmlFor={`${formId}-message`}>الرسالة</label>
       <textarea
+        id={`${formId}-message`}
         rows={4}
         value={form.message}
         onChange={(e) => onChange({ ...form, message: e.target.value })}
       />
 
-      {message && <div className="success-box">{message}</div>}
-      {error && <div className="error-box">{error}</div>}
+      {message && <div className="success-box" role="status">{message}</div>}
+      {error && <div className="error-box" role="alert">{error}</div>}
 
       <button className="btn" type="submit" disabled={sending}>
         {sending ? 'جارٍ الإرسال...' : 'إرسال'}

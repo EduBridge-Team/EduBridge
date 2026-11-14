@@ -1,0 +1,222 @@
+{
+  "date": "2026-11-14",
+  "target": "https://edubridge.win",
+  "method": "Live cloud browser UI; secure credential form; no mock API",
+  "repository_base": "04e6839e409eed5814108fde5ad6f6a9b37211ad",
+  "production_revision": "Not independently verified in this round; previous baseline 4a0c975f7eeb55cdb28df941ba108bb296a85da1",
+  "credentials": "No credentials or tokens included or copied to repository",
+  "session_isolation": "Separate tab per role, sequential logout; tabs share browser profile, independent browser contexts not available",
+  "accounts": [
+    {
+      "role": "Parent",
+      "role_label": "ولي أمر",
+      "verified_landing_path": "/parent",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة ولي الأمر والحالات الفارغة للأطفال والتقدم والمحادثات",
+        "التقارير الأسبوعية: لا يوجد أطفال متاحون للمتابعة، اختيار الطفل معطل",
+        "الدروس: بحث اصطناعي دون نتائج ورسالة عربية واضحة",
+        "فتح نموذج إضافة طفل دون تعبئة أو إرسال؛ Tab من الاسم إلى العمر",
+        "فتح صفحات إدارة المدرسة وأطفالي ودروس ولي الأمر والواجبات والدعم والفريق والمحادثات؛ بعض اللقطات انتقالية ولا تثبت اكتمال تحميل كل صفحة"
+      ],
+      "limitations": [
+        "لا أطفال مرتبطون؛ تعذر اختبار بيانات تقدم فعلية",
+        "قياس DOM للعرض الحالي فقط: 1353px، لا تجاوز أفقي في نموذج إضافة طفل"
+      ]
+    },
+    {
+      "role": "Teacher",
+      "role_label": "معلّم",
+      "verified_landing_path": "/teacher",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة المعلم: 4 دروس، صفر أطفال متابعين",
+        "البحث الفارغ: رسالة تحقق معلنة عبر role=alert",
+        "بحث برقم اصطناعي 000000000: عرض جارٍ البحث ثم لا توجد نتائج مطابقة عبر role=status",
+        "الأطفال: لا يوجد أطفال بعد",
+        "الواجبات ودروس ولي الأمر ودراسات الحالة والمحادثات: حالات فارغة شوهدت أثناء الجولة",
+        "التقارير الأسبوعية: لا يوجد أطفال متاحون للمتابعة"
+      ],
+      "limitations": [
+        "إعادة طلب الدخول الأولى أظهرت Parent، لم تحتسب Teacher؛ أُنهِيت ثم تحقق Teacher في الطلب التالي",
+        "تحذير Google عند العودة إلى الدخول: تكرار google.accounts.id.initialize؛ لا فشل دخول مثبت بسببه",
+        "فتح إدارة المدرسة، لكن لم توثق حالة نهائية مستقرة لها"
+      ]
+    },
+    {
+      "role": "Specialist",
+      "role_label": "أخصائي",
+      "verified_landing_path": "/specialist",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة المختص: صفر أطفال ومهام",
+        "التقدم الأسبوعي: لا يوجد أطفال متاحون للمتابعة واختيار الطفل معطل",
+        "اقتراحات المتابعة: لا توجد اقتراحات في هذه الحالة، لم يُحفظ التخصص",
+        "اجتماعات الدعم: لا توجد طلبات ولا جلسات",
+        "إعدادات وصول الأطفال: لا يوجد أطفال مرتبطون"
+      ],
+      "limitations": [
+        "لم تُفتح جميع عناصر القائمة مثل الدروس ودراسات الحالة والبحث في هذه الجلسة",
+        "لم تُفتعل أخطاء تحميل على الإنتاج"
+      ]
+    },
+    {
+      "role": "Ministry",
+      "role_label": "الوزارة",
+      "verified_landing_path": "/ministry",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة المتابعة المركزية: المناهج والموافقات فارغة",
+        "الإحصائيات: أعداد صفرية، فتح باستخدام Return",
+        "المستخدمون والأطفال: لا يوجد مستخدمون أو أطفال",
+        "الدعم: فتح نموذج طلب جديد وقائمة طلبات فارغة دون إرسال"
+      ],
+      "limitations": [
+        "حقول الدعم بلا أسماء وصول: التصنيف والعنوان والرسالة",
+        "لم تُستكمل صفحات الدروس والبحث والمحادثات وإدارة المدرسة لهذه الجلسة"
+      ]
+    },
+    {
+      "role": "Institution",
+      "role_label": "المؤسسة التعليمية",
+      "verified_landing_path": "/institution",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة المؤسسة وأدواتها عربية",
+        "المدارس: تعذر تحميل إعدادات المؤسسة",
+        "المعلمون: الصفحة متاحة من نطاق المؤسسة المخصص فقط",
+        "الطلاب والجدول والحضور والبدائل والتقارير: الصفحة متاحة من نطاق المؤسسة فقط"
+      ],
+      "limitations": [
+        "وظائف المؤسسة الداخلية محجوبة بسياق النطاق على edubridge.win؛ لم يُنتقل إلى أي نطاق آخر",
+        "سبب رسالة إعدادات المؤسسة غير محسوم: لم يلتقط سجل HTTP",
+        "لم تستكمل صفحات المحتوى العامة والبحث والمحادثات لهذه الجلسة"
+      ]
+    },
+    {
+      "role": "School",
+      "role_label": "المدرسة",
+      "verified_landing_path": "/school",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة معلومات المدرسة الرسمية للعرض فقط",
+        "ظهور المدرسة التجريبية وحالتها النشطة ومدير QA",
+        "المحادثات: فتح باستخدام Return، حالة فارغة"
+      ],
+      "limitations": [
+        "لم تُنفذ أي عمليات إدارة أو تعديل",
+        "لم يُختبر البحث العام لهذا الدور"
+      ]
+    },
+    {
+      "role": "School Director",
+      "role_label": "مدير المدرسة",
+      "verified_landing_path": "/school",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "لوحة إدارة المدرسة بالدور الصحيح",
+        "النطاق المدرسي: مؤكد وغير قابل للتغيير",
+        "فتح الحسابات الداخلية والنواب والصلاحيات والهيكل والمعلمين والطلاب والترفيع والحضور والجدول والمنهاج والتقارير",
+        "التقارير: طالب واحد وصف واحد، صفر معلمين وحصص وكتب"
+      ],
+      "limitations": [
+        "فحص وجود الأقسام وعناوينها؛ لم تختبر العمليات أو كل صف/نموذج",
+        "لم تُنفذ أزرار إنشاء الحساب أو إعادة كلمة المرور أو تعيين نائب",
+        "لم تُفتح المحادثات أو البحث لهذا الدور"
+      ]
+    },
+    {
+      "role": "Staff",
+      "role_label": "موظف المدرسة",
+      "verified_landing_path": "/profile",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "الدخول يوجه إلى الملف الشخصي",
+        "الرئيسية باستخدام Return تبقى في الملف الشخصي",
+        "القائمة تعرض الرئيسية والمحادثات فقط",
+        "المحادثات: حالة فارغة"
+      ],
+      "limitations": [
+        "لم يختبر تغيير كلمة المرور أو الإعدادات أو حذف الحساب",
+        "لم يُختبر البحث العام لهذا الدور"
+      ]
+    },
+    {
+      "role": "Student",
+      "role_label": "طالب",
+      "verified_landing_path": "/student",
+      "login": "PASS",
+      "logout": "PASS",
+      "qa_status": "PARTIAL",
+      "checks": [
+        "ظهور أسماء المدرسة والصف والشعبة التجريبية بوضوح وصحة",
+        "الجدول والواجبات والتقدم: حالات فارغة واضحة",
+        "استكشف الدروس باستخدام Return: مكتبة 4 دروس",
+        "البحث الاصطناعي: لا توجد دروس مطابقة",
+        "المحادثات: حالة فارغة"
+      ],
+      "limitations": [
+        "لم يبدأ درس أو يسلم واجب أو يكتب رسالة أو تقييمًا"
+      ]
+    }
+  ],
+  "admin": {
+    "status": "NOT_TESTED",
+    "reason": "Explicitly excluded by user"
+  },
+  "global_limits": {
+    "viewports": {
+      "390": "NOT_TESTED",
+      "768": "NOT_TESTED",
+      "1280": "NOT_TESTED"
+    },
+    "actual_observed_width": 1353,
+    "mobile_escape_focus": "NOT_TESTED; viewport control unavailable",
+    "network": "INCOMPLETE: no request/response capture API available; no HTTP status conclusions inferred from console",
+    "javascript": "Console reviewed for all roles except full separate Institution final log; extension errors excluded; one Google initialization warning observed",
+    "error_paths": "Natural errors and blank search validated; no production fault injection"
+  },
+  "findings": [
+    {
+      "id": "LIVE-01",
+      "severity": "medium",
+      "summary": "Support request controls lack associated accessible names; feedback lacks live roles",
+      "status": "Fix and regression test prepared; not deployed"
+    },
+    {
+      "id": "LIVE-02",
+      "severity": "unresolved",
+      "summary": "Institution schools settings error; other institution routes require tenant domain",
+      "status": "Documented; no tenant/configuration changes"
+    },
+    {
+      "id": "LIVE-03",
+      "severity": "low",
+      "summary": "Google identity initialized multiple times on return to login",
+      "status": "Observed warning; no fix without focused Google sign-in validation"
+    }
+  ],
+  "safety": {
+    "production_data_writes": false,
+    "migrations": false,
+    "deployment": false,
+    "oracle_cloudflare_changes": false,
+    "jabalia_uat_changes": false
+  }
+}
