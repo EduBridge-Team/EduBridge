@@ -196,6 +196,26 @@ test('institution hostname resolver does not mistake the main domain for a tenan
   assert.equal(resolveInstitutionSlug('api.edubridge.win'), null)
 })
 
+
+test('institution membership failures are explained without exposing arbitrary server errors', async () => {
+  const { describeInstitutionContextFailure } = await server.ssrLoadModule('/src/institutionContext.jsx')
+  const cases = [
+    [403, { error: 'هذا الحساب غير مرتبط بمؤسسة فعالة' }, 'هذا الحساب غير مرتبط بمؤسسة فعالة'],
+    [403, { error: 'الحساب مرتبط بأكثر من مؤسسة؛ يرجى تحديد المؤسسة من الإدارة' }, 'الحساب مرتبط بأكثر من مؤسسة؛ يرجى تحديد المؤسسة من الإدارة'],
+    [403, { error: 'internal account id 1234' }, 'ليس لهذا الحساب صلاحية الوصول إلى المؤسسة'],
+    [401, { error: 'unexpected private error' }, 'انتهت جلسة الدخول؛ يرجى تسجيل الدخول مرة أخرى'],
+    [404, { error: 'unexpected private error' }, 'المؤسسة غير متاحة'],
+    [503, { error: 'unexpected private error' }, 'تعذر تحميل إعدادات المؤسسة'],
+  ]
+  for (const [status, body, expected] of cases) {
+    const actual = await describeInstitutionContextFailure({ status, async json() { return body } })
+    assert.equal(actual, expected)
+  }
+  assert.equal(await describeInstitutionContextFailure({
+    status: 403, async json() { throw new SyntaxError('Invalid body') },
+  }), 'ليس لهذا الحساب صلاحية الوصول إلى المؤسسة')
+})
+
 test('student toolbar offers lesson search instead of unavailable identity search', async () => {
   const html = await renderRoute('/student', 'student')
   assert.match(html, /ابحث في الدروس والمحتوى/)

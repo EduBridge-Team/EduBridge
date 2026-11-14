@@ -7,6 +7,28 @@ const InstitutionContext = createContext({ institution: null, loading: false, er
 const RESERVED_SUBDOMAINS = new Set(['www', 'app', 'api', 'staging'])
 const DEFAULT_TITLE = 'EduBridge'
 
+const APPROVED_MEMBERSHIP_ERRORS = new Set([
+  'هذا الحساب غير مرتبط بمؤسسة فعالة',
+  'الحساب مرتبط بأكثر من مؤسسة؛ يرجى تحديد المؤسسة من الإدارة',
+])
+
+// Surface only server-supported, non-sensitive membership states. Never echo
+// arbitrary API errors or accept a tenant slug supplied by the user.
+export async function describeInstitutionContextFailure(response) {
+  if (response.status === 404) return 'المؤسسة غير متاحة'
+  if (response.status === 401) return 'انتهت جلسة الدخول؛ يرجى تسجيل الدخول مرة أخرى'
+  if (response.status === 403) {
+    try {
+      const payload = await response.json()
+      if (APPROVED_MEMBERSHIP_ERRORS.has(payload?.error)) return payload.error
+    } catch {
+      // Invalid or absent JSON must not leak raw network errors to the UI.
+    }
+    return 'ليس لهذا الحساب صلاحية الوصول إلى المؤسسة'
+  }
+  return 'تعذر تحميل إعدادات المؤسسة'
+}
+
 export function resolveInstitutionSlug(hostname = window.location.hostname) {
   const explicit = import.meta.env.VITE_INSTITUTION_SLUG?.trim()
   if (explicit) return explicit
@@ -40,7 +62,7 @@ export function InstitutionProvider({ children }) {
       headers: { 'X-EduBridge-Client': 'web' },
     })
       .then(async (response) => {
-        if (!response.ok) throw new Error(response.status === 404 ? 'المؤسسة غير متاحة' : 'تعذر تحميل إعدادات المؤسسة')
+        if (!response.ok) throw new Error(await describeInstitutionContextFailure(response))
         return response.json()
       })
       .then((data) => {
