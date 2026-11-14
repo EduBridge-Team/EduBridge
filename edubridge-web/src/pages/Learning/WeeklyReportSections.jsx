@@ -1,5 +1,12 @@
 import EmptyState from '../../components/EmptyState'
 import FormField from '../../components/FormField'
+export function WeeklyReportErrors({ error, childrenError }) {
+  return <>
+    {error && <div className="fp-error" role="alert">{error}</div>}
+    {childrenError && <div className="fp-error" role="alert">{childrenError}</div>}
+  </>
+}
+
 export function WeeklyReportForm({
   busy,
   draft,

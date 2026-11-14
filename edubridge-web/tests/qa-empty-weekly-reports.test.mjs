@@ -7,7 +7,13 @@ import { createServer } from 'vite'
 test('weekly progress without assigned children does not suggest switching child', async () => {
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
   try {
-    const { WeeklyReportsGrid } = await server.ssrLoadModule('/src/pages/Learning/WeeklyReportSections.jsx')
+    const { WeeklyReportsGrid, WeeklyReportErrors } = await server.ssrLoadModule('/src/pages/Learning/WeeklyReportSections.jsx')
+    for (const props of [{ error: 'تعذر تحميل التقارير' }, { childrenError: 'تعذر تحميل الأطفال' }]) {
+      const html = renderToStaticMarkup(createElement(WeeklyReportErrors, props))
+      assert.match(html, /class="fp-error" role="alert"/)
+      assert.match(html, /تعذر تحميل/)
+    }
+    assert.equal(renderToStaticMarkup(createElement(WeeklyReportErrors, {})), '')
     const empty = renderToStaticMarkup(createElement(WeeklyReportsGrid, { reports: [], progressView: true, hasAvailableChildren: false }))
     assert.match(empty, /لا يوجد أطفال متاحون للمتابعة/)
     assert.doesNotMatch(empty, /اختر طفل آخر|اختيار طفل آخر|اختيار طفل آخر من أعلى الصفحة|اختيار طفل آخر من أعلى الصفحة|اختر طفلًا آخر/)
