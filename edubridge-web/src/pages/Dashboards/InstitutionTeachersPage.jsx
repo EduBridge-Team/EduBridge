@@ -122,12 +122,15 @@ export default function InstitutionTeachersPage() {
     setLoading(true)
     setError('')
     try {
-      const [school, people] = await Promise.all([
+      const [school, people] = await Promise.allSettled([
         fetchInstitutionAcademicOverview(slug, schoolId),
         fetchInstitutionParticipants(slug, schoolId),
       ])
-      setAcademic(school)
-      setParticipants(people)
+      if (school.status === 'fulfilled') setAcademic(school.value)
+      if (people.status === 'fulfilled') setParticipants(people.value)
+      if (school.status === 'rejected' || people.status === 'rejected') {
+        setError('تعذّر تحميل بعض بيانات المعلمين أو الهيكل الأكاديمي. يرجى التحديث قبل إضافة تكليفات.')
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -150,11 +153,16 @@ export default function InstitutionTeachersPage() {
     setParticipants(null)
     if (slug && schoolId) {
       setLoading(true)
-      Promise.all([
+      Promise.allSettled([
         fetchInstitutionAcademicOverview(slug, schoolId),
         fetchInstitutionParticipants(slug, schoolId),
       ]).then(([school, people]) => {
-        if (active) { setAcademic(school); setParticipants(people); setError('') }
+        if (!active) return
+        if (school.status === 'fulfilled') setAcademic(school.value)
+        if (people.status === 'fulfilled') setParticipants(people.value)
+        if (school.status === 'rejected' || people.status === 'rejected') {
+          setError('لم تكتمل بيانات المدرسة والمعلمين، يرجى إعادة التحميل.')
+        } else setError('')
       }).catch((err) => { if (active) setError(err.message) })
         .finally(() => { if (active) setLoading(false) })
     }
