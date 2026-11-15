@@ -131,6 +131,42 @@ class InstitutionInternalTeacherTest extends TestCase
         $this->assertSame(3, DB::table('users')->where('id', $userId)->value('session_version'));
     }
 
+    public function test_first_login_is_limited_to_password_change_until_updated(): void
+    {
+        $record = $this->invoke('store', ['name' => 'Teacher', 'username' => 'teacher30'])
+            ->getData(true)['accounts'][0];
+        config()->set('services.jwt.secret', 'local-test-only-secret');
+        $login = \App\Http\Controllers\AuthController::class;
+        $loginRequest = Request::create('/api/auth/login', 'POST', [
+            'email' => $record['login_identifier'],
+            'password' => $record['temporary_password'],
+        ]);
+        $auth = app($login)->login($loginRequest);
+        $this->assertSame(200, $auth->status());
+        $this->assertTrue($auth->getData(true)['user']['must_change_password']);
+        $token = $auth->getData(true)['token'];
+        $middleware = app(\App\Http\Middleware\JwtAuth::class);
+        $protected = Request::create('/api/lessons', 'GET');
+        $protected->headers->set('Authorization', 'Bearer '.$token);
+        $denied = $middleware->handle($protected, fn () => response()->json(['allowed' => true]));
+        $this->assertSame(403, $denied->status());
+        $allowed = Request::create('/api/me/password', 'PUT');
+        $allowed->headers->set('Authorization', 'Bearer '.$token);
+        $accepted = $middleware->handle($allowed, fn () => response()->json(['allowed' => true]));
+        $this->assertSame(200, $accepted->status());
+        $allowed->attributes->set('jwt_user', DB::table('users')->find($record['user_id']));
+        $allowed->merge(['current_password' => $record['temporary_password'],
+            'new_password' => 'ReplacementPassword123!']);
+        $changed = app(\App\Http\Controllers\AccountController::class)->changePassword($allowed);
+        $this->assertSame(200, $changed->status());
+        $this->assertFalse(InstitutionInternalSession::requiresPasswordChange($record['user_id']));
+        $this->assertTrue(password_verify('ReplacementPassword123!',
+            DB::table('users')->where('id', $record['user_id'])->value('password_hash')));
+        $protected->headers->set('Authorization', 'Bearer '.$changed->getData(true)['token']);
+        $this->assertSame(200, $middleware->handle($protected,
+            fn () => response()->json(['allowed' => true]))->status());
+    }
+
     public function test_school_namespace_collision_and_tenant_scoping(): void
     {
         DB::table('schools')->insert([

@@ -98,7 +98,7 @@ class InstitutionInternalTeacherController extends Controller
                     throw new \DomainException('Invalid institution namespace');
                 }
                 if (DB::table('schools')->where('internal_domain', $domain)
-                    ->whereNotNull('internal_domain_confirmed_at')->exists()) {
+                    ->exists()) {
                     throw new \DomainException('Namespace already assigned to a school');
                 }
                 if ($current->internal_domain === null) {

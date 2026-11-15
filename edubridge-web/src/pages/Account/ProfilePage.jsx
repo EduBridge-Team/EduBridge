@@ -32,7 +32,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     let active = true
-    if (['teacher', 'specialist'].includes(getUser()?.role)) {
+    if (['teacher', 'specialist'].includes(getUser()?.role) && !forcePasswordChange) {
       fetchCertificates().then(data => { if (active) setCertificates(data.certificates || []) }).catch(error => { if (active) setError(error.message) })
     }
     fetchMyProfile()
@@ -55,7 +55,7 @@ export default function ProfilePage() {
     setPasswordMessage('')
 
     if (newPassword.length < (forcePasswordChange ? 12 : 8)) {
-      setError('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل')
+      setError(forcePasswordChange ? 'كلمة المرور الجديدة يجب أن تكون 12 حرفاً على الأقل' : 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل')
       return
     }
     if (newPassword !== confirmPassword) {

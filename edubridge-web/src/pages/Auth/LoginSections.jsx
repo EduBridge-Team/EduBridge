@@ -81,7 +81,7 @@ export function LoginCard({
         <div className="auth-field">
           <div className="auth-label-row">
             <label htmlFor="password">كلمة المرور</label>
-            <Link to="/forgot-password">نسيت كلمة المرور؟</Link>
+            {isInstitutionPortal ? <span>للحساب الداخلي، اطلب إعادة التعيين من الإدارة.</span> : <Link to="/forgot-password">نسيت كلمة المرور؟</Link>}
           </div>
 
           <PasswordField
@@ -100,14 +100,14 @@ export function LoginCard({
         </button>
       </form>
 
-      <button
+      {!isInstitutionPortal && <button
         type="button"
         className="auth-secondary-action"
         onClick={onResendVerification}
         disabled={loading}
       >
         إعادة إرسال رسالة تأكيد البريد
-      </button>
+      </button>}
 
       {isInstitutionPortal && (
         <p className="institution-login-note">
