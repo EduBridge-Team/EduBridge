@@ -142,7 +142,7 @@ class InstitutionInternalTeacherTest extends TestCase
             'password' => $record['temporary_password'],
         ]);
         $auth = app($login)->login($loginRequest);
-        $this->assertSame(200, $auth->status());
+        $this->assertSame(200, $auth->status(), $auth->getContent());
         $this->assertTrue($auth->getData(true)['user']['must_change_password']);
         $token = $auth->getData(true)['token'];
         $middleware = app(\App\Http\Middleware\JwtAuth::class);
