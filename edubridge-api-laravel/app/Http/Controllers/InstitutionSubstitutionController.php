@@ -36,7 +36,7 @@ class InstitutionSubstitutionController extends Controller
             ->where('absence_date', $data['absence_date'])
             ->first();
 
-        $weekday = (int) date('N', strtotime($data['absence_date']));
+        $weekday = (int) date(($organizationSlug === 'jabalia' ? 'N' : 'w'), strtotime($data['absence_date'])) + ($organizationSlug === 'jabalia' ? 0 : 1);
         $affected = DB::table('timetable_entries as t')
             ->join('sections as s', 's.id', '=', 't.section_id')
             ->join('grades as g', 'g.id', '=', 's.grade_id')
@@ -126,7 +126,7 @@ class InstitutionSubstitutionController extends Controller
             return response()->json(['error' => 'المعلم البديل لا يتبع هذه المؤسسة'], 422);
         }
 
-        $weekday = (int) date('N', strtotime($data['class_date']));
+        $weekday = (int) date(($organizationSlug === 'jabalia' ? 'N' : 'w'), strtotime($data['class_date'])) + ($organizationSlug === 'jabalia' ? 0 : 1);
         if ($weekday !== (int) $slot->weekday) {
             return response()->json(['error' => 'تاريخ البديل لا يطابق يوم الحصة في الجدول'], 422);
         }
