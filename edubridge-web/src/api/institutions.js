@@ -98,6 +98,21 @@ export function fetchInstitutionCurriculum(slug, schoolId) {
   return request(schoolPath(slug, schoolId, '/curriculum'))
 }
 
+export function fetchInstitutionInternalTeachers(slug, afterId = null) {
+  return request(tenantPath(slug, '/internal-teachers?limit=100' + (afterId ? '&after_id=' + encodeURIComponent(afterId) : '')))
+}
+export function createInstitutionInternalTeacher(slug, payload) {
+  return request(tenantPath(slug, '/internal-teachers'), { method: 'POST', body: JSON.stringify(payload) })
+}
+export function bulkCreateInstitutionInternalTeachers(slug, accounts) {
+  return request(tenantPath(slug, '/internal-teachers/bulk'), { method: 'POST', body: JSON.stringify({ accounts }) })
+}
+export function setInstitutionInternalTeacherActive(slug, identityId, isActive) {
+  return request(tenantPath(slug, `/internal-teachers/${identityId}`), { method: 'PATCH', body: JSON.stringify({ is_active: isActive }) })
+}
+export function resetInstitutionInternalTeacherPassword(slug, identityId) {
+  return request(tenantPath(slug, `/internal-teachers/${identityId}/reset-password`), { method: 'POST', body: JSON.stringify({}) })
+}
 export function fetchInstitutionTeacherInvitations(slug) {
   return request(tenantPath(slug, '/teacher-invitations'))
 }

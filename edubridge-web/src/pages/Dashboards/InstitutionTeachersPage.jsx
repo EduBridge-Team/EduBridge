@@ -4,6 +4,7 @@ import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInst
 import { useInstitution } from '../../institutionContext'
 import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument, fetchJabaliaTeacherTransfers, transferJabaliaTeacher } from '../../api/institutions'
 import JabaliaTeacherDocumentAccessPanel from '../../components/Institution/JabaliaTeacherDocumentAccessPanel'
+import InstitutionInternalTeachersPanel from '../../components/Institution/InstitutionInternalTeachersPanel'
 import JabaliaTeacherContractPeriodsPanel from '../../components/Institution/JabaliaTeacherContractPeriodsPanel'
 import '../../styles/institution-operations.css'
 
@@ -383,8 +384,9 @@ export default function InstitutionTeachersPage() {
             <div className="role-hero-actions"><Link className="btn outline" to="/institution/schools">إدارة المدارس</Link></div>
           </div>
         </section>
+        <InstitutionInternalTeachersPanel slug={slug} onCreated={() => { reloadMemberships(); refresh() }} />
         <section className="institution-panel">
-          <h2>دعوة معلم جديد</h2>
+           <h2>دعوة معلم جديد</h2>
           <p>يجب أن يسجّل المعلم بحساب معلم ويؤكد بريده الإلكتروني قبل قبول الدعوة.</p>
           <form className="institution-school-form" onSubmit={sendInvitation}>
             <label>البريد الإلكتروني<input type="email" required maxLength={190} value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} /></label>

@@ -42,6 +42,10 @@ class SchoolInternalDomainController extends Controller
                 if (!$school) {
                     return response()->json(['error' => 'School access is unavailable'], 403);
                 }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('organizations', 'internal_domain')
+                    && DB::table('organizations')->where('internal_domain', $domain)->exists()) {
+                    return response()->json(['error' => 'Internal domain is reserved by an institution'], 409);
+                }
                 if ($school->internal_domain_confirmed_at !== null) {
                     return response()->json(['error' => 'Internal domain is immutable',
                         'internal_domain' => $school->internal_domain], 409);

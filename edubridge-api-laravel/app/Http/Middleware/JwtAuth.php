@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Support\AuthCredentials;
 use App\Support\SchoolDirectorSession;
+use App\Support\InstitutionInternalSession;
 
 class JwtAuth
 {
@@ -56,7 +57,8 @@ class JwtAuth
             }
 
             if (str_ends_with(strtolower((string) ($account->email ?? '')), '.edubridge')) {
-                if (!\App\Support\SchoolInternalSession::active((int) $account->id)) {
+                if (!\App\Support\SchoolInternalSession::active((int) $account->id)
+                    && !InstitutionInternalSession::active((int) $account->id)) {
                     return response()->json(['error' => 'School identity unavailable', 'code' => 'SESSION_INVALID'], 401);
                 }
             }
@@ -90,6 +92,11 @@ class JwtAuth
                     'error' => 'انتهت صلاحية تكليف مدير المدرسة',
                     'code' => 'SESSION_INVALID',
                 ], 401);
+            }
+
+            if (InstitutionInternalSession::requiresPasswordChange((int) $account->id)
+                && !$request->is('api/me/password', 'api/me', 'api/auth/logout')) {
+                return response()->json(['error' => 'يجب تغيير كلمة المرور الأولية أولاً', 'code' => 'PASSWORD_CHANGE_REQUIRED'], 403);
             }
 
             // The current database account is authoritative for every policy.
