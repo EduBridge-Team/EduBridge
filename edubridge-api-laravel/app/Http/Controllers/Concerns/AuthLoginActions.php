@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use App\Support\SchoolDirectorSession;
+use App\Support\InstitutionInternalSession;
 
 trait AuthLoginActions
 {
@@ -33,7 +34,7 @@ trait AuthLoginActions
             $isInternalIdentifier = is_string($email)
                 && str_ends_with(strtolower(trim($email)), '.edubridge');
             $user = $isInternalIdentifier
-                ? $this->resolveSchoolInternalLogin($email)
+                ? ($this->resolveSchoolInternalLogin($email) ?? InstitutionInternalSession::resolve($email))
                 : DB::table('users')->where('email', $email)->first();
             $storedHash = $user?->{$passwordColumn} ?? null;
 
@@ -121,6 +122,7 @@ trait AuthLoginActions
                         ? ($user->specialty ?? null)
                         : null,
                     'verification_status' => $user->verification_status ?? 'pending',
+                    'must_change_password' => InstitutionInternalSession::requiresPasswordChange((int) $user->id),
                 ],
             ]);
         } catch (QueryException $e) {

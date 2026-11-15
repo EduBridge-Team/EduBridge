@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Concerns;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 trait AccountPasswordActions
 {
@@ -25,9 +26,11 @@ trait AccountPasswordActions
             ], 422);
         }
 
-        if (mb_strlen($newPassword) < 8) {
+        $internal = Schema::hasTable('institution_internal_identities')
+            && DB::table('institution_internal_identities')->where('user_id', $userId)->exists();
+        if (mb_strlen($newPassword) < ($internal ? 12 : 8) || mb_strlen($newPassword) > 128) {
             return response()->json([
-                'error' => 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل',
+                'error' => $internal ? 'كلمة المرور الجديدة يجب أن تكون بين 12 و128 حرفاً' : 'كلمة المرور الجديدة يجب أن تكون بين 8 و128 حرفاً',
             ], 422);
         }
 
@@ -46,9 +49,17 @@ trait AccountPasswordActions
             return response()->json(['error' => 'كلمة المرور الحالية غير صحيحة'], 422);
         }
 
-        DB::table('users')->where('id', $userId)->update([
-            $passwordColumn => password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 10]),
-        ]);
+        DB::transaction(function () use ($userId, $newPassword, $passwordColumn, $internal) {
+            $hash = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 10]);
+            $changes = [$passwordColumn => $hash];
+            if ($internal) {
+                if (Schema::hasColumn('users', 'password')) $changes['password'] = $hash;
+                if (Schema::hasColumn('users', 'password_hash')) $changes['password_hash'] = $hash;
+                DB::table('institution_internal_identities')->where('user_id', $userId)
+                    ->update(['must_change_password' => false, 'updated_at' => now()]);
+            }
+            DB::table('users')->where('id', $userId)->update($changes);
+        });
 
         $account = DB::table('users')->find($userId);
         $secret = config('services.jwt.secret') ?: env('JWT_SECRET');

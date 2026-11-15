@@ -4,6 +4,7 @@ use App\Http\Controllers\InstitutionAcademicController;
 use App\Http\Controllers\InstitutionDirectorDirectoryController;
 use App\Http\Controllers\InstitutionTeacherInvitationController;
 use App\Http\Controllers\InstitutionTeacherMembershipController;
+use App\Http\Controllers\InstitutionInternalTeacherController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionCurriculumController;
 use App\Http\Controllers\InstitutionParticipantController;
@@ -55,6 +56,11 @@ Route::prefix('/institutions/{organizationSlug}')
     ->group(function () {
         Route::post('/school-accounts', [\App\Http\Controllers\SchoolProvisionController::class, 'affiliated'])
             ->middleware('throttle:10,1');
+        Route::get('/internal-teachers', [InstitutionInternalTeacherController::class, 'index']);
+        Route::post('/internal-teachers', [InstitutionInternalTeacherController::class, 'store'])->middleware('throttle:10,1');
+        Route::post('/internal-teachers/bulk', [InstitutionInternalTeacherController::class, 'bulk'])->middleware('throttle:3,1');
+        Route::patch('/internal-teachers/{identity}', [InstitutionInternalTeacherController::class, 'update'])->whereNumber('identity')->middleware('throttle:10,1');
+        Route::post('/internal-teachers/{identity}/reset-password', [InstitutionInternalTeacherController::class, 'resetPassword'])->whereNumber('identity')->middleware('throttle:10,1');
         Route::get('/teachers', [InstitutionTeacherMembershipController::class, 'index']);
         Route::patch('/teachers/{teacher}', [InstitutionTeacherMembershipController::class, 'update'])->whereNumber('teacher');
         Route::get('/teacher-invitations', [InstitutionTeacherInvitationController::class, 'index']);
