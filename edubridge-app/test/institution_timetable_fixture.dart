@@ -34,7 +34,7 @@ class InstitutionTimetableFixture {
   ];
   List<Map<String, dynamic>> rows = [
     {'id': 80, 'school_id': 5, 'academic_year_id': 10, 'section_id': 30,
-      'subject_id': 50, 'teacher_id': 7, 'teacher_name': 'المعلم محمود', 'weekday': 1,
+      'subject_id': 50, 'teacher_id': 7, 'teacher_name': 'المعلم محمود', 'weekday': 2,
       'period_number': 1, 'starts_at': '08:00:00', 'ends_at': '08:45:00', 'room': 'غرفة نور'},
   ];
   http.Response json(Map<String, dynamic> body, int code) => http.Response(jsonEncode(body), code,
@@ -63,7 +63,7 @@ class InstitutionTimetableFixture {
         final date = DateTime.parse(body['absence_date'] as String);
         return json(absenceResponse ?? {'absence': {'id': 100, 'school_id': 5,
           ...body, 'status': 'confirmed'}, 'affected_classes': rows.where((r) =>
-          r['teacher_id'] == body['teacher_id'] && r['weekday'] == date.weekday).toList()}, postStatus);
+          r['teacher_id'] == body['teacher_id'] && r['weekday'] == date.weekday % 7 + 1).toList()}, postStatus);
       }
       if (path == '/institutions/demo-institution/schools/5/timetable') {
         paths.add(path); creations.add(body); await beforeWrite?.call();
