@@ -135,7 +135,7 @@ class InstitutionInternalTeacherTest extends TestCase
     {
         $record = $this->invoke('store', ['name' => 'Teacher', 'username' => 'teacher30'])
             ->getData(true)['accounts'][0];
-        config()->set('services.jwt.secret', 'local-test-only-secret');
+        config()->set('services.jwt.secret', 'local-test-only-secret-32-bytes-minimum-2026');
         $login = \App\Http\Controllers\AuthController::class;
         $loginRequest = Request::create('/api/auth/login', 'POST', [
             'email' => $record['login_identifier'],
@@ -143,7 +143,7 @@ class InstitutionInternalTeacherTest extends TestCase
         ]);
         $resolvedUser = InstitutionInternalSession::resolve($record['login_identifier']);
         $this->assertNotNull($resolvedUser);
-        $this->assertNotEmpty(\App\Support\AuthCredentials::issue($resolvedUser, 'local-test-only-secret'));
+        $this->assertNotEmpty(\App\Support\AuthCredentials::issue($resolvedUser, 'local-test-only-secret-32-bytes-minimum-2026'));
         $auth = app($login)->login($loginRequest);
         $this->assertSame(200, $auth->status(), $auth->getContent());
         $this->assertTrue($auth->getData(true)['user']['must_change_password']);
