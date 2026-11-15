@@ -66,7 +66,11 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
       await action()
       reset()
       setMessage(success)
-      await onRefresh()
+      try {
+        await onRefresh()
+      } catch {
+        setError('تم الحفظ بنجاح، لكن تعذّر تحديث البيانات المعروضة. اضغط تحديث من أعلى صفحة المدارس قبل إعادة الإضافة.')
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -94,6 +98,15 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
         <span>شعب: <b>{sections.length}</b></span>
       </div>
 
+      <div className="state" role="status">
+        <strong>دليل الإعداد:</strong> {[
+          ['السنة الدراسية', years.length], ['الفصل الدراسي', terms.length],
+          ['الصفوف', grades.length], ['المواد', subjects.length], ['الشعب', sections.length],
+        ].map(([name, total], index) => <span key={name} style={{ marginInlineEnd: 12 }}>
+          {index + 1}. {name}: {total > 0 ? 'موجود' : 'لم يُضف بعد'}
+        </span>)}
+        <p>ابدأ بالسنة الدراسية، ثم الفصل والصفوف والمواد والشعب. بعد ذلك اربط المعلمين بالمواد والشعب قبل إضافة حصص الجدول.</p>
+      </div>
       <div className="academic-setup-grid">
         <FormCard Icon={CalendarPlus} title="السنة الدراسية" description="حدد البداية والنهاية واجعل السنة الحالية مفعلة عند الحاجة.">
           <form onSubmit={(event) => {
@@ -104,7 +117,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>تاريخ البداية<input required type="date" value={year.starts_on} onChange={(e) => setYear({ ...year, starts_on: e.target.value })} /></label>
             <label>تاريخ النهاية<input required type="date" value={year.ends_on} onChange={(e) => setYear({ ...year, ends_on: e.target.value })} /></label>
             <label className="academic-checkbox"><input type="checkbox" checked={year.is_current} onChange={(e) => setYear({ ...year, is_current: e.target.checked })} /> السنة الحالية</label>
-            <SubmitButton saving={saving === 'year'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -119,7 +132,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>الترتيب<input required type="number" min="1" max="20" value={term.position} onChange={(e) => setTerm({ ...term, position: e.target.value })} /></label>
             <label>البداية<input required type="date" value={term.starts_on} onChange={(e) => setTerm({ ...term, starts_on: e.target.value })} /></label>
             <label>النهاية<input required type="date" value={term.ends_on} onChange={(e) => setTerm({ ...term, ends_on: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'term'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -131,7 +144,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>اسم الصف<input required placeholder="الصف الأول" value={grade.name} onChange={(e) => setGrade({ ...grade, name: e.target.value })} /></label>
             <label>الرمز<input dir="ltr" placeholder="G1" value={grade.code} onChange={(e) => setGrade({ ...grade, code: e.target.value })} /></label>
             <label>الترتيب<input type="number" min="1" max="100" value={grade.position} onChange={(e) => setGrade({ ...grade, position: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'grade'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -142,7 +155,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
           }}>
             <label>اسم المادة<input required placeholder="الرياضيات" value={subject.name} onChange={(e) => setSubject({ ...subject, name: e.target.value })} /></label>
             <label>الرمز<input dir="ltr" placeholder="MATH" value={subject.code} onChange={(e) => setSubject({ ...subject, code: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'subject'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -161,7 +174,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>الصف<select required value={section.grade_id} onChange={(e) => setSection({ ...section, grade_id: e.target.value })}><option value="">اختر الصف</option>{grades.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
             <label>اسم الشعبة<input required placeholder="أ" value={section.name} onChange={(e) => setSection({ ...section, name: e.target.value })} /></label>
             <label>السعة<input type="number" min="1" max="500" value={section.capacity} onChange={(e) => setSection({ ...section, capacity: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'section'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
       </div>

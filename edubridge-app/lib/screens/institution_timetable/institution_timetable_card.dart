@@ -5,8 +5,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../model/institutions/institution_timetable.dart';
 
 Map<int, String> timetableDays(AppLocalizations l) => {0: l.all,
-  1: l.timetableSunday, 2: l.timetableMonday, 3: l.timetableTuesday, 4: l.timetableWednesday,
-  5: l.timetableThursday, 6: l.timetableFriday, 7: l.timetableSaturday};
+  7: l.timetableSunday, 1: l.timetableMonday, 2: l.timetableTuesday, 3: l.timetableWednesday,
+  4: l.timetableThursday, 5: l.timetableFriday, 6: l.timetableSaturday};
 
 class InstitutionTimetableCard extends StatelessWidget {
   const InstitutionTimetableCard({super.key, required this.timetable, required this.entry, this.onChoose, this.onRemove});

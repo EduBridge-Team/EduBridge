@@ -86,14 +86,27 @@ export default function InstitutionSchoolsPage() {
     if (!quiet) setDetailsLoading(true)
     setDetailsError('')
     try {
-      const [academic, attendance, timetable, curriculum] = await Promise.all([
-        fetchInstitutionAcademicOverview(slug, selectedId),
+      // Academic setup must remain editable if attendance, timetable or
+      // curriculum reporting is temporarily unavailable.
+      const academic = await fetchInstitutionAcademicOverview(slug, selectedId)
+      const [attendance, timetable, curriculum] = await Promise.allSettled([
         fetchInstitutionAttendance(slug, selectedId),
         fetchInstitutionTimetable(slug, selectedId),
         fetchInstitutionCurriculum(slug, selectedId),
       ])
       if (version !== detailsVersion.current) return
-      setDetails({ academic, attendance, timetable, curriculum })
+      setDetails({
+        academic,
+        attendance: attendance.status === 'fulfilled' ? attendance.value : { attendance_sessions: [] },
+        timetable: timetable.status === 'fulfilled' ? timetable.value : { timetable: [] },
+        curriculum: curriculum.status === 'fulfilled' ? curriculum.value : { books: [] },
+      })
+      const unavailable = [
+        attendance.status === 'rejected' ? 'الحضور' : null,
+        timetable.status === 'rejected' ? 'الجدول' : null,
+        curriculum.status === 'rejected' ? 'المنهاج' : null,
+      ].filter(Boolean)
+      setDetailsError(unavailable.length ? 'بيانات ' + unavailable.join('، ') + ' غير متاحة حاليًا. الهيكل الأكاديمي لا يزال متاحًا للإعداد.' : '')
     } catch (err) {
       if (version === detailsVersion.current) setDetailsError(err.message)
     } finally {
