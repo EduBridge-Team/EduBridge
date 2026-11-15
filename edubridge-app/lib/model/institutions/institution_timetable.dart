@@ -1,8 +1,8 @@
 import '../enrollment/enrollment_models.dart';
 import 'institution_academic_records.dart';
 
-// The institution API uses 1=Sunday through 7=Saturday.
-int institutionWeekday(DateTime date) => date.weekday % 7 + 1;
+// The institution API stores ISO weekdays: Monday=1 through Sunday=7.
+int institutionWeekday(DateTime date) => date.weekday;
 DateTime timetableDate(DateTime date) => DateTime(date.year, date.month, date.day);
 String? _time(dynamic value) {
   if (value == null) return null;
@@ -56,7 +56,7 @@ class InstitutionTimetable {
       throw const FormatException('Duplicate timetable entry');
     }
     entries.sort((a, b) {
-      final day = a.weekday.compareTo(b.weekday);
+      final day = (a.weekday % 7).compareTo(b.weekday % 7);
       return day == 0 ? a.period.compareTo(b.period) : day;
     });
     return InstitutionTimetable(academic, entries);
