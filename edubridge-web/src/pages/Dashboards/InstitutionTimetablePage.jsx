@@ -83,7 +83,9 @@ export default function InstitutionTimetablePage() {
       ].filter(Boolean)
       setRefreshWarning(unavailable.length ? 'بعض البيانات لم تُحمّل: ' + unavailable.join('، ') + '. حدّث الصفحة قبل التعديل.' : '')
       const year = (a.academic_years || []).find((y) => y.is_current) || a.academic_years?.[0]
-      setForm({ ...EMPTY, weekday: slug === 'jabalia' ? '7' : '1', academic_year_id: String(year?.id || '') })
+      const allowedWeekdays = settingsResult.status === 'fulfilled' ? settingsResult.value?.weekdays || [] : []
+      const initialDay = slug === 'jabalia' ? (allowedWeekdays.includes(7) ? 7 : allowedWeekdays[0] || 7) : 1
+      setForm({ ...EMPTY, weekday: String(initialDay), academic_year_id: String(year?.id || '') })
       setFilterTeacher(requestedTeacher && (p.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
       setFilterSection(requestedSection && (a.sections || []).some((section) => String(section.id) === requestedSection) ? requestedSection : '')
       setFilterSubject(requestedSubject && (a.subjects || []).some((subject) => String(subject.id) === requestedSubject) ? requestedSubject : '')
@@ -153,6 +155,11 @@ export default function InstitutionTimetablePage() {
     setBusy(true); setError(''); setMessage('')
     try {
       await updateJabaliaTimetableSettings(slug, schoolId, timetableSettings)
+      setForm((current) => ({
+        ...current,
+        weekday: timetableSettings.weekdays.includes(Number(current.weekday)) ? current.weekday : String(timetableSettings.weekdays[0]),
+        period_number: String(Math.min(Number(current.period_number), timetableSettings.periods.length)),
+      }))
       setMessage('تم تحديث إعدادات الجدول المدرسي.')
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
@@ -373,7 +380,7 @@ export default function InstitutionTimetablePage() {
           </label>
           <section className="institution-panel" aria-label="عرض الجدول الأسبوعي">
             <h3>شبكة الجدول الأسبوعي</h3>
-            <InstitutionWeeklyGrid entries={filtered} days={slug === 'jabalia' && timetableSettings ? displayDays.filter((day) => timetableSettings.weekdays.includes(day.value)) : displayDays} sectionId={filterSection} periodCount={slug === 'jabalia' ? timetableSettings?.periods?.length || 0 : 0} periods={timetableSettings?.periods || []} />
+            <InstitutionWeeklyGrid entries={entries.filter((entry) => !filterYear || String(entry.academic_year_id) === filterYear)} days={slug === 'jabalia' && timetableSettings ? displayDays.filter((day) => timetableSettings.weekdays.includes(day.value)) : displayDays} sectionId={filterSection} periodCount={slug === 'jabalia' ? timetableSettings?.periods?.length || 0 : 0} periods={timetableSettings?.periods || []} />
           </section>
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
             <h3>توزيع المواد على أيام الأسبوع</h3>
