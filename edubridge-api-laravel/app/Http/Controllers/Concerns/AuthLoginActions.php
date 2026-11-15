@@ -134,6 +134,7 @@ trait AuthLoginActions
             ], 500);
         } catch (\Throwable $e) {
             report($e);
+            if (app()->environment('testing')) throw $e;
 
             return response()->json([
                 'error' => 'تعذر إكمال تسجيل الدخول على السيرفر',
