@@ -9,10 +9,13 @@ import 'institution_timetable_fixture.dart';
 
 void main() {
   final monday = DateTime(2026, 10, 26);
-  test('API weekdays map Monday to 1 and Sunday to 7', () {
-    expect(institutionWeekday(DateTime(2026, 10, 25)), 7);
-    expect(institutionWeekday(monday), 1);
-    expect(institutionWeekday(DateTime(2026, 10, 31)), 6);
+  test('Jabalia uses ISO weekdays while other institutions keep legacy numbering', () {
+    expect(institutionWeekday(DateTime(2026, 10, 25), iso: true), 7);
+    expect(institutionWeekday(DateTime(2026, 10, 25)), 1);
+    expect(institutionWeekday(monday, iso: true), 1);
+    expect(institutionWeekday(monday), 2);
+    expect(institutionWeekday(DateTime(2026, 10, 31), iso: true), 6);
+    expect(institutionWeekday(DateTime(2026, 10, 31)), 7);
   });
   test('school-scoped timetable keeps authored names, times and immutable rows', () async {
     final f = InstitutionTimetableFixture();
