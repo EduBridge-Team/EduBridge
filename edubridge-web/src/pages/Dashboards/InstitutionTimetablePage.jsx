@@ -8,6 +8,7 @@ import {
 } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import JabaliaTimetableCoveragePanel from '../../components/Institution/JabaliaTimetableCoveragePanel'
+import InstitutionWeeklyGrid from '../../components/Institution/InstitutionWeeklyGrid'
 import '../../styles/institution-operations.css'
 import { TIMETABLE_DAYS } from '../../components/Institution/institutionTimetableDays'
 
@@ -370,6 +371,10 @@ export default function InstitutionTimetablePage() {
               {displayDays.map(({ name, value }) => <option key={value} value={value}>{name}</option>)}
             </select>
           </label>
+          <section className="institution-panel" aria-label="عرض الجدول الأسبوعي">
+            <h3>شبكة الجدول الأسبوعي</h3>
+            <InstitutionWeeklyGrid entries={filtered} days={slug === 'jabalia' && timetableSettings ? displayDays.filter((day) => timetableSettings.weekdays.includes(day.value)) : displayDays} sectionId={filterSection} periodCount={slug === 'jabalia' ? timetableSettings?.periods?.length || 0 : 0} periods={timetableSettings?.periods || []} />
+          </section>
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
             <h3>توزيع المواد على أيام الأسبوع</h3>
             <p>ملخص للحصص المسجلة فعليًا حسب الفلاتر المختارة. الأعداد تمثل الحصص المسجلة وليست الحصص الأسبوعية المطلوبة.</p>
