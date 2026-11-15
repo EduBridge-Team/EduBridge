@@ -44,7 +44,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const u = await login(email.trim(), password)
-      navigate(dashboardFor(u))
+      navigate(u.must_change_password ? '/profile?change-password=1' : dashboardFor(u))
     } catch (err) {
       setError(err.message)
     } finally {

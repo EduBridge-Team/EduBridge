@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { changeMyPassword, fetchMyProfile, fetchCertificates, openProtectedFile, getUser, logout } from '../../api'
 import { ROLE_NAMES } from '../../roles'
 import { isIdentityVerificationExempt } from '../../verificationPolicy'
@@ -15,11 +15,13 @@ import {
 
 export default function ProfilePage() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const forcePasswordChange = params.get('change-password') === '1'
   const [profile, setProfile] = useState(() => getUser() || {})
   const [certificates, setCertificates] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [passwordOpen, setPasswordOpen] = useState(false)
+  const [passwordOpen, setPasswordOpen] = useState(() => new URLSearchParams(window.location.search).get('change-password') === '1')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -52,7 +54,7 @@ export default function ProfilePage() {
     setError('')
     setPasswordMessage('')
 
-    if (newPassword.length < 8) {
+    if (newPassword.length < (forcePasswordChange ? 12 : 8)) {
       setError('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل')
       return
     }
@@ -69,6 +71,7 @@ export default function ProfilePage() {
       setConfirmPassword('')
       setPasswordMessage('تم تغيير كلمة المرور بنجاح')
       setPasswordOpen(false)
+      if (forcePasswordChange) navigate('/teacher', { replace: true })
     } catch (err) {
       setError(err.message || 'تعذّر تغيير كلمة المرور')
     } finally {
@@ -127,16 +130,18 @@ export default function ProfilePage() {
         <button className="btn" onClick={() => navigate('/verify')}>إضافة شهادة</button>
       </section>}
 
+      {forcePasswordChange && <p className="state error" role="alert">يجب تغيير كلمة المرور الأولية قبل استخدام حسابك.</p>}
       <ProfileSecuritySection
         confirmPassword={confirmPassword}
         currentPassword={currentPassword}
         newPassword={newPassword}
-        onClose={() => setPasswordOpen(false)}
+        onClose={() => { if (!forcePasswordChange) setPasswordOpen(false) }}
         onConfirmPasswordChange={(e) => setConfirmPassword(e.target.value)}
         onCurrentPasswordChange={(e) => setCurrentPassword(e.target.value)}
         onNewPasswordChange={(e) => setNewPassword(e.target.value)}
         onSubmit={submitPassword}
         onToggle={() => {
+          if (forcePasswordChange) return
           setError('')
           setPasswordOpen((value) => !value)
         }}

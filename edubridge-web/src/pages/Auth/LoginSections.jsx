@@ -65,16 +65,16 @@ export function LoginCard({
 
       <form className="auth-login-form" onSubmit={onSubmit}>
         <div className="auth-field">
-          <label htmlFor="email">البريد الإلكتروني</label>
+          <label htmlFor="email">البريد الإلكتروني أو معرّف الدخول الداخلي</label>
           <input
             id="email"
-            type="email"
+            type="text"
             dir="ltr"
-            placeholder="name@example.com"
+            placeholder={isInstitutionPortal ? "teacher01@jabalia.edubridge" : "name@example.com"}
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
             required
-            autoComplete="email"
+            autoComplete="username"
           />
         </div>
 
