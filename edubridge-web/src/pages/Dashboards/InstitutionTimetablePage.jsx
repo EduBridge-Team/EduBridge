@@ -15,6 +15,7 @@ const EMPTY = { academic_year_id: '', section_id: '', subject_id: '', teacher_id
 
 export default function InstitutionTimetablePage() {
   const { slug, loading: contextLoading } = useInstitution()
+  const displayDays = slug === 'jabalia' ? TIMETABLE_DAYS : TIMETABLE_DAYS.map((day, index) => ({ ...day, value: index + 1 }))
   const [searchParams] = useSearchParams()
   const requestedSchool = searchParams.get('school') || ''
   const requestedTeacher = searchParams.get('teacher') || ''
@@ -81,7 +82,7 @@ export default function InstitutionTimetablePage() {
       ].filter(Boolean)
       setRefreshWarning(unavailable.length ? 'بعض البيانات لم تُحمّل: ' + unavailable.join('، ') + '. حدّث الصفحة قبل التعديل.' : '')
       const year = (a.academic_years || []).find((y) => y.is_current) || a.academic_years?.[0]
-      setForm({ ...EMPTY, academic_year_id: String(year?.id || '') })
+      setForm({ ...EMPTY, weekday: slug === 'jabalia' ? '7' : '1', academic_year_id: String(year?.id || '') })
       setFilterTeacher(requestedTeacher && (p.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
       setFilterSection(requestedSection && (a.sections || []).some((section) => String(section.id) === requestedSection) ? requestedSection : '')
       setFilterSubject(requestedSubject && (a.subjects || []).some((subject) => String(subject.id) === requestedSubject) ? requestedSubject : '')
@@ -191,12 +192,12 @@ export default function InstitutionTimetablePage() {
     (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
     (!filterSubject || String(e.subject_id) === filterSubject) &&
     (!filterDay || String(e.weekday) === filterDay))
-    .sort((a, b) => (Number(a.weekday) % 7) - (Number(b.weekday) % 7) || Number(a.period_number) - Number(b.period_number))
+    .sort((a, b) => (slug === 'jabalia' ? (Number(a.weekday) % 7) - (Number(b.weekday) % 7) : Number(a.weekday) - Number(b.weekday)) || Number(a.period_number) - Number(b.period_number))
 
   // Reflect actual scheduled lessons; never invent target weekly periods.
   const subjectDistribution = subjects.map((subject) => {
     const lessons = filtered.filter((entry) => String(entry.subject_id) === String(subject.id))
-    const weekdays = TIMETABLE_DAYS.map(({ name, value }) => ({
+    const weekdays = displayDays.map(({ name, value }) => ({
       name,
       count: lessons.filter((entry) => Number(entry.weekday) === value).length,
     })).filter((day) => day.count > 0)
@@ -237,7 +238,7 @@ export default function InstitutionTimetablePage() {
           <p>حدد أيام الدوام وبداية ونهاية كل حصة. لا تُغيّر الإعدادات حصصًا محفوظة مسبقًا.</p>
           <form className="institution-school-form" onSubmit={saveTimetableSettings}>
             <fieldset><legend>أيام الدوام (الأحد = 7)</legend>
-              {TIMETABLE_DAYS.map(({ name: day, value: iso }) => {
+              {displayDays.map(({ name: day, value: iso }) => {
                 return <label key={day}>
                   <input type="checkbox" checked={timetableSettings.weekdays.includes(iso)}
                     onChange={(event) => setTimetableSettings((prev) => ({
@@ -322,7 +323,7 @@ export default function InstitutionTimetablePage() {
             </label>
             <label>اليوم
               <select value={form.weekday} onChange={(e) => setForm({ ...form, weekday: e.target.value })}>
-                {(slug === 'jabalia' && timetableSettings ? TIMETABLE_DAYS.filter((day) => timetableSettings.weekdays.includes(day.value)) : TIMETABLE_DAYS).map(({ name, value }) => <option key={value} value={value}>{name}</option>)}
+                {(slug === 'jabalia' && timetableSettings ? displayDays.filter((day) => timetableSettings.weekdays.includes(day.value)) : displayDays).map(({ name, value }) => <option key={value} value={value}>{name}</option>)}
               </select>
             </label>
             <label>رقم الحصة<input type="number" required min="1" max={slug === 'jabalia' && timetableSettings ? timetableSettings.periods.length : 20} value={form.period_number} onChange={(e) => setForm({ ...form, period_number: e.target.value })} /></label>
@@ -366,7 +367,7 @@ export default function InstitutionTimetablePage() {
           <label>تصفية حسب اليوم
             <select value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
               <option value="">جميع الأيام</option>
-              {TIMETABLE_DAYS.map(({ name, value }) => <option key={value} value={value}>{name}</option>)}
+              {displayDays.map(({ name, value }) => <option key={value} value={value}>{name}</option>)}
             </select>
           </label>
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
@@ -385,7 +386,7 @@ export default function InstitutionTimetablePage() {
             )}
           </section>
           {!filtered.length ? <p>لا توجد حصص مطابقة.</p> : <div className="institution-actions">
-            {TIMETABLE_DAYS.map(({ name: day, value }) => {
+            {displayDays.map(({ name: day, value }) => {
               const dayEntries = filtered.filter((entry) => Number(entry.weekday) === value)
               if (!dayEntries.length) return null
               return <section key={day} className="institution-panel" aria-label={`حصص ${day}`}>
