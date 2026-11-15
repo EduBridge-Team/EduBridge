@@ -141,6 +141,9 @@ class InstitutionInternalTeacherTest extends TestCase
             'email' => $record['login_identifier'],
             'password' => $record['temporary_password'],
         ]);
+        $resolvedUser = InstitutionInternalSession::resolve($record['login_identifier']);
+        $this->assertNotNull($resolvedUser);
+        $this->assertNotEmpty(\App\Support\AuthCredentials::issue($resolvedUser, 'local-test-only-secret'));
         $auth = app($login)->login($loginRequest);
         $this->assertSame(200, $auth->status(), $auth->getContent());
         $this->assertTrue($auth->getData(true)['user']['must_change_password']);
