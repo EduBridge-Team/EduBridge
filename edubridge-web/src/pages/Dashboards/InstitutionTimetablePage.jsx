@@ -66,7 +66,7 @@ export default function InstitutionTimetablePage() {
       if (!active) return
       setAcademic(a); setParticipants(p); setEntries(t?.timetable || []); setTimetableSettings(settings); setSubjectQuotas(quotas?.quotas || [])
       const year = (a?.academic_years || []).find((y) => y.is_current) || a?.academic_years?.[0]
-      setForm({ ...EMPTY, academic_year_id: String(year?.id || '') })
+      setForm({ ...EMPTY, academic_year_id: String(year?.id || ''), weekday: String(settings?.weekdays?.[0] ?? 7) })
       setFilterTeacher(requestedTeacher && (p?.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
       setFilterSection(requestedSection && (a?.sections || []).some((section) => String(section.id) === requestedSection) ? requestedSection : '')
       setFilterSubject(requestedSubject && (a?.subjects || []).some((subject) => String(subject.id) === requestedSubject) ? requestedSubject : '')
@@ -107,7 +107,7 @@ export default function InstitutionTimetablePage() {
         period_number: Number(form.period_number),
         room: form.room.trim() || null,
       })
-      setMessage('تم حفظ الحصة بنجاح. جارِ تحديث الجدول…')
+      setMessage('تم حفظ الحصة على الخادم. جارِ تحديث الجدول…')
       try { await refresh(); setMessage('تم حفظ الحصة وتحديث الجدول.') }
       catch { setMessage('تم حفظ الحصة، لكن تعذر تحديث العرض. اضغط تحديث الجدول للتحقق.') }
       resetFilters()
@@ -307,16 +307,17 @@ export default function InstitutionTimetablePage() {
             </label>
             <label>اليوم
               <select value={form.weekday} onChange={(e) => setForm({ ...form, weekday: e.target.value })}>
-                {DAYS.map((day, i) => <option key={day} value={ISO_DAYS[i]}>{day}</option>)}
+                {DAYS.map((day, i) => (!timetableSettings || timetableSettings.weekdays.includes(ISO_DAYS[i])) && <option key={day} value={ISO_DAYS[i]}>{day}</option>)}
               </select>
             </label>
-            <label>رقم الحصة<input type="number" required min="1" max="20" value={form.period_number} onChange={(e) => setForm({ ...form, period_number: e.target.value })} /></label>
+            <label>رقم الحصة<input type="number" required min="1" max={timetableSettings?.periods?.length || 20} value={form.period_number} onChange={(e) => setForm({ ...form, period_number: e.target.value })} /></label>
             <label>الغرفة (اختياري)<input maxLength="80" value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} /></label>
             <button className="btn" disabled={busy || loading || !years.length || !sections.length || !subjects.length}>إضافة الحصة</button>
           </form>
         </section>
         <section className="institution-panel">
-          <h2>الحصص المدرسية</h2>
+          <h2>الحصص المدرسية المحفوظة</h2>
+          <p>تُقرأ الحصص من قاعدة البيانات. اختر اليوم أو الشعبة لمراجعة النتيجة بعد الإضافة.</p>
           <button type="button" className="btn outline" disabled={loading || busy} onClick={() => refresh().then(() => { setError(''); setMessage('تم تحديث الجدول من الخادم.') }).catch(err => setError(`تعذر تحديث الجدول: ${err.message}`))}>تحديث الجدول من الخادم</button>
           <div className="academic-setup-summary" aria-label="ملخص الجدول حسب الفلاتر">
             <span>الحصص: <b>{filtered.length}</b></span>
