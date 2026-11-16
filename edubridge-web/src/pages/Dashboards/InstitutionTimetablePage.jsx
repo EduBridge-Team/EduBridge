@@ -177,7 +177,7 @@ export default function InstitutionTimetablePage() {
     (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
     (!filterSubject || String(e.subject_id) === filterSubject) &&
     (!filterDay || String(e.weekday) === filterDay))
-    .sort((a, b) => Number(a.weekday) - Number(b.weekday) || Number(a.period_number) - Number(b.period_number))
+    .sort((a, b) => ISO_WEEKDAYS.indexOf(Number(a.weekday)) - ISO_WEEKDAYS.indexOf(Number(b.weekday)) || Number(a.period_number) - Number(b.period_number))
 
   // Reflect actual scheduled lessons; never invent target weekly periods.
   const subjectDistribution = subjects.map((subject) => {
@@ -353,7 +353,7 @@ export default function InstitutionTimetablePage() {
           <label>تصفية حسب اليوم
             <select value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
               <option value="">جميع الأيام</option>
-              {DAYS.map((day, i) => <option key={day} value={i+1}>{day}</option>)}
+              {DAYS.map((day, i) => <option key={day} value={ISO_WEEKDAYS[i]}>{day}</option>)}
             </select>
           </label>
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
@@ -373,7 +373,7 @@ export default function InstitutionTimetablePage() {
           </section>
           {!filtered.length ? <p>لا توجد حصص مطابقة.</p> : <div className="institution-actions">
             {DAYS.map((day, index) => {
-              const dayEntries = filtered.filter((entry) => Number(entry.weekday) === index + 1)
+              const dayEntries = filtered.filter((entry) => Number(entry.weekday) === ISO_WEEKDAYS[index])
               if (!dayEntries.length) return null
               return <section key={day} className="institution-panel" aria-label={`حصص ${day}`}>
                 <h3>{day} — {dayEntries.length} حصة</h3>
