@@ -70,6 +70,21 @@ export default function SchoolWorkspacePage() {
       </section>}
       {director && <section className="school-workspace-body" aria-label={t('أقسام إدارة المدرسة', 'School management sections')}>
         {!selected ? <>
+          <section className="institution-panel" aria-label={t('دليل بدء إدارة المدرسة', 'School administration start guide')}>
+            <h2>{t('كيف أبدأ إدارة المدرسة؟', 'How do I get started?')}</h2>
+            <p>{t('ابدأ بخطوات واضحة، ثم افتح أي قسم من البطاقات. الحساب الرسمي للمدرسة للعرض فقط؛ التعديلات تتم من حساب المدير المكلّف.', 'Follow these steps, then open any section. The official school account is read-only; changes are made using an appointed director account.')}</p>
+            <div className="school-workspace-grid">
+              {[
+                { id: 'domain', ar: '1. تأكيد النطاق الداخلي', en: '1. Confirm internal domain' },
+                { id: 'accounts', ar: '2. إنشاء حسابات المدرسة', en: '2. Create school accounts' },
+                { id: 'academic', ar: '3. إعداد السنة والفصول والصفوف', en: '3. Set up years, terms and grades' },
+                { id: 'timetable', ar: '4. إنشاء الجدول ومراجعته', en: '4. Create and review timetable' },
+              ].filter(step => visibleSections.some(section => section.id === step.id)).map(step =>
+                <button type="button" className="school-workspace-tile" key={step.id} onClick={() => setActiveSection(step.id)}>
+                  <b>{t(step.ar, step.en)}</b>
+                </button>)}
+            </div>
+          </section>
           <h2 className="school-workspace-section-title">{t('الأقسام الإدارية', 'Management sections')}</h2>
           <div className="school-workspace-grid">
             {visibleSections.map(section => {
