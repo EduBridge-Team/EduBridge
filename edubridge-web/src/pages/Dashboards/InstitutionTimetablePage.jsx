@@ -356,6 +356,35 @@ export default function InstitutionTimetablePage() {
               {DAYS.map((day, i) => <option key={day} value={ISO_WEEKDAYS[i]}>{day}</option>)}
             </select>
           </label>
+          <section className="institution-panel" aria-label="الجدول الأسبوعي للشعبة">
+            <h3>الجدول الأسبوعي للشعبة</h3>
+            <p>اختر شعبة من الفلاتر أعلاه لعرض أيامها وحصصها في شبكة واحدة. الجدول يعرض البيانات المحفوظة فقط.</p>
+            {!filterSection ? <p className="state">اختر الشعبة من تصفية الجدول لعرض شبكتها الأسبوعية.</p> : (
+              <div className="institution-timetable-scroll" tabIndex={0} role="region" aria-label="شبكة الجدول الأسبوعي، مرر أفقيًا عند الحاجة">
+                <table className="institution-weekly-grid">
+                  <thead><tr><th scope="col">الحصة</th>
+                    {DAYS.map((day, index) => ({ day, iso: ISO_WEEKDAYS[index] }))
+                      .filter(({ iso }) => !timetableSettings?.weekdays || timetableSettings.weekdays.includes(iso))
+                      .map(({ day, iso }) => <th scope="col" key={iso}>{day}</th>)}
+                  </tr></thead>
+                  <tbody>
+                    {Array.from({ length: Math.max(timetableSettings?.periods?.length || 0, ...filtered.map(e => Number(e.period_number)), 1) }, (_, index) => index + 1).map(period => <tr key={period}>
+                      <th scope="row">{period}</th>
+                      {ISO_WEEKDAYS.filter(iso => !timetableSettings?.weekdays || timetableSettings.weekdays.includes(iso)).map(iso => {
+                        const lessons = filtered.filter(e => Number(e.weekday) === iso && Number(e.period_number) === period)
+                        return <td key={iso}>
+                          {lessons.length ? lessons.map(entry => <div className="institution-weekly-lesson" key={entry.id}>
+                            <strong>{entry.subject_name}</strong>
+                            <small>{entry.teacher_name || 'دون معلم'}{entry.room ? ` · ${entry.room}` : ''}</small>
+                          </div>) : <span className="institution-weekly-empty">—</span>}
+                        </td>
+                      })}
+                    </tr>)}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
             <h3>توزيع المواد على أيام الأسبوع</h3>
             <p>ملخص للحصص المسجلة فعليًا حسب الفلاتر المختارة. الأعداد تمثل الحصص المسجلة وليست الحصص الأسبوعية المطلوبة.</p>
