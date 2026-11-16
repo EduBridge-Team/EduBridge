@@ -86,14 +86,20 @@ export default function InstitutionSchoolsPage() {
     if (!quiet) setDetailsLoading(true)
     setDetailsError('')
     try {
-      const [academic, attendance, timetable, curriculum] = await Promise.all([
+      const [academicResult, attendanceResult, timetableResult, curriculumResult] = await Promise.allSettled([
         fetchInstitutionAcademicOverview(slug, selectedId),
         fetchInstitutionAttendance(slug, selectedId),
         fetchInstitutionTimetable(slug, selectedId),
         fetchInstitutionCurriculum(slug, selectedId),
       ])
       if (version !== detailsVersion.current) return
+      const academic = academicResult.status === 'fulfilled' ? academicResult.value : null
+      const attendance = attendanceResult.status === 'fulfilled' ? attendanceResult.value : null
+      const timetable = timetableResult.status === 'fulfilled' ? timetableResult.value : null
+      const curriculum = curriculumResult.status === 'fulfilled' ? curriculumResult.value : null
       setDetails({ academic, attendance, timetable, curriculum })
+      const failures = [academicResult, attendanceResult, timetableResult, curriculumResult].filter(result => result.status === 'rejected')
+      if (failures.length) setDetailsError('تعذر تحميل بعض تفاصيل المدرسة. يمكنك متابعة إعداد السنة الدراسية إذا كانت بياناتها متاحة.')
     } catch (err) {
       if (version === detailsVersion.current) setDetailsError(err.message)
     } finally {
@@ -186,13 +192,13 @@ export default function InstitutionSchoolsPage() {
               ) : details ? (
                 <>
                   <div className="role-stats-grid">
-                    <Stat Icon={CalendarDays} label="السنوات الدراسية" value={count(details.academic.academic_years)} />
-                    <Stat Icon={GraduationCap} label="الصفوف" value={count(details.academic.grades)} />
-                    <Stat Icon={School} label="الشعب" value={count(details.academic.sections)} />
-                    <Stat Icon={BookOpen} label="المواد" value={count(details.academic.subjects)} />
-                    <Stat Icon={ClipboardCheck} label="سجلات الحضور" value={count(details.attendance.attendance_sessions)} />
-                    <Stat Icon={CalendarDays} label="حصص الجدول" value={count(details.timetable.timetable)} />
-                    <Stat Icon={BookOpen} label="كتب المنهاج" value={count(details.curriculum.books)} />
+                    <Stat Icon={CalendarDays} label="السنوات الدراسية" value={count(details.academic?.academic_years)} />
+                    <Stat Icon={GraduationCap} label="الصفوف" value={count(details.academic?.grades)} />
+                    <Stat Icon={School} label="الشعب" value={count(details.academic?.sections)} />
+                    <Stat Icon={BookOpen} label="المواد" value={count(details.academic?.subjects)} />
+                    <Stat Icon={ClipboardCheck} label="سجلات الحضور" value={count(details.attendance?.attendance_sessions)} />
+                    <Stat Icon={CalendarDays} label="حصص الجدول" value={count(details.timetable?.timetable)} />
+                    <Stat Icon={BookOpen} label="كتب المنهاج" value={count(details.curriculum?.books)} />
                   </div>
                 </>
               ) : null}
