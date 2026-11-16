@@ -111,8 +111,9 @@ export default function InstitutionTimetablePage() {
         period_number: Number(form.period_number),
         room: form.room.trim() || null,
       })
-      try { await refresh() } catch { setMessage('تم حفظ الحصة، لكن تعذر تحديث القائمة. أعد تحميل الحصص.'); return }
-      setMessage('تمت إضافة الحصة إلى الجدول.')
+      let refreshed = true
+      try { await refresh() } catch { refreshed = false }
+      setMessage(refreshed ? 'تمت إضافة الحصة إلى الجدول.' : 'تم حفظ الحصة، لكن تعذر تحديث القائمة. أعد تحميل الحصص.')
       resetFilters()
       setForm((old) => ({ ...old, section_id: '', subject_id: '', teacher_id: '', room: '' }))
     } catch (err) { setError(err.message) }
@@ -124,8 +125,9 @@ export default function InstitutionTimetablePage() {
     setBusy(true); setError(''); setMessage('')
     try {
       await deleteInstitutionTimetableEntry(slug, schoolId, entry.id)
-      try { await refresh() } catch { setMessage('تم حذف الحصة، لكن تعذر تحديث القائمة. أعد تحميل الحصص.'); return }
-      setMessage('تم حذف الحصة.')
+      let refreshed = true
+      try { await refresh() } catch { refreshed = false }
+      setMessage(refreshed ? 'تم حذف الحصة.' : 'تم حذف الحصة، لكن تعذر تحديث القائمة. أعد تحميل الحصص.')
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
   }
