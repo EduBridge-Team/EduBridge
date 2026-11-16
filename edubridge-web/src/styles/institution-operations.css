@@ -243,3 +243,15 @@
 @media (prefers-reduced-motion: reduce) {
   .school-workspace-tile { transition: none; }
 }
+
+
+/* Selected-section schedule grid: horizontally scrollable on narrow devices. */
+.institution-operations-page .institution-timetable-scroll { overflow-x: auto; max-width: 100%; margin-top: 12px; }
+.institution-operations-page .institution-weekly-grid { width: 100%; min-width: 650px; border-collapse: collapse; text-align: right; }
+.institution-operations-page .institution-weekly-grid th,
+.institution-operations-page .institution-weekly-grid td { border: 1px solid var(--border, #d8dee8); padding: 10px; vertical-align: top; min-width: 110px; }
+.institution-operations-page .institution-weekly-grid th { background: color-mix(in srgb, var(--institution-primary, #1f6feb) 8%, var(--surface, #fff)); }
+.institution-operations-page .institution-weekly-grid tbody th { min-width: 58px; width: 58px; }
+.institution-operations-page .institution-weekly-lesson { display: grid; gap: 5px; margin: 0 0 6px; }
+.institution-operations-page .institution-weekly-lesson small { color: var(--muted, #667085); }
+.institution-operations-page .institution-weekly-empty { color: var(--muted, #667085); }
