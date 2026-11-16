@@ -12,7 +12,6 @@ import '../../styles/institution-operations.css'
 
 const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
 const ISO_DAYS = [7, 1, 2, 3, 4, 5, 6]
-const dayName = (iso) => DAYS[ISO_DAYS.indexOf(Number(iso))] || 'يوم غير معروف'
 const EMPTY = { academic_year_id: '', section_id: '', subject_id: '', teacher_id: '', weekday: '7', period_number: '1', room: '' }
 
 export default function InstitutionTimetablePage() {
@@ -135,8 +134,9 @@ export default function InstitutionTimetablePage() {
     if (!window.confirm('حفظ مواعيد الدوام الجديدة؟ قد يتم رفض التعديل إذا تعارض مع حصص مسجلة.')) return
     setBusy(true); setError(''); setMessage('')
     try {
-      await updateJabaliaTimetableSettings(slug, schoolId, timetableSettings)
-      setMessage('تم تحديث إعدادات الجدول المدرسي.')
+      const saved = await updateJabaliaTimetableSettings(slug, schoolId, timetableSettings)
+      setTimetableSettings(saved.settings || timetableSettings)
+      setMessage('تم حفظ مواعيد الدوام على الخادم.')
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
   }
@@ -176,7 +176,7 @@ export default function InstitutionTimetablePage() {
     (!filterTeacher || String(e.teacher_id) === filterTeacher) &&
     (!filterSubject || String(e.subject_id) === filterSubject) &&
     (!filterDay || String(e.weekday) === filterDay))
-    .sort((a, b) => Number(a.weekday) - Number(b.weekday) || Number(a.period_number) - Number(b.period_number))
+    .sort((a, b) => ISO_DAYS.indexOf(Number(a.weekday)) - ISO_DAYS.indexOf(Number(b.weekday)) || Number(a.period_number) - Number(b.period_number))
 
   // Reflect actual scheduled lessons; never invent target weekly periods.
   const subjectDistribution = subjects.map((subject) => {
@@ -222,7 +222,7 @@ export default function InstitutionTimetablePage() {
           <form className="institution-school-form" onSubmit={saveTimetableSettings}>
             <fieldset><legend>أيام الدوام (الأحد = 7)</legend>
               {DAYS.map((day, index) => {
-                const iso = index === 0 ? 7 : index
+                const iso = ISO_DAYS[index]
                 return <label key={day}>
                   <input type="checkbox" checked={timetableSettings.weekdays.includes(iso)}
                     onChange={(event) => setTimetableSettings((prev) => ({
@@ -372,7 +372,7 @@ export default function InstitutionTimetablePage() {
           </section>
           {!filtered.length ? <p>لا توجد حصص مطابقة.</p> : <div className="institution-actions">
             {DAYS.map((day, index) => {
-              const dayEntries = filtered.filter((entry) => Number(entry.weekday) === index + 1)
+              const dayEntries = filtered.filter((entry) => Number(entry.weekday) === ISO_DAYS[index])
               if (!dayEntries.length) return null
               return <section key={day} className="institution-panel" aria-label={`حصص ${day}`}>
                 <h3>{day} — {dayEntries.length} حصة</h3>
