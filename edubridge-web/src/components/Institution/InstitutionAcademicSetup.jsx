@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   BookOpen,
   CalendarPlus,
@@ -53,6 +54,10 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
   const sections = academic?.sections || []
   const terms = academic?.academic_terms || []
 
+  const ready = { year: years.length > 0, term: terms.length > 0, grade: grades.length > 0, subject: subjects.length > 0, section: sections.length > 0 }
+  const completed = Object.values(ready).filter(Boolean).length
+  const nextStep = !ready.year ? 'السنة الدراسية' : !ready.term ? 'الفصل الدراسي' : !ready.grade ? 'الصفوف' : !ready.subject ? 'المواد' : !ready.section ? 'الشعب' : null
+
   const currentYear = useMemo(
     () => years.find((item) => Boolean(item.is_current)) || years[0] || null,
     [years],
@@ -94,6 +99,12 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
         <span>شعب: <b>{sections.length}</b></span>
       </div>
 
+      <div className="state academic-current-state" role="status">
+        <strong>تقدم إعداد المدرسة: {completed} من 5 خطوات</strong>
+        <p>{nextStep ? `الخطوة التالية: ${nextStep}. أكمل البيانات الرسمية قبل ربط المعلمين وبناء الجدول.` : 'الهيكل الأكاديمي الأساسي مكتمل. يمكنك الانتقال إلى ربط المعلمين ثم الجدول المدرسي.'}</p>
+        {nextStep === null && <p><Link to="/institution/teachers">إدارة المعلمين</Link> · <Link to={`/institution/timetable?school=${encodeURIComponent(schoolId)}`}>الجدول المدرسي</Link></p>}
+      </div>
+
       <div className="academic-setup-grid">
         <FormCard Icon={CalendarPlus} title="السنة الدراسية" description="حدد البداية والنهاية واجعل السنة الحالية مفعلة عند الحاجة.">
           <form onSubmit={(event) => {
@@ -104,7 +115,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>تاريخ البداية<input required type="date" value={year.starts_on} onChange={(e) => setYear({ ...year, starts_on: e.target.value })} /></label>
             <label>تاريخ النهاية<input required type="date" value={year.ends_on} onChange={(e) => setYear({ ...year, ends_on: e.target.value })} /></label>
             <label className="academic-checkbox"><input type="checkbox" checked={year.is_current} onChange={(e) => setYear({ ...year, is_current: e.target.checked })} /> السنة الحالية</label>
-            <SubmitButton saving={saving === 'year'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -119,7 +130,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>الترتيب<input required type="number" min="1" max="20" value={term.position} onChange={(e) => setTerm({ ...term, position: e.target.value })} /></label>
             <label>البداية<input required type="date" value={term.starts_on} onChange={(e) => setTerm({ ...term, starts_on: e.target.value })} /></label>
             <label>النهاية<input required type="date" value={term.ends_on} onChange={(e) => setTerm({ ...term, ends_on: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'term'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -131,7 +142,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>اسم الصف<input required placeholder="الصف الأول" value={grade.name} onChange={(e) => setGrade({ ...grade, name: e.target.value })} /></label>
             <label>الرمز<input dir="ltr" placeholder="G1" value={grade.code} onChange={(e) => setGrade({ ...grade, code: e.target.value })} /></label>
             <label>الترتيب<input type="number" min="1" max="100" value={grade.position} onChange={(e) => setGrade({ ...grade, position: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'grade'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -142,7 +153,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
           }}>
             <label>اسم المادة<input required placeholder="الرياضيات" value={subject.name} onChange={(e) => setSubject({ ...subject, name: e.target.value })} /></label>
             <label>الرمز<input dir="ltr" placeholder="MATH" value={subject.code} onChange={(e) => setSubject({ ...subject, code: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'subject'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
 
@@ -161,7 +172,7 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
             <label>الصف<select required value={section.grade_id} onChange={(e) => setSection({ ...section, grade_id: e.target.value })}><option value="">اختر الصف</option>{grades.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
             <label>اسم الشعبة<input required placeholder="أ" value={section.name} onChange={(e) => setSection({ ...section, name: e.target.value })} /></label>
             <label>السعة<input type="number" min="1" max="500" value={section.capacity} onChange={(e) => setSection({ ...section, capacity: e.target.value })} /></label>
-            <SubmitButton saving={saving === 'section'} />
+            <SubmitButton saving={saving !== ''} />
           </form>
         </FormCard>
       </div>
