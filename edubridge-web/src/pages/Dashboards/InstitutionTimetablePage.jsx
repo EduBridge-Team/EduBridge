@@ -11,7 +11,9 @@ import JabaliaTimetableCoveragePanel from '../../components/Institution/JabaliaT
 import '../../styles/institution-operations.css'
 
 const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
-const EMPTY = { academic_year_id: '', section_id: '', subject_id: '', teacher_id: '', weekday: '1', period_number: '1', room: '' }
+const ISO_DAYS = [7, 1, 2, 3, 4, 5, 6]
+const dayName = (iso) => DAYS[ISO_DAYS.indexOf(Number(iso))] || 'يوم غير معروف'
+const EMPTY = { academic_year_id: '', section_id: '', subject_id: '', teacher_id: '', weekday: '7', period_number: '1', room: '' }
 
 export default function InstitutionTimetablePage() {
   const { slug, loading: contextLoading } = useInstitution()
@@ -53,21 +55,23 @@ export default function InstitutionTimetablePage() {
     let active = true
     setLoading(true)
     setAcademic(null); setParticipants(null); setEntries([]); setTimetableSettings(null); setSubjectQuotas([])
-    Promise.all([
+    Promise.allSettled([
       fetchInstitutionAcademicOverview(slug, schoolId),
       fetchInstitutionParticipants(slug, schoolId),
       fetchInstitutionTimetable(slug, schoolId),
       slug === 'jabalia' ? fetchJabaliaTimetableSettings(slug, schoolId) : Promise.resolve(null),
       slug === 'jabalia' ? fetchJabaliaSubjectQuotas(slug, schoolId) : Promise.resolve(null),
-     ]).then(([a, p, t, settings, quotas]) => {
+     ]).then((results) => {
+      const [a, p, t, settings, quotas] = results.map(result => result.status === 'fulfilled' ? result.value : null)
+      const failures = results.map((result, index) => result.status === 'rejected' ? ['الهيكل الأكاديمي', 'المعلمون', 'الحصص المحفوظة', 'إعدادات الدوام', 'الحصص الأسبوعية'][index] : null).filter(Boolean)
       if (!active) return
-      setAcademic(a); setParticipants(p); setEntries(t.timetable || []); setTimetableSettings(settings); setSubjectQuotas(quotas?.quotas || [])
-      const year = (a.academic_years || []).find((y) => y.is_current) || a.academic_years?.[0]
+      setAcademic(a); setParticipants(p); setEntries(t?.timetable || []); setTimetableSettings(settings); setSubjectQuotas(quotas?.quotas || [])
+      const year = (a?.academic_years || []).find((y) => y.is_current) || a?.academic_years?.[0]
       setForm({ ...EMPTY, academic_year_id: String(year?.id || '') })
-      setFilterTeacher(requestedTeacher && (p.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
-      setFilterSection(requestedSection && (a.sections || []).some((section) => String(section.id) === requestedSection) ? requestedSection : '')
-      setFilterSubject(requestedSubject && (a.subjects || []).some((subject) => String(subject.id) === requestedSubject) ? requestedSubject : '')
-      setError('')
+      setFilterTeacher(requestedTeacher && (p?.teachers || []).some((teacher) => String(teacher.id) === requestedTeacher) ? requestedTeacher : '')
+      setFilterSection(requestedSection && (a?.sections || []).some((section) => String(section.id) === requestedSection) ? requestedSection : '')
+      setFilterSubject(requestedSubject && (a?.subjects || []).some((subject) => String(subject.id) === requestedSubject) ? requestedSubject : '')
+      setError(failures.length ? `تعذر تحميل: ${failures.join('، ')}. باقي البيانات المتاحة معروضة. حاول تحديث الصفحة.` : '')
     }).catch((err) => { if (active) setError(err.message) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
@@ -104,8 +108,9 @@ export default function InstitutionTimetablePage() {
         period_number: Number(form.period_number),
         room: form.room.trim() || null,
       })
-      await refresh()
-      setMessage('تمت إضافة الحصة إلى الجدول.')
+      setMessage('تم حفظ الحصة بنجاح. جارِ تحديث الجدول…')
+      try { await refresh(); setMessage('تم حفظ الحصة وتحديث الجدول.') }
+      catch { setMessage('تم حفظ الحصة، لكن تعذر تحديث العرض. اضغط تحديث الجدول للتحقق.') }
       resetFilters()
       setForm((old) => ({ ...old, section_id: '', subject_id: '', teacher_id: '', room: '' }))
     } catch (err) { setError(err.message) }
@@ -117,8 +122,9 @@ export default function InstitutionTimetablePage() {
     setBusy(true); setError(''); setMessage('')
     try {
       await deleteInstitutionTimetableEntry(slug, schoolId, entry.id)
-      await refresh()
-      setMessage('تم حذف الحصة.')
+      setMessage('تم حذف الحصة. جارِ تحديث العرض…')
+      try { await refresh(); setMessage('تم حذف الحصة وتحديث الجدول.') }
+      catch { setMessage('تم حذف الحصة، لكن تعذر تحديث العرض. اضغط تحديث الجدول.') }
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
   }
@@ -177,7 +183,7 @@ export default function InstitutionTimetablePage() {
     const lessons = filtered.filter((entry) => String(entry.subject_id) === String(subject.id))
     const weekdays = DAYS.map((name, index) => ({
       name,
-      count: lessons.filter((entry) => Number(entry.weekday) === index + 1).length,
+      count: lessons.filter((entry) => Number(entry.weekday) === ISO_DAYS[index]).length,
     })).filter((day) => day.count > 0)
     return { id: subject.id, name: subject.name, code: subject.code, count: lessons.length, weekdays }
   }).filter((subject) => subject.count > 0)
@@ -301,7 +307,7 @@ export default function InstitutionTimetablePage() {
             </label>
             <label>اليوم
               <select value={form.weekday} onChange={(e) => setForm({ ...form, weekday: e.target.value })}>
-                {DAYS.map((day, i) => <option key={day} value={i+1}>{day}</option>)}
+                {DAYS.map((day, i) => <option key={day} value={ISO_DAYS[i]}>{day}</option>)}
               </select>
             </label>
             <label>رقم الحصة<input type="number" required min="1" max="20" value={form.period_number} onChange={(e) => setForm({ ...form, period_number: e.target.value })} /></label>
@@ -311,6 +317,7 @@ export default function InstitutionTimetablePage() {
         </section>
         <section className="institution-panel">
           <h2>الحصص المدرسية</h2>
+          <button type="button" className="btn outline" disabled={loading || busy} onClick={() => refresh().then(() => { setError(''); setMessage('تم تحديث الجدول من الخادم.') }).catch(err => setError(`تعذر تحديث الجدول: ${err.message}`))}>تحديث الجدول من الخادم</button>
           <div className="academic-setup-summary" aria-label="ملخص الجدول حسب الفلاتر">
             <span>الحصص: <b>{filtered.length}</b></span>
             <span>المعلمون: <b>{distinctTeachers}</b></span>
@@ -345,7 +352,7 @@ export default function InstitutionTimetablePage() {
           <label>تصفية حسب اليوم
             <select value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
               <option value="">جميع الأيام</option>
-              {DAYS.map((day, i) => <option key={day} value={i+1}>{day}</option>)}
+              {DAYS.map((day, i) => <option key={day} value={ISO_DAYS[i]}>{day}</option>)}
             </select>
           </label>
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
