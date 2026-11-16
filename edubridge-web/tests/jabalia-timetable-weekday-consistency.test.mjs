@@ -32,6 +32,8 @@ test('partial API failure does not discard academic school setup or timetable da
   assert.match(web, /Promise\.allSettled\(/)
   assert.match(web, /setEntries\(t\?\.timetable \|\| \[\]\)/)
   assert.match(web, /تم حفظ الحصة، لكن تعذر تحديث القائمة/)
+  assert.match(web, /institution-weekly-grid/)
+  assert.match(web, /الجدول الأسبوعي للشعبة/)
   assert.match(setup, /تقدم إعداد المدرسة/)
   assert.match(setup, /الخطوة التالية/)
 })
