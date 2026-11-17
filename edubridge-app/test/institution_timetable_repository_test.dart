@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:edubridge_app/model/institutions/institution_timetable.dart';
+import 'package:edubridge_app/model/institutions/institution_academic_records.dart';
 import 'package:edubridge_app/screens/institution_timetable/institution_substitute_controller.dart';
 import 'package:edubridge_app/services/enrollment/enrollment_api_client.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,9 +19,9 @@ void main() {
     expect(institutionWeekday(DateTime(2026, 10, 25), iso: true), 7);
     expect(institutionWeekday(monday, iso: true), 1);
     final f = InstitutionTimetableFixture();
-    f.academic.slug = 'jabalia';
     f.rows.first['weekday'] = 7;
-    final data = await f.repository.load();
+    final academic = InstitutionAcademicRecords.fromJson('jabalia', 4, 5, f.academic.data);
+    final data = InstitutionTimetable.fromJson(academic, {'timetable': f.rows});
     expect(data.acceptsDate(data.entries.single, DateTime(2026, 10, 25)), isTrue);
     expect(data.acceptsDate(data.entries.single, monday), isFalse);
     expect(data.nextDate(data.entries.single, monday), DateTime(2026, 11, 1));
