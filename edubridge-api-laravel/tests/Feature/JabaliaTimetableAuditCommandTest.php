@@ -93,7 +93,7 @@ class JabaliaTimetableAuditCommandTest extends TestCase
         $this->assertSame(1, $report['schools'][0]['weekday_counts'][7]);
         $this->assertSame(11, $report['schools'][1]['school_id']);
         $this->assertSame(1, $report['schools'][1]['mismatched_clock_times']);
-        $this->assertSame($beforeEntries, DB::table('timetable_entries')->orderBy('id')->get()->toArray());
+        $this->assertEquals($beforeEntries, DB::table('timetable_entries')->orderBy('id')->get()->toArray());
         $this->assertEquals($beforeSettings, DB::table('jabalia_school_timetable_settings')->first());
         $this->assertStringNotContainsString('Teacher', Artisan::output());
     }
