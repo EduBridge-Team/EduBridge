@@ -1,8 +1,8 @@
 import '../enrollment/enrollment_models.dart';
 import 'institution_academic_records.dart';
 
-// The institution API uses 1=Sunday through 7=Saturday.
-int institutionWeekday(DateTime date) => date.weekday % 7 + 1;
+// Jabalia follows ISO weekdays (Sunday=7); legacy institutions use Sunday=1.
+int institutionWeekday(DateTime date, {bool iso = false}) => iso ? date.weekday : date.weekday % 7 + 1;
 DateTime timetableDate(DateTime date) => DateTime(date.year, date.month, date.day);
 String? _time(dynamic value) {
   if (value == null) return null;
@@ -56,7 +56,7 @@ class InstitutionTimetable {
       throw const FormatException('Duplicate timetable entry');
     }
     entries.sort((a, b) {
-      final day = a.weekday.compareTo(b.weekday);
+      final day = academic.organizationSlug == 'jabalia' ? (a.weekday % 7).compareTo(b.weekday % 7) : a.weekday.compareTo(b.weekday);
       return day == 0 ? a.period.compareTo(b.period) : day;
     });
     return InstitutionTimetable(academic, entries);
@@ -70,13 +70,13 @@ class InstitutionTimetable {
   bool acceptsDate(InstitutionTimetableEntry entry, DateTime date) {
     final year = academic.years.firstWhere((y) => y.id == entry.yearId);
     final day = timetableDate(date);
-    return institutionWeekday(day) == entry.weekday && !day.isBefore(year.start) && !day.isAfter(year.end);
+    return institutionWeekday(day, iso: academic.organizationSlug == 'jabalia') == entry.weekday && !day.isBefore(year.start) && !day.isAfter(year.end);
   }
   DateTime? nextDate(InstitutionTimetableEntry entry, DateTime from) {
     final year = academic.years.firstWhere((y) => y.id == entry.yearId);
     var day = timetableDate(from);
     if (day.isBefore(year.start) || day.isAfter(year.end)) day = year.start;
-    day = day.add(Duration(days: (entry.weekday - institutionWeekday(day) + 7) % 7));
+    day = day.add(Duration(days: (entry.weekday - institutionWeekday(day, iso: academic.organizationSlug == 'jabalia') + 7) % 7));
     return day.isAfter(year.end) ? null : day;
   }
 }
