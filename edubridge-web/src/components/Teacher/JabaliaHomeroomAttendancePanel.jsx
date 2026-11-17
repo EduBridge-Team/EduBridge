@@ -15,6 +15,9 @@ export default function JabaliaHomeroomAttendancePanel() {
   const [today, setToday] = useState('')
   const [sectionId, setSectionId] = useState('')
   const [session, setSession] = useState(null)
+  const [canStart, setCanStart] = useState(false)
+  const [canMark, setCanMark] = useState(false)
+  const [unavailableReason, setUnavailableReason] = useState('')
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -44,6 +47,9 @@ export default function JabaliaHomeroomAttendancePanel() {
     )
     setSession(data.session)
     setRows(data.records || [])
+    setCanStart(Boolean(data.can_start))
+    setCanMark(Boolean(data.can_mark))
+    setUnavailableReason(data.unavailable_reason || '')
     return data
   }, [])
 
@@ -53,6 +59,9 @@ export default function JabaliaHomeroomAttendancePanel() {
     setLoading(true)
     setSession(null)
     setRows([])
+    setCanStart(false)
+    setCanMark(false)
+    setUnavailableReason('')
     setNotice('')
     setError('')
     request(`/institutions/jabalia/homeroom/sections/${encodeURIComponent(sectionId)}/attendance`)
@@ -60,6 +69,9 @@ export default function JabaliaHomeroomAttendancePanel() {
         if (!active) return
         setSession(data.session)
         setRows(data.records || [])
+        setCanStart(Boolean(data.can_start))
+        setCanMark(Boolean(data.can_mark))
+        setUnavailableReason(data.unavailable_reason || '')
       })
       .catch((err) => { if (active) setError(err.message) })
       .finally(() => { if (active) setLoading(false) })
@@ -67,7 +79,7 @@ export default function JabaliaHomeroomAttendancePanel() {
   }, [slug, sectionId])
 
   async function start() {
-    if (!sectionId || !today || saving || loading) return
+    if (!sectionId || !today || saving || loading || !canStart) return
     setSaving(true); setError(''); setNotice('')
     try {
       await request(`/institutions/jabalia/homeroom/sections/${encodeURIComponent(sectionId)}/attendance`, {
@@ -83,7 +95,7 @@ export default function JabaliaHomeroomAttendancePanel() {
   }
 
   async function save() {
-    if (!session?.id || !rows.length || saving || loading || session.status !== 'open') return
+    if (!session?.id || !rows.length || saving || loading || !canMark || session.status !== 'open') return
     setSaving(true); setError(''); setNotice('')
     try {
       await request(
@@ -119,8 +131,9 @@ export default function JabaliaHomeroomAttendancePanel() {
         </select>
       </label>
       <p>تاريخ الحضور: <strong>{today || 'غير متاح'}</strong></p>
+      {unavailableReason && <p role="status" className="state">{unavailableReason}</p>}
       {loading && <p role="status">جارِ تحميل الحضور…</p>}
-      {!loading && !session && <button type="button" className="btn"
+      {!loading && !session && canStart && <button type="button" className="btn"
         disabled={saving || !today} onClick={start}>
         {saving ? 'جارِ الفتح…' : 'فتح سجل حضور اليوم'}
       </button>}
@@ -130,7 +143,7 @@ export default function JabaliaHomeroomAttendancePanel() {
           {rows.map((item) => <label key={item.child_id}>
             {item.child_name} — {item.confirmed ? 'تم تأكيد الحالة' : 'لم تُؤكد الحالة بعد'}
             <select aria-label={`حالة ${item.child_name}`} value={item.status}
-              disabled={saving || loading || session.status !== 'open'}
+              disabled={saving || loading || !canMark || session.status !== 'open'}
               onChange={(event) => setRows((previous) => previous.map((row) =>
                 row.child_id === item.child_id ? { ...row, status: event.target.value } : row))}>
               {Object.entries(STATUS).map(([value, label]) =>
@@ -138,7 +151,7 @@ export default function JabaliaHomeroomAttendancePanel() {
             </select>
           </label>)}
         </div> : <p>لا يوجد طلاب مسجلون حاليًا في هذه الشعبة.</p>}
-        {session.status === 'open' && rows.length > 0 && <button type="button"
+        {canMark && session.status === 'open' && rows.length > 0 && <button type="button"
           className="btn" disabled={saving || loading} onClick={save}>
           {saving ? 'جارِ الحفظ…' : 'حفظ الحضور اليومي'}
         </button>}
