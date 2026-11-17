@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class JabaliaHomeroomAttendanceController extends Controller
@@ -59,6 +60,25 @@ class JabaliaHomeroomAttendanceController extends Controller
         return $data['date'] ?? $this->today();
     }
 
+    /**
+     * Use the school's configured ISO weekdays and approved closure calendar.
+     * This is a teaching-day check, not an admission or holiday-policy approval.
+     */
+    private function attendanceBlocker(int $school, string $date): ?string
+    {
+        $weekdays = JabaliaTimetableSettingsController::forSchool($school)['weekdays'] ?? [];
+        $day = CarbonImmutable::createFromFormat('!Y-m-d', $date, 'Asia/Hebron');
+        if (!is_array($weekdays) || !in_array($day->dayOfWeekIso, $weekdays, true)) {
+            return 'لا يمكن تسجيل الحضور خارج أيام الدوام المحددة للمدرسة';
+        }
+        if (Schema::hasTable('jabalia_school_closure_days')
+            && DB::table('jabalia_school_closure_days')
+                ->where('school_id', $school)->whereDate('closed_on', $date)->exists()) {
+            return 'لا يمكن تسجيل الحضور في يوم إغلاق مدرسي معتمد';
+        }
+        return null;
+    }
+
     public function sections(Request $request, string $organizationSlug): JsonResponse
     {
         $scope = $this->context($request, $organizationSlug);
@@ -94,13 +114,16 @@ class JabaliaHomeroomAttendanceController extends Controller
             || $asDate->isBefore(CarbonImmutable::today('Asia/Hebron')->subDays(30))) {
             return response()->json(['error' => 'التاريخ خارج فترة العرض المسموحة'], 422);
         }
+        $unavailableReason = $this->attendanceBlocker((int) $row->school_id, $date);
+        $isEditableDay = $date === $this->today() && $unavailableReason === null;
         $session = DB::table('attendance_sessions')->where('section_id', $section)
             ->where('attendance_date', $date)->whereNull('period_number')->first();
 
         if (!$session) {
             return response()->json([
                 'section' => $row, 'date' => $date, 'session' => null,
-                'records' => [], 'can_mark' => $date === $this->today(),
+                'records' => [], 'can_start' => $isEditableDay,
+                'can_mark' => false, 'unavailable_reason' => $unavailableReason,
             ]);
         }
 
@@ -126,7 +149,9 @@ class JabaliaHomeroomAttendanceController extends Controller
             'section' => $row, 'date' => $date,
             'session' => ['id' => (int) $session->id, 'status' => $session->status],
             'records' => $records,
-            'can_mark' => $date === $this->today() && $session->status === 'open',
+            'can_start' => false,
+            'can_mark' => $isEditableDay && $session->status === 'open',
+            'unavailable_reason' => $unavailableReason,
         ]);
     }
 
@@ -142,6 +167,11 @@ class JabaliaHomeroomAttendanceController extends Controller
             DB::table('schools')->where('id', $row->school_id)->lockForUpdate()->first();
             if (!$this->assignedSection($request, $organizationSlug, $section)) {
                 return response()->json(['error' => 'Not found'], 404);
+            }
+            if (($unavailableReason = $this->attendanceBlocker((int) $row->school_id, $this->today())) !== null) {
+                return response()->json([
+                    'error' => $unavailableReason, 'code' => 'JABALIA_NON_SCHOOL_DAY',
+                ], 409);
             }
             $request->replace([
                 'section_id' => $section, 'attendance_date' => $data['date'],
@@ -165,6 +195,11 @@ class JabaliaHomeroomAttendanceController extends Controller
             DB::table('schools')->where('id', $row->school_id)->lockForUpdate()->first();
             if (!$this->assignedSection($request, $organizationSlug, $section)) {
                 return response()->json(['error' => 'Not found'], 404);
+            }
+            if (($unavailableReason = $this->attendanceBlocker((int) $row->school_id, $this->today())) !== null) {
+                return response()->json([
+                    'error' => $unavailableReason, 'code' => 'JABALIA_NON_SCHOOL_DAY',
+                ], 409);
             }
             $roll = DB::table('attendance_sessions')->where('id', $session)
                 ->where('section_id', $section)->whereNull('period_number')

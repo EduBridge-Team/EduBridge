@@ -28,3 +28,12 @@ This batch adds a **Jabalia-only** teacher-specific daily attendance workflow. I
 - Production deployment, role-specific UAT and formal association signoff are separate and **not claimed by this PR**.
 
 Tracked in issue #1364.
+
+## Follow-up calendar guard (17 November 2026, pending PR review)
+
+- Teacher daily-roll GET now returns explicit `can_start`, `can_mark` and `unavailable_reason` flags. A missing roll has `can_mark=false` until a roll exists.
+- Both teacher-only POST and PUT validate the school's **configured ISO weekdays** and approved closure days after acquiring the school lock, returning HTTP 409 / `JABALIA_NON_SCHOOL_DAY` without changing a roll when blocked.
+- The React form hides the start/save actions when the corresponding server permission is false, prevents editing selects and explains an unavailable date with a status message.
+- These guards apply **only** to the Jabalia homeroom teacher endpoints. Institution-authorized historical corrections retain their existing path and authorization constraints.
+- Laravel fixtures cover unsupported school weekdays and approved closures, including rejection of an attempted write to an existing open roll; React source tests cover permission-driven controls.
+- This is not ministry/association approval of calendars, admission decisions, or signed UAT. No database migration or production operation is part of this change.
