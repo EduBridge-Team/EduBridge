@@ -20,3 +20,17 @@ test('Jabalia homeroom UI is teacher-scoped and never sends arbitrary school or 
   assert.doesNotMatch(source, /teacher_id:|school_id:|close_session:|storage_path|medical_report/)
   assert.match(teacher, /<JabaliaHomeroomAttendancePanel \/>/)
 })
+
+
+test('Jabalia homeroom UI honors server can_start and can_mark on closed or off-school days', () => {
+  const source = readFileSync(new URL(
+    '../src/components/Teacher/JabaliaHomeroomAttendancePanel.jsx', import.meta.url
+  ), 'utf8')
+  assert.match(source, /setCanStart\(Boolean\(data\.can_start\)\)/)
+  assert.match(source, /setCanMark\(Boolean\(data\.can_mark\)\)/)
+  assert.match(source, /setUnavailableReason\(data\.unavailable_reason \|\| ''\)/)
+  assert.match(source, /!session && canStart && <button/)
+  assert.match(source, /canMark && session\.status === 'open'/)
+  assert.match(source, /!canMark \|\| session\.status !== 'open'/)
+  assert.match(source, /unavailableReason && <p role="status"/)
+})
