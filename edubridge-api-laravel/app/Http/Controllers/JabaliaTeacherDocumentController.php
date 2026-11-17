@@ -85,13 +85,18 @@ class JabaliaTeacherDocumentController extends Controller
             'expires_on' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:issued_on'],
             'notes' => ['nullable', 'string', 'max:5000'],
         ]);
-        $id = DB::table('jabalia_teacher_documents')->insertGetId([
-            'organization_id' => $org->id, 'school_id' => $school, 'teacher_id' => $teacher,
-            ...$data, 'recorded_by' => $request->attributes->get('jwt_user')?->id ?? $request->user()?->id,
-            'created_at' => now(), 'updated_at' => now(),
-        ]);
-        return response()->json(['document' => $this->publicMetadataQuery()->where('id', $id)
-            ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first()], 201);
+        // Persist the document and its access event atomically; never create
+        // a confidential record without an audit trail.
+        return DB::transaction(function () use ($request, $org, $school, $teacher, $data) {
+            $id = DB::table('jabalia_teacher_documents')->insertGetId([
+                'organization_id' => $org->id, 'school_id' => $school, 'teacher_id' => $teacher,
+                ...$data, 'recorded_by' => $request->attributes->get('jwt_user')?->id ?? $request->user()?->id,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+            $this->recordAccess($request, $org, $school, $teacher, $id, 'created');
+            return response()->json(['document' => $this->publicMetadataQuery()->where('id', $id)
+                ->where('organization_id', $org->id)->where('school_id', $school)->where('teacher_id', $teacher)->first()], 201);
+        });
     }
 
     public function upload(Request $request, string $organizationSlug, int $school, int $teacher, int $document): JsonResponse
@@ -114,7 +119,7 @@ class JabaliaTeacherDocumentController extends Controller
         $path = Storage::disk('local')->putFileAs('jabalia-teacher-documents', $file, Str::uuid().'.'.$ext);
         if (!$path) return response()->json(['error' => 'تعذر حفظ الملف'], 500);
         try {
-            $previousPath = DB::transaction(function () use ($org, $school, $teacher, $document, $path, $file) {
+            $previousPath = DB::transaction(function () use ($request, $org, $school, $teacher, $document, $path, $file) {
                 $current = DB::table('jabalia_teacher_documents')->where('id', $document)
                     ->where('organization_id', $org->id)->where('school_id', $school)
                     ->where('teacher_id', $teacher)->lockForUpdate()->first();
@@ -131,6 +136,9 @@ class JabaliaTeacherDocumentController extends Controller
                         'file_size' => $file->getSize(),
                         'updated_at' => now(),
                     ]);
+                // The audit insert participates in this transaction; any failure
+                // rolls back metadata and the newly uploaded file is cleaned up.
+                $this->recordAccess($request, $org, $school, $teacher, $document, 'file_uploaded');
                 return $current->storage_path;
             });
         } catch (\Throwable $error) {
@@ -170,7 +178,7 @@ class JabaliaTeacherDocumentController extends Controller
     {
         $org = $this->tenant($request, $organizationSlug, $school, $teacher);
         if (!$org) return response()->json(['error' => 'المعلم أو المدرسة غير موجود'], 404);
-        $previousPath = DB::transaction(function () use ($org, $school, $teacher, $document) {
+        $previousPath = DB::transaction(function () use ($request, $org, $school, $teacher, $document) {
             $row = DB::table('jabalia_teacher_documents')->where('id', $document)
                 ->where('organization_id', $org->id)->where('school_id', $school)
                 ->where('teacher_id', $teacher)->lockForUpdate()->first();
@@ -179,6 +187,9 @@ class JabaliaTeacherDocumentController extends Controller
             DB::table('jabalia_teacher_documents')->where('id', $document)
                 ->where('organization_id', $org->id)->where('school_id', $school)
                 ->where('teacher_id', $teacher)->delete();
+            // Keep the deleted document ID for the append-only audit ledger.
+            // A failed audit must roll back the deletion and retain the file.
+            $this->recordAccess($request, $org, $school, $teacher, $document, 'deleted');
             return $row->storage_path;
         });
         if ($previousPath === false) return response()->json(['error' => 'السجل غير موجود'], 404);
