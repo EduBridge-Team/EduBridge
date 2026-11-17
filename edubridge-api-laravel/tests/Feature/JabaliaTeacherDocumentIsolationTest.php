@@ -25,6 +25,7 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
             $t->date('expires_on')->nullable(); $t->text('notes')->nullable();
             $t->unsignedBigInteger('recorded_by')->nullable();
             $t->string('storage_path')->nullable(); $t->string('original_filename')->nullable();
+            $t->string('mime_type')->nullable(); $t->unsignedBigInteger('file_size')->nullable();
             $t->timestamps();
         });
         Schema::create('jabalia_teacher_document_access_events', function (Blueprint $t) {
