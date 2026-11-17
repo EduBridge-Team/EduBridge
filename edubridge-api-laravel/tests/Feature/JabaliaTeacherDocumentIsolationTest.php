@@ -25,6 +25,7 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
             $t->date('expires_on')->nullable(); $t->text('notes')->nullable();
             $t->unsignedBigInteger('recorded_by')->nullable();
             $t->string('storage_path')->nullable(); $t->string('original_filename')->nullable();
+            $t->string('mime_type')->nullable(); $t->unsignedBigInteger('file_size')->nullable();
             $t->timestamps();
         });
         Schema::create('jabalia_teacher_document_access_events', function (Blueprint $t) {
@@ -313,6 +314,87 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
         $this->assertSame(404, $controller->download($this->request(1, 'jabalia'), 'jabalia', 2, 11, 1)->status());
         $this->assertSame(1, DB::table('jabalia_teacher_document_access_events')
             ->where('action', 'download_issued')->count());
+    }
+
+
+    public function test_document_create_is_audited_and_failure_rolls_back_record(): void
+    {
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $request = $this->request(1, 'jabalia');
+        $request->replace(['type' => 'cv', 'title' => 'Private CV']);
+        $created = $controller->store($request, 'jabalia', 1, 11);
+        $this->assertSame(201, $created->status());
+        $id = $created->getData(true)['document']['id'];
+        $this->assertDatabaseHas('jabalia_teacher_document_access_events', [
+            'document_id' => $id, 'actor_id' => 99, 'action' => 'created',
+        ]);
+
+        Schema::dropIfExists('jabalia_teacher_document_access_events');
+        $request->replace(['type' => 'cv', 'title' => 'Rollback CV']);
+        try {
+            $controller->store($request, 'jabalia', 1, 11);
+            $this->fail('A document must not exist without its audit event');
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $this->assertDatabaseMissing('jabalia_teacher_documents', ['title' => 'Rollback CV']);
+        }
+    }
+
+    public function test_document_upload_and_deletion_append_scoped_audit_events(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        DB::table('jabalia_teacher_documents')->where('id', 1)->update(['type' => 'cv']);
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $request = $this->request(1, 'jabalia');
+        $request->files->set('file', \Illuminate\Http\UploadedFile::fake()->createWithContent(
+            'private.pdf', "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
+        ));
+        $uploaded = $controller->upload($request, 'jabalia', 1, 11, 1);
+        $this->assertSame(200, $uploaded->status());
+        $document = DB::table('jabalia_teacher_documents')->where('id', 1)->first();
+        \Illuminate\Support\Facades\Storage::disk('local')->assertExists($document->storage_path);
+        $this->assertDatabaseHas('jabalia_teacher_document_access_events', [
+            'document_id' => 1, 'actor_id' => 99, 'action' => 'file_uploaded',
+        ]);
+
+        $deleted = $controller->destroy($this->request(1, 'jabalia'), 'jabalia', 1, 11, 1);
+        $this->assertSame(200, $deleted->status());
+        $this->assertDatabaseMissing('jabalia_teacher_documents', ['id' => 1]);
+        \Illuminate\Support\Facades\Storage::disk('local')->assertMissing($document->storage_path);
+        $this->assertDatabaseHas('jabalia_teacher_document_access_events', [
+            'document_id' => 1, 'actor_id' => 99, 'action' => 'deleted',
+        ]);
+    }
+
+    public function test_failed_upload_and_delete_audits_preserve_existing_file_and_record(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $path = 'jabalia-teacher-documents/existing.pdf';
+        \Illuminate\Support\Facades\Storage::disk('local')->put($path, "%PDF-1.4\n%%EOF");
+        DB::table('jabalia_teacher_documents')->where('id', 1)->update([
+            'type' => 'cv', 'storage_path' => $path, 'original_filename' => 'existing.pdf',
+        ]);
+        Schema::dropIfExists('jabalia_teacher_document_access_events');
+        $controller = app(JabaliaTeacherDocumentController::class);
+        $request = $this->request(1, 'jabalia');
+        $request->files->set('file', \Illuminate\Http\UploadedFile::fake()->createWithContent(
+            'replacement.pdf', "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
+        ));
+        try {
+            $controller->upload($request, 'jabalia', 1, 11, 1);
+            $this->fail('Upload must fail closed when the audit ledger is unavailable');
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $this->assertDatabaseHas('jabalia_teacher_documents', ['id' => 1, 'storage_path' => $path]);
+            \Illuminate\Support\Facades\Storage::disk('local')->assertExists($path);
+            $this->assertCount(1, \Illuminate\Support\Facades\Storage::disk('local')->allFiles('jabalia-teacher-documents'));
+        }
+
+        try {
+            $controller->destroy($this->request(1, 'jabalia'), 'jabalia', 1, 11, 1);
+            $this->fail('Deletion must fail closed when the audit ledger is unavailable');
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $this->assertDatabaseHas('jabalia_teacher_documents', ['id' => 1, 'storage_path' => $path]);
+            \Illuminate\Support\Facades\Storage::disk('local')->assertExists($path);
+        }
     }
 
 }
