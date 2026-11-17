@@ -41,11 +41,11 @@ class InstitutionTeacherAbsenceRepository implements InstitutionTeacherAbsenceGa
       final affected = enrollmentList(response['affected_classes']).map((raw) =>
         InstitutionTimetableEntry.fromJson(current.timetable.academic,
           {...enrollmentMap(raw), 'teacher_name': current.teachers[teacherId]})).toList();
-      final expected = current.timetable.entries.where((e) => e.teacherId == teacherId && e.weekday == institutionWeekday(day)).toList();
+      final expected = current.timetable.entries.where((e) => e.teacherId == teacherId && e.weekday == institutionWeekday(day, iso: current.timetable.academic.organizationSlug == 'jabalia')).toList();
       if (affected.length != expected.length ||
           affected.any((e) => !expected.any((v) => v.identity == e.identity)) ||
           affected.map((e) => e.id).toSet().length != affected.length ||
-          affected.any((e) => e.teacherId != teacherId || e.weekday != institutionWeekday(day))) {
+          affected.any((e) => e.teacherId != teacherId || e.weekday != institutionWeekday(day, iso: current.timetable.academic.organizationSlug == 'jabalia'))) {
         throw const FormatException('Invalid affected classes');
       }
       // The API includes recurring slots from every year; retain them in the

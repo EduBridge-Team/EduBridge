@@ -8,6 +8,7 @@ import {
 } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import JabaliaTimetableCoveragePanel from '../../components/Institution/JabaliaTimetableCoveragePanel'
+import InstitutionWeeklyGrid from '../../components/Institution/InstitutionWeeklyGrid'
 import '../../styles/institution-operations.css'
 
 const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
@@ -356,6 +357,18 @@ export default function InstitutionTimetablePage() {
               {DAYS.map((day, i) => <option key={day} value={ISO_DAYS[i]}>{day}</option>)}
             </select>
           </label>
+          {slug === 'jabalia' && <section className="institution-panel" aria-label="الجدول الأسبوعي للشعبة">
+            <h3>جدول الشعبة الأسبوعي</h3>
+            <p>عرض للجدول المحفوظ حسب اليوم ورقم الحصة. اختر شعبة في الفلتر بالأعلى، والفراغ لا يعني أن الحصة محجوزة أو مطلوبة.</p>
+            <InstitutionWeeklyGrid
+              entries={filtered}
+              sectionId={filterSection}
+              days={DAYS.map((name, index) => ({ name, value: ISO_DAYS[index] }))
+                .filter(day => !timetableSettings || timetableSettings.weekdays.includes(day.value))}
+              periodCount={timetableSettings?.periods?.length || 5}
+              periods={timetableSettings?.periods || []}
+            />
+          </section>}
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
             <h3>توزيع المواد على أيام الأسبوع</h3>
             <p>ملخص للحصص المسجلة فعليًا حسب الفلاتر المختارة. الأعداد تمثل الحصص المسجلة وليست الحصص الأسبوعية المطلوبة.</p>

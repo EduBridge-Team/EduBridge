@@ -55,7 +55,7 @@ class _InstitutionTimetableCreateFieldsState extends State<InstitutionTimetableC
         options: {0: l.timetableNoTeacher, ...data.teachers}, value: _teacher, requiredMessage: l.academicRequired,
         onChanged: widget.enabled ? (v) => setState(() => _teacher = v) : null),
       AcademicChoiceField(key: const ValueKey('timetable-create-day'), label: l.timetableDay,
-        options: Map.of(timetableDays(l))..remove(0), value: _day, requiredMessage: l.academicRequired,
+        options: Map.of(timetableDays(l, iso: academic.organizationSlug == 'jabalia'))..remove(0), value: _day, requiredMessage: l.academicRequired,
         onChanged: widget.enabled ? (v) => setState(() => _day = v) : null),
       TextFormField(key: const ValueKey('timetable-create-period'), controller: _period, enabled: widget.enabled,
         keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l.institutionAttendancePeriod),

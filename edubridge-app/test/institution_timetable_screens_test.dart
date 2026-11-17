@@ -28,11 +28,10 @@ void main() {
         await tapCurriculum(tester, 'institution-open-timetable');
         await timetableChoice(tester, 'timetable-year', 1);
         await timetableChoice(tester, 'timetable-section', 1);
-        // The backend uses ISO weekdays: Sunday=7, Monday=1, Tuesday=2.
-        // Pick Monday (no fixture) before Tuesday (fixture entry id 80).
-        await timetableChoice(tester, 'timetable-day', 2);
+        // Legacy demo tenant: Sunday=1 and Monday=2, retaining its original contract.
+        await timetableChoice(tester, 'timetable-day', 1);
         expect(find.text(strings.timetableEmpty), findsOneWidget);
-        await timetableChoice(tester, 'timetable-day', 3);
+        await timetableChoice(tester, 'timetable-day', 2);
         expect(find.byKey(const ValueKey('timetable-entry-80')), findsOneWidget);
         await tapCurriculum(tester, 'timetable-substitute-80');
         await timetableChoice(tester, 'substitute-teacher', 0);
