@@ -4,9 +4,11 @@ import '../../l10n/l10n.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../model/institutions/institution_timetable.dart';
 
-Map<int, String> timetableDays(AppLocalizations l) => {0: l.all,
-  7: l.timetableSunday, 1: l.timetableMonday, 2: l.timetableTuesday, 3: l.timetableWednesday,
-  4: l.timetableThursday, 5: l.timetableFriday, 6: l.timetableSaturday};
+Map<int, String> timetableDays(AppLocalizations l, {bool iso = false}) => {0: l.all,
+  if (iso) ...{7: l.timetableSunday, 1: l.timetableMonday, 2: l.timetableTuesday, 3: l.timetableWednesday,
+    4: l.timetableThursday, 5: l.timetableFriday, 6: l.timetableSaturday}
+  else ...{1: l.timetableSunday, 2: l.timetableMonday, 3: l.timetableTuesday, 4: l.timetableWednesday,
+    5: l.timetableThursday, 6: l.timetableFriday, 7: l.timetableSaturday}};
 
 class InstitutionTimetableCard extends StatelessWidget {
   const InstitutionTimetableCard({super.key, required this.timetable, required this.entry, this.onChoose, this.onRemove});
@@ -22,7 +24,7 @@ class InstitutionTimetableCard extends StatelessWidget {
         Text(timetable.academic.curriculum.subjects.firstWhere((s) => s.id == entry.subjectId).name,
           style: Theme.of(context).textTheme.titleMedium),
         Text(entry.teacherName ?? l.timetableNoTeacher),
-        Text(timetableDays(l)[entry.weekday]!),
+        Text(timetableDays(l, iso: timetable.academic.organizationSlug == 'jabalia')[entry.weekday]!),
         Text('${l.institutionAttendancePeriod}: ${entry.period}'),
         if (entry.startsAt != null) Text('${l.timetableStarts}: ${entry.startsAt}'),
         if (entry.endsAt != null) Text('${l.timetableEnds}: ${entry.endsAt}'),
