@@ -64,6 +64,10 @@ class JabaliaHomeroomAttendanceTest extends TestCase
             $t->string('previous_status')->nullable(); $t->string('new_status');
             $t->unsignedBigInteger('actor_id')->nullable(); $t->timestamp('created_at');
         });
+        Schema::create('jabalia_school_timetable_settings', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id');
+            $t->text('weekdays'); $t->text('periods');
+        });
         Schema::create('jabalia_school_closure_days', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('school_id'); $t->date('closed_on');
         });
@@ -135,7 +139,7 @@ class JabaliaHomeroomAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['notifications','child_parent','jabalia_school_closure_days',
+        foreach (['notifications','child_parent','jabalia_school_timetable_settings','jabalia_school_closure_days',
             'jabalia_attendance_change_events','attendance_records','attendance_sessions',
             'student_enrollments','children','sections','grades','academic_years',
             'organization_user','users','schools','organizations'] as $table) {
@@ -295,4 +299,64 @@ class JabaliaHomeroomAttendanceTest extends TestCase
         $response = $this->getJson('/api/institutions/jabalia/homeroom/sections');
         $this->assertContains($response->status(), [401,403]);
     }
+
+    public function test_homeroom_cannot_start_or_mark_on_unconfigured_weekday(): void
+    {
+        $today = $this->today();
+        $isoDay = (int) now('Asia/Hebron')->dayOfWeekIso;
+        $otherDay = $isoDay === 1 ? 2 : 1;
+        DB::table('jabalia_school_timetable_settings')->insert([
+            'school_id' => 10, 'weekdays' => json_encode([$otherDay]),
+            'periods' => json_encode([]),
+        ]);
+
+        $controller = app(JabaliaHomeroomAttendanceController::class);
+        $shown = $controller->show($this->request(['date' => $today]), 'jabalia', 21)->getData(true);
+        $this->assertFalse($shown['can_start']);
+        $this->assertFalse($shown['can_mark']);
+        $this->assertNotEmpty($shown['unavailable_reason']);
+        $started = $controller->start($this->request(['date' => $today]), 'jabalia', 21);
+        $this->assertSame(409, $started->status());
+        $this->assertSame('JABALIA_NON_SCHOOL_DAY', $started->getData(true)['code']);
+        $this->assertSame(0, DB::table('attendance_sessions')->count());
+
+        // Even a pre-existing roll cannot be changed on a now-restricted day.
+        $session = DB::table('attendance_sessions')->insertGetId([
+            'section_id' => 21, 'attendance_date' => $today, 'period_number' => null,
+            'status' => 'open', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        DB::table('attendance_records')->insert([
+            'attendance_session_id' => $session, 'child_id' => 1,
+            'status' => 'present', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->assertFalse($controller->show($this->request(), 'jabalia', 21)
+            ->getData(true)['can_mark']);
+        $mark = $controller->mark($this->request([
+            'records' => [['child_id' => 1, 'status' => 'absent']],
+        ]), 'jabalia', 21, $session);
+        $this->assertSame(409, $mark->status());
+        $this->assertSame('JABALIA_NON_SCHOOL_DAY', $mark->getData(true)['code']);
+        $this->assertSame('present', DB::table('attendance_records')->value('status'));
+        $this->assertSame(0, DB::table('jabalia_attendance_change_events')->count());
+    }
+
+    public function test_homeroom_respects_approved_closure_and_does_not_create_roll(): void
+    {
+        $today = $this->today();
+        DB::table('jabalia_school_closure_days')->insert([
+            'school_id' => 10, 'closed_on' => $today,
+        ]);
+        $controller = app(JabaliaHomeroomAttendanceController::class);
+        $show = $controller->show($this->request(), 'jabalia', 21)->getData(true);
+        $this->assertFalse($show['can_start']);
+        $this->assertFalse($show['can_mark']);
+        $this->assertNotEmpty($show['unavailable_reason']);
+
+        $result = $controller->start($this->request(['date' => $today]), 'jabalia', 21);
+        $this->assertSame(409, $result->status());
+        $this->assertSame('JABALIA_NON_SCHOOL_DAY', $result->getData(true)['code']);
+        $this->assertSame(0, DB::table('attendance_sessions')->count());
+        $this->assertSame(0, DB::table('attendance_records')->count());
+    }
+
 }
