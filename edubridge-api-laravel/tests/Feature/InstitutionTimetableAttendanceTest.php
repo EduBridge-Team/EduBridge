@@ -342,6 +342,72 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(6, DB::table('jabalia_attendance_change_events')->count());
     }
 
+    public function test_unconfirmed_absence_cannot_extend_fourth_day_guardian_notice(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        $sessions = [];
+        foreach (['2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07'] as $date) {
+            $sessionId = DB::table('attendance_sessions')->insertGetId([
+                'section_id' => 1, 'attendance_date' => $date,
+                'period_number' => null, 'status' => 'open',
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+            $sessions[$date] = $sessionId;
+            DB::table('attendance_records')->insert([
+                'attendance_session_id' => $sessionId, 'child_id' => 1,
+                'status' => 'absent', 'marked_at' => null,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+
+        // An unconfirmed day in the middle is not evidence of a continuous absence.
+        foreach (['2026-10-04', '2026-10-05', '2026-10-07'] as $date) {
+            $this->assertSame(200, $controller->mark($this->tenantRequest([
+                'records' => [['child_id' => 1, 'status' => 'absent']],
+            ]), 'jabalia', 1, $sessions[$date])->status());
+        }
+        $this->assertSame(0, DB::table('notifications')
+            ->where('type', 'school_attendance_consecutive')->count());
+
+        // Confirming the missing third day afterwards does not retroactively
+        // send a notice for a different (already marked) day's session.
+        $this->assertSame(200, $controller->mark($this->tenantRequest([
+            'records' => [['child_id' => 1, 'status' => 'absent']],
+        ]), 'jabalia', 1, $sessions['2026-10-06'])->status());
+        $this->assertSame(0, DB::table('notifications')
+            ->where('type', 'school_attendance_consecutive')->count());
+        $this->assertSame(0, DB::table('jabalia_attendance_change_events')->count());
+        $this->assertSame(4, DB::table('attendance_records')->whereNotNull('marked_at')->count());
+    }
+
+    public function test_confirming_prefilled_absent_on_fourth_day_sends_exactly_one_notice(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        foreach (['2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07'] as $date) {
+            $sessionId = DB::table('attendance_sessions')->insertGetId([
+                'section_id' => 1, 'attendance_date' => $date,
+                'period_number' => null, 'status' => 'open',
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+            DB::table('attendance_records')->insert([
+                'attendance_session_id' => $sessionId, 'child_id' => 1,
+                'status' => 'absent', 'marked_at' => null,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+
+            $save = fn () => $controller->mark($this->tenantRequest([
+                'records' => [['child_id' => 1, 'status' => 'absent']],
+            ]), 'jabalia', 1, $sessionId);
+            $this->assertSame(200, $save()->status());
+            $this->assertSame(200, $save()->status());
+        }
+
+        $this->assertSame(1, DB::table('notifications')
+            ->where('user_id', 20)->where('type', 'school_attendance_consecutive')->count());
+        $this->assertSame(0, DB::table('jabalia_attendance_change_events')->count());
+        $this->assertSame(4, DB::table('attendance_records')->whereNotNull('marked_at')->count());
+    }
+
     public function test_attendance_change_history_is_append_only_and_repeat_saves_are_idempotent(): void
     {
         $sessionId = DB::table('attendance_sessions')->insertGetId([
