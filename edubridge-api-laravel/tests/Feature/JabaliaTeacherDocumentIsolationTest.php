@@ -341,6 +341,7 @@ class JabaliaTeacherDocumentIsolationTest extends TestCase
     public function test_document_upload_and_deletion_append_scoped_audit_events(): void
     {
         \\Illuminate\\Support\\Facades\\Storage::fake('local');
+        DB::table('jabalia_teacher_documents')->where('id', 1)->update(['type' => 'cv']);
         $controller = app(JabaliaTeacherDocumentController::class);
         $request = $this->request(1, 'jabalia');
         $request->files->set('file', \\Illuminate\\Http\\UploadedFile::fake()->createWithContent(
