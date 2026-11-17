@@ -112,7 +112,7 @@ class _InstitutionTimetableScreenState extends State<InstitutionTimetableScreen>
             AcademicChoiceField(key: const ValueKey('timetable-section'), label: l.academicSections,
               options: {0: l.all, for (final s in data.academic.sections.where((s) => _year == 0 || s.yearId == _year)) s.id: data.sectionLabel(s.id)},
               value: _section, requiredMessage: l.academicRequired, onChanged: !_state.canWrite ? null : (v) => setState(() => _section = v)),
-            AcademicChoiceField(key: const ValueKey('timetable-day'), label: l.timetableDay, options: timetableDays(l),
+            AcademicChoiceField(key: const ValueKey('timetable-day'), label: l.timetableDay, options: timetableDays(l, iso: data.timetable.academic.organizationSlug == 'jabalia'),
               value: _day, requiredMessage: l.academicRequired, onChanged: !_state.canWrite ? null : (v) => setState(() => _day = v)),
             AcademicChoiceField(key: const ValueKey('timetable-teacher'), label: l.teacherAssignmentTeacher,
               options: {0: l.all, for (final e in data.entries.where((e) => e.teacherId != null && e.teacherName != null)) e.teacherId!: e.teacherName!},
