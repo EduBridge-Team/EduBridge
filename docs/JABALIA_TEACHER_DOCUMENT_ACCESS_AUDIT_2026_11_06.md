@@ -16,3 +16,10 @@ This is an access ledger, not a legal audit/retention policy, immutable external
 Additive migration `2026_11_06_020000_create_jabalia_teacher_document_access_events.php` must be deployed **before** relying on teacher document API routes (listing and downloads now write to this table). This route change therefore requires a planned migration/release sequence and a verified Jabalia-only backup plus isolated restore rehearsal. Do not auto-run migrations on production, activate admission document uploads, run `migrate:fresh`, or execute against the main EduBridge database.
 
 CI/test success is **not** production rollout or signed acceptance. References: `docs/JABALIA_V2_UNIFIED_REQUIREMENTS_AR.md`, `docs/JABALIA_PRIVATE_UPLOADS_BACKUP_AND_RESTORE.md`, issue #1364.
+
+## Proposed teacher-document write audit (17 November 2026)
+
+- `created`, `file_uploaded` and `deleted` record successful teacher-document mutations in the existing append-only audit table, with scoped actor and document ID.
+- Document creation and deletion use a database transaction that rolls back if audit insertion fails. Upload metadata and audit insertion share a transaction; on failure, the newly staged file is deleted while any existing file remains in place.
+- Signed-contract immutability and tenant/role restrictions are unchanged. Database commits and private file operations are not a distributed transaction, so operators must still monitor storage errors.
+- Isolated tests cover successful mutations and fail-closed missing-ledger scenarios. This is proposed source work, not proof of CI, deployment, or institution-approved personnel retention policy.
