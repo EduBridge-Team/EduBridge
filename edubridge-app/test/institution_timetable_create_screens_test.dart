@@ -22,8 +22,8 @@ Future<void> fillTimetable(WidgetTester tester, {String period = '2'}) async {
   await createTimetableChoice(tester, 'timetable-create-section', 0);
   await createTimetableChoice(tester, 'timetable-create-subject', 0);
   await createTimetableChoice(tester, 'timetable-create-teacher', 2);
-  // ISO weekdays in the chooser: Sunday=7, Monday=1, Tuesday=2.
-  await createTimetableChoice(tester, 'timetable-create-day', 2);
+  // Demo institution uses legacy weekdays: index 1 selects Monday=2.
+  await createTimetableChoice(tester, 'timetable-create-day', 1);
   await createTimetableText(tester, 'timetable-create-period', period);
 }
 void main() {
