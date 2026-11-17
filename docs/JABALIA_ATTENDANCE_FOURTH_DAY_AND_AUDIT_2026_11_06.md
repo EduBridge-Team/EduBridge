@@ -22,3 +22,9 @@
 - No production rollout or signed association acceptance is claimed by this PR. Never run `migrate:fresh`, `compose down -v`, or seed/provision an existing Jabalia installation again.
 
 Track remaining work in issue #1364.
+
+## Confirmation integrity follow-up — 2026-11-17
+- Only daily attendance records with `marked_at` set count toward the fourth consecutive *school-day* absence alert. Unconfirmed legacy/prefilled absence rows cannot manufacture a streak.
+- Explicitly confirming an already-prefilled `absent` record is treated as the first marking event for guardian notification evaluation, without creating a false status-change audit event. Repeating an identical confirmed save is idempotent.
+- Confirmation of a historical gap does **not** automatically generate retroactive notices for a later day. Any historical reconciliation, guardian delivery or notice withdrawal needs institution-authorized UAT and policy before activation.
+- This source-level change does not activate external delivery channels or modify final admission decisions. Run the isolated Laravel and required CI checks before merge, and retain the no-production-deploy gate.
