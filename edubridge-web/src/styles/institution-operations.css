@@ -243,3 +243,13 @@
 @media (prefers-reduced-motion: reduce) {
   .school-workspace-tile { transition: none; }
 }
+
+/* Read-only section grid; do not infer assignments from empty cells. */
+.institution-operations-page .institution-weekly-grid-scroll { overflow-x: auto; max-width: 100%; }
+.institution-operations-page .institution-weekly-grid { width: 100%; min-width: 650px; border-collapse: collapse; }
+.institution-operations-page .institution-weekly-grid th,
+.institution-operations-page .institution-weekly-grid td { border: 1px solid var(--border, #d8dee8); padding: 10px; text-align: start; vertical-align: top; }
+.institution-operations-page .institution-weekly-grid thead th { background: color-mix(in srgb, var(--institution-primary, #1f6feb) 8%, transparent); }
+.institution-operations-page .institution-weekly-grid-lesson { display: grid; gap: 4px; margin-bottom: 6px; }
+.institution-operations-page .institution-weekly-grid-lesson small,
+.institution-operations-page .institution-weekly-grid-empty { display: block; color: var(--muted, #667085); }
