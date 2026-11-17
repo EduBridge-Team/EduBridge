@@ -43,6 +43,17 @@ class InstitutionTimetableAttendanceTest extends TestCase
         });
         Schema::create('teacher_assignments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id'); $t->string('status')->default('active'); $t->date('starts_on')->nullable(); $t->date('ends_on')->nullable(); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('academic_year_id'); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('subject_id'); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedTinyInteger('weekday'); $t->unsignedTinyInteger('period_number'); $t->time('starts_at')->nullable(); $t->time('ends_at')->nullable(); $t->string('room')->nullable(); $t->timestamps(); });
+        Schema::create('teacher_absences', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('school_id'); $t->unsignedBigInteger('teacher_id');
+            $t->date('absence_date'); $t->text('reason')->nullable(); $t->string('status');
+            $t->unsignedBigInteger('reported_by')->nullable(); $t->timestamps();
+        });
+        Schema::create('class_substitutions', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('timetable_entry_id'); $t->date('class_date');
+            $t->unsignedBigInteger('original_teacher_id')->nullable();
+            $t->unsignedBigInteger('substitute_teacher_id'); $t->string('status');
+            $t->text('notes')->nullable(); $t->unsignedBigInteger('assigned_by')->nullable(); $t->timestamps();
+        });
         Schema::create('jabalia_school_timetable_settings', function (Blueprint $t) {
             $t->id(); $t->unsignedBigInteger('school_id')->unique();
             $t->json('weekdays'); $t->json('periods'); $t->timestamps();
@@ -64,7 +75,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['jabalia_school_timetable_settings','jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
+        foreach (['class_substitutions','teacher_absences','jabalia_school_timetable_settings','jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -640,6 +651,76 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $response = app(InstitutionTimetableController::class)->store($request, 'demo', 3);
         $this->assertSame(422, $response->status());
         $this->assertSame(0, DB::table('timetable_entries')->count());
+    }
+
+
+    public function test_jabalia_sunday_absence_matches_iso_timetable_entries(): void
+    {
+        DB::table('timetable_entries')->insert([
+            'school_id' => 1, 'academic_year_id' => 1, 'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 7, 'period_number' => 1,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $controller = app(\App\Http\Controllers\InstitutionSubstitutionController::class);
+        $response = $controller->reportAbsence($this->tenantRequest([
+            'teacher_id' => 10, 'absence_date' => '2026-10-04',
+        ]), 'jabalia', 1);
+        $this->assertSame(201, $response->status());
+        $this->assertCount(1, $response->getData(true)['affected_classes']);
+
+        $monday = $controller->reportAbsence($this->tenantRequest([
+            'teacher_id' => 10, 'absence_date' => '2026-10-05',
+        ]), 'jabalia', 1);
+        $this->assertSame(201, $monday->status());
+        $this->assertCount(0, $monday->getData(true)['affected_classes']);
+    }
+
+    public function test_jabalia_sunday_substitute_accepts_matching_day_and_rejects_monday(): void
+    {
+        DB::table('users')->insert(['id' => 40, 'name' => 'Substitute']);
+        DB::table('organization_user')->insert([
+            'organization_id' => 1, 'user_id' => 40, 'role' => 'teacher', 'is_active' => true,
+        ]);
+        $entryId = DB::table('timetable_entries')->insertGetId([
+            'school_id' => 1, 'academic_year_id' => 1, 'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 7, 'period_number' => 1,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $controller = app(\App\Http\Controllers\InstitutionSubstitutionController::class);
+        $wrong = $controller->assign($this->tenantRequest([
+            'class_date' => '2026-10-05', 'substitute_teacher_id' => 40,
+        ]), 'jabalia', 1, $entryId);
+        $this->assertSame(422, $wrong->status());
+        $this->assertSame(0, DB::table('class_substitutions')->count());
+
+        $correct = $controller->assign($this->tenantRequest([
+            'class_date' => '2026-10-04', 'substitute_teacher_id' => 40,
+        ]), 'jabalia', 1, $entryId);
+        $this->assertSame(201, $correct->status());
+        $this->assertSame(1, DB::table('class_substitutions')->count());
+    }
+
+    public function test_other_institutions_keep_legacy_sunday_weekday_one_for_absence(): void
+    {
+        DB::table('organizations')->insert(['id' => 2, 'slug' => 'demo', 'is_active' => true]);
+        DB::table('organization_user')->insert([
+            'organization_id' => 2, 'user_id' => 10, 'role' => 'teacher', 'is_active' => true,
+        ]);
+        DB::table('schools')->insert(['id' => 2, 'organization_id' => 2, 'name' => 'Demo']);
+        DB::table('timetable_entries')->insert([
+            'school_id' => 2, 'academic_year_id' => 1, 'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 1, 'period_number' => 1,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $request = $this->tenantRequest([
+            'teacher_id' => 10, 'absence_date' => '2026-10-04',
+        ]);
+        $request->attributes->set('organization', (object) ['id' => 2, 'slug' => 'demo']);
+        $response = app(\App\Http\Controllers\InstitutionSubstitutionController::class)
+            ->reportAbsence($request, 'demo', 2);
+        $this->assertSame(201, $response->status());
+        $this->assertCount(1, $response->getData(true)['affected_classes']);
     }
 
     private function tenantRequest(array $payload): Request
