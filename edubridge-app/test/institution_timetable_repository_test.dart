@@ -13,6 +13,9 @@ void main() {
     expect(institutionWeekday(DateTime(2026, 10, 25)), 1);
     expect(institutionWeekday(monday), 2);
     expect(institutionWeekday(DateTime(2026, 10, 31)), 7);
+    expect(institutionWeekday(DateTime(2026, 10, 25), iso: true), 7);
+    expect(institutionWeekday(monday, iso: true), 1);
+    expect(institutionWeekday(DateTime(2026, 10, 31), iso: true), 6);
   });
   test('school-scoped timetable keeps authored names, times and immutable rows', () async {
     final f = InstitutionTimetableFixture();
