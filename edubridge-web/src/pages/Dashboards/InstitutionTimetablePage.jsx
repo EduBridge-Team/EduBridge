@@ -361,8 +361,8 @@ export default function InstitutionTimetablePage() {
             <h3>الجدول الأسبوعي حسب الشعبة</h3>
             <InstitutionWeeklyGrid entries={filtered}
               sectionId={filterSection}
-              days={DAYS.map((name, index) => ({ name, value: ISO_DAYS[index] })).filter((day) => !timetableSettings || timetableSettings.weekdays.includes(day.value))}
-              periodCount={timetableSettings?.periods?.length || 5}
+              days={DAYS.map((name, index) => ({ name, value: ISO_DAYS[index] })).filter((day) => timetableSettings?.weekdays?.includes(day.value))}
+              periodCount={timetableSettings?.periods?.length || 0}
               periods={timetableSettings?.periods || []} />
           </section>}
           <section className="institution-panel" aria-label="توزيع المواد على أيام الأسبوع">
