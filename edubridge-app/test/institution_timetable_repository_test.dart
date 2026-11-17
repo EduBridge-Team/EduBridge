@@ -14,6 +14,17 @@ void main() {
     expect(institutionWeekday(monday), 2);
     expect(institutionWeekday(DateTime(2026, 10, 31)), 7);
   });
+  test('Jabalia ISO weekday dates match Sunday slots without changing legacy tenants', () async {
+    expect(institutionWeekday(DateTime(2026, 10, 25), iso: true), 7);
+    expect(institutionWeekday(monday, iso: true), 1);
+    final f = InstitutionTimetableFixture();
+    f.academic.slug = 'jabalia';
+    f.rows.first['weekday'] = 7;
+    final data = await f.repository.load();
+    expect(data.acceptsDate(data.entries.single, DateTime(2026, 10, 25)), isTrue);
+    expect(data.acceptsDate(data.entries.single, monday), isFalse);
+    expect(data.nextDate(data.entries.single, monday), DateTime(2026, 11, 1));
+  });
   test('school-scoped timetable keeps authored names, times and immutable rows', () async {
     final f = InstitutionTimetableFixture();
     final data = await f.repository.load();
