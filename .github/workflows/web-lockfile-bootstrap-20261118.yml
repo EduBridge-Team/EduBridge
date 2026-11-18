@@ -40,4 +40,7 @@ jobs:
           git add -- edubridge-web/package-lock.json
           if git diff --cached --quiet; then exit 0; fi
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(web): regenerate audited esbuild lockfile'
+          # Preserve concurrent app commits instead of overwriting branch history.
+          git fetch origin fix/web-esbuild-audit-20261118
+          git rebase origin/fix/web-esbuild-audit-20261118
           git push origin HEAD:fix/web-esbuild-audit-20261118
