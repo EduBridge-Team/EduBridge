@@ -17,16 +17,30 @@ test('school forms preserve explicit false and require a real destination select
 })
 
 test('school provisioning and operation forms render in both languages without school-login passwords', async () => {
-  const { createServer } = await import('vite')
+  const { build } = await import('esbuild')
+  const { pathToFileURL } = await import('node:url')
+  const { join } = await import('node:path')
+  const { writeFile, unlink } = await import('node:fs/promises')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const previous = globalThis.localStorage
-  const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
+  const entry = join(process.cwd(), '.qa-school-forms-ssr.mjs')
   try {
-    const { default: Form } = await server.ssrLoadModule('/src/components/Institution/SchoolProvisionForm.jsx')
-    const { default: Operation } = await server.ssrLoadModule('/src/components/School/SchoolOperationForm.jsx')
-    const { default: AttendanceReport } = await server.ssrLoadModule('/src/components/School/SchoolAttendanceReportPanel.jsx')
-    const { default: Promotion } = await server.ssrLoadModule('/src/components/School/SchoolPromotionPanel.jsx')
+    const entries = [
+      './src/components/Institution/SchoolProvisionForm.jsx',
+      './src/components/School/SchoolOperationForm.jsx',
+      './src/components/School/SchoolAttendanceReportPanel.jsx',
+      './src/components/School/SchoolPromotionPanel.jsx',
+    ]
+    const source = entries.map((item, i) => `export { default as Component${i} } from '${item}'`).join('\\n')
+    const bundle = await build({
+      stdin: { contents: source, resolveDir: process.cwd(), sourcefile: 'qa-ssr-entry.jsx', loader: 'jsx' },
+      bundle: true, write: false, platform: 'node', format: 'esm', packages: 'external',
+      loader: { '.css': 'empty', '.svg': 'empty', '.png': 'empty' },
+      define: { 'import.meta.env': JSON.stringify({ VITE_API_URL: '/api', VITE_INSTITUTION_SLUG: '', VITE_GOOGLE_CLIENT_ID: '' }) },
+    })
+    await writeFile(entry, bundle.outputFiles[0].contents)
+    const { Component0: Form, Component1: Operation, Component2: AttendanceReport, Component3: Promotion } = await import(pathToFileURL(entry).href)
     for (const language of ['ar', 'en']) {
       globalThis.localStorage = { getItem: () => language }
       const html = renderToStaticMarkup(createElement(Form, {}))
@@ -49,5 +63,5 @@ test('school provisioning and operation forms render in both languages without s
       assert.doesNotMatch(promotion, /idempotency_key|promotion-approve|promotion-preview/)
       assert.match(promotion, /2026/)
     }
-  } finally { globalThis.localStorage = previous; await server.close() }
+  } finally { globalThis.localStorage = previous; await unlink(entry).catch(() => {}) }
 })
