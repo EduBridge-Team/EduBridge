@@ -42,7 +42,7 @@ test('failed page retains last good data and retries the requested page', async 
 })
 
 test('API preserves legacy lists and encodes explicit page and filter requests', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
   const oldFetch = globalThis.fetch
   const oldStorage = globalThis.localStorage
@@ -64,7 +64,7 @@ test('API preserves legacy lists and encodes explicit page and filter requests',
 })
 
 test('parent statistics stay global, search stays mounted during loading, and pager buttons have correct boundaries', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })

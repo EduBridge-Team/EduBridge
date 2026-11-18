@@ -26,7 +26,7 @@ test('Jabalia teacher contract period records use private institution-scoped API
 })
 
 test('Jabalia contract period panel renders only in the institution teacher document context', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({

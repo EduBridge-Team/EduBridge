@@ -38,7 +38,7 @@ test('workflow values display Arabic labels without changing stored enum values'
 })
 
 test('workflow controls render visible associated labels and child links are keyboard focusable', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
@@ -70,7 +70,7 @@ test('admin child counts use real parent relations and include every assigned sp
 
 
 test('closed support tickets do not offer close or in-progress actions', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
