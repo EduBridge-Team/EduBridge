@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import { fetchJabaliaTeacherHistory, updateJabaliaTeacherProfile, fetchJabaliaTeacherDocuments, createJabaliaTeacherDocument, deleteJabaliaTeacherDocument, uploadJabaliaTeacherDocument, downloadJabaliaTeacherDocument, fetchJabaliaTeacherTransfers, transferJabaliaTeacher } from '../../api/institutions'
 import JabaliaTeacherDocumentAccessPanel from '../../components/Institution/JabaliaTeacherDocumentAccessPanel'
 import InstitutionInternalTeachersPanel from '../../components/Institution/InstitutionInternalTeachersPanel'
+import { loadTeacherSchoolData } from '../../components/Institution/teacherSchoolLoad'
 import JabaliaTeacherContractPeriodsPanel from '../../components/Institution/JabaliaTeacherContractPeriodsPanel'
 import '../../styles/institution-operations.css'
 
@@ -37,6 +38,7 @@ export default function InstitutionTeachersPage() {
   const [schoolId, setSchoolId] = useState('')
   const [academic, setAcademic] = useState(null)
   const [participants, setParticipants] = useState(null)
+  const schoolLoadVersion = useRef(0)
   const [form, setForm] = useState({ teacher_id: '', section_id: '', subject_id: '' })
   const [assignmentTeacher, setAssignmentTeacher] = useState('')
   const [assignmentSubject, setAssignmentSubject] = useState('')
@@ -119,19 +121,25 @@ export default function InstitutionTeachersPage() {
 
   const refresh = useCallback(async () => {
     if (!slug || !schoolId) return
+    const version = ++schoolLoadVersion.current
     setLoading(true)
     setError('')
     try {
-      const [school, people] = await Promise.all([
-        fetchInstitutionAcademicOverview(slug, schoolId),
-        fetchInstitutionParticipants(slug, schoolId),
-      ])
-      setAcademic(school)
-      setParticipants(people)
+      const result = await loadTeacherSchoolData(
+        () => fetchInstitutionAcademicOverview(slug, schoolId),
+        () => fetchInstitutionParticipants(slug, schoolId),
+      )
+      if (version !== schoolLoadVersion.current) return
+      setAcademic(result.academic)
+      setParticipants(result.participants)
+      setError(result.error)
     } catch (err) {
+      if (version !== schoolLoadVersion.current) return
+      setAcademic(null)
+      setParticipants(null)
       setError(err.message)
     } finally {
-      setLoading(false)
+      if (version === schoolLoadVersion.current) setLoading(false)
     }
   }, [slug, schoolId])
 
@@ -145,25 +153,17 @@ export default function InstitutionTeachersPage() {
   }, [slug, schoolId])
 
   useEffect(() => {
-    let active = true
+    schoolLoadVersion.current += 1
     setAcademic(null)
     setParticipants(null)
-    if (slug && schoolId) {
-      setLoading(true)
-      Promise.all([
-        fetchInstitutionAcademicOverview(slug, schoolId),
-        fetchInstitutionParticipants(slug, schoolId),
-      ]).then(([school, people]) => {
-        if (active) { setAcademic(school); setParticipants(people); setError('') }
-      }).catch((err) => { if (active) setError(err.message) })
-        .finally(() => { if (active) setLoading(false) })
-    }
-    return () => { active = false }
-  }, [slug, schoolId])
+    setLoading(false)
+    if (slug && schoolId) void refresh()
+    return () => { schoolLoadVersion.current += 1 }
+  }, [slug, schoolId, refresh])
 
   async function assign(event) {
     event.preventDefault()
-    if (!slug || !schoolId || saving) return
+    if (!slug || !schoolId || saving || loading || !academic || !participants) return
     if (participants?.teacher_assignments?.some((item) => String(item.teacher_id) === form.teacher_id &&
       String(item.section_id) === form.section_id && String(item.subject_id) === form.subject_id)) {
       setError('هذا المعلم مكلّف بالفعل بهذه المادة والشعبة. لا يمكن إضافة التكليف نفسه مرتين.')
@@ -190,6 +190,7 @@ export default function InstitutionTeachersPage() {
   }
 
   async function removeAssignment(id) {
+    if (saving || loading || !academic || !participants) return
     if (!window.confirm('هل تريد إلغاء تعيين هذا المعلم لهذه المادة والشعبة؟')) return
     setSaving(true)
     setError('')
@@ -404,14 +405,16 @@ export default function InstitutionTeachersPage() {
         <section className="institution-panel">
           <div className="section-heading compact"><div><h2>اختر المدرسة</h2><p>تُعرض التعيينات الخاصة بالمدرسة المحددة فقط.</p></div></div>
           <label>المدرسة
-            <select value={schoolId} onChange={(event) => { setSchoolId(event.target.value); setForm({ teacher_id: '', section_id: '', subject_id: '' }); setAssignmentTeacher(''); setAssignmentSubject(''); setAssignmentSection(''); setMessage('') }}>
+            <select value={schoolId} onChange={(event) => { schoolLoadVersion.current += 1; setAcademic(null); setParticipants(null); setLoading(false); setSchoolId(event.target.value); setForm({ teacher_id: '', section_id: '', subject_id: '' }); setAssignmentTeacher(''); setAssignmentSubject(''); setAssignmentSection(''); setMessage('') }}>
               <option value="">اختر المدرسة</option>
               {schools.map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
             </select>
           </label>
           {error && <div className="state error" role="alert">{error}</div>}
           {message && <div className="state success" role="status">{message}</div>}
+          <button className="btn outline" type="button" disabled={!schoolId || loading || saving} onClick={() => void refresh()}>إعادة تحميل بيانات المعلمين</button>
           {loading && <div className="state">جارِ تحميل المعلمين والتعيينات…</div>}
+          {!loading && schoolId && (academic || participants) && !(academic && participants) && <div className="state" role="status">تم تحميل جزء من بيانات المدرسة، لكن إنشاء التكليفات أو حذفها متوقف حتى يكتمل تحميل المعلمين والهيكل الأكاديمي.</div>}
           {!loading && schoolId && participants && academic && (
             <>
               <div className="academic-setup-summary">
