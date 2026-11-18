@@ -19,6 +19,10 @@ class InstitutionTimetableAttendanceTest extends TestCase
         Schema::create('organizations', function (Blueprint $t) { $t->id(); $t->string('slug'); $t->boolean('is_active')->default(true); });
         Schema::create('users', function (Blueprint $t) { $t->id(); $t->string('name'); });
         Schema::create('organization_user', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('user_id'); $t->string('role'); $t->boolean('is_active')->default(true); });
+        Schema::create('institution_internal_identities', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('organization_id'); $t->unsignedBigInteger('user_id');
+            $t->string('username'); $t->boolean('is_active')->default(true); $t->timestamps();
+        });
         Schema::create('schools', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('organization_id')->nullable(); $t->string('name'); });
         Schema::create('academic_years', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
         Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
@@ -75,7 +79,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['class_substitutions','teacher_absences','jabalia_school_timetable_settings','jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','organization_user','users','organizations'] as $table) {
+        foreach (['class_substitutions','teacher_absences','jabalia_school_timetable_settings','jabalia_attendance_change_events','jabalia_school_closure_days','teacher_assignments','timetable_entries','attendance_records','attendance_sessions','notifications','child_parent','student_enrollments','children','subjects','sections','grades','academic_years','schools','institution_internal_identities','organization_user','users','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -721,6 +725,67 @@ class InstitutionTimetableAttendanceTest extends TestCase
             ->reportAbsence($request, 'demo', 2);
         $this->assertSame(201, $response->status());
         $this->assertCount(1, $response->getData(true)['affected_classes']);
+    }
+
+
+    public function test_disabled_jabalia_internal_teacher_cannot_be_added_to_timetable(): void
+    {
+        DB::table('institution_internal_identities')->insert([
+            'organization_id' => 1, 'user_id' => 10,
+            'username' => 'teacher10', 'is_active' => false,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $result = app(InstitutionTimetableController::class)->store($this->tenantRequest([
+            'academic_year_id' => 1, 'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 7, 'period_number' => 1,
+        ]), 'jabalia', 1);
+        $this->assertSame(422, $result->status());
+        $this->assertSame(0, DB::table('timetable_entries')->count());
+
+        // Authorized reactivation restores scheduling without altering old history.
+        DB::table('institution_internal_identities')->where('user_id', 10)
+            ->update(['is_active' => true]);
+        $result = app(InstitutionTimetableController::class)->store($this->tenantRequest([
+            'academic_year_id' => 1, 'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 7, 'period_number' => 1,
+        ]), 'jabalia', 1);
+        $this->assertSame(201, $result->status());
+        $this->assertSame(1, DB::table('timetable_entries')->count());
+    }
+
+    public function test_disabled_jabalia_internal_teacher_cannot_be_assigned_as_substitute(): void
+    {
+        DB::table('users')->insert(['id' => 40, 'name' => 'Replacement']);
+        DB::table('organization_user')->insert([
+            'organization_id' => 1, 'user_id' => 40,
+            'role' => 'teacher', 'is_active' => true,
+        ]);
+        DB::table('institution_internal_identities')->insert([
+            'organization_id' => 1, 'user_id' => 40,
+            'username' => 'replacement', 'is_active' => false,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $entryId = DB::table('timetable_entries')->insertGetId([
+            'school_id' => 1, 'academic_year_id' => 1, 'section_id' => 1,
+            'subject_id' => 1, 'teacher_id' => 10, 'weekday' => 7,
+            'period_number' => 1, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $request = $this->tenantRequest([
+            'class_date' => '2026-10-04', 'substitute_teacher_id' => 40,
+        ]);
+        $result = app(\App\Http\Controllers\InstitutionSubstitutionController::class)
+            ->assign($request, 'jabalia', 1, $entryId);
+        $this->assertSame(422, $result->status());
+        $this->assertSame(0, DB::table('class_substitutions')->count());
+    }
+
+    public function test_legacy_invited_teacher_without_internal_identity_remains_schedulable(): void
+    {
+        $result = app(InstitutionTimetableController::class)->store($this->tenantRequest([
+            'academic_year_id' => 1, 'section_id' => 1, 'subject_id' => 1,
+            'teacher_id' => 10, 'weekday' => 7, 'period_number' => 1,
+        ]), 'jabalia', 1);
+        $this->assertSame(201, $result->status());
     }
 
     private function tenantRequest(array $payload): Request
