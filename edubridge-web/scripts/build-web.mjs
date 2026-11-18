@@ -1,5 +1,5 @@
 import { build, context } from 'esbuild'
-import { copyFile, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -25,6 +25,14 @@ const shared = {
   assetNames: 'assets/[name]-[hash]',
   loader: { '.png': 'file', '.jpg': 'file', '.jpeg': 'file', '.svg': 'file', '.woff': 'file', '.woff2': 'file', '.webp': 'file', '.gif': 'file' },
   define: { 'import.meta.env': JSON.stringify(env), 'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production') },
+  // Absolute / URLs inside CSS refer to files copied unchanged from public/.
+  plugins: [{
+    name: 'public-root-urls',
+    setup(builder) {
+      builder.onResolve({ filter: /^\\// }, args =>
+        args.kind === 'url-token' ? { path: args.path, external: true } : undefined)
+    },
+  }],
   metafile: true,
   minify: !dev,
   logLevel: 'info',
@@ -52,7 +60,7 @@ await prepare()
 if (dev) {
   // Development mode keeps the same origin and /api paths as production;
   // it is for local usage only, not an Oracle deployment.
-  const ctx = await context({ ...shared, write: true, plugins: [{
+  const ctx = await context({ ...shared, write: true, plugins: [...shared.plugins, {
     name: 'html-entry',
     setup(build) {
       build.onEnd(async result => {
