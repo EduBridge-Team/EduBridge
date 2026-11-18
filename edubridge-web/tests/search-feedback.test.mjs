@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { createServer } from 'vite'
+import { createServer } from './helpers/ssr-esbuild.mjs'
 
 test('identity search links invalid input to an announced error', async () => {
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })

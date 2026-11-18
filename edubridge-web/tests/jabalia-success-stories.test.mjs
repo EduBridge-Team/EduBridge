@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 test('Jabalia reports expose internal-only success story controls and hide them elsewhere', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({
