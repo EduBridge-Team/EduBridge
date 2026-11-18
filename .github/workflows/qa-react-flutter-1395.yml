@@ -37,6 +37,9 @@ jobs:
         env:
           VITE_API_URL: /api
         run: npm run build
+      - name: Verify hashed production assets and compression
+        working-directory: edubridge-web
+        run: npm run test:build
       - name: Install isolated browser runner
         run: npm install --no-save --package-lock=false playwright@1.56.1
       - name: Install Chromium
@@ -46,7 +49,7 @@ jobs:
           set -euo pipefail
           node --input-type=module -e '
             import { spawn } from "node:child_process";
-            const child = spawn("./node_modules/.bin/vite", ["preview", "--host", "127.0.0.1", "--port", "4173", "--strictPort"], { detached: true, stdio: "ignore" });
+            const child = spawn(process.execPath, ["scripts/preview-web.mjs", "--port", "4173"], { detached: true, stdio: "ignore" });
             child.unref();
           '
           for i in $(seq 1 30); do

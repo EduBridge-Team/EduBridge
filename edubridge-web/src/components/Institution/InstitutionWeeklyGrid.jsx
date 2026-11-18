@@ -1,4 +1,4 @@
-import { weeklyGridRows } from './institutionWeeklyGrid'
+import { weeklyGridRows } from './institutionWeeklyGrid.js'
 
 export default function InstitutionWeeklyGrid({ entries, days, sectionId, periodCount, periods = [] }) {
   if (!sectionId) return <p>اختر شعبة من فلتر «تصفية حسب الشعبة» لعرض جدولها الأسبوعي.</p>

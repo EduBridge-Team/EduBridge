@@ -20,7 +20,7 @@ test('global unread badge and empty final pages survive parsing; malformed curso
 })
 
 test('notifications request bounded pages with explicit history/delta cursors using the web session cookie', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
   const oldFetch = globalThis.fetch
   const oldStorage = globalThis.localStorage

@@ -4,7 +4,7 @@ import { PassThrough } from 'node:stream'
 import { createElement } from 'react'
 import { renderToString, renderToPipeableStream } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
-import { createServer } from 'vite'
+import { createServer } from './helpers/ssr-esbuild.mjs'
 
 let server
 let AppRoutes

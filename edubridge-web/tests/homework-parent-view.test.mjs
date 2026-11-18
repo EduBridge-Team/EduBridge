@@ -10,7 +10,7 @@ test('homework submission choices contain only owned, assigned children', () => 
 })
 
 test('parent sees zero grades and feedback, pending status, and no other child submissions or grading controls', async () => {
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })

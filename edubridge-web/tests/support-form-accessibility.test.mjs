@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { createServer } from 'vite'
+import { createServer } from './helpers/ssr-esbuild.mjs'
 
 test('support form associates Arabic labels with controls and announces feedback', async () => {
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
