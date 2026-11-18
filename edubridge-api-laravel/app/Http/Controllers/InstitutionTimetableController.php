@@ -271,6 +271,16 @@ class InstitutionTimetableController extends Controller
         }
 
         $organization = $request->attributes->get('organization');
+        // A disabled internal institution identity must not be schedulable,
+        // even when its historical organization membership remains active.
+        // Preserve legacy invitation-based teachers without internal identities.
+        if (\Illuminate\Support\Facades\Schema::hasTable('institution_internal_identities')
+            && DB::table('institution_internal_identities')
+                ->where('organization_id', $organization->id)
+                ->where('user_id', $teacher)
+                ->where('is_active', false)->exists()) {
+            return false;
+        }
         return DB::table('organization_user')
             ->where('organization_id', $organization->id)
             ->where('user_id', $teacher)
