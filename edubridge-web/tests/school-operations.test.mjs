@@ -35,7 +35,7 @@ test('school provisioning and operation forms render in both languages without s
     const source = entries.map((item, i) => `export { default as Component${i} } from '${item}'`).join('\n')
     const bundle = await build({
       stdin: { contents: source, resolveDir: process.cwd(), sourcefile: 'qa-ssr-entry.jsx', loader: 'jsx' },
-      bundle: true, write: false, platform: 'node', format: 'esm', packages: 'external',
+      bundle: true, write: false, platform: 'node', format: 'esm', packages: 'external', jsx: 'automatic',
       loader: { '.css': 'empty', '.svg': 'empty', '.png': 'empty' },
       define: { 'import.meta.env': JSON.stringify({ VITE_API_URL: '/api', VITE_INSTITUTION_SLUG: '', VITE_GOOGLE_CLIENT_ID: '' }) },
     })
