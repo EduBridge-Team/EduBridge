@@ -19,6 +19,7 @@ const shared = {
   format: 'esm',
   platform: 'browser',
   target: 'es2020',
+  jsx: 'automatic',
   entryNames: 'assets/[name]-[hash]',
   chunkNames: 'assets/[name]-[hash]',
   assetNames: 'assets/[name]-[hash]',
