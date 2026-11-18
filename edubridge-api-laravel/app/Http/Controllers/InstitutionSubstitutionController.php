@@ -98,6 +98,14 @@ class InstitutionSubstitutionController extends Controller
             ->where('ou.organization_id', $organization->id)
             ->where('ou.is_active', true)
             ->where('ou.role', 'teacher')
+            ->when(\Illuminate\Support\Facades\Schema::hasTable('institution_internal_identities'), function ($query) use ($organization) {
+                $query->whereNotExists(function ($inactive) use ($organization) {
+                    $inactive->selectRaw('1')->from('institution_internal_identities as identity')
+                        ->whereColumn('identity.user_id', 'u.id')
+                        ->where('identity.organization_id', $organization->id)
+                        ->where('identity.is_active', false);
+                });
+            })
             ->when($excluded->isNotEmpty(), fn ($q) => $q->whereNotIn('u.id', $excluded->all()))
             ->select('u.id', 'u.name')
             ->orderBy('u.name')
