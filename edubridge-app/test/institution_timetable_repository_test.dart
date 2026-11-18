@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:edubridge_app/model/institutions/institution_timetable.dart';
+import 'package:edubridge_app/model/institutions/institution_academic_records.dart';
 import 'package:edubridge_app/screens/institution_timetable/institution_substitute_controller.dart';
 import 'package:edubridge_app/services/enrollment/enrollment_api_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'institution_timetable_fixture.dart';
+import 'institution_academic_fixture.dart';
 
 void main() {
   final monday = DateTime(2026, 10, 26);
@@ -17,6 +19,21 @@ void main() {
     expect(institutionWeekday(monday, iso: true), 1);
     expect(institutionWeekday(DateTime(2026, 10, 31), iso: true), 6);
   });
+  test('Jabalia ISO Sunday substitute date filter agrees with timetable nextDate', () {
+    final academic = InstitutionAcademicRecords.fromJson('jabalia', 4, 5, institutionAcademicJson());
+    final timetable = InstitutionTimetable.fromJson(academic, {'timetable': [
+      {'id': 80, 'school_id': 5, 'academic_year_id': 10, 'section_id': 30,
+       'subject_id': 50, 'teacher_id': 7, 'teacher_name': 'Teacher',
+       'weekday': 7, 'period_number': 1, 'starts_at': '08:00:00',
+       'ends_at': '08:40:00', 'room': null},
+    ]});
+    final entry = timetable.entries.single;
+    expect(timetable.acceptsDate(entry, DateTime(2026, 10, 25)), isTrue);
+    expect(timetable.acceptsDate(entry, DateTime(2026, 10, 26)), isFalse);
+    expect(timetable.acceptsDate(entry, DateTime(2027, 7, 4)), isFalse);
+    expect(timetable.nextDate(entry, DateTime(2026, 10, 26)), DateTime(2026, 11, 1));
+  });
+
   test('school-scoped timetable keeps authored names, times and immutable rows', () async {
     final f = InstitutionTimetableFixture();
     final data = await f.repository.load();
