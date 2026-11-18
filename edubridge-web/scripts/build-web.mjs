@@ -29,7 +29,7 @@ const shared = {
   plugins: [{
     name: 'public-root-urls',
     setup(builder) {
-      builder.onResolve({ filter: /^\\// }, args =>
+      builder.onResolve({ filter: /^\// }, args =>
         args.kind === 'url-token' ? { path: args.path, external: true } : undefined)
     },
   }],
