@@ -101,7 +101,7 @@ test('Jabalia quota coverage is read-only and integrated with actual school sett
   assert.match(component, /لم يتم تحديد نصاب أسبوعي/)
   assert.match(component, /تغطية الجدول الأسبوعي/)
   assert.doesNotMatch(component, /createInstitutionTimetableEntry|postQuota|onClick/)
-  const { createServer } = await import('vite')
+  const { createServer } = await import('./helpers/ssr-esbuild.mjs')
   const { createElement } = await import('react')
   const { renderToStaticMarkup } = await import('react-dom/server')
   const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
