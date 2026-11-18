@@ -32,7 +32,7 @@ test('school provisioning and operation forms render in both languages without s
       './src/components/School/SchoolAttendanceReportPanel.jsx',
       './src/components/School/SchoolPromotionPanel.jsx',
     ]
-    const source = entries.map((item, i) => `export { default as Component${i} } from '${item}'`).join('\\n')
+    const source = entries.map((item, i) => `export { default as Component${i} } from '${item}'`).join('\n')
     const bundle = await build({
       stdin: { contents: source, resolveDir: process.cwd(), sourcefile: 'qa-ssr-entry.jsx', loader: 'jsx' },
       bundle: true, write: false, platform: 'node', format: 'esm', packages: 'external',
