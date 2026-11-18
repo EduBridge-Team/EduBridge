@@ -325,7 +325,11 @@ class InstitutionAttendanceController extends Controller
                         'created_at' => now(),
                     ]);
                 }
-                if (in_array($record['status'], ['absent', 'late'], true) && $previous !== $record['status']) {
+                // A legacy/unconfirmed Jabalia row becomes an attendance event on first
+                // explicit mark, even when its previously stored status matches.
+                $firstConfirmation = $jabalia && $previousRow?->marked_at === null;
+                if (in_array($record['status'], ['absent', 'late'], true)
+                    && ($previous !== $record['status'] || $firstConfirmation)) {
                     if (!$jabalia || $record['status'] === 'late') {
                         $this->notifyParents((int) $record['child_id'], $record['status'], $session);
                     } else {
@@ -359,6 +363,9 @@ class InstitutionAttendanceController extends Controller
             ->where('r.child_id', $childId)
             ->where('a.section_id', $session->section_id)
             ->whereNull('a.period_number')
+            // Only explicitly confirmed daily attendance can extend an absence streak.
+            // Unmarked legacy rows must not trigger a guardian notice.
+            ->whereNotNull('r.marked_at')
             ->whereDate('a.attendance_date', '<=', $session->attendance_date)
             ->select('a.attendance_date', 'r.status')
             ->orderByDesc('a.attendance_date')
