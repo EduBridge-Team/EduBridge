@@ -9,6 +9,7 @@ import {
 import { useInstitution } from '../../institutionContext'
 import JabaliaTimetableCoveragePanel from '../../components/Institution/JabaliaTimetableCoveragePanel'
 import InstitutionWeeklyGrid from '../../components/Institution/InstitutionWeeklyGrid'
+import { saveQuotaWithRefresh } from '../../components/Institution/quotaSaveFeedback'
 import '../../styles/institution-operations.css'
 
 const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
@@ -147,14 +148,18 @@ export default function InstitutionTimetablePage() {
     if (busy) return
     setBusy(true); setError(''); setMessage('')
     try {
-      await updateJabaliaSubjectQuota(slug, schoolId, {
-        section_id: Number(quotaForm.section_id),
-        subject_id: Number(quotaForm.subject_id),
-        weekly_periods: Number(quotaForm.weekly_periods),
-      })
-      const result = await fetchJabaliaSubjectQuotas(slug, schoolId)
-      setSubjectQuotas(result.quotas || [])
-      setMessage('تم تحديث الحصص الأسبوعية للمادة والشعبة.')
+      const result = await saveQuotaWithRefresh(
+        () => updateJabaliaSubjectQuota(slug, schoolId, {
+          section_id: Number(quotaForm.section_id),
+          subject_id: Number(quotaForm.subject_id),
+          weekly_periods: Number(quotaForm.weekly_periods),
+        }),
+        () => fetchJabaliaSubjectQuotas(slug, schoolId),
+      )
+      if (result.refreshed) setSubjectQuotas(result.quotas)
+      setMessage(result.refreshed
+        ? 'تم حفظ الحصص الأسبوعية وتحديث القائمة.'
+        : 'تم حفظ الحصص الأسبوعية على الخادم، لكن تعذر تحديث القائمة. راجع القيمة من الخادم قبل إعادة الحفظ.')
     } catch (err) { setError(err.message) }
     finally { setBusy(false) }
   }
