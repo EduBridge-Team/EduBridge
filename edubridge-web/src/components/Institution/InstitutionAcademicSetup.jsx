@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { saveAcademicAndRefresh } from './academicSaveFeedback'
 import {
   BookOpen,
   CalendarPlus,
@@ -72,10 +73,10 @@ export default function InstitutionAcademicSetup({ slug, schoolId, academic, onR
     setError('')
     setMessage('')
     try {
-      await action()
+      const outcome = await saveAcademicAndRefresh(action, onRefresh)
       reset()
-      setMessage(success)
-      await onRefresh()
+      setMessage(outcome.refreshed ? success
+        : `${success} تعذّر تحديث الملخص بعد الحفظ. راجع البيانات من الخادم قبل محاولة الإضافة مرة أخرى.`)
     } catch (err) {
       setError(err.message)
     } finally {
