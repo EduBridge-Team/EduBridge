@@ -53,7 +53,7 @@ class _InstitutionSubstituteScreenState extends State<InstitutionSubstituteScree
     final initial = timetable.nextDate(entry, _date);
     if (initial == null) return;
     final date = await showDatePicker(context: context, initialDate: initial, firstDate: year.start, lastDate: year.end,
-      selectableDayPredicate: (d) => institutionWeekday(d) == entry.weekday);
+      selectableDayPredicate: (d) => timetable.acceptsDate(entry, d));
     if (!mounted || date == null || !identical(controller, _state) || controller.busy || controller.loading) return;
     controller.dispose();
     setState(() {
