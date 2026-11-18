@@ -779,6 +779,38 @@ class InstitutionTimetableAttendanceTest extends TestCase
         $this->assertSame(0, DB::table('class_substitutions')->count());
     }
 
+    public function test_available_substitutes_hide_disabled_internal_teachers_but_keep_invited_teachers(): void
+    {
+        DB::table('users')->insert([
+            ['id' => 40, 'name' => 'Disabled internal teacher'],
+            ['id' => 50, 'name' => 'Invited teacher'],
+        ]);
+        DB::table('organization_user')->insert([
+            ['organization_id' => 1, 'user_id' => 40, 'role' => 'teacher', 'is_active' => true],
+            ['organization_id' => 1, 'user_id' => 50, 'role' => 'teacher', 'is_active' => true],
+        ]);
+        DB::table('institution_internal_identities')->insert([
+            'organization_id' => 1, 'user_id' => 40, 'username' => 'disabled40',
+            'is_active' => false, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $entryId = DB::table('timetable_entries')->insertGetId([
+            'school_id' => 1, 'academic_year_id' => 1, 'section_id' => 1,
+            'subject_id' => 1, 'teacher_id' => 10, 'weekday' => 7,
+            'period_number' => 1, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $request = Request::create('/?date=2026-10-04', 'GET');
+        $request->attributes->set('organization', (object) ['id' => 1, 'slug' => 'jabalia']);
+        $controller = app(\App\Http\Controllers\InstitutionSubstitutionController::class);
+        $response = $controller->availableTeachers($request, 'jabalia', 1, $entryId);
+        $this->assertSame(200, $response->status());
+        $this->assertSame([50], array_column($response->getData(true)['available_teachers'], 'id'));
+
+        DB::table('institution_internal_identities')->where('user_id', 40)->update(['is_active' => true]);
+        $reactivated = $controller->availableTeachers($request, 'jabalia', 1, $entryId);
+        $this->assertSame(200, $reactivated->status());
+        $this->assertSame([40, 50], array_column($reactivated->getData(true)['available_teachers'], 'id'));
+    }
+
     public function test_legacy_invited_teacher_without_internal_identity_remains_schedulable(): void
     {
         $result = app(InstitutionTimetableController::class)->store($this->tenantRequest([
