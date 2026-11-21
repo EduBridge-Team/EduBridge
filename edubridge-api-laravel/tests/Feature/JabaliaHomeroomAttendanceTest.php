@@ -14,6 +14,11 @@ class JabaliaHomeroomAttendanceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Fixed Thursday (Asia/Hebron): these tests must not depend on
+        // whether GitHub Actions happens to run on a weekend.
+        $date = \Carbon\CarbonImmutable::parse('2026-11-19 10:00:00', 'Asia/Hebron');
+        \Carbon\Carbon::setTestNow($date);
+        \Carbon\CarbonImmutable::setTestNow($date);
         Schema::create('organizations', function (Blueprint $t) {
             $t->id(); $t->string('slug'); $t->boolean('is_active')->default(true);
         });
@@ -145,6 +150,8 @@ class JabaliaHomeroomAttendanceTest extends TestCase
             'organization_user','users','schools','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
+        \Carbon\CarbonImmutable::setTestNow();
+        \Carbon\Carbon::setTestNow();
         parent::tearDown();
     }
 

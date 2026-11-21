@@ -1,0 +1,118 @@
+name: Jabalia demo fixture PostgreSQL rehearsal
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'edubridge-api-laravel/app/Console/Commands/SeedJabaliaDemo.php'
+      - 'edubridge-api-laravel/tests/Feature/JabaliaHomeroomAttendanceTest.php'
+      - 'deploy/jabalia-demo-seed-production.sh'
+      - '.github/workflows/jabalia-demo-seed.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-seed:
+    name: Seed twice on disposable PostgreSQL 17
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: edubridge_jabalia_demo_ci
+          POSTGRES_USER: edubridge
+          POSTGRES_PASSWORD: fixture-ci-only-not-production
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U edubridge -d edubridge_jabalia_demo_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: edubridge-api-laravel
+    env:
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DB_DATABASE: edubridge_jabalia_demo_ci
+      DB_USERNAME: edubridge
+      DB_PASSWORD: fixture-ci-only-not-production
+      DB_URL: ""
+      SESSION_DRIVER: file
+      JWT_SECRET: fixture-ci-only-jwt-secret
+      JABALIA_DEMO_SEED_ENABLED: "true"
+      JABALIA_DEMO_PASSWORD: fixture-ci-only-example-password-with-32-chars
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, pdo_pgsql, pgsql
+          coverage: none
+      - name: Install Laravel dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Build fresh disposable schema
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate:fresh --force
+          php artisan institutions:provision-jabalia --domain=jabalia.edubridge.win
+          php artisan tinker --execute='DB::table("schools")->insert(["id"=>1,"organization_id"=>1,"name"=>"[DEMO] School","slug"=>"demo","is_active"=>true,"created_at"=>now(),"updated_at"=>now()]);'
+      - name: Dry run does not write
+        run: |
+          php artisan institutions:seed-jabalia-demo --confirm-organization=jabalia --confirm-school=1 --confirm-database=edubridge_jabalia_demo_ci
+          php artisan tinker --execute='if(DB::table("academic_years")->where("name","DEMO-2026/2027")->exists()) throw new RuntimeException("Dry run changed database");'
+      - name: Reject incorrect database confirmation
+        run: |
+          if php artisan institutions:seed-jabalia-demo --apply --confirm-organization=jabalia --confirm-school=1 --confirm-database=wrong; then
+            echo "ERROR: database mismatch guard did not reject the write"
+            exit 1
+          fi
+      - name: Seed fixture twice
+        run: |
+          for n in 1 2; do
+            php artisan institutions:seed-jabalia-demo \
+              --apply \
+              --confirm-organization=jabalia \
+              --confirm-school=1 \
+              --confirm-database=edubridge_jabalia_demo_ci \
+              --archive-legacy-fixtures
+          done
+      - name: Verify expected counts, login identity and timetable conflicts
+        run: |
+          php artisan tinker --execute='
+          $y=DB::table("academic_years")->where("school_id",1)->where("name","DEMO-2026/2027")->first();
+          if(!$y) throw new RuntimeException("Missing fixture year");
+          $sections=DB::table("sections")->where("academic_year_id",$y->id)->count();
+          $assignments=DB::table("teacher_assignments as a")->join("sections as s","s.id","=","a.section_id")->where("s.academic_year_id",$y->id)->where("a.status","active")->count();
+          $quotas=DB::table("jabalia_section_subject_quotas as q")->join("sections as s","s.id","=","q.section_id")->where("s.academic_year_id",$y->id)->count();
+          $entries=DB::table("timetable_entries")->where("academic_year_id",$y->id)->count();
+          $enrollments=DB::table("student_enrollments as e")->join("sections as s","s.id","=","e.section_id")->where("s.academic_year_id",$y->id)->where("e.status","active")->count();
+          $books=DB::table("curriculum_books")->where("academic_year_id",$y->id)->count();
+          $teachers=DB::table("institution_internal_identities")->where("organization_id",1)->count();
+          $students=DB::table("student_account_links")->where("school_id",1)->count();
+          $counts=["sections"=>$sections,"assignments"=>$assignments,"quotas"=>$quotas,"entries"=>$entries,"enrollments"=>$enrollments,"books"=>$books,"teachers"=>$teachers,"students"=>$students];
+          $expected=["sections"=>4,"assignments"=>20,"quotas"=>20,"entries"=>48,"enrollments"=>8,"books"=>10,"teachers"=>5,"students"=>8];
+          echo "FIXTURE_COUNTS=".json_encode($counts).PHP_EOL;
+          if($counts!==$expected) throw new RuntimeException("Fixture counts do not match");
+          $conflicts=DB::table("timetable_entries")->where("academic_year_id",$y->id)->whereNotNull("teacher_id")->select("teacher_id","weekday","period_number")->groupBy("teacher_id","weekday","period_number")->havingRaw("COUNT(*)>1")->get();
+          if($conflicts->isNotEmpty()) throw new RuntimeException("Teacher timetable collisions");
+          if(!\App\Support\InstitutionInternalSession::active((int)DB::table("users")->where("email","demo.teacher.ar@jabalia.edubridge")->value("id"))) throw new RuntimeException("Demo teacher internal login inactive");
+          '
+          php artisan jabalia:audit-timetable --json > /tmp/jabalia-demo-audit.json
+          php -r '
+          $d=json_decode(file_get_contents("/tmp/jabalia-demo-audit.json"), true, 512, JSON_THROW_ON_ERROR);
+          if(($d["scheduled_entries"]??null)!==48) throw new RuntimeException("Audit expected 48 timetable rows");
+          foreach(($d["schools"]??[]) as $s){
+            foreach(["outside_configured_days","outside_configured_periods","missing_clock_times","mismatched_clock_times"] as $key)
+              if(($s[$key]??-1)!==0) throw new RuntimeException("Timetable audit failed for ".$key);
+          }
+          echo "PASS: PostgreSQL fixture idempotence and timetable audit".PHP_EOL;
+          '
