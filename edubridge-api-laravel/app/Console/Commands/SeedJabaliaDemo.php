@@ -65,7 +65,7 @@ class SeedJabaliaDemo extends Command
 
             $this->assertRequiredSchema();
             $this->assertReservedDomains($organization, $school);
-            $this->assertNoConflictingDirector($schoolId);
+            $this->assertNoConflictingDirector($school);
 
             $this->newLine();
             $this->info('Jabalia synthetic fixture preflight');
