@@ -98,6 +98,10 @@ jobs:
           $books=DB::table("curriculum_books")->where("academic_year_id",$y->id)->count();
           $teachers=DB::table("institution_internal_identities")->where("organization_id",1)->count();
           $students=DB::table("student_account_links")->where("school_id",1)->count();
+          $homerooms=DB::table("sections")->where("academic_year_id",$y->id)->whereNotNull("homeroom_teacher_id")->count();
+          if($homerooms!==4) throw new RuntimeException("Four homeroom assignments are required");
+          $demoRolls=DB::table("attendance_sessions as a")->join("sections as s","s.id","=","a.section_id")->where("s.academic_year_id",$y->id)->where("a.attendance_date","2026-11-19")->whereNull("a.period_number")->count();
+          if($demoRolls!==4) throw new RuntimeException("Four fixture attendance rolls must be on Thursday");
           $counts=["sections"=>$sections,"assignments"=>$assignments,"quotas"=>$quotas,"entries"=>$entries,"enrollments"=>$enrollments,"books"=>$books,"teachers"=>$teachers,"students"=>$students];
           $expected=["sections"=>4,"assignments"=>20,"quotas"=>20,"entries"=>48,"enrollments"=>8,"books"=>10,"teachers"=>5,"students"=>8];
           echo "FIXTURE_COUNTS=".json_encode($counts).PHP_EOL;

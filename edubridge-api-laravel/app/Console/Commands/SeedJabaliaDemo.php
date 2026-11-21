@@ -23,7 +23,7 @@ class SeedJabaliaDemo extends Command
     private const YEAR_NAME = 'DEMO-2026/2027';
     private const ORG_DOMAIN = 'jabalia.edubridge';
     private const SCHOOL_DOMAIN = 'jabalia-demo.edubridge';
-    private const FIXTURE_DATE = '2026-11-20';
+    private const FIXTURE_DATE = '2026-11-19';
 
     public function handle(): int
     {
@@ -478,15 +478,32 @@ class SeedJabaliaDemo extends Command
         if ($existing && $existing->role !== $role) {
             throw new RuntimeException('Reserved demo email is already used by a different account role: '.$email);
         }
-        $hash = Hash::make($password);
+
         $values = [
             'name' => $name,
-            'email_verified_at' => now(),
-            'password' => $hash,
+            'email_verified_at' => $existing?->email_verified_at ?? now(),
             'updated_at' => now(),
         ];
-        if (Schema::hasColumn('users', 'password_hash')) $values['password_hash'] = $hash;
-        if (Schema::hasColumn('users', 'verification_status')) $values['verification_status'] = 'verified';
+        if (Schema::hasColumn('users', 'verification_status')) {
+            $values['verification_status'] = 'verified';
+        }
+
+        // Re-running with the same secret must not rotate password hashes or
+        // invalidate working demo sessions. When the secret changes, explicitly
+        // revoke previously issued tokens through session_version.
+        $storedHash = $existing?->password_hash ?: ($existing?->password ?? null);
+        $rotatePassword = !$existing || !is_string($storedHash) || !Hash::check($password, $storedHash);
+        if ($rotatePassword) {
+            $hash = Hash::make($password);
+            $values['password'] = $hash;
+            if (Schema::hasColumn('users', 'password_hash')) {
+                $values['password_hash'] = $hash;
+            }
+            if ($existing && Schema::hasColumn('users', 'session_version')) {
+                $values['session_version'] = DB::raw('COALESCE(session_version, 0) + 1');
+            }
+        }
+
         if (!$existing) {
             $values['email'] = $email;
             $values['role'] = $role;
@@ -759,7 +776,14 @@ class SeedJabaliaDemo extends Command
         array $subjectIds,
         array $teacherIds
     ): void {
-        foreach ($sectionIds as $sectionId) {
+        $homeroomTeachers = array_values($teacherIds);
+        foreach ($sectionIds as $index => $sectionId) {
+            // Assign one active demonstration homeroom teacher per section so
+            // homeroom attendance flows can be tested end-to-end.
+            DB::table('sections')->where('id', $sectionId)->update([
+                'homeroom_teacher_id' => $homeroomTeachers[$index],
+                'updated_at' => now(),
+            ]);
             foreach ($subjectDefinitions as $definition) {
                 $subjectId = $subjectIds[$definition['code']];
                 $teacherId = $teacherIds[$definition['code']];
