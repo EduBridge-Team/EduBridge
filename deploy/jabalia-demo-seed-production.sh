@@ -3,7 +3,12 @@ set -Eeuo pipefail
 
 API_CONTAINER="edubridge-jabalia-api"
 POSTGRES_CONTAINER="edubridge-jabalia-postgres"
-BACKUP_ROOT="\${JABALIA_BACKUP_DIR:-/home/ubuntu/backups}"
+BACKUP_ROOT="${JABALIA_BACKUP_DIR:-/home/ubuntu/backups}"
+
+if [[ "$BACKUP_ROOT" != /* ]]; then
+  echo "ERROR: JABALIA_BACKUP_DIR must resolve to an absolute directory." >&2
+  exit 1
+fi
 
 for command in docker openssl date mkdir chmod; do
   command -v "$command" >/dev/null 2>&1 || {
