@@ -70,6 +70,21 @@ jobs:
           assert 'if [[ "$BACKUP_ROOT" != /* ]]' in script, "Backup root must be absolute"
           print("PASS: backup path is expanded and absolute")
           PY
+      - name: Validate a real PostgreSQL custom-format backup via stdin
+        run: |
+          set -euo pipefail
+          export PGPASSWORD="$DB_PASSWORD"
+          pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME" -d "$DB_DATABASE" -Fc > /tmp/jabalia-demo-backup-test.dump
+          test -s /tmp/jabalia-demo-backup-test.dump
+          pg_restore --list < /tmp/jabalia-demo-backup-test.dump > /tmp/jabalia-demo-backup-test.toc
+          test -s /tmp/jabalia-demo-backup-test.toc
+          python3 - <<'PY'
+          from pathlib import Path
+          script = Path("../deploy/jabalia-demo-seed-production.sh").read_text()
+          assert 'pg_restore --list < "$BACKUP_FILE"' in script, "Production backup validation must read stdin without a literal dash filename"
+          assert 'pg_restore --list - < "$BACKUP_FILE"' not in script
+          print("PASS: valid custom-format archive accepted through stdin")
+          PY
       - name: Build fresh disposable schema
         run: |
           cp .env.example .env
