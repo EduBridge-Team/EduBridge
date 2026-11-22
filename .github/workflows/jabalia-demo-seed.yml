@@ -58,6 +58,18 @@ jobs:
           coverage: none
       - name: Install Laravel dependencies
         run: composer install --no-interaction --prefer-dist
+      - name: Verify production backup path expansion and shell syntax
+        run: |
+          bash -n ../deploy/jabalia-demo-seed-production.sh
+          python3 - <<'PY'
+          from pathlib import Path
+          script = Path("../deploy/jabalia-demo-seed-production.sh").read_text()
+          expected = 'BACKUP_ROOT="${JABALIA_BACKUP_DIR:-/home/ubuntu/backups}"'
+          assert expected in script, "Backup root expansion must use Bash parameter expansion"
+          assert 'BACKUP_ROOT="\\${' not in script, "Backup root must not escape Bash parameter expansion"
+          assert 'if [[ "$BACKUP_ROOT" != /* ]]' in script, "Backup root must be absolute"
+          print("PASS: backup path is expanded and absolute")
+          PY
       - name: Build fresh disposable schema
         run: |
           cp .env.example .env
