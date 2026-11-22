@@ -61,7 +61,7 @@ docker exec "$POSTGRES_CONTAINER" sh -lc \
   'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$BACKUP_FILE"
 chmod 600 "$BACKUP_FILE"
 test -s "$BACKUP_FILE"
-docker exec -i "$POSTGRES_CONTAINER" pg_restore --list - < "$BACKUP_FILE" >/dev/null
+docker exec -i "$POSTGRES_CONTAINER" pg_restore --list < "$BACKUP_FILE" >/dev/null
 echo "Verified backup: $BACKUP_FILE"
 
 DEMO_PASSWORD="$(openssl rand -hex 32)"
